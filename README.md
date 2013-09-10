@@ -5,7 +5,7 @@ To work on this project, you'll probably want at least the following:
 
 1. Git for Windows (http://msysgit.github.io/)
 2. Python 3.3.2 (http://www.python.org/download/)
-3. Visual Studio 2013 (http://www.microsoft.com/visualstudio/eng/2013-downloads)
+3. Visual Studio 2012 (Go to Dreamspark)
 4. Python Tools for Visual Studio (http://pytools.codeplex.com/)
 
 ### Overview
