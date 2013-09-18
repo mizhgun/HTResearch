@@ -23,16 +23,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="DAO\" />
-    <Folder Include="DTO\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="DAO\ContactDAO.py" />
-    <Compile Include="DAO\OrganizationDAO.py" />
-    <Compile Include="DAO\PublicationDAO.py" />
-    <Compile Include="DTO\ContactDTO.py" />
-    <Compile Include="DTO\OrganizationDTO.py" />
-    <Compile Include="DTO\PublicationDTO.py" />
+    <Compile Include="dao.py" />
+    <Compile Include="dto.py" />
+    <Compile Include="__init__.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>
