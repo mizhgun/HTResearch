@@ -8,8 +8,8 @@ class ContactDTO(Document):
     primary_phone = IntField()
     secondary_phone = IntField()
     email = EmailField()
-    organizations = ListField(ReferenceField(OrganizationDTO))
-    publications = ListField(ReferenceField(PublicationDTO))
+    organizations = ListField(ReferenceField('OrganizationDTO'))
+    publications = ListField(ReferenceField('PublicationDTO'))
     position = StringField()
 
 class OrganizationDTO(Document):
@@ -22,7 +22,7 @@ class OrganizationDTO(Document):
     email = EmailField()
     contacts = ListField(ReferenceField(ContactDTO))
     organization_url = URLField()
-    partners = ListField(ReferenceField(OrganizationDTO))
+    partners = ListField(ReferenceField('self'))
 
 class PublicationDTO(Document):
     """A DTO wrapper for Publication documents"""

@@ -6,7 +6,7 @@ class ContactDAO(Object):
     def Create(cls, contact_dto):
         contact_dto.save()
 
-    def Delete(cls, contactDTO):
+    def Delete(cls, contact_dto):
         contact_dto.delete()
 
     def Edit(cls, contact_dto):
