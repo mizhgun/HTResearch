@@ -45,8 +45,8 @@ class PublicationDAO(Object):
 
     def Edit(cls, pub_dto):
         old_dto = PublicationDTO.objects(id=pub_dto.id).first()
-        old_dto = org_dto
+        old_dto = pub_dto
         old_dto.save()
     
-    def Find(cls, org_dto):
+    def Find(cls, pub_dto):
         return PublicationDTO.objects(id=pub_dto.id).first()
