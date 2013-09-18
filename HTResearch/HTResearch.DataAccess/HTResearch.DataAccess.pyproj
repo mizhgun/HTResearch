@@ -24,6 +24,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="dao.py" />
+    <Compile Include="db_connect.py" />
     <Compile Include="dto.py" />
     <Compile Include="__init__.py" />
   </ItemGroup>
