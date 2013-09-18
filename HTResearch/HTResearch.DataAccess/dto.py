@@ -22,7 +22,7 @@ class OrganizationDTO(Document):
     email = EmailField()
     contacts = ListField(ReferenceField(ContactDTO))
     organization_url = URLField()
-    partners = ListField(ReferencceField(OrganizationDTO))
+    partners = ListField(ReferenceField(OrganizationDTO))
 
 class PublicationDTO(Document):
     """A DTO wrapper for Publication documents"""
