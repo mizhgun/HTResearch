@@ -5,7 +5,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>30455834-1e95-4ed2-b95d-974ffd71b5cb</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>HTResearch.DataAccess.py</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,7 +23,16 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="HTResearch.DataAccess.py" />
+    <Folder Include="DAO\" />
+    <Folder Include="DTO\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DAO\ContactDAO.py" />
+    <Compile Include="DAO\OrganizationDAO.py" />
+    <Compile Include="DAO\PublicationDAO.py" />
+    <Compile Include="DTO\ContactDTO.py" />
+    <Compile Include="DTO\OrganizationDTO.py" />
+    <Compile Include="DTO\PublicationDTO.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>
