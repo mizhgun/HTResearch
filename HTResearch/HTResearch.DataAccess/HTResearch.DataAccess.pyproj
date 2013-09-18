@@ -25,6 +25,7 @@
   <ItemGroup>
     <Compile Include="dao.py" />
     <Compile Include="dto.py" />
+    <Compile Include="enums.py" />
     <Compile Include="__init__.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
