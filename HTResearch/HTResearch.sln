@@ -7,6 +7,8 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "DataAccess", "DataAccess\Da
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "DataModel", "DataModel\DataModel.pyproj", "{C4DCB6FC-A118-4982-A0C1-9B653D221FFB}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "WebCrawler", "WebCrawler\WebCrawler.pyproj", "{ECA3B746-A860-4971-92E4-BA1346121BA7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,7 @@ Global
 		{3525395A-26ED-459F-A830-A7C88C41D669}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3525395A-26ED-459F-A830-A7C88C41D669}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3525395A-26ED-459F-A830-A7C88C41D669}.Release|Any CPU.Build.0 = Release|Any CPU
+<<<<<<< HEAD
 		{30455834-1E95-4ED2-B95D-974FFD71B5CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{30455834-1E95-4ED2-B95D-974FFD71B5CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30455834-1E95-4ED2-B95D-974FFD71B5CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -25,6 +28,12 @@ Global
 		{C4DCB6FC-A118-4982-A0C1-9B653D221FFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4DCB6FC-A118-4982-A0C1-9B653D221FFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4DCB6FC-A118-4982-A0C1-9B653D221FFB}.Release|Any CPU.Build.0 = Release|Any CPU
+=======
+		{ECA3B746-A860-4971-92E4-BA1346121BA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECA3B746-A860-4971-92E4-BA1346121BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECA3B746-A860-4971-92E4-BA1346121BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECA3B746-A860-4971-92E4-BA1346121BA7}.Release|Any CPU.Build.0 = Release|Any CPU
+>>>>>>> a5c0231afdb344a6a0db8edd261abc166e720906
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
