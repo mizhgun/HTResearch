@@ -3,15 +3,16 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <Name>HTResearch.WebClient</Name>
-    <RootNamespace>HTResearch.WebClient</RootNamespace>
+    <Name>WebClient</Name>
+    <RootNamespace>WebClient</RootNamespace>
     <UseIISExpress>true</UseIISExpress>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>3525395a-26ed-459f-a830-a7c88c41d669</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
+    <ProjectHome>
+    </ProjectHome>
     <ProjectTypeGuids>{5F0BE9CA-D677-4A4D-8806-6076C0FAAD37};{349c5851-65df-11da-9384-00065b846f21};{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <StartupFile>manage.py</StartupFile>
     <SearchPath>
@@ -30,10 +31,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="manage.py" />
-    <Compile Include="HTResearch.WebClient\__init__.py" />
-    <Compile Include="HTResearch.WebClient\settings.py" />
-    <Compile Include="HTResearch.WebClient\urls.py" />
-    <Compile Include="HTResearch.WebClient\wsgi.py" />
+    <Compile Include="WebClient\__init__.py" />
+    <Compile Include="WebClient\settings.py" />
+    <Compile Include="WebClient\urls.py" />
+    <Compile Include="WebClient\wsgi.py" />
   </ItemGroup>
   <ItemGroup>
     <WebPiReference Include="https://www.microsoft.com/web/webpi/3.0/toolsproductlist.xml%3fDjango">
@@ -43,7 +44,7 @@
     </WebPiReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="HTResearch.WebClient\" />
+    <Folder Include="WebClient\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Python Tools\Microsoft.PythonTools.Django.targets" />
   <ProjectExtensions>
