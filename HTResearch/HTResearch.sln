@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "HTResearch.WebClient", "HTResearch.WebClient\HTResearch.WebClient.pyproj", "{3525395A-26ED-459F-A830-A7C88C41D669}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "WebClient", "WebClient\WebClient.pyproj", "{3525395A-26ED-459F-A830-A7C88C41D669}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "HTResearch.DataAccess", "HTResearch.DataAccess\HTResearch.DataAccess.pyproj", "{30455834-1E95-4ED2-B95D-974FFD71B5CB}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "DataAccess", "DataAccess\DataAccess.pyproj", "{30455834-1E95-4ED2-B95D-974FFD71B5CB}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "DataModel", "DataModel\DataModel.pyproj", "{C4DCB6FC-A118-4982-A0C1-9B653D221FFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +21,10 @@ Global
 		{30455834-1E95-4ED2-B95D-974FFD71B5CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30455834-1E95-4ED2-B95D-974FFD71B5CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30455834-1E95-4ED2-B95D-974FFD71B5CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4DCB6FC-A118-4982-A0C1-9B653D221FFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4DCB6FC-A118-4982-A0C1-9B653D221FFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4DCB6FC-A118-4982-A0C1-9B653D221FFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4DCB6FC-A118-4982-A0C1-9B653D221FFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
