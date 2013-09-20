@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.20623.1 VSUPREVIEW
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "HTResearch.WebClient", "HTResearch.WebClient\HTResearch.WebClient.pyproj", "{3525395A-26ED-459F-A830-A7C88C41D669}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "WebCrawler", "WebCrawler\WebCrawler.pyproj", "{ECA3B746-A860-4971-92E4-BA1346121BA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +15,10 @@ Global
 		{3525395A-26ED-459F-A830-A7C88C41D669}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3525395A-26ED-459F-A830-A7C88C41D669}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3525395A-26ED-459F-A830-A7C88C41D669}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECA3B746-A860-4971-92E4-BA1346121BA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECA3B746-A860-4971-92E4-BA1346121BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECA3B746-A860-4971-92E4-BA1346121BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECA3B746-A860-4971-92E4-BA1346121BA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
