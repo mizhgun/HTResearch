@@ -7,6 +7,8 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "DataAccess", "DataAccess\Da
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "WebCrawler", "WebCrawler\WebCrawler.pyproj", "{ECA3B746-A860-4971-92E4-BA1346121BA7}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Test", "Test\Test.pyproj", "{09EC0EC0-C930-4FAD-B368-52C726F448E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{ECA3B746-A860-4971-92E4-BA1346121BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECA3B746-A860-4971-92E4-BA1346121BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECA3B746-A860-4971-92E4-BA1346121BA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09EC0EC0-C930-4FAD-B368-52C726F448E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09EC0EC0-C930-4FAD-B368-52C726F448E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09EC0EC0-C930-4FAD-B368-52C726F448E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09EC0EC0-C930-4FAD-B368-52C726F448E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
