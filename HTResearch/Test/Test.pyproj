@@ -23,9 +23,19 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="DataAccess\" />
-    <Folder Include="WebCrawler\" />
-    <Folder Include="WebClient\" />
+    <Folder Include="Access\" />
+    <Folder Include="Crawler\" />
+    <Folder Include="Client\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="db_interaction_test.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataAccess\DataAccess.pyproj">
+      <Name>DataAccess</Name>
+      <Project>{30455834-1e95-4ed2-b95d-974ffd71b5cb}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>
