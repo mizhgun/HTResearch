@@ -17,7 +17,7 @@ class OrganizationDTO(Document):
 
     name = Mongo.StringField()
     address = Mongo.StringField()
-    types = Mongo.StringField()
+    types = Mongo.ListField(Mongo.IntField())
     phone_number = Mongo.IntField()
     email = Mongo.EmailField()
     contacts = Mongo.ListField(ReferenceField(ContactDTO))
@@ -31,5 +31,5 @@ class PublicationDTO(Document):
     authors = Mongo.ListField(ReferenceField(ContactDTO))
     publisher = Mongo.ReferenceField(ContactDTO)
     publication_date = Mongo.DateTimeField()
-    types = Mongo.StringField()
+    types = Mongo.ListField(Mongo.IntField())
     content_url = Mongo.URLField()
