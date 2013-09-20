@@ -26,7 +26,6 @@
   <ItemGroup>
     <Compile Include="dao.py" />
     <Compile Include="dto.py" />
-    <Compile Include="enums.py" />
     <Compile Include="factory.py" />
     <Compile Include="__init__.py" />
   </ItemGroup>
