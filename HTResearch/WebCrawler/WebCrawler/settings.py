@@ -8,7 +8,7 @@
 
 BOT_NAME = 'WebCrawler'
 
-SPIDER_MODULES = ['WebCrawler.spiders']
+SPIDER_MODULES = ['WebCrawler.spiders', 'WebCrawler.unittests']
 NEWSPIDER_MODULE = 'WebCrawler.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
