@@ -19,3 +19,4 @@ class LinkScraperTest(BaseSpider):
         links = self.scraper.parse(response)
 
         print links
+        #TODO: unit tests should check a static input against an output

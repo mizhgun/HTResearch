@@ -5,9 +5,10 @@
 
 from scrapy.item import Item, Field
 
-class WebcrawlerItem(Item):
+class ScrapedUrl(Item):
     # define the fields for your item here like:
     # name = Field()
+    url = Field()
     pass
 
 class Email(Item):
