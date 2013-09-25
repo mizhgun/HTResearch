@@ -1,7 +1,7 @@
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from scrapy.contrib.loader import XPathItemLoader
-from WebCrawler.items import Email
+from WebCrawler.items import ScrapedEmail
 import pdb
 import re
 
@@ -27,4 +27,11 @@ class EmailScraper(BaseSpider):
 
         # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
         emails = list(set(emails))
-        return emails
+
+        # Make the list an item
+        email_list = []
+        for email in emails:
+            item = ScrapedEmail()
+            item['email'] = email
+            email_list.append(item)
+        return email_list

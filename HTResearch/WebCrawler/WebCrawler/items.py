@@ -11,6 +11,5 @@ class ScrapedUrl(Item):
     url = Field()
     pass
 
-class Email(Item):
-    address = Field()
-    domain = Field()
+class ScrapedEmail(Item):
+    email = Field()
