@@ -65,6 +65,6 @@ class DatabaseInteractionTestSuite():
         print 'PublicationDAO tests passed'
         self.destroy_database()
 
-if __name__:
+if __name__ == '__main__':
     my_suite = DatabaseInteractionTestSuite()
     print 'DB interaction test complete'
