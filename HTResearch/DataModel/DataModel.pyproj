@@ -26,5 +26,12 @@
     <Compile Include="model.py" />
     <Compile Include="__init__.py" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataAccess\DataAccess.pyproj">
+      <Name>DataAccess</Name>
+      <Project>{30455834-1e95-4ed2-b95d-974ffd71b5cb}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>
