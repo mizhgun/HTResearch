@@ -1,5 +1,5 @@
 import sys
-[sys.path.remove(p) for p in sys.path if '../DataAccess/' in p]
+[sys.path.remove(p) for p in sys.path if 'DataAccess' in p]
 sys.path.append('../DataAccess/')
 from mongoengine.connection import connect, disconnect, get_connection
 from dto import ContactDTO, OrganizationDTO, PublicationDTO
