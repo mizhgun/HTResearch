@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>09ec0ec0-c930-4fad-b368-52c726f448e5</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>db_interaction_test.py</StartupFile>
+    <StartupFile>Access\db_interaction_test.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -27,7 +27,7 @@
     <Folder Include="Client\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="db_interaction_test.py" />
+    <Compile Include="Access\db_interaction_test.py" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.pyproj">
