@@ -11,24 +11,19 @@ class DatabaseInteractionTest(unittest.TestCase):
 
     mongodb_name = 'db_test'
 
-    def test_db_interaction(self):
+    def setUp(self):
         print "New DatabaseInteractionTest running"
-        self.run_test()
-
-    def init_database(self):
-        
         disconnect()
         connect(self.mongodb_name)
         print 'Creating mongo test-database: ' + self.mongodb_name
 
-    def destroy_database(self):
+    def tearDown(self):
         connection = get_connection()
         connection.drop_database(self.mongodb_name)
         print 'Dropping mongo test-database: ' + self.mongodb_name
         disconnect()
 
-    def run_test(self):
-        self.init_database()
+    def test_dao(self):
         my_contact = ContactDTO()
         my_contact.first_name = "Jordan"
         my_contact.last_name = "Degner"
@@ -63,7 +58,6 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertTrue(assert_publication.title == my_publication.title)
         self.assertTrue(assert_publication.authors == my_publication.authors)
         print 'PublicationDAO tests passed'
-        self.destroy_database()
 
 if __name__ == '__main__':
     try:
