@@ -11,7 +11,7 @@ class DatabaseInteractionTest(unittest.TestCase):
 
     mongodb_name = 'db_test'
 
-    def __init__(self):
+    def test_db_interaction(self):
         print "New DatabaseInteractionTest running"
         self.run_test()
 
@@ -66,5 +66,9 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.destroy_database()
 
 if __name__ == '__main__':
-    my_test = DatabaseInteractionTest()
+    try:
+        unittest.main()
+    except SystemExit as inst:
+        if inst.args[0]:
+            raise
     print 'DB interaction test complete'
