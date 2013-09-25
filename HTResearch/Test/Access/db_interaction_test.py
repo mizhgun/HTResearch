@@ -1,7 +1,6 @@
 import sys
 [sys.path.remove(p) for p in sys.path if '../DataAccess/' in p]
-if 'DataAccess' not in sys.path:
-    sys.path.append('../DataAccess/')
+sys.path.append('../DataAccess/')
 from mongoengine.connection import connect, disconnect, get_connection
 from dto import ContactDTO, OrganizationDTO, PublicationDTO
 from dao import ContactDAO, OrganizationDAO, PublicationDAO
