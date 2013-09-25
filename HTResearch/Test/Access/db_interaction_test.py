@@ -2,6 +2,7 @@ import sys
 [sys.path.remove(p) for p in sys.path if '../DataAccess/' in p]
 if 'DataAccess' not in sys.path:
     sys.path.append('../DataAccess/')
+from mongoengine.connection import connect, disconnect, get_connection
 from dto import ContactDTO, OrganizationDTO, PublicationDTO
 from dao import ContactDAO, OrganizationDAO, PublicationDAO
 from factory import DAOFactory
@@ -15,13 +16,12 @@ class DatabaseInteractionTestSuite():
         self.run_test()
 
     def init_database(self):
-        from mongoengine.connection import connect, disconnect
+        
         disconnect()
         connect(self.mongodb_name)
         print 'Creating mongo test-database ' + self.mongodb_name
 
     def destroy_database(self):
-        from mongoengine.connection import get_connection, disconnect
         connection = get_connection()
         connection.drop_database(self.mongodb_name)
         print 'Dropping mongo test-database: ' + self.mongodb_name
