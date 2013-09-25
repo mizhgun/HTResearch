@@ -28,6 +28,7 @@
     <Folder Include="Client\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Access\db_interaction_test.py" />
     <Compile Include="Model\model_test.py" />
   </ItemGroup>
   <ItemGroup>
