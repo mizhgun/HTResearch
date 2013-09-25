@@ -1,4 +1,9 @@
-from DataAccess import dto
+import sys
+[sys.path.remove(p) for p in sys.path if 'DataAccess' in p]
+
+sys.path.append('../DataAccess/')
+
+import dto
 
 class DTOConverter(object):
     """A class for converting base objects to and from DTOs."""
@@ -6,11 +11,11 @@ class DTOConverter(object):
     @staticmethod
     def from_dto(cls, obj):
         new_cls = cls()
-        for attr, value in obj.__dict__.iteritems():
-            new_cls.attr = value
+        [setattr(new_cls, key, obj._data[key]) for key in obj._data if key != 'id']
+        return new_cls
 
     @staticmethod
     def to_dto(cls, obj):
         new_dto = cls()
-        for attr, value in obj.__dict__.iteritems():
-            new_dto.attr = value
+        [setattr(new_dto, attr, value) for attr, value in obj.__dict__.iteritems()]
+        return new_dto

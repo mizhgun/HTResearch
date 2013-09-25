@@ -36,7 +36,7 @@ class Publication(object):
     """A model class for an anti-trafficking research publication."""
 
     def __init__(self, title = "", authors = [],
-                 publisher = None, publication_date = datetime(),
+                 publisher = None, publication_date = datetime.now(),
                  types = [], content_url = ""):
         self.title = title
         self.authors = authors
