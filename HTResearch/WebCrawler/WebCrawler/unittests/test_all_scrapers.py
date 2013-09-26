@@ -14,14 +14,26 @@ class ScraperTests(unittest.TestCase):
         output, error = p.communicate()
         emails = output.split("\r\n")
         emails = emails[:len(emails)-1]
-        pdb.set_trace()
+
+        assert_list = ["sitelicense@blizzard.com",
+                       "tours@blizzard.com",
+                       "kkdevaraj@bombayteenchallenge.org",
+                       "tvarghese@bombayteenchallenge.org"]
+        for test in assert_list:
+            self.assertIn(test, emails, "Email not found")
 
     def test_link_scraper(self):
         p = subprocess.Popen('scrapy crawl link_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
         urls = output.split("\r\n")
         urls = urls[:len(urls)-1]
-        pdb.set_trace()
+        urls = [x.lower() for x in urls]
+
+        assert_list = ["http://www.black.com/"
+                       ]
+
+        for test in assert_list:
+            self.assertIn(test.lower(), urls, "URL " + test + " was not found")
 
 if __name__ == '__main__':
     try:

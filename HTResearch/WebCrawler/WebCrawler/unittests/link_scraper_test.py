@@ -8,7 +8,7 @@ import os
 
 class LinkScraperTest(BaseSpider):
     name = "link_scraper_test"
-    start_urls = ["http://en.wikipedia.org/wiki/Web_scraping"]
+    start_urls = ["http://black.com/"]
     scraper = None
 
     def __init__(self, *args, **kwargs):
