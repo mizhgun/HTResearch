@@ -34,4 +34,5 @@ class EmailScraper(BaseSpider):
             item = ScrapedEmail()
             item['email'] = email
             email_list.append(item)
+
         return email_list
