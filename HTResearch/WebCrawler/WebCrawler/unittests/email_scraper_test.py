@@ -5,6 +5,7 @@ from WebCrawler.scrapers.email_scraper import EmailScraper
 import scrapy
 import pdb
 import os
+import unittest
 
 class EmailScraperTest(BaseSpider):
     name = "email_scraper_test"
@@ -17,4 +18,19 @@ class EmailScraperTest(BaseSpider):
     def parse(self, response):
         emails = self.scraper.parse(response)
 
-        print emails
+        return emails
+
+class EmailTest(unittest.TestCase):
+    def test_email_scraper(self):
+        bliz_emails = ["sitelicense@blizzard.com","tours@blizzard.com"]
+        btc_emails = ["tvarghese@bombayteenchallenge.org","kkdevearaj@bombayteenchallenge.org"]
+        test = EmailScraperTest()
+        print test.parse()
+
+
+if __name__ == '__main__':
+    try:
+        unittest.main()
+    except SystemExit as inst:
+        if inst.args[0]:
+            raise

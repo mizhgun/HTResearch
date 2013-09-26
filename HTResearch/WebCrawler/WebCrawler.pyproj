@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{eca3b746-a860-4971-92e4-ba1346121ba7}</ProjectGuid>
     <ProjectHome />
-    <StartupFile />
+    <StartupFile>WebCrawler/unittests/email_scraper_test.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -13,15 +13,18 @@
     <InterpreterVersion>2.7</InterpreterVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <Compile Include="WebCrawler\items.py" />
     <Compile Include="WebCrawler\pipelines.py" />
+    <Compile Include="WebCrawler\scrapers\email_scraper.py" />
     <Compile Include="WebCrawler\scrapers\link_scraper.py" />
     <Compile Include="WebCrawler\scrapers\__init__.py" />
     <Compile Include="WebCrawler\settings.py" />
+    <Compile Include="WebCrawler\unittests\email_scraper_test.py" />
     <Compile Include="WebCrawler\unittests\link_scraper_test.py" />
     <Compile Include="WebCrawler\unittests\__init__.py" />
     <Compile Include="WebCrawler\__init__.py" />
