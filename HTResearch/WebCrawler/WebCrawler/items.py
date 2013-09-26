@@ -9,7 +9,3 @@ class WebcrawlerItem(Item):
     # define the fields for your item here like:
     # name = Field()
     pass
-
-class LinkItem(Item):
-    title = Field()
-    link = Field()
