@@ -3,13 +3,11 @@ from urlparse import urljoin
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request, TextResponse
-from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
-from scrapy.item import Item, Field
 
 class BasicCrawlSpider(BaseSpider):
     name = 'basic_crawl'
-    allowed_domains = [ 'www.stoptrafficking.net' ]
-    start_urls = [ 'http://www.stoptrafficking.net/' ]
+    allowed_domains = [ 'shaktivahini.org' ]
+    start_urls = [ 'http://www.shaktivahini.org/' ]
 
     def parse(self, response):
         if isinstance(response, TextResponse):
