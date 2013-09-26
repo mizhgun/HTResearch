@@ -1,0 +1,15 @@
+﻿
+2013-09-19T16:35:01: Start analysis
+2013-09-19T16:35:01: Deleting 0 files
+2013-09-19T16:35:01: Scraping builtin modules
+2013-09-19T16:35:01: Command: C:\workspaces_git\HTResearch\HTResearch\env\Scripts\python.exe "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Extensions\Microsoft\Python Tools for Visual Studio\2.0\PythonScraper.py" C:\workspaces_git\HTResearch\HTResearch\env\.ptvs\1935be30-9c2d-4b2c-9a1f-1ff01ae137d9\2.7 "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Extensions\Microsoft\Python Tools for Visual Studio\2.0\CompletionDB"
+2013-09-19T16:35:01: [WARNING] Errors
+System.ComponentModel.Win32Exception (0x80004005): The system cannot find the file specified
+   at System.Diagnostics.Process.StartWithCreateProcess(ProcessStartInfo startInfo)
+   at System.Diagnostics.Process.Start()
+   at Microsoft.PythonTools.ProcessOutput..ctor(Process process, Redirector redirector)
+2013-09-19T16:35:01: [ERROR] Failed to scrape builtin modules
+2013-09-19T16:35:01: [ERROR] Analysis failed
+System.InvalidOperationException: Failed to scrape builtin modules
+   at Microsoft.PythonTools.Analysis.PyLibAnalyzer.Scrape()
+   at Microsoft.PythonTools.Analysis.PyLibAnalyzer.Main(String[] args)
