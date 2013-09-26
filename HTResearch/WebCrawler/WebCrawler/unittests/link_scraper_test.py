@@ -18,5 +18,8 @@ class LinkScraperTest(BaseSpider):
     def parse(self, response):
         links = self.scraper.parse(response)
 
-        print links
+        for element in links:
+            print(element["url"])
+
+        return links
         #TODO: unit tests should check a static input against an output
