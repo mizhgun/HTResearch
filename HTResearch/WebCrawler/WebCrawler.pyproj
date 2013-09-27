@@ -22,6 +22,7 @@
     <Compile Include="WebCrawler\pipelines.py" />
     <Compile Include="WebCrawler\scrapers\email_scraper.py" />
     <Compile Include="WebCrawler\scrapers\link_scraper.py" />
+    <Compile Include="WebCrawler\scrapers\phone_number_scraper.py" />
     <Compile Include="WebCrawler\scrapers\__init__.py" />
     <Compile Include="WebCrawler\settings.py" />
     <Compile Include="WebCrawler\unittests\email_scraper_test.py" />

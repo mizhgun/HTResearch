@@ -1,26 +1,36 @@
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from scrapy.contrib.loader import XPathItemLoader
-from WebCrawler.items import S
+from WebCrawler.items import ScrapedPhoneNumber
 import pdb
 import re
 import string
 
 class PhoneNumberScraper(BaseSpider):
-
+    name = "phone_number_scraper_test"
+    start_urls = ["http://www.yellowpages.com/lincoln-ne/restaurants"]
+    allowed_domains = ["unl.edu"]
+    
     def __init__(self):
         phone_nums = []
-
+        
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
+        regex = re.compile(r'\s(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?')
+        #regex = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b')
+        # body will get phone numbers that are just text in the body
+        body = hxs.select('//body').re(regex)
         
-        # body will get emails that are just text in the body
-        body = hxs.select('//body').re(r'^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$')
+        footer = hxs.select('//footer').re(regex)
+
+        # hrefs will get phone numbers from hrefs
+        hrefs = hxs.select("//./a/@href").re(regex)
         
-        # hrefs will get emails from hrefs
-        #hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b')
-        
-        phone_nums = body#+hrefs
+        intersection = list(set(body) & set(hrefs))  
+        phone_nums = body     
+
+        for num in intersection:
+            phone_nums.remove(num)
 
         # Take out the unicode or whatever
         for i in range(len(phone_nums)):
@@ -36,4 +46,5 @@ class PhoneNumberScraper(BaseSpider):
             item['phone_number'] = num
             phone_nums_list.append(item)
 
+        pdb.set_trace()
         return phone_nums_list
