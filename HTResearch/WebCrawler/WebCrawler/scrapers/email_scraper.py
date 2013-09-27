@@ -5,7 +5,7 @@ from WebCrawler.items import ScrapedEmail
 import pdb
 import re
 
-class EmailScraper(BaseSpider):
+class EmailScraper:
 
     def __init__(self):
         emails = []
