@@ -40,5 +40,5 @@ class URLMetadataDTO(Mongo.Document):
     url = Mongo.URLField()
     last_visited = Mongo.DateTimeField()
     score = Mongo.IntegerField()
-    update_freq = None
-    checksum = 0
+    update_freq = Mongo.IntegerField()
+    checksum = Mongo.IntegerField()

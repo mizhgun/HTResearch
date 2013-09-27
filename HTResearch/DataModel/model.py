@@ -49,7 +49,7 @@ class URLMetadata(object):
     """A model class for an anti-trafficiking organization URL metadata."""
 
     def __init__(self, url = "", last_visited = datetime.now(),
-                 score = 0, update_freq = timedelta.min,
+                 score = 0, update_freq = 0,
                  checksum = 0):
         self.url = url
         self.last_visited = last_visited
