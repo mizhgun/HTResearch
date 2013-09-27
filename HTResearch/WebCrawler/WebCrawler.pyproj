@@ -19,9 +19,8 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <Compile Include="WebCrawler\items.py" />
-    <Compile Include="WebCrawler\item_pipeline\item_switch.py" />
+    <Compile Include="WebCrawler\item_pipeline\item_switches.py" />
     <Compile Include="WebCrawler\item_pipeline\__init__.py" />
-    <Compile Include="WebCrawler\pipelines.py" />
     <Compile Include="WebCrawler\scrapers\email_scraper.py" />
     <Compile Include="WebCrawler\scrapers\link_scraper.py" />
     <Compile Include="WebCrawler\scrapers\org_type_scraper.py" />

@@ -14,7 +14,7 @@ SPIDER_MODULES = ['WebCrawler.spiders', 'WebCrawler.unittests']
 NEWSPIDER_MODULE = 'WebCrawler.spiders'
 
 ITEM_PIPELINES = {
-    'WebCrawler.item_pipeline.item_switch.ItemSwitch' : 100,
+    'WebCrawler.item_pipeline.item_switches.ItemSwitch' : 100,
 }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
