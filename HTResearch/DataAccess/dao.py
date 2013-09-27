@@ -50,3 +50,20 @@ class PublicationDAO(object):
 
     def Find(self, dto_id):
         return PublicationDTO.objects(id=dto_id).first()
+
+class URLMetadataDAO(object):
+    """A DAO for the Publication document"""
+
+    def Create(self, url_dto):
+        url_dto.save()
+
+    def Delete(self, url_dto):
+        url_dto.delete()
+
+    def Edit(self, url_dto):
+        old_dto = URLMetadataDTO.objects(id=url_dto.id).first()
+        old_dto = url_dto
+        old_dto.save()
+
+    def Find(self, dto_id):
+        return URLMetadataDTO.objects(id=dto_id).first()
