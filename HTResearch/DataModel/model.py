@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class Contact(object):
     """A model class for an anti-trafficking contact."""

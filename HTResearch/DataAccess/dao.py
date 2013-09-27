@@ -52,7 +52,7 @@ class PublicationDAO(object):
         return PublicationDTO.objects(id=dto_id).first()
 
 class URLMetadataDAO(object):
-    """A DAO for the Publication document"""
+    """A DAO for the URLMetadata document"""
 
     def Create(self, url_dto):
         url_dto.save()
