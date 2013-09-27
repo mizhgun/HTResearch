@@ -10,9 +10,12 @@ class ContactDAO(object):
         contact_dto.delete()
 
     def Edit(self, contact_dto):
-        old_dto = ContactDTO.objects(id=contact_dto.id).first()
-        old_dto = contact_dto
-        old_dto.save()
+        if len(ContactDTO.objects(id=contact_dto.id)) > 0:
+            old_dto = ContactDTO.objects(id=contact_dto.id).first()
+            old_dto = contact_dto
+            old_dto.save()
+        else:
+            contact_dto.save()
 
     def Find(self, dto_id):
         return ContactDTO.objects(id=dto_id).first()
@@ -27,9 +30,12 @@ class OrganizationDAO(object):
         org_dto.delete()
 
     def Edit(self, org_dto):
-        old_dto = OrganizationDTO.objects(id=org_dto.id).first()
-        old_dto = org_dto
-        old_dto.save()
+        if len(OrganizationDTO.objects(id=org_dto.id)) > 0:
+            old_dto = OrganizationDTO.objects(id=org_dto.id).first()
+            old_dto = org_dto
+            old_dto.save()
+        else:
+            org_dto.save()
 
     def Find(self, dto_id):
         return OrganizationDTO.objects(id=dto_id).first()
@@ -44,9 +50,12 @@ class PublicationDAO(object):
         pub_dto.delete()
 
     def Edit(self, pub_dto):
-        old_dto = PublicationDTO.objects(id=pub_dto.id).first()
-        old_dto = pub_dto
-        old_dto.save()
+        if len(PublicationDTO.objects(id=pub_dto.id)) > 0:
+            old_dto = PublicationDTO.objects(id=pub_dto.id).first()
+            old_dto = pub_dto
+            old_dto.save()
+        else:
+            pub_dto.save()
 
     def Find(self, dto_id):
         return PublicationDTO.objects(id=dto_id).first()
@@ -61,9 +70,12 @@ class URLMetadataDAO(object):
         url_dto.delete()
 
     def Edit(self, url_dto):
-        old_dto = URLMetadataDTO.objects(id=url_dto.id).first()
-        old_dto = url_dto
-        old_dto.save()
+        if len(URLMetadataDTO.objects(id=url_dto.id)) > 0:
+            old_dto = URLMetadataDTO.objects(id=url_dto.id).first()
+            old_dto = url_dto
+            old_dto.save()
+        else:
+            url_dto.save()
 
     def Find(self, dto_id):
         return URLMetadataDTO.objects(id=dto_id).first()
