@@ -8,6 +8,8 @@
 
 BOT_NAME = 'WebCrawler'
 
+LOG_ENABLED = False
+
 SPIDER_MODULES = ['WebCrawler.spiders', 'WebCrawler.unittests']
 NEWSPIDER_MODULE = 'WebCrawler.spiders'
 
