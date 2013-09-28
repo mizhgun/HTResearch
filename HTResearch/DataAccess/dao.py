@@ -10,8 +10,9 @@ class ContactDAO(object):
         contact_dto.delete()
 
     def Edit(self, contact_dto):
-        if len(ContactDTO.objects(id=contact_dto.id)) > 0:
-            old_dto = ContactDTO.objects(id=contact_dto.id).first()
+        results = ContactDTO.objects(id=org_dto.id)
+        if len(results) > 0:
+            old_dto = results.first()
             old_dto = contact_dto
             old_dto.save()
         else:
@@ -30,8 +31,9 @@ class OrganizationDAO(object):
         org_dto.delete()
 
     def Edit(self, org_dto):
-        if len(OrganizationDTO.objects(id=org_dto.id)) > 0:
-            old_dto = OrganizationDTO.objects(id=org_dto.id).first()
+        results = OrganizationDTO.objects(id=org_dto.id)
+        if len(results) > 0:
+            old_dto = results.first()
             old_dto = org_dto
             old_dto.save()
         else:
@@ -50,8 +52,9 @@ class PublicationDAO(object):
         pub_dto.delete()
 
     def Edit(self, pub_dto):
-        if len(PublicationDTO.objects(id=pub_dto.id)) > 0:
-            old_dto = PublicationDTO.objects(id=pub_dto.id).first()
+        results = PublicationDTO.objects(id=pub_dto.id)
+        if len(results) > 0:
+            old_dto = results.first()
             old_dto = pub_dto
             old_dto.save()
         else:
@@ -70,8 +73,9 @@ class URLMetadataDAO(object):
         url_dto.delete()
 
     def Edit(self, url_dto):
-        if len(URLMetadataDTO.objects(id=url_dto.id)) > 0:
-            old_dto = URLMetadataDTO.objects(id=url_dto.id).first()
+        results = URLMetadataDTO.objects(id=url_dto.id)
+        if len(results) > 0:
+            old_dto = results.first()
             old_dto = url_dto
             old_dto.save()
         else:
