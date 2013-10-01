@@ -33,3 +33,12 @@ class PublicationDTO(Mongo.Document):
     publication_date = Mongo.DateTimeField()
     types = Mongo.ListField(Mongo.IntField())
     content_url = Mongo.URLField()
+
+class URLMetadataDTO(Mongo.Document):
+    """A DTO wrapper for URLMetadata documents"""
+
+    url = Mongo.URLField()
+    last_visited = Mongo.DateTimeField()
+    score = Mongo.IntegerField()
+    update_freq = Mongo.IntegerField()
+    checksum = Mongo.IntegerField()

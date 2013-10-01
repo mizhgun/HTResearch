@@ -44,3 +44,15 @@ class Publication(object):
         self.publication_date = publication_date
         self.types = types
         self.content_url = content_url
+
+class URLMetadata(object):
+    """A model class for an anti-trafficiking organization URL metadata."""
+
+    def __init__(self, url = "", last_visited = datetime.now(),
+                 score = 0, update_freq = 0,
+                 checksum = 0):
+        self.url = url
+        self.last_visited = last_visited
+        self.score = score
+        self.update_freq = update_freq
+        self.checksum = checksum
