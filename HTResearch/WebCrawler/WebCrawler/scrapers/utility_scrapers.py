@@ -18,18 +18,19 @@ class ContactPublicationsScraper:
         publications = []
 
 class EmailScraper:
+    email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b')
 
     def __init__(self):
-        emails = []
+        email_list = []
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-        
+
         # body will get emails that are just text in the body
-        body = hxs.select('//body').re(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b')
+        body = hxs.select('//body').re(regex)
         
         # hrefs will get emails from hrefs
-        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b')
+        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(regex)
         
         emails = body+hrefs
 
@@ -41,7 +42,6 @@ class EmailScraper:
         emails = list(set(emails))
 
         # Make the list an item
-        email_list = []
         for email in emails:
             item = ScrapedEmail()
             item['email'] = email

@@ -9,11 +9,15 @@ import subprocess
 
 class ScraperTests(unittest.TestCase):
     def test_email_scraper(self):
+        # Runs the test spider and pipes the printed output to "output"
         p = subprocess.Popen('scrapy crawl email_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
+
+        # Splits the results based on automatically added characters
         emails = output.split("\r\n")
         emails = emails[:len(emails)-1]
 
+        # Hardcoded results based on the sites that were crawled
         assert_list = ["sitelicense@blizzard.com",
                        "tours@blizzard.com",
                        "kkdevaraj@bombayteenchallenge.org",
