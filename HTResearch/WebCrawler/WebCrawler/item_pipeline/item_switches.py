@@ -19,7 +19,7 @@ class ItemSwitch(object):
             pass 
         #elif item_class == "Organization":
             #do something
-        #elif item_clase == "Contact":
+        #elif item_class == "Contact":
             #do something
         # etc.
         else:
