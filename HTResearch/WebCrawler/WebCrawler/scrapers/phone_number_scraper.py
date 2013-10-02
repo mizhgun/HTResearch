@@ -9,30 +9,22 @@ import string
 class PhoneNumberScraper(BaseSpider):
     name = "phone_number_scraper_test"
     start_urls = ["http://www.yellowpages.com/lincoln-ne/restaurants"]
-    allowed_domains = ["unl.edu"]
     
     def __init__(self):
         phone_nums = []
         
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-        regex = re.compile(r'\s(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?')
-        #regex = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b')
+        us_format_regex = re.compile(r'\b(?! )1?\s?[(-./]?\s?[2-9][0-8][0-9]\s?[)-./]?\s?[2-9][0-9]{2}\s?\W?\s?[0-9]{4}\b')
+        india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?[0-9]{5}[0-9]?\b')
         # body will get phone numbers that are just text in the body
-        body = hxs.select('//body').re(regex)
-        
-        footer = hxs.select('//footer').re(regex)
+        body = hxs.select('//body').re(us_format_regex)
+        body2 = hxs.select('//body').re(india_format_regex)
 
-        # hrefs will get phone numbers from hrefs
-        hrefs = hxs.select("//./a/@href").re(regex)
-        
-        intersection = list(set(body) & set(hrefs))  
-        phone_nums = body     
+        phone_nums = body
+        #phone_nums = list(set(body) | set(body2))     
 
-        for num in intersection:
-            phone_nums.remove(num)
-
-        # Take out the unicode or whatever
+        # Remove unicode indicators
         for i in range(len(phone_nums)):
             phone_nums[i] = phone_nums[i].encode('ascii','ignore')
 
