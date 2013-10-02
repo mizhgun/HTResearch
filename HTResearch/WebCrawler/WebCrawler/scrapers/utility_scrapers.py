@@ -18,30 +18,28 @@ class ContactPublicationsScraper:
         publications = []
 
 class EmailScraper:
-    email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b')
-
-    def __init__(self):
-        email_list = []
-
     def parse(self, response):
+        email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
         hxs = HtmlXPathSelector(response)
 
         # body will get emails that are just text in the body
-        body = hxs.select('//body').re(regex)
+        body = hxs.select('//body').re(email_regex)
         
         # hrefs will get emails from hrefs
-        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(regex)
+        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(email_regex)
         
         emails = body+hrefs
 
-        # Take out the unicode or whatever
+        # Take out the unicode or whatever, and substitute [at] for @ and [dot] for .
         for i in range(len(emails)):
             emails[i] = emails[i].encode('ascii','ignore')
+            emails[i] = re.sub(r'(\[at]|\(at\)| at )([A-Za-z0-9.-]+)(\[dot]|\(dot\)| dot )', r'@\2.', emails[i])
 
         # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
         emails = list(set(emails))
 
         # Make the list an item
+        email_list = []
         for email in emails:
             item = ScrapedEmail()
             item['email'] = email
