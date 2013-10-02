@@ -49,9 +49,6 @@ class EmailScraper:
 
 class IndianPhoneNumberScraper:
     
-    def __init__(self):
-        phone_nums = []
-        
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
         india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?[0-9]{5}[0-9]?\b')
@@ -127,10 +124,7 @@ class PublicationTypeScraper:
         type = []
 
 class USPhoneNumberScraper:
-    
-    def __init__(self):
-        phone_nums = []
-        
+           
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
         us_format_regex = re.compile(r'\b(?! )1?\s?[(-./]?\s?[2-9][0-8][0-9]\s?[)-./]?\s?[2-9][0-9]{2}\s?\W?\s?[0-9]{4}\b')
