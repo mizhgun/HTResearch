@@ -8,7 +8,7 @@ import os
 
 class LinkScraperTest(BaseSpider):
     name = "link_scraper_test"
-    start_urls = ["http://en.wikipedia.org/wiki/Web_scraping"]
+    start_urls = ["http://black.com/"]
     scraper = None
 
     def __init__(self, *args, **kwargs):
@@ -18,5 +18,8 @@ class LinkScraperTest(BaseSpider):
     def parse(self, response):
         links = self.scraper.parse(response)
 
-        print links
+        for element in links:
+            print(element["url"])
+
+        return links
         #TODO: unit tests should check a static input against an output
