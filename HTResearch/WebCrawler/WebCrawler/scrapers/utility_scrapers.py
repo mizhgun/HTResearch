@@ -101,7 +101,32 @@ class OrgTypeScraper:
     def __init__(self):
         types = []
 
-class PhoneNumberScraper:
+class PublicationAuthorsScraper:
+
+    def __init__(self):
+        authors = []
+
+class PublicationDateScraper:
+
+    def __init__(self):
+        partners = []
+
+class PublicationPublisherScraper:
+
+    def __init__(self):
+        publisher = []
+
+class PublicationTitleScraper:
+
+    def __init__(self):
+        titles = []
+
+class PublicationTypeScraper:
+
+    def __init__(self):
+        type = []
+
+class USPhoneNumberScraper:
     
     def __init__(self):
         phone_nums = []
@@ -129,28 +154,3 @@ class PhoneNumberScraper:
             phone_nums_list.append(item)
 
         return phone_nums_list
-
-class PublicationAuthorsScraper:
-
-    def __init__(self):
-        authors = []
-
-class PublicationDateScraper:
-
-    def __init__(self):
-        partners = []
-
-class PublicationPublisherScraper:
-
-    def __init__(self):
-        publisher = []
-
-class PublicationTitleScraper:
-
-    def __init__(self):
-        titles = []
-
-class PublicationTypeScraper:
-
-    def __init__(self):
-        type = []
