@@ -12,3 +12,6 @@ class ScrapedUrl(Item):
 
 class ScrapedEmail(Item):
     email = Field()
+
+class ScrapedPhoneNumber(Item):
+    phone_number=Field()
