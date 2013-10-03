@@ -16,7 +16,6 @@ class ModelTest(unittest.TestCase):
         my_contact = model.Contact(first_name = "Jordan", 
                                    last_name = "Degner",
                                    primary_phone = 4029813230,
-                                   secondary_phone = None,
                                    email = "jdegner0129@gmail.com",
                                    position = "Software Engineer")
 
