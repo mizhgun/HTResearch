@@ -1,8 +1,10 @@
 from urlparse import urljoin
 
+from WebCrawler.scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
-from scrapy.http import Request, TextResponse
+from scrapy.http import Request, TextResponse, HtmlResponse
+import scrapy
 
 class BasicCrawlSpider(BaseSpider):
     name = 'ht_research'
@@ -23,3 +25,30 @@ class BasicCrawlSpider(BaseSpider):
                         urls.append(url)
 
             return [ Request(url) for url in urls ]
+
+class StopTraffickingSpider(BaseSpider):
+    name = "stop_trafficking"
+    allowed_domains = [ 'stoptrafficking.in' ]
+    start_urls = [ 'http://www.stoptrafficking.in/Directory.aspx' ]
+
+    def __init__(self, *args, **kwargs):
+        super(StopTraffickingSpider, self).__init__(*args, **kwargs)
+        self.scraper = StopTraffickingDotInScraper()
+        self.first = True
+        self.directory_results = None
+
+    def parse(self, response):
+        """Parse this super specific page"""
+
+        # if first time through...
+        if(self.first):
+            self.first = False
+            results = self.scraper.parse_directory(response)
+            # grab directory entries
+            self.directory_results = results
+            #return Requests for each Popup page
+            return [Request(result.popup_url) for result in results]
+
+        print response.url
+
+        return None

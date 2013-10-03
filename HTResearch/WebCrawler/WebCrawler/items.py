@@ -12,3 +12,13 @@ class ScrapedUrl(Item):
 
 class ScrapedEmail(Item):
     email = Field()
+
+class ScrapedOrganization(Item):
+    name = Field()
+    address = Field()
+    types = Field()
+    phone_number = Field()
+    email_address = Field()
+    contacts = Field()
+    organization_url = Field()
+    partners = Field()
