@@ -1,5 +1,4 @@
-import sys
-from dto import ContactDTO, OrganizationDTO, PublicationDTO, URLMetadataDTO
+from dto import *
 
 class ContactDAO(object):
     """A DAO for the Contact document"""

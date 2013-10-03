@@ -17,7 +17,7 @@ class DTOConverter(object):
         for key in obj._data:
             if key == 'contacts' or key == 'authors':
                 setattr(new_cls, key, [DTOConverter.from_dto(Contact, c) for c in obj._data[key]])
-            elif key == 'publisher':
+            elif key == 'publisher' and obj._data[key] is not None:
                 setattr(new_cls, key, DTOConverter.from_dto(Contact, obj._data[key]))
             elif key == 'organizations':
                 setattr(new_cls, key, [DTOConverter.from_dto(Organization, o) for o in obj._data[key]])

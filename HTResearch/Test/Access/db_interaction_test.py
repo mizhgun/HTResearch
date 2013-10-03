@@ -8,11 +8,11 @@ for m in modules:
 [sys.path.append('../' + m) for m in modules]
 
 from mongoengine.connection import connect, disconnect, get_connection
-from dto import ContactDTO, OrganizationDTO, PublicationDTO, URLMetadataDTO
-from dao import ContactDAO, OrganizationDAO, PublicationDAO, URLMetadataDAO
+from dto import *
+from dao import *
+from model import *
 from factory import DAOFactory
 from converter import DTOConverter
-from model import Contact, Organization, Publication, URLMetadata
 
 class DatabaseInteractionTest(unittest.TestCase):
 

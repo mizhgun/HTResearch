@@ -1,4 +1,4 @@
-from dao import ContactDAO, OrganizationDAO, PublicationDAO, URLMetadataDAO
+from dao import *
 
 class DAOFactory(object):
     """A Factory class for different DAOs."""
