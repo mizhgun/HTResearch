@@ -22,3 +22,6 @@ class ScrapedOrganization(Item):
     contacts = Field()
     organization_url = Field()
     partners = Field()
+
+class ScrapedPhoneNumber(Item):
+    phone_number=Field()
