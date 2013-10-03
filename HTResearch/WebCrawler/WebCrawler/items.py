@@ -9,7 +9,6 @@ class ScrapedUrl(Item):
     # define the fields for your item here like:
     # name = Field()
     url = Field()
-    pass
 
 class ScrapedEmail(Item):
     email = Field()
