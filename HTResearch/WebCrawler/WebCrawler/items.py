@@ -5,6 +5,12 @@
 
 from scrapy.item import Item, Field
 
+class ScrapedAddress(Item):
+    address = Field()
+    city = Field()
+    state = Field()
+    zip_code = Field()
+
 class ScrapedUrl(Item):
     # define the fields for your item here like:
     # name = Field()

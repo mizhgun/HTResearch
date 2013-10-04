@@ -52,10 +52,110 @@ class NameScraper:
     def __init__(self):
         names = []
 
-class OrgAddressScraper:
+class OrgUsAddressScraper:
+    def parse(self, response):
+        # maybe use google maps api to check if real address?
 
-    def __init__(self):
-        addresses = []
+        hxs = HtmlXPathSelector(response)
+
+        ## if super duper pathetically desperate, use if response.url == url and then just call the needed code
+
+        """ THIS IS ALL FOR THE PAGE http://www.tiss.edu/TopMenuBar/contact-us/location-1 """
+        #content_div = hxs.select('//div[@id="content"]')
+        
+        ## text will select the text before the </br> if the <p> tag has <em><strong>Postal Address</></>
+        #addresses = content_div.select('./span/p[contains(./em/strong/text(),"Postal Address")]/br[1]/preceding-sibling::text()[1]').extract()
+
+        #for i in range(len(addresses)):
+        #    addresses[i] = addresses[i].encode('ascii','ignore')
+        #    addresses[i] = addresses[i].strip()
+        #    if (addresses[i])[len(addresses[i])-1] == ",":
+        #        after_break = (content_div.select('//span/p[@align="justify"]/br[1]/following-sibling::text()[1]').extract())[0]
+        #        after_break = (after_break.strip()).encode('ascii','ignore')
+        #        addresses[i] = addresses[i] + " " + after_break
+        #    if (addresses[i][0] == ":"):
+        #        addresses[i] = (addresses[i][1:]).strip()
+        #    if (addresses[i][len(addresses[i])-1] == "."):
+        #        addresses[i] = (addresses[i][:-1]).strip()
+
+        """ THIS IS ALL FOR THE PAGE http://apneaap.org/contact/ """
+        #content_div = hxs.select('//div[@class="entry-content"]')
+
+        #text = content_div.select('./p/text()').extract()
+        #address = ""
+        #addresses = []
+
+        #for i in range(len(text)):
+        #    text[i] = text[i].encode('ascii','ignore')
+        #    text[i] = text[i].strip()
+        #    if (text[i][:3] == "(T)"):
+        #        addresses.append(address)
+        #        address = ""
+        #    else:
+        #        if address != "":
+        #            address += ", "
+        #        address += text[i]
+
+        """ THIS IS ALL FOR THE PAGE http://www.aawc.in/contact_us.html """
+        #text = hxs.select('//address/p[contains(./img/@src,"images/add_icons.jpg")]/text()').extract()
+        #address = ""
+        #addresses = []
+        #for i in range(len(text)):
+        #    text[i] = text[i].encode('ascii','ignore')
+        #    text[i] = text[i].strip()
+
+        #    if i != 0:
+        #        if text[i-1][-1] == ",":
+        #            address += " " + text[i]
+        #            addresses.append(address)
+        #            address = ""
+        #        else:
+        #            address += text[i]
+        #    else:
+        #        address += text[i]
+
+        """ THIS IS ALL FOR THE PAGE https://bombayteenchallenge.org/ """
+        ##text = hxs.select('//div[@class="textwidget"]/p/text()[position()>1 and position()!=last()]').extract()
+        #text = hxs.select('//div[@class="textwidget"]/p/text()[position()>1]').extract()
+        #address = ""
+        #addresses = []
+
+        #for i in range(len(text)):
+        #    text[i] = (text[i].encode('ascii','ignore')).strip()
+        #    if text[i][:3] == "Tel":
+        #        addresses.append(address)
+        #        address = ""
+        #    else:
+        #        if address != "":
+        #            address += ", "
+        #        address += text[i]
+
+        """ THIS IS ALL FOR THE PAGE http://www.compliance-matters.com/human-trafficking/ """
+        #text = hxs.select('//footer/div[@class="col first"]/p/text()').extract()
+
+        #addresses = []
+        #for i in range(len(text)):
+        #    text[i] = (text[i].encode('ascii','ignore')).strip()
+        #    if (i == 0 or i == 3):
+        #        find_preceding_str = text[i].find(": ")
+        #        length = len(": ")
+        #        text[i] = text[i][find_preceding_str+length:]
+        #addresses.append(text[0] + " " + text[1] + ", " + text[2])
+        #addresses.append(text[3] + ", " + text[4] + " " + text[5])
+
+
+
+        address_list = []
+        for address in addresses:
+            item = ScrapedAddress()
+            item['address'] = address
+            address_list.append(item)
+        pdb.set_trace()
+        return address_list
+
+#class OrgIndiaAddressScraper:
+#    def parse(self, response):
+#        return "POOP"
 
 class OrgContactsScraper:
 
