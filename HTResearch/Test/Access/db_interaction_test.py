@@ -7,12 +7,12 @@ for m in modules:
 
 [sys.path.append('../' + m) for m in modules]
 
-from mongoengine.connection import connect, disconnect, get_connection
 from dto import *
 from dao import *
 from model import *
 from factory import DAOFactory
 from converter import DTOConverter
+from connection import DBConnection
 
 class DatabaseInteractionTest(unittest.TestCase):
 
@@ -20,10 +20,6 @@ class DatabaseInteractionTest(unittest.TestCase):
 
     def setUp(self):
         print "New DatabaseInteractionTest running"
-
-        disconnect()
-        connect(self.mongodb_name)
-        print 'Creating mongo test-database: ' + self.mongodb_name
 
         self.contact = Contact(first_name = "Jordan", 
                                last_name = "Degner",
@@ -36,10 +32,8 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.urlmetadata = URLMetadata(url = "http://google.com")
 
     def tearDown(self):
-        connection = get_connection()
-        connection.drop_database(self.mongodb_name)
-        print 'Dropping mongo test-database: ' + self.mongodb_name
-        disconnect()
+        with DBConnection() as c:
+            c.dropall()
 
     def test_contact_dao(self):
         contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)

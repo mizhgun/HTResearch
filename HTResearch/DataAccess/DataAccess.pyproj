@@ -24,6 +24,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="connection.py" />
     <Compile Include="dao.py" />
     <Compile Include="dto.py" />
     <Compile Include="factory.py" />
