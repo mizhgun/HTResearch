@@ -1,8 +1,10 @@
 import re
 import string
+
 from scrapy import log
-from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request, TextResponse, HtmlResponse
+from scrapy.selector import HtmlXPathSelector
+
 from WebCrawler.items import ScrapedOrganization, ScrapedContact
 
 class StopTraffickingDotInScraper:
@@ -12,35 +14,12 @@ class StopTraffickingDotInScraper:
     # use first .group(1) to get the cid out
     onclick_re = re.compile(r'^javascript:window\.open\(\'ServicesPopup\.aspx\?cid=(\d+)\',.*$')
 
-    class _TableData:
-        """An intermediate class to hold table data"""
-
-        def __init__(self, state = None, district = None,
-                     org_name = None, popup_url = None, categories = None,
-                     contacts = None, contact_numbers = None):
-            self.state = state
-            self.district = district
-            self.org_name = org_name
-            self.popup_url = popup_url
-            self.categories = categories
-            self.contacts = contacts
-            self.contact_numbers = contact_numbers
-
-        def __str__(self):
-            ret = "<" + self.state + ", "
-            ret += self.district + ", "
-            ret += self.org_name + ", "
-            ret += self.popup_url + ", "
-            ret += self.categories + ", "
-            ret += self.contacts + ", "
-            ret += self.contact_numbers + ">"
-            return ret
-
+    # constructors
     def __init__(self):
         pass
 
     def parse_directory(self, response):
-        """Scrape the HttpRequest.Response for Organizations"""
+        """Scrape the HttpRequest.Response of the Directory.aspx page for Orgs/Contacts"""
 
         # Reference regex so I only have to type this once
         regex = StopTraffickingDotInScraper.onclick_re
@@ -68,6 +47,7 @@ class StopTraffickingDotInScraper:
             for onclick in onclicks:
                 cids.append(regex.match(onclick).group(1))
 
+            #Create _TableDate items to store data for parsing popups
             items = self._create_items(states, districts, orgnames, categories, contacts, contact_numbers, cids)
 
         return items 
@@ -80,6 +60,7 @@ class StopTraffickingDotInScraper:
         # get our data from the cells
         cells = hxs.select('//table/tr/td')
 
+        # Extract data to popup dictionary
         popup = {}
         popup['org'] = cells.select('span[@id ="lblOrgName"]/text()').extract()
         popup['category'] = cells.select('span[@id ="lblCategory"]/text()').extract()
@@ -132,11 +113,14 @@ class StopTraffickingDotInScraper:
         return popup
 
     def _create_contact(self, popup):
+        """Take an inputed popup dictionary and return ScrapedContact"""
 
+        #Convert names to first and last name
         names = self._parse_contact_name(popup['contact_name'])
         first = names[0]
         last = names[1]
 
+        # combine phone numbers, first will be primary and 2nd secondary
         telephone = popup['telephone'] if popup['telephone'] != None else []
         mobile1 = popup['mobile1'] if popup['mobile1'] != None else []
         mobile2 = popup['mobile2'] if popup['mobile2'] != None else []
@@ -148,37 +132,45 @@ class StopTraffickingDotInScraper:
         if len(numbers) > 1:
             sec_no = numbers[1]
 
+        # grab email
         email = None
         if popup['email1']:
             email = popup['email1'][0]
 
+        #grab position
         position = None
         if 'role' in popup.keys():
             position = popup['role']
 
+        #create contact
         contact = ScrapedContact(
             first_name = first, 
             last_name = last, 
-            primary_phone_number = primary_no,
-            secondary_phone_number = sec_no, 
-            email_address = email,
+            primary_phone= primary_no,
+            secondary_phone = sec_no, 
+            email = email,
             organizations = None,
             publications = None,
             position = '') 
         return contact
 
     def _create_org(self, popup):
+        # grab orgname
         orgname = popup['org']
+
+        # get address is available, otherwise use state, otherwise district
         addr = popup['address'] if popup['address'] != None else ''
         if not addr and popup['state']:
             addr = popup['state']
         if not addr and popup['district']:
             addr = popup['district']
 
+        # Landlines are for organization, pass mobile for contacts
         phone = None
         if popup['telephone']:
             phone = popup['telephone'][0]
 
+        # if no contacts, get email for organization
         email = None
         if not popup['contact_name'] and (popup['email1'] or popup['email2']):
             if popup['email1']:
@@ -186,16 +178,19 @@ class StopTraffickingDotInScraper:
             else:
                 email = popup['email2'][0]
 
+        # grab url
         url = popup['url']
 
+        # extract contact(s) for organization
         extr_contacts = self._get_org_contacts(popup)
 
+        # build organization item
         organization = ScrapedOrganization(
             name = orgname,
             address = addr,
             types = None,
             phone_number = phone,
-            email_address = email,
+            email = email,
             contacts = extr_contacts,
             organization_url = url,
             partners = None)
@@ -203,18 +198,21 @@ class StopTraffickingDotInScraper:
         return organization
     
     def _get_org_contacts(self, popup):
+        # if no contact names, return
         if not popup['contact_name']:
             return None
 
-
+        # combine mobile numbers
         mobile1 = popup['mobile1'] if popup['mobile1'] != None else []
         mobile2 = popup['mobile2'] if popup['mobile2'] != None else []
         numbers = mobile1 + mobile2
 
+        # combine emails
         email1 = popup['email1'] if popup['email1'] != None else []
         email2 = popup['email2'] if popup['email2'] != None else []
         emails = email1 + email2
 
+        # for each contact, create contact and add
         i = 0
         contacts = []
         for contact in popup['contact_name']:
@@ -233,9 +231,9 @@ class StopTraffickingDotInScraper:
             contact = ScrapedContact(
                 first_name = first, 
                 last_name = last, 
-                primary_phone_number = primary,
-                secondary_phone_number = None, 
-                email_address = email,
+                primary_phone = primary,
+                secondary_phone = None, 
+                email = email,
                 organizations = None, # this will be done automatically
                 publications = None,
                 position = '') 
@@ -250,6 +248,7 @@ class StopTraffickingDotInScraper:
         if org == None:
             return None
 
+        # Edit org name for generic names like "Board"
         if org == "Board" or org == "Committee":
             state = data['state'] if data['state'] != None else 'Unknown'
             district = data['district'] if data['district'] != None else 'Unknown'
@@ -264,12 +263,13 @@ class StopTraffickingDotInScraper:
             return None
 
         contacts = []
+        # if organization is Individual or NPO, split after comma for title
         if data['category'] == "Individual" or data['category'] == "Nodal Police Office":
             name_role_split = contact_name.split(',', 1)
             contacts.append(name_role_split[0])
             if len(name_role_split) > 1:
                 data['role'] = name_role_split[1]
-        else:
+        else: # else, each comma delimits another person
             contacts = contact_name.split(',')
 
         return contacts
@@ -296,6 +296,7 @@ class StopTraffickingDotInScraper:
         if phone == None:
             return None
 
+        # split phones by comma
         phones = phone.split(',') 
         parsed_phones = []
 
@@ -304,17 +305,25 @@ class StopTraffickingDotInScraper:
         nodigs = all.translate(all, string.digits)
 
         for num in phones:
+            # convert to ascii
             ascii = num.encode("ascii", 'ignore')
             if len(ascii) > 0:
+                #extract digits
                 digit_only = ascii.translate(all, nodigs)
-                parsed_phones.append(int(float(digit_only)))
+                #store as integers
+                int_num = int(float(digit_only))
+                if abs(int_num) < (2**8): # check mongo max value
+                    parsed_phones.append(int_num)
 
         return parsed_phones
 
     def _edit_email(self, email, data = None):
         if email == None:
             return None
-        return email.split(',')
+        # split emails on commas or semicolons
+        if "," in email:
+            return email.split(',')
+        return email.split(';')
 
     def _parse_contact_name(self, contact_name):
         name = contact_name
@@ -322,7 +331,9 @@ class StopTraffickingDotInScraper:
             first = ''
             last = ''
         else:
-
+            # Split on rightmost space
+            # e.g. "first first first first" "last"
+            # or "first"
             names = name[0].rsplit(' ', 1)
             first = names[0]
             if len(names) > 1:
@@ -350,3 +361,28 @@ class StopTraffickingDotInScraper:
 
     def _map_cid_to_url(self, cid):
         return "http://www.stoptrafficking.in/ServicesPopup.aspx?cid=" + cid
+
+    # an inner class for storing _TableData
+    class _TableData:
+        """An intermediate class to hold table data"""
+
+        def __init__(self, state = None, district = None,
+                     org_name = None, popup_url = None, categories = None,
+                     contacts = None, contact_numbers = None):
+            self.state = state
+            self.district = district
+            self.org_name = org_name
+            self.popup_url = popup_url
+            self.categories = categories
+            self.contacts = contacts
+            self.contact_numbers = contact_numbers
+
+        def __str__(self):
+            ret = "<" + self.state + ", "
+            ret += self.district + ", "
+            ret += self.org_name + ", "
+            ret += self.popup_url + ", "
+            ret += self.categories + ", "
+            ret += self.contacts + ", "
+            ret += self.contact_numbers + ">"
+            return ret
