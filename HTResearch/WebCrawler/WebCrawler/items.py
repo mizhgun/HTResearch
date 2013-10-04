@@ -23,5 +23,15 @@ class ScrapedOrganization(Item):
     organization_url = Field()
     partners = Field()
 
+class ScrapedContact(Item):
+    first_name = Field()
+    last_name = Field()
+    primary_phone_number = Field()
+    secondary_phone_number = Field()
+    email_address = Field()
+    organizations = Field()
+    publications = Field()
+    position = Field()
+
 class ScrapedPhoneNumber(Item):
     phone_number=Field()

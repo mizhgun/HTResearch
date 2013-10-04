@@ -17,11 +17,10 @@ class ItemSwitch(object):
             # Create DAO for URL with empty fields
             # Pass it to URLFrontier, which will add it iff it is new 
             pass 
-        #elif item_class == "Organization":
-            #do something
-        #elif item_class == "Contact":
-            #do something
-        # etc.
+        elif item_class == "ScrapedOrganization":
+            print item
+        elif item_class == "ScrapedContact":
+            print item
         else:
             raise DropItem("No behavior defined for item of type %s" % item_class)
         

@@ -49,6 +49,13 @@ class StopTraffickingSpider(BaseSpider):
             #return Requests for each Popup page
             return [Request(result.popup_url) for result in results]
 
-        print response.url
+        # grab corresponding table entry 
+        table_entry =  next(entry for entry in self.directory_results if entry.popup_url == response.url)
 
-        return None
+        # cleanup
+        if table_entry != None:
+            self.directory_results.remove(table_entry)
+
+        items = self.scraper.parse_popup(response, table_entry)
+
+        return items
