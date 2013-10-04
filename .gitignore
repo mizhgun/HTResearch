@@ -1,3 +1,6 @@
+# Ignore PyCharm files
+.idea/
+
 # Ignore common Python and Django files
 *.log
 *.pot

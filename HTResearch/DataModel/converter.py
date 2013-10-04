@@ -1,11 +1,6 @@
-import sys
-
-[sys.path.remove(p) for p in sys.path if 'DataAccess' in p]
-
-sys.path.append('../DataAccess/')
-
 from model import *
-from dto import *
+from htresearch.dataaccess.dto import *
+
 
 class DTOConverter(object):
     """A class for converting base objects to and from DTOs."""
