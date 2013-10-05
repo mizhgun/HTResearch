@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class Contact(object):
     """A model class for an anti-trafficking contact."""
 
@@ -14,6 +15,7 @@ class Contact(object):
         self.organizations = organizations
         self.publications = publications
         self.position = position
+
 
 class Organization(object):
     """A model class for an anti-trafficking organization."""
@@ -32,6 +34,7 @@ class Organization(object):
         self.organization_url = organization_url
         self.partners = partners
 
+
 class Publication(object):
     """A model class for an anti-trafficking research publication."""
 
@@ -44,6 +47,7 @@ class Publication(object):
         self.publication_date = publication_date
         self.types = types
         self.content_url = content_url
+
 
 class URLMetadata(object):
     """A model class for an anti-trafficiking organization URL metadata."""

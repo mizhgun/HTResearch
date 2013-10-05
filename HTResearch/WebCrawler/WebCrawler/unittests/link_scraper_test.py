@@ -1,7 +1,7 @@
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from scrapy import log
-from WebCrawler.scrapers.link_scraper import LinkScraper
+from webcrawler.scrapers.link_scraper import LinkScraper
 import scrapy
 import pdb
 import os

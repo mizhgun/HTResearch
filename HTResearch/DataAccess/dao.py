@@ -1,6 +1,7 @@
 from dto import *
 from connection import DBConnection
 
+
 class ContactDAO(object):
     """A DAO for the Contact document"""
 
@@ -19,6 +20,7 @@ class ContactDAO(object):
         with DBConnection():
             return ContactDTO.objects(id=dto_id).first()
 
+
 class OrganizationDAO(object):
     """A DAO for the Organization document"""
 
@@ -35,6 +37,7 @@ class OrganizationDAO(object):
     def find(self, dto_id):
         with DBConnection():
             return OrganizationDTO.objects(id=dto_id).first()
+
 
 class PublicationDAO(object):
     """A DAO for the Publication document"""

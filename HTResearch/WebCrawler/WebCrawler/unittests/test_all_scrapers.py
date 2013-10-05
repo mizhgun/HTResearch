@@ -14,7 +14,7 @@ class ScraperTests(unittest.TestCase):
         output, error = p.communicate()
 
         # Splits the results based on automatically added characters
-        emails = output.split("\r\n")
+        emails = output.splitlines()
         emails = emails[:len(emails)-1]
 
         # Hardcoded results based on the sites that were crawled
@@ -31,8 +31,7 @@ class ScraperTests(unittest.TestCase):
     def test_link_scraper(self):
         p = subprocess.Popen('scrapy crawl link_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
-        urls = output.split("\r\n")
-        urls = urls[:len(urls)-1]
+        urls = output.splitlines()
         urls = [x.lower() for x in urls]
 
         assert_list = ["http://www.black.com/"

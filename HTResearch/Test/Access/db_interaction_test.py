@@ -1,18 +1,13 @@
 import sys
 import unittest
 
-modules = ['DataAccess', 'DataModel']
-for m in modules:
-    [sys.path.remove(p) for p in sys.path if m in p]
+from htresearch.dataaccess.dto import *
+from htresearch.dataaccess.dao import *
+from htresearch.dataaccess.connection import DBConnection
+from htresearch.dataaccess.factory import DAOFactory
+from htresearch.datamodel.model import *
+from htresearch.datamodel.converter import DTOConverter
 
-[sys.path.append('../' + m) for m in modules]
-
-from dto import *
-from dao import *
-from model import *
-from factory import DAOFactory
-from converter import DTOConverter
-from connection import DBConnection
 
 class DatabaseInteractionTest(unittest.TestCase):
 
