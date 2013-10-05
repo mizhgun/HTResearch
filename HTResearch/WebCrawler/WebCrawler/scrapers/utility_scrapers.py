@@ -212,7 +212,6 @@ class OrgTypeScraper:
     def _cosine(self, arr1, arr2):
         dot = self._dot(arr1, arr2)
         norms = self._norm(arr1) * self._norm(arr2)
-        print(arr1)
         return float((dot / norms) if norms > 0 else 0)
     
     # Index terms in a list of tokens in a document
@@ -239,7 +238,7 @@ class OrgTypeScraper:
     def _tf(self, term, docTerms):
         rawFreq = self._freq(term, docTerms)
         maxFreq = self._max_freq(docTerms)
-        return rawFreq / maxFreq
+        return float(rawFreq) / maxFreq
     
     # inverse document frequency: measure of rarity of term across documents
     def _idf(self, term):
@@ -254,7 +253,6 @@ class OrgTypeScraper:
     
     # Build vector based on list of terms
     def _build_vector(self, terms, vectorKeywordIndex):
-        print(vectorKeywordIndex)
         vector = [0] * len(vectorKeywordIndex)
         for term in vectorKeywordIndex.iterkeys():
             vector[vectorKeywordIndex[term]] = self._tf_idf(term, terms)
@@ -276,7 +274,7 @@ class OrgTypeScraper:
         typeWeights = {}
         for type in self._org_terms:
             # Build query vector
-            queryTerms = [ self._simplify_word(token) for token in self._org_terms[type] ]
+            queryTerms = [ self._stem(token) for token in self._org_terms[type] ]
 
             queryVector = self._build_vector(queryTerms, vectorKeywordIndex)
                 
