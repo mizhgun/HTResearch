@@ -1,85 +1,75 @@
-from dto import ContactDTO, OrganizationDTO, PublicationDTO
+from dto import *
+from connection import DBConnection
+
 
 class ContactDAO(object):
     """A DAO for the Contact document"""
 
-    def Create(self, contact_dto):
-        contact_dto.save()
+    def create_update(self, contact_dto):
+        with DBConnection():
+            [OrganizationDAO().create_update(o) for o in contact_dto.organizations]
+            [PublicationDAO().create_update(p) for p in contact_dto.publications]
 
-    def Delete(self, contact_dto):
-        contact_dto.delete()
-
-    def Edit(self, contact_dto):
-        results = ContactDTO.objects(id=org_dto.id)
-        if len(results) > 0:
-            old_dto = results.first()
-            old_dto = contact_dto
-            old_dto.save()
-        else:
             contact_dto.save()
 
-    def Find(self, dto_id):
-        return ContactDTO.objects(id=dto_id).first()
+    def delete(self, contact_dto):
+        with DBConnection():
+            contact_dto.delete()
+
+    def find(self, dto_id):
+        with DBConnection():
+            return ContactDTO.objects(id=dto_id).first()
+
 
 class OrganizationDAO(object):
     """A DAO for the Organization document"""
 
-    def Create(self, org_dto):
-        org_dto.save()
+    def create_update(self, org_dto):
+        with DBConnection():
+            [ContactDAO().create_update(c) for c in org_dto.contacts]
 
-    def Delete(self, org_dto):
-        org_dto.delete()
-
-    def Edit(self, org_dto):
-        results = OrganizationDTO.objects(id=org_dto.id)
-        if len(results) > 0:
-            old_dto = results.first()
-            old_dto = org_dto
-            old_dto.save()
-        else:
             org_dto.save()
 
-    def Find(self, dto_id):
-        return OrganizationDTO.objects(id=dto_id).first()
+    def delete(self, org_dto):
+        with DBConnection():
+            org_dto.delete()
+
+    def find(self, dto_id):
+        with DBConnection():
+            return OrganizationDTO.objects(id=dto_id).first()
+
 
 class PublicationDAO(object):
     """A DAO for the Publication document"""
 
-    def Create(self, pub_dto):
-        pub_dto.save()
+    def create_update(self, pub_dto):
+        with DBConnection():
+            [ContactDAO().create_update(c) for c in pub_dto.authors]
 
-    def Delete(self, pub_dto):
-        pub_dto.delete()
+            if pub_dto.publisher is not None:
+                ContactDAO().create_update(pub_dto.publisher)
 
-    def Edit(self, pub_dto):
-        results = PublicationDTO.objects(id=pub_dto.id)
-        if len(results) > 0:
-            old_dto = results.first()
-            old_dto = pub_dto
-            old_dto.save()
-        else:
             pub_dto.save()
 
-    def Find(self, dto_id):
-        return PublicationDTO.objects(id=dto_id).first()
+    def delete(self, pub_dto):
+        with DBConnection():
+            pub_dto.delete()
+
+    def find(self, dto_id):
+        with DBConnection():
+            return PublicationDTO.objects(id=dto_id).first()
 
 class URLMetadataDAO(object):
     """A DAO for the URLMetadata document"""
 
-    def Create(self, url_dto):
-        url_dto.save()
+    def create_update(self, url_dto):
+        with DBConnection():
+            url_dto.save(cascade=True)
 
-    def Delete(self, url_dto):
-        url_dto.delete()
+    def delete(self, url_dto):
+        with DBConnection():
+            url_dto.delete()
 
-    def Edit(self, url_dto):
-        results = URLMetadataDTO.objects(id=url_dto.id)
-        if len(results) > 0:
-            old_dto = results.first()
-            old_dto = url_dto
-            old_dto.save()
-        else:
-            url_dto.save()
-
-    def Find(self, dto_id):
-        return URLMetadataDTO.objects(id=dto_id).first()
+    def find(self, dto_id):
+        with DBConnection():
+            return URLMetadataDTO.objects(id=dto_id).first()
