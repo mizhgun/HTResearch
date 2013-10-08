@@ -7,6 +7,7 @@ import pdb
 import os
 import subprocess
 
+
 class ScraperTests(unittest.TestCase):
     def test_email_scraper(self):
         # Runs the test spider and pipes the printed output to "output"
@@ -26,7 +27,7 @@ class ScraperTests(unittest.TestCase):
                        "tvarghese@bombayteenchallenge.org"]
 
         for test in assert_list:
-            self.assertIn(test, emails, "Email " + test + "not found")
+            self.assertIn(test, emails, "Email " + test + " not found")
 
     def test_link_scraper(self):
         p = subprocess.Popen('scrapy crawl link_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)

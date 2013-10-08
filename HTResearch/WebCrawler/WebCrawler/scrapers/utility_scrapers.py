@@ -7,15 +7,18 @@ import re
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
 
+
 class ContactPositionScraper:
 
     def __init__(self):
-        position = ""
+        self.position = ""
+
 
 class ContactPublicationsScraper:
 
     def __init__(self):
-        publications = []
+        self.publications = []
+
 
 class EmailScraper:
     def parse(self, response):
@@ -47,10 +50,11 @@ class EmailScraper:
 
         return email_list
 
+
 class NameScraper:
 
     def __init__(self):
-        names = []
+        self.names = []
 
 class OrgUsAddressScraper:
     def parse(self, response):
@@ -143,7 +147,13 @@ class OrgUsAddressScraper:
         #addresses.append(text[0] + " " + text[1] + ", " + text[2])
         #addresses.append(text[3] + ", " + text[4] + " " + text[5])
 
-
+        """ THIS IS ALL FOR THE PAGE http://www.prajwalaindia.com/home.html """
+        #text = hxs.select('//div[@id="footer_inner_right"]/p/text()').extract()
+        #
+        #addresses = []
+        #for i in range(len(text)):
+        #    text[i] = (text[i].encode('ascii','ignore')).strip()
+        #addresses.append(", ".join(text))
 
         address_list = []
         for address in addresses:
@@ -160,12 +170,12 @@ class OrgUsAddressScraper:
 class OrgContactsScraper:
 
     def __init__(self):
-        contacts = []
+        self.contacts = []
 
 class OrgPartnersScraper:
 
     def __init__(self):
-        partners = []
+        self.partners = []
 
 class OrgTypeScraper:
 

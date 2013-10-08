@@ -13,8 +13,9 @@ class EmailScraperTest(BaseSpider):
                     "http://apneaap.org/contact/",
                     "http://www.aawc.in/contact_us.html",
                     "https://bombayteenchallenge.org/",
-                    "http://www.compliance-matters.com/human-trafficking/"] """
-    start_urls = ["http://www.bba.org.in/?q=content/contact-us"]
+                    "http://www.compliance-matters.com/human-trafficking/",
+                    "http://www.bba.org.in/?q=content/contact-us"] """
+    start_urls = ["http://www.prajwalaindia.com/home.html"]
 
     def __init__(self, *args, **kwargs):
         super(EmailScraperTest, self).__init__(*args, **kwargs)
