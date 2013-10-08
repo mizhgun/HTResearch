@@ -1,7 +1,7 @@
 import re
 import string
 
-from scrapy.http import Request, TextResponse, HtmlResponse
+from scrapy.http import TextResponse
 from scrapy.selector import HtmlXPathSelector
 
 from ..items import ScrapedOrganization, ScrapedContact

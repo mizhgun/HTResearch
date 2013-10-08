@@ -10,11 +10,11 @@ BOT_NAME = 'WebCrawler'
 
 LOG_ENABLED = False
 
-SPIDER_MODULES = ['WebCrawler.WebCrawler.spiders', 'WebCrawler.WebCrawler.unittests']
-NEWSPIDER_MODULE = 'WebCrawler.WebCrawler.spiders'
+SPIDER_MODULES = ['WebCrawler.spiders', 'WebCrawler.unittests']
+NEWSPIDER_MODULE = 'WebCrawler.spiders'
 
 ITEM_PIPELINES = {
-    'WebCrawler.WebCrawler.item_pipeline.item_switches.ItemSwitch' : 100,
+    'WebCrawler.item_pipeline.item_switches.ItemSwitch' : 100,
 }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
