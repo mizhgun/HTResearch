@@ -40,6 +40,19 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test.lower(), urls, "URL " + test + " was not found")
 
+    def test_keyword_scraper(self):
+        # Runs the test spider and pipes the printed output to "output"
+        p = subprocess.Popen('scrapy crawl keyword_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output, error = p.communicate()
+        # Splits the results based on automatically added characters
+        #keywords = output.split("\r\n")
+        #keywords = keywords[:len(keywords)-1]
+        keywords = output
+
+        assert_list = ["nicolas", "cage"]
+        for test in assert_list:
+            self.assertIn(test, keywords, "Keyword " + test + " not found or frequent enough")
+
 if __name__ == '__main__':
     try:
         unittest.main()

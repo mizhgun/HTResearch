@@ -3,6 +3,9 @@ from scrapy.contrib.loader import XPathItemLoader
 from webcrawler.items import *
 import pdb
 import re
+from nltk import FreqDist
+import os
+import string
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
@@ -46,6 +49,116 @@ class EmailScraper:
             email_list.append(item)
 
         return email_list
+
+class KeywordScraper:
+
+    def format_extracted_text(self, list):
+
+        for i in range(len(list)):
+            list[i] = list[i].encode('ascii','ignore')
+        return list
+            
+    def append_words(self, append_to, source):
+        if source == []:
+            return append_to
+
+        #Split each array into sentence, and those into words
+        for line in self.format_extracted_text(source):
+            line = string.lower(line)
+            for c in string.punctuation:
+                line = line.replace(c, "")
+                for word in line.split():
+                    if not word.isdigit():
+                        append_to.append(word)
+
+        return append_to
+            
+    def parse(self, response):
+        num_keywords_to_return = 50
+        all_words = []
+
+        #Add 
+        abspath = os.path.abspath(__file__)
+        dname = os.path.dirname(abspath)
+        os.chdir(dname)
+
+        #Load words to be ignored
+        with open("stopwords.txt") as f:
+            stopwords = f.readlines()
+        for i in range(len(stopwords)):
+            stopwords[i] = stopwords[i].strip()
+
+        #Parse the response
+        hxs = HtmlXPathSelector(response)
+
+        ##Headers
+        h1=hxs.select('//h1/text()').extract()
+        all_words = self.append_words(all_words, h1)
+        h2=hxs.select('//h2/text()').extract()
+        all_words = self.append_words(all_words, h2)
+        h3=hxs.select('//h3/text()').extract()
+        all_words = self.append_words(all_words, h3)
+        h4=hxs.select('//h4/text()').extract()
+        all_words = self.append_words(all_words, h4)
+        h5=hxs.select('//h5/text()').extract()
+        all_words = self.append_words(all_words, h5)
+        h6=hxs.select('//h6/text()').extract()
+        all_words = self.append_words(all_words, h6)
+
+        p = hxs.select('//p/text()').extract()
+        all_words = self.append_words(all_words, p)
+
+        a = hxs.select('//a/text()').extract()
+        all_words = self.append_words(all_words, a)
+
+        b = hxs.select('//b/text()').extract()
+        all_words = self.append_words(all_words, b)
+
+        code = hxs.select('//code/text()').extract()
+        all_words = self.append_words(all_words, code)
+
+        em = hxs.select('//em/text()').extract()
+        all_words = self.append_words(all_words, em)
+
+        italic = hxs.select('//i/text()').extract()
+        all_words = self.append_words(all_words, italic)
+
+        small = hxs.select('//small/text()').extract()
+        all_words = self.append_words(all_words, small)
+
+        strong = hxs.select('//strong/text()').extract()
+        all_words = self.append_words(all_words, strong)
+
+        div =  hxs.select('//div/text()').extract()
+        all_words = self.append_words(all_words, div)
+
+        span = hxs.select('//span/text()').extract()
+        all_words = self.append_words(all_words, span)
+
+        li = hxs.select('//li/text()').extract()
+        all_words = self.append_words(all_words, li)
+
+        th = hxs.select('//th/text()').extract()
+        all_words = self.append_words(all_words, th)
+
+        td = hxs.select('//td/text()').extract()
+        all_words = self.append_words(all_words, td)
+
+        href = hxs.select('//a[contains(@href, "image")]/text()').extract()
+        all_words = self.append_words(all_words, href)
+
+        #Run a frequency distribution on the web page body
+        freq_dist = FreqDist(all_words)
+
+        #Parse the distribution into individual words without frequencies
+        keywords = freq_dist.keys()
+
+        #Remove ignored words
+        parsed_keywords = [word for word in keywords if word not in stopwords]
+        
+        #Sort by frequency
+        most_freq_keywords = parsed_keywords[:num_keywords_to_return]
+        return most_freq_keywords
 
 class IndianPhoneNumberScraper:
     
