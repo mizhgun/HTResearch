@@ -52,6 +52,18 @@ class EmailScraper:
 
 class KeywordScraper:
 
+    def __init__(self):
+        #Add path
+        abspath = os.path.abspath(__file__)
+        dname = os.path.dirname(abspath)
+        os.chdir(dname)
+
+        #Load words to be ignored
+        with open("stopwords.txt") as f:
+            stopwords = f.readlines()
+        for i in range(len(stopwords)):
+            stopwords[i] = stopwords[i].strip()
+
     def format_extracted_text(self, list):
 
         for i in range(len(list)):
@@ -76,17 +88,6 @@ class KeywordScraper:
     def parse(self, response):
         num_keywords_to_return = 50
         all_words = []
-
-        #Add 
-        abspath = os.path.abspath(__file__)
-        dname = os.path.dirname(abspath)
-        os.chdir(dname)
-
-        #Load words to be ignored
-        with open("stopwords.txt") as f:
-            stopwords = f.readlines()
-        for i in range(len(stopwords)):
-            stopwords[i] = stopwords[i].strip()
 
         #Parse the response
         hxs = HtmlXPathSelector(response)
