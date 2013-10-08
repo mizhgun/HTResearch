@@ -91,61 +91,12 @@ class KeywordScraper:
         #Parse the response
         hxs = HtmlXPathSelector(response)
 
-        ##Headers
-        h1=hxs.select('//h1/text()').extract()
-        all_words = self.append_words(all_words, h1)
-        h2=hxs.select('//h2/text()').extract()
-        all_words = self.append_words(all_words, h2)
-        h3=hxs.select('//h3/text()').extract()
-        all_words = self.append_words(all_words, h3)
-        h4=hxs.select('//h4/text()').extract()
-        all_words = self.append_words(all_words, h4)
-        h5=hxs.select('//h5/text()').extract()
-        all_words = self.append_words(all_words, h5)
-        h6=hxs.select('//h6/text()').extract()
-        all_words = self.append_words(all_words, h6)
+        elements = ['h1', 'h2','h3','h4','h5','h6','p','a','b','code','em','italic',
+                    'small','strong','div','span','li','th','td','a[contains(@href, "image")]']
 
-        p = hxs.select('//p/text()').extract()
-        all_words = self.append_words(all_words, p)
-
-        a = hxs.select('//a/text()').extract()
-        all_words = self.append_words(all_words, a)
-
-        b = hxs.select('//b/text()').extract()
-        all_words = self.append_words(all_words, b)
-
-        code = hxs.select('//code/text()').extract()
-        all_words = self.append_words(all_words, code)
-
-        em = hxs.select('//em/text()').extract()
-        all_words = self.append_words(all_words, em)
-
-        italic = hxs.select('//i/text()').extract()
-        all_words = self.append_words(all_words, italic)
-
-        small = hxs.select('//small/text()').extract()
-        all_words = self.append_words(all_words, small)
-
-        strong = hxs.select('//strong/text()').extract()
-        all_words = self.append_words(all_words, strong)
-
-        div =  hxs.select('//div/text()').extract()
-        all_words = self.append_words(all_words, div)
-
-        span = hxs.select('//span/text()').extract()
-        all_words = self.append_words(all_words, span)
-
-        li = hxs.select('//li/text()').extract()
-        all_words = self.append_words(all_words, li)
-
-        th = hxs.select('//th/text()').extract()
-        all_words = self.append_words(all_words, th)
-
-        td = hxs.select('//td/text()').extract()
-        all_words = self.append_words(all_words, td)
-
-        href = hxs.select('//a[contains(@href, "image")]/text()').extract()
-        all_words = self.append_words(all_words, href)
+        for element in elements:
+            words=hxs.select(element+'/text()').extract()
+            all_words = self.append_words(all_words, words)
 
         #Run a frequency distribution on the web page body
         freq_dist = FreqDist(all_words)
@@ -155,8 +106,7 @@ class KeywordScraper:
 
         #Remove ignored words
         parsed_keywords = [word for word in keywords if word not in self.stopwords]
-        
-        #Sort by frequency
+
         most_freq_keywords = parsed_keywords[:self.NUM_KEYWORDS]
         return most_freq_keywords
 
