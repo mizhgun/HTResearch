@@ -5,6 +5,7 @@
 
 from scrapy.item import Item, Field
 
+
 class ScrapedContact(Item):
     first_name = Field()
     last_name = Field()
@@ -15,8 +16,10 @@ class ScrapedContact(Item):
     publications = Field()
     position = Field()
 
+
 class ScrapedEmail(Item):
     email = Field()
+
 
 class ScrapedOrganization(Item):
     name = Field()
@@ -28,6 +31,7 @@ class ScrapedOrganization(Item):
     organization_url = Field()
     partners = Field()
 
+
 class ScrapedPublication(Item):
     title = Field()
     authors = Field()
@@ -36,8 +40,10 @@ class ScrapedPublication(Item):
     types = Field()
     content_url = Field()
 
+
 class ScrapedPhoneNumber(Item):
     phone_number=Field()
+
 
 class ScrapedUrl(Item):
     url = Field()

@@ -1,5 +1,5 @@
 from model import *
-from htresearch.dataaccess.dto import *
+from dataaccess.dto import *
 
 
 class DTOConverter(object):

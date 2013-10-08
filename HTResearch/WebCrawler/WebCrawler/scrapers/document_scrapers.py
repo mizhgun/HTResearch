@@ -1,6 +1,6 @@
 from scrapy.selector import HtmlXPathSelector
 from scrapy.contrib.loader import XPathItemLoader
-from webcrawler.items import *
+from ..items import *
 import pdb
 import re
 

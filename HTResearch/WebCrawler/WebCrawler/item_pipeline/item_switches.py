@@ -1,16 +1,9 @@
-import sys
-
-[sys.path.remove(p) for p in sys.path if 'DataModel' in p]
-[sys.path.remove(p) for p in sys.path if 'DataAccess' in p]
-sys.path.append('../DataModel/')
-sys.path.append('../DataAccess/')
-
 from scrapy.exceptions import DropItem
-from dao import *
-from dto import *
-from factory import *
-from converter import *
-from WebCrawler.converter import ModelConverter 
+from dataaccess.dao import *
+from dataaccess.factory import *
+from datamodel.converter import *
+from ..converter import ModelConverter
+
 
 class ItemSwitch(object):
     """Redirect Items to Appropriate Pipeline Handler"""

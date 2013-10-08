@@ -1,11 +1,6 @@
 import unittest
-from scrapy.selector import HtmlXPathSelector
-from scrapy.http import HtmlResponse
-from scrapy import log
-import scrapy
-import pdb
-import os
 import subprocess
+
 
 class ScraperTests(unittest.TestCase):
     def test_email_scraper(self):

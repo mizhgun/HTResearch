@@ -1,11 +1,5 @@
-import sys
+from datamodel.model import *
 
-[sys.path.remove(p) for p in sys.path if 'DataModel' in p]
-
-sys.path.append('../DataModel/')
-
-from model import *
-from dto import *
 
 class ModelConverter(object):
     """A class for converting items to Models."""

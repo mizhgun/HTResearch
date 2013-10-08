@@ -1,18 +1,18 @@
 import re
 import string
 
-from scrapy import log
 from scrapy.http import Request, TextResponse, HtmlResponse
 from scrapy.selector import HtmlXPathSelector
 
-from WebCrawler.items import ScrapedOrganization, ScrapedContact
+from ..items import ScrapedOrganization, ScrapedContact
+
 
 class StopTraffickingDotInScraper:
     """An ad hoc scraper for the page: http://www.stoptrafficking.in/Directory.aspx"""
 
     # parses the onclick attribute for the cid we will use to find the popup windows
     # use first .group(1) to get the cid out
-    onclick_re = re.compile(r'^javascript:window\.open\(\'ServicesPopup\.aspx\?cid=(\d+)\',.*$')
+    onclick_re = re.compile(r"^javascript:window\.open\('ServicesPopup\.aspx\?cid=(\d+)',.*$")
 
     # constructors
     def __init__(self):

@@ -1,9 +1,8 @@
 from twisted.internet import reactor
 from scrapy.crawler import Crawler
-from scrapy.settings import Settings
 from scrapy import log
 from scrapy.utils.project import get_project_settings
-from WebCrawler.spiders import *
+from webcrawler.spiders import *
 
 # TODO: define spiders we want to use
 spider = StopTraffickingSpider()
