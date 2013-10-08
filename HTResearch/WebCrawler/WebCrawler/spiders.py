@@ -4,6 +4,7 @@ from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request, TextResponse
 
+
 class BasicCrawlSpider(BaseSpider):
     name = 'ht_research'
     allowed_domains = [ 'shaktivahini.org' ]
