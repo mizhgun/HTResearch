@@ -51,7 +51,7 @@ class EmailScraper:
         return email_list
 
 class KeywordScraper:
-
+    NUM_KEYWORDS = 50
     def __init__(self):
         #Add path
         abspath = os.path.abspath(__file__)
@@ -86,7 +86,6 @@ class KeywordScraper:
         return append_to
             
     def parse(self, response):
-        num_keywords_to_return = 50
         all_words = []
 
         #Parse the response
@@ -158,7 +157,7 @@ class KeywordScraper:
         parsed_keywords = [word for word in keywords if word not in self.stopwords]
         
         #Sort by frequency
-        most_freq_keywords = parsed_keywords[:num_keywords_to_return]
+        most_freq_keywords = parsed_keywords[:self.NUM_KEYWORDS]
         return most_freq_keywords
 
 class IndianPhoneNumberScraper:
