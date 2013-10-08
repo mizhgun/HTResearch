@@ -34,7 +34,8 @@ class ItemSwitch(object):
         # return item to next piece of pipeline
         return item
 
-    def _store_contact(self, scraped_contact):
+    @staticmethod
+    def _store_contact(scraped_contact):
         # item to model
         contact = ModelConverter.to_model(Contact, scraped_contact)
         # model to dto...
@@ -44,7 +45,8 @@ class ItemSwitch(object):
         #store
         dao.create_update(contact_dto)
 
-    def _store_organization(self, scraped_org):
+    @staticmethod
+    def _store_organization(scraped_org):
         # item to model
         org = ModelConverter.to_model(Organization, scraped_org)
         # model to dto...
@@ -54,7 +56,8 @@ class ItemSwitch(object):
         #store
         dao.create_update(org_dto)
 
-    def _store_publication(self, scraped_pub):
+    @staticmethod
+    def _store_publication(scraped_pub):
         # item to model
         pub = ModelConverter.to_model(Publication, scraped_pub)
         # model to dto...
