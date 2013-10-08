@@ -1,10 +1,32 @@
 import unittest
-import scrapy
 import pdb
 import subprocess
 
 
 class ScraperTests(unittest.TestCase):
+    def test_india_address_scraper(self):
+        # Runs the test spider and pipes the printed output to "output"
+        p = subprocess.Popen('scrapy crawl india_address_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output, error = p.communicate()
+
+        # Splits the results based on automatically added characters
+        addresses = output.splitlines()
+
+        #pdb.set_trace()
+        # Hardcoded results based on the sites that were crawled
+        assert_list = ["Guwahati 781001",
+                       "Tuljapur 413601",
+                       "Hyderabad 500030",
+                       "Mumbai 400088",
+                       "New Delhi 110003",
+                       "Hyderabad 500002",
+                       "Mumbai 400064",
+                       "New Delhi 110019",
+                       "Mumbai 400052"]
+
+        for test in assert_list:
+            self.assertIn(test, addresses, test + " not found")
+
     def test_email_scraper(self):
         # Runs the test spider and pipes the printed output to "output"
         p = subprocess.Popen('scrapy crawl email_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -12,7 +34,6 @@ class ScraperTests(unittest.TestCase):
 
         # Splits the results based on automatically added characters
         emails = output.splitlines()
-        emails = emails[:len(emails)-1]
 
         # Hardcoded results based on the sites that were crawled
         assert_list = ["sgnhrc@nic.in",

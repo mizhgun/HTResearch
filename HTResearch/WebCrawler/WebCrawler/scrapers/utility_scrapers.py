@@ -14,7 +14,6 @@ class ContactPositionScraper:
         self.position = ""
 
 
-
 class ContactPublicationsScraper:
 
     def __init__(self):
@@ -24,12 +23,13 @@ class ContactPublicationsScraper:
 class EmailScraper:
     def parse(self, response):
         email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
-                                '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
-                                '\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
-                                '\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
+                                r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
+                                r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
+                                r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
         hxs = HtmlXPathSelector(response)
 
         # body will get emails that are just text in the body
+        #b = hxs.select('//body//text()').extract()
         body = hxs.select('//body').re(email_regex)
         
         # hrefs will get emails from hrefs
@@ -91,6 +91,7 @@ class NameScraper:
 class OrgUsAddressScraper:
     def parse(self, response):
         # maybe use google maps api to check if real address?
+        return
 
 
 class OrgIndiaAddressScraper:

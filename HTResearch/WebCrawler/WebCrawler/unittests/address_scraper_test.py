@@ -1,11 +1,10 @@
 from scrapy.spider import BaseSpider
 #from scrapy import log
-from WebCrawler.scrapers.utility_scrapers import OrgIndiaAddressScraper
-from WebCrawler.items import ScrapedIndiaAddress
+from ..scrapers.utility_scrapers import OrgIndiaAddressScraper
 import pdb
 
 class AddressScraperTest(BaseSpider):
-    name = "address_scraper_test"
+    name = "india_address_scraper_test"
     start_urls = ["http://www.tiss.edu/TopMenuBar/contact-us/location-1",
                   "http://apneaap.org/contact/",
                   "http://www.aawc.in/contact_us.html",
@@ -22,6 +21,7 @@ class AddressScraperTest(BaseSpider):
     def parse(self, response):
         addresses = self.scraper.parse(response)
         for element in addresses:
-            print('{:<15}'.format(element["city"]) + " " + element["zip_code"])
+            #print('{:<15}'.format(element["city"]) + " " + element["zip_code"])
+            print(element["city"] + " " + element["zip_code"])
 
         return addresses
