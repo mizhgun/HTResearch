@@ -1,7 +1,7 @@
 from scrapy.selector import HtmlXPathSelector
 from scrapy.contrib.loader import XPathItemLoader
 import pdb
-import HTResearch.WebCrawler.WebCrawler.items as items
+from htresearch.webcrawler.webcrawler.items import *
 import re
 from nltk import FreqDist
 import os
@@ -45,7 +45,7 @@ class EmailScraper:
         # Make the list an item
         email_list = []
         for email in emails:
-            item = items.ScrapedEmail()
+            item = ScrapedEmail()
             item['email'] = email
             email_list.append(item)
 
@@ -131,7 +131,7 @@ class IndianPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            item = items.ScrapedPhoneNumber()
+            item = ScrapedPhoneNumber()
             item['phone_number'] = num
             phone_nums_list.append(item)
 
@@ -207,7 +207,7 @@ class USPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            item = items.ScrapedPhoneNumber()
+            item = ScrapedPhoneNumber()
             item['phone_number'] = num
             phone_nums_list.append(item)
 
