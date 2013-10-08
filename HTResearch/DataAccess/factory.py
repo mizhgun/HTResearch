@@ -1,5 +1,6 @@
 from dao import *
 
+
 class DAOFactory(object):
     """A Factory class for different DAOs."""
 

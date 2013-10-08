@@ -1,5 +1,6 @@
 import mongoengine as Mongo
 
+
 class ContactDTO(Mongo.Document):
     """A DTO wrapper for Contact documents"""
 
@@ -11,6 +12,7 @@ class ContactDTO(Mongo.Document):
     organizations = Mongo.ListField(Mongo.ReferenceField('OrganizationDTO'), db_field='os')
     publications = Mongo.ListField(Mongo.ReferenceField('PublicationDTO'), db_field='ps')
     position = Mongo.StringField(db_field='pn')
+
 
 class OrganizationDTO(Mongo.Document):
     """A DTO wrapper for Organization documents"""
@@ -24,6 +26,7 @@ class OrganizationDTO(Mongo.Document):
     organization_url = Mongo.URLField(db_field='u')
     partners = Mongo.ListField(Mongo.ReferenceField('self'), db_field='ps')
 
+
 class PublicationDTO(Mongo.Document):
     """A DTO wrapper for Publication documents"""
 
@@ -33,6 +36,7 @@ class PublicationDTO(Mongo.Document):
     publication_date = Mongo.DateTimeField(db_field='d')
     types = Mongo.ListField(Mongo.IntField(), db_field='ts')
     content_url = Mongo.URLField(db_field='u')
+
 
 class URLMetadataDTO(Mongo.Document):
     """A DTO wrapper for URLMetadata documents"""
