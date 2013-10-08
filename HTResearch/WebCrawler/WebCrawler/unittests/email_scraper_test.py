@@ -1,12 +1,6 @@
 from scrapy.spider import BaseSpider
-from scrapy.spider import BaseSpider
-from scrapy.selector import HtmlXPathSelector
-from scrapy.http import HtmlResponse
-#from scrapy import log
-from WebCrawler.scrapers.utility_scrapers import EmailScraper
-from WebCrawler.items import ScrapedEmail
-import scrapy
-import pdb
+from ..scrapers.utility_scrapers import EmailScraper
+
 
 class EmailScraperTest(BaseSpider):
     name = "email_scraper_test"

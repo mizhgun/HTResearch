@@ -1,9 +1,6 @@
-import sys
-[sys.path.remove(p) for p in sys.path if 'DataAccess' in p]
+from model import *
+from HTResearch.DataAccess.dto import *
 
-sys.path.append('../DataAccess/')
-
-import dto
 
 class DTOConverter(object):
     """A class for converting base objects to and from DTOs."""
@@ -11,11 +8,34 @@ class DTOConverter(object):
     @staticmethod
     def from_dto(cls, obj):
         new_cls = cls()
-        [setattr(new_cls, key, obj._data[key]) for key in obj._data if key != 'id']
+
+        for key in obj._data:
+            if key == 'contacts' or key == 'authors':
+                setattr(new_cls, key, [DTOConverter.from_dto(Contact, c) for c in obj._data[key]])
+            elif key == 'publisher' and obj._data[key] is not None:
+                setattr(new_cls, key, DTOConverter.from_dto(Contact, obj._data[key]))
+            elif key == 'organizations':
+                setattr(new_cls, key, [DTOConverter.from_dto(Organization, o) for o in obj._data[key]])
+            elif key == 'publications':
+                setattr(new_cls, key, [DTOConverter.from_dto(Publication, p) for p in obj._data[key]])
+            else:
+                if key != 'id':
+                    setattr(new_cls, key, obj._data[key])
         return new_cls
 
     @staticmethod
     def to_dto(cls, obj):
         new_dto = cls()
-        [setattr(new_dto, attr, value) for attr, value in obj.__dict__.iteritems()]
+
+        for key, value in obj.__dict__.iteritems():
+            if key == 'contacts' or key == 'authors':
+                setattr(new_dto, key, [DTOConverter.to_dto(ContactDTO, c) for c in value])
+            elif key == 'publisher' and value is not None:
+                setattr(new_dto, key, DTOConverter.to_dto(ContactDTO, value))
+            elif key == 'organizations':
+                setattr(new_dto, key, [DTOConverter.to_dto(OrganizationDTO, o) for o in value])
+            elif key == 'publications':
+                setattr(new_dto, key, [DTOConverter.to_dto(PublicationDTO, p) for p in value])
+            else:
+                setattr(new_dto, key, value)
         return new_dto

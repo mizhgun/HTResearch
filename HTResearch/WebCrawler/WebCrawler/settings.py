@@ -6,15 +6,15 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #
 
-BOT_NAME = 'WebCrawler'
+BOT_NAME = 'webcrawler'
 
 LOG_ENABLED = False
 
-SPIDER_MODULES = ['WebCrawler.spiders', 'WebCrawler.unittests']
-NEWSPIDER_MODULE = 'WebCrawler.spiders'
+SPIDER_MODULES = ['webcrawler.spiders', 'webcrawler.unittests']
+NEWSPIDER_MODULE = 'webcrawler.spiders'
 
 ITEM_PIPELINES = {
-    'WebCrawler.item_pipeline.item_switches.ItemSwitch' : 100,
+    'webcrawler.item_pipeline.item_switches.ItemSwitch' : 100,
 }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

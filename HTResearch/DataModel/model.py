@@ -1,27 +1,30 @@
 from datetime import datetime
 
+
 class Contact(object):
     """A model class for an anti-trafficking contact."""
 
-    def __init__(self, first_name = "", last_name = "",
-                 primary_phone = 0, secondary_phone = 0,
-                 email = "", organizations = [],
-                 publications = [], position = ""):
+    def __init__(self, first_name = None, last_name = None,
+                 primary_phone = None, secondary_phone = None,
+                 email = None, organizations = [],
+                 publications = [], position = None):
         self.first_name = first_name
         self.last_name = last_name
         self.primary_phone = primary_phone
+        self.secondary_phone = secondary_phone
         self.email = email
         self.organizations = organizations
         self.publications = publications
         self.position = position
 
+
 class Organization(object):
     """A model class for an anti-trafficking organization."""
 
-    def __init__(self, name = "", address = "",
-                 types = [], phone_number = 0,
-                 email = "", contacts = [],
-                 organization_url = "",
+    def __init__(self, name = None, address = None,
+                 types = [], phone_number = None,
+                 email = None, contacts = [],
+                 organization_url = None,
                  partners = []):
         self.name = name
         self.address = address
@@ -32,12 +35,13 @@ class Organization(object):
         self.organization_url = organization_url
         self.partners = partners
 
+
 class Publication(object):
     """A model class for an anti-trafficking research publication."""
 
-    def __init__(self, title = "", authors = [],
+    def __init__(self, title = None, authors = [],
                  publisher = None, publication_date = datetime.now(),
-                 types = [], content_url = ""):
+                 types = [], content_url = None):
         self.title = title
         self.authors = authors
         self.publisher = publisher
@@ -45,12 +49,13 @@ class Publication(object):
         self.types = types
         self.content_url = content_url
 
+
 class URLMetadata(object):
     """A model class for an anti-trafficiking organization URL metadata."""
 
-    def __init__(self, url = "", last_visited = datetime.now(),
-                 score = 0, update_freq = 0,
-                 checksum = 0):
+    def __init__(self, url = None, last_visited = datetime.now(),
+                 score = None, update_freq = None,
+                 checksum = None):
         self.url = url
         self.last_visited = last_visited
         self.score = score

@@ -1,10 +1,6 @@
 from scrapy.spider import BaseSpider
-from scrapy.selector import HtmlXPathSelector
-from scrapy import log
-from WebCrawler.scrapers.link_scraper import LinkScraper
-import scrapy
-import pdb
-import os
+from ..scrapers.link_scraper import LinkScraper
+
 
 class LinkScraperTest(BaseSpider):
     name = "link_scraper_test"
