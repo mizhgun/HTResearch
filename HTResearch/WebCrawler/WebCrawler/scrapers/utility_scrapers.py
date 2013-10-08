@@ -1,7 +1,7 @@
 from scrapy.selector import HtmlXPathSelector
 from scrapy.contrib.loader import XPathItemLoader
-from webcrawler.items import *
 import pdb
+import HTResearch.WebCrawler.WebCrawler.items as items
 import re
 from nltk import FreqDist
 import os
@@ -9,6 +9,7 @@ import string
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
+
 
 class ContactPositionScraper:
 
@@ -44,7 +45,7 @@ class EmailScraper:
         # Make the list an item
         email_list = []
         for email in emails:
-            item = ScrapedEmail()
+            item = items.ScrapedEmail()
             item['email'] = email
             email_list.append(item)
 
@@ -130,7 +131,7 @@ class IndianPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            item = ScrapedPhoneNumber()
+            item = items.ScrapedPhoneNumber()
             item['phone_number'] = num
             phone_nums_list.append(item)
 
@@ -206,7 +207,7 @@ class USPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            item = ScrapedPhoneNumber()
+            item = items.ScrapedPhoneNumber()
             item['phone_number'] = num
             phone_nums_list.append(item)
 
