@@ -1,5 +1,7 @@
 from scrapy.selector import HtmlXPathSelector
 from ..items import *
+import itertools
+import pdb
 import re
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
@@ -19,10 +21,12 @@ class ContactPublicationsScraper:
         self.publications = []
 
 
-
 class EmailScraper:
     def parse(self, response):
-        email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
+        email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
+                                '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
+                                '\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
+                                '\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
         hxs = HtmlXPathSelector(response)
 
         # body will get emails that are just text in the body
@@ -90,6 +94,7 @@ class OrgUsAddressScraper:
 
 
 class OrgIndiaAddressScraper:
+    def parse(self, response):
         hxs = HtmlXPathSelector(response)
 
         ## if super duper pathetically desperate, use if response.url == url and then just call the needed code
@@ -185,17 +190,49 @@ class OrgIndiaAddressScraper:
         #    text[i] = (text[i].encode('ascii','ignore')).strip()
         #addresses.append(", ".join(text))
 
+        body = hxs.select('//body//text()').extract()
+        for i in range(len(body)):
+            body[i] = (body[i].encode('ascii', 'ignore')).strip()
+            body[i] = "".join((char if char.isalnum() else " ") for char in body[i]).split()
+        body = list(self.flatten(body))
+
+        f = open("C:\Users\Brian\Documents\cities.txt", 'r')
+        cities = f.read().splitlines()
+
+        # This loop will check if city is in the body, if it is, find all occurrences of that city in the body,
+        # and then it will check all the occurring indices, and if the next index (or next 2 indices) is the zip code
+        city_and_zip = []
+        for city in cities:
+            city = city.strip()
+            if city in body:
+                indices = [i for i, x in enumerate(body) if x == city]
+                for i in indices:
+                    # because the body is separated by spaces, "New Delhi" would be in separate indices, so
+                    # check if the index before it could add to the city name and still be valid
+                    # EX: "Delhi" is valid and "New Delhi" is valid
+                    check = body[i]
+                    counter = 0
+                    while check in cities:
+                        if check in cities:
+                            city = check
+                        check = body[i-1-counter] + " " + city
+                        counter += 1
+                    if len(body[i+1]) == 6 and body[i+1].isdigit():
+                        city_and_zip.append((city, body[i+1]))
+                    elif len(body[i+1]) == 3 and len(body[i+2]) == 3 and body[i+1].isdigit() and body[i+2].isdigit():
+                        city_and_zip.append((city, body[i+1] + body[i+2]))
         address_list = []
-        for address in addresses:
-            item = ScrapedAddress()
-            item['address'] = address
+        for i in range(len(city_and_zip)):
+            item = ScrapedIndiaAddress()
+            item['city'] = city_and_zip[i][0]
+            item['zip_code'] = city_and_zip[i][1]
             address_list.append(item)
-        pdb.set_trace()
         return address_list
 
-#class OrgIndiaAddressScraper:
-#    def parse(self, response):
-#        return "POOP"
+    @staticmethod
+    def flatten(l):
+        # Flatten one level of nesting
+        return itertools.chain.from_iterable(l)
 
 
 class OrgContactsScraper:

@@ -1,4 +1,6 @@
 import unittest
+import scrapy
+import pdb
 import subprocess
 
 
