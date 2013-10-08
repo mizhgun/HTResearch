@@ -5,13 +5,16 @@
 
 from scrapy.item import Item, Field
 
+
 class ScrapedUrl(Item):
     # define the fields for your item here like:
     # name = Field()
     url = Field()
 
+
 class ScrapedEmail(Item):
     email = Field()
+
 
 class ScrapedPhoneNumber(Item):
     phone_number=Field()
