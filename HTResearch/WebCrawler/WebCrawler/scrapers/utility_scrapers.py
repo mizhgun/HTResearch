@@ -155,7 +155,7 @@ class KeywordScraper:
         keywords = freq_dist.keys()
 
         #Remove ignored words
-        parsed_keywords = [word for word in keywords if word not in stopwords]
+        parsed_keywords = [word for word in keywords if word not in self.stopwords]
         
         #Sort by frequency
         most_freq_keywords = parsed_keywords[:num_keywords_to_return]
