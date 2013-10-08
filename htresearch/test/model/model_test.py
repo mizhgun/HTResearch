@@ -1,8 +1,8 @@
 ﻿import unittest
 
-from HTResearch.DataAccess.dto import ContactDTO
-from HTResearch.DataModel.converter import DTOConverter
-from HTResearch.DataModel.model import Contact
+from DataAccess.dto import ContactDTO
+from DataModel.converter import DTOConverter
+from DataModel.model import Contact
 
 
 class ModelTest(unittest.TestCase):

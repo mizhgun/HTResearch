@@ -1,11 +1,11 @@
 import unittest
 
-from HTResearch.DataAccess.dto import *
-from HTResearch.DataAccess.dao import *
-from HTResearch.DataAccess.connection import DBConnection
-from HTResearch.DataAccess.factory import DAOFactory
-from HTResearch.DataModel.model import *
-from HTResearch.DataModel.converter import DTOConverter
+from DataAccess.dto import *
+from DataAccess.dao import *
+from DataAccess.connection import DBConnection
+from DataAccess.factory import DAOFactory
+from DataModel.model import *
+from DataModel.converter import DTOConverter
 
 
 class DatabaseInteractionTest(unittest.TestCase):
