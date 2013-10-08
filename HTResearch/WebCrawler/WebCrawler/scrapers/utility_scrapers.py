@@ -244,11 +244,11 @@ class OrgTypeScraper:
     def _idf(self, term):
         n = len(self._documents)
         docFreq = 1 + sum(1 for doc in self._documents if term in doc)
-        val = math.log(1 + n / docFreq)
-        return max(val, 1)
+        return math.log(1 + n / docFreq)
 
     # tf-idf
     def _tf_idf(self, term, doc):
+        idf = self._idf(term)
         return self._tf(term, doc) * self._idf(term)
     
     # Build vector based on list of terms
