@@ -13,4 +13,6 @@ class KeywordScraperTest(BaseSpider):
 
     def parse(self, response):
         keywords = self.scraper.parse(response)
+        for word in keywords:
+            print word
         return keywords

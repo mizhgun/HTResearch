@@ -53,14 +53,19 @@ class EmailScraper:
 
 class KeywordScraper:
     NUM_KEYWORDS = 50
-
+    stopwords = []
     def __init__(self):
+        self.savedPath = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
         #Load words to be ignored
         with open("stopwords.txt") as f:
-            stopwords = f.readlines()
-        for i in range(len(stopwords)):
-            stopwords[i] = stopwords[i].strip()
+            self.stopwords = f.readlines()
+        for i in range(len(self.stopwords)):
+            self.stopwords[i] = self.stopwords[i].strip()
+
+    def __del__( self ):
+        os.chdir( self.savedPath )
 
     def format_extracted_text(self, list):
 
@@ -93,7 +98,7 @@ class KeywordScraper:
                     'small','strong','div','span','li','th','td','a[contains(@href, "image")]']
 
         for element in elements:
-            words = hxs.select(element+'/text()').extract()
+            words = hxs.select('//'+element+'/text()').extract()
             all_words = self.append_words(all_words, words)
 
         #Run a frequency distribution on the web page body

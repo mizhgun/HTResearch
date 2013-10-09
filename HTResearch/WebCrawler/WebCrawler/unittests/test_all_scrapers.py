@@ -41,9 +41,8 @@ class ScraperTests(unittest.TestCase):
         p = subprocess.Popen('scrapy crawl keyword_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
         # Splits the results based on automatically added characters
-        #keywords = output.split("\r\n")
-        #keywords = keywords[:len(keywords)-1]
-        keywords = output
+        keywords = output.splitlines()
+        keywords = keywords[:len(keywords)-1]
 
         assert_list = ["nicolas", "cage"]
         for test in assert_list:
