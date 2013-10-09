@@ -5,15 +5,14 @@ import os
 
 
 class ScraperTests(unittest.TestCase):
-    def test_india_address_scraper(self):
+    def test_address_scraper(self):
         # Runs the test spider and pipes the printed output to "output"
-        p = subprocess.Popen('scrapy crawl india_address_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        p = subprocess.Popen('scrapy crawl address_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
 
         # Splits the results based on automatically added characters
         addresses = output.splitlines()
 
-        #pdb.set_trace()
         # Hardcoded results based on the sites that were crawled
         assert_list = ["Guwahati 781001",
                        "Tuljapur 413601",

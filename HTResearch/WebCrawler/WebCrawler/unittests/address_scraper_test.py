@@ -1,10 +1,11 @@
 from scrapy.spider import BaseSpider
 #from scrapy import log
-from ..scrapers.utility_scrapers import OrgIndiaAddressScraper
+from ..scrapers.utility_scrapers import OrgAddressScraper
 import pdb
 
+
 class AddressScraperTest(BaseSpider):
-    name = "india_address_scraper_test"
+    name = "address_scraper_test"
     start_urls = ["http://www.tiss.edu/TopMenuBar/contact-us/location-1",
                   "http://apneaap.org/contact/",
                   "http://www.aawc.in/contact_us.html",
@@ -16,7 +17,7 @@ class AddressScraperTest(BaseSpider):
 
     def __init__(self, *args, **kwargs):
         super(AddressScraperTest, self).__init__(*args, **kwargs)
-        self.scraper = OrgIndiaAddressScraper()
+        self.scraper = OrgAddressScraper()
 
     def parse(self, response):
         addresses = self.scraper.parse(response)

@@ -87,11 +87,9 @@ class NameScraper:
         self.names = []
 
 
-class OrgIndiaAddressScraper:
+class OrgAddressScraper:
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-
-        ## if super duper pathetically desperate, use if response.url == url and then just call the needed code
 
         """ THIS IS ALL FOR THE PAGE http://www.tiss.edu/TopMenuBar/contact-us/location-1 """
         #content_div = hxs.select('//div[@id="content"]')
@@ -217,7 +215,7 @@ class OrgIndiaAddressScraper:
                         city_and_zip.append((city, body[i+1] + body[i+2]))
         address_list = []
         for i in range(len(city_and_zip)):
-            item = ScrapedIndiaAddress()
+            item = ScrapedAddress()
             item['city'] = city_and_zip[i][0]
             item['zip_code'] = city_and_zip[i][1]
             address_list.append(item)
@@ -245,12 +243,6 @@ class OrgTypeScraper:
 
     def __init__(self):
         types = []
-
-
-class OrgUsAddressScraper:
-    def parse(self, response):
-        # maybe use google maps api to check if real address?
-        return
 
 
 class PublicationAuthorsScraper:

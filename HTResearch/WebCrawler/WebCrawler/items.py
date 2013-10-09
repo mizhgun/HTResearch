@@ -6,7 +6,7 @@
 from scrapy.item import Item, Field
 
 
-class ScrapedIndiaAddress(Item):
+class ScrapedAddress(Item):
     city = Field()
     zip_code = Field()
 
