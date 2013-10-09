@@ -1,12 +1,11 @@
 from scrapy.spider import BaseSpider
-from scrapy.selector import HtmlXPathSelector
-from scrapy.http import HtmlResponse
-from WebCrawler.scrapers.utility_scrapers import KeywordScraper
+from htresearch.webcrawler.webcrawler.scrapers.utility_scrapers import KeywordScraper
 import scrapy
 
 class KeywordScraperTest(BaseSpider):
     name = "keyword_scraper_test"
     start_urls = ["http://en.wikipedia.org/wiki/Nicolas_Cage"]
+    scraper = None
 
     def __init__(self, *args, **kwargs):
         super(KeywordScraperTest, self).__init__(*args, **kwargs)

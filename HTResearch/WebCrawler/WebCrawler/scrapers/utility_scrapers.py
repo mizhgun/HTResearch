@@ -1,6 +1,4 @@
 from scrapy.selector import HtmlXPathSelector
-from scrapy.contrib.loader import XPathItemLoader
-import pdb
 from htresearch.webcrawler.webcrawler.items import *
 import re
 from nltk import FreqDist
@@ -53,11 +51,8 @@ class EmailScraper:
 
 class KeywordScraper:
     NUM_KEYWORDS = 50
+
     def __init__(self):
-        #Add path
-        abspath = os.path.abspath(__file__)
-        dname = os.path.dirname(abspath)
-        os.chdir(dname)
 
         #Load words to be ignored
         with open("stopwords.txt") as f:
@@ -72,7 +67,7 @@ class KeywordScraper:
         return list
             
     def append_words(self, append_to, source):
-        if source == []:
+        if not source:
             return append_to
 
         #Split each array into sentence, and those into words
@@ -96,7 +91,7 @@ class KeywordScraper:
                     'small','strong','div','span','li','th','td','a[contains(@href, "image")]']
 
         for element in elements:
-            words=hxs.select(element+'/text()').extract()
+            words = hxs.select(element+'/text()').extract()
             all_words = self.append_words(all_words, words)
 
         #Run a frequency distribution on the web page body

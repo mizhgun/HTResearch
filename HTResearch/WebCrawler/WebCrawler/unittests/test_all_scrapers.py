@@ -1,10 +1,4 @@
 import unittest
-from scrapy.selector import HtmlXPathSelector
-from scrapy.http import HtmlResponse
-from scrapy import log
-import scrapy
-import pdb
-import os
 import subprocess
 
 class ScraperTests(unittest.TestCase):
@@ -22,7 +16,6 @@ class ScraperTests(unittest.TestCase):
                        "covdnhrc@nic.in",
                        "anilpradhanshilong@gmail.com",
                        "snarayan1946@gmail.com",
-                       "kkdevaraj@bombayteenchallenge.org",
                        "tvarghese@bombayteenchallenge.org"]
 
         for test in assert_list:
