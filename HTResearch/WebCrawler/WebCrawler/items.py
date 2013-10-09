@@ -15,3 +15,13 @@ class ScrapedEmail(Item):
 
 class ScrapedPhoneNumber(Item):
     phone_number=Field()
+
+class ScrapedOrganization(Item):
+    name=Field()
+    address=Field()
+    types=Field()
+    phone_number=Field()
+    email=Field()
+    contacts=Field()
+    organization_url=Field()
+    partners=Field()
