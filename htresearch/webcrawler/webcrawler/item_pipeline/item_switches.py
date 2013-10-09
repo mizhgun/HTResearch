@@ -1,7 +1,7 @@
 from scrapy.exceptions import DropItem
-from DataAccess.dao import *
-from DataAccess.factory import *
-from DataModel.converter import *
+from HTResearch.DataAccess.dao import *
+from HTResearch.DataAccess.factory import *
+from HTResearch.DataModel.converter import *
 from ..converter import ModelConverter
 
 

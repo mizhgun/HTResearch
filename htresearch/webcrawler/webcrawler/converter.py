@@ -1,4 +1,4 @@
-from DataModel.model import *
+from HTResearch.DataModel.model import *
 
 
 class ModelConverter(object):
