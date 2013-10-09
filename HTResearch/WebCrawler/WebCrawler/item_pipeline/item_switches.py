@@ -2,7 +2,6 @@ from scrapy.exceptions import DropItem
 from HTResearch.DataAccess.dao import *
 from HTResearch.DataAccess.factory import *
 from HTResearch.DataModel.converter import *
-from ..converter import ModelConverter
 
 
 class ItemSwitch(object):
