@@ -12,13 +12,13 @@ class Contact:
 
 class Organization:
     _scrapers = {
-        'name': None, #OrgNameScraper(),
+        'name': OrgNameScraper(),
         'address': OrgAddressScraper(),
         'types': OrgTypeScraper(),
         'phone_number': USPhoneNumberScraper(),
         'email': EmailScraper(),
         'contacts': OrgContactsScraper(),
-        'organization_url': None, #OrgUrlScraper(),
+        'organization_url': OrgUrlScraper(),
         'partners': OrgPartnersScraper(),
     }
 

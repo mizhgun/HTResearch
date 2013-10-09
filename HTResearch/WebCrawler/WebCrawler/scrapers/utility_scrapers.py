@@ -76,7 +76,7 @@ class IndianPhoneNumberScraper:
 
         return phone_nums_list
 
-class NameScraper:
+class OrgNameScraper:
 
     def __init__(self):
         names = []
@@ -90,6 +90,11 @@ class OrgContactsScraper:
 
     def __init__(self):
         contacts = []
+
+class OrgUrlScraper:
+
+    def __init__(self):
+        url = []
 
 class OrgPartnersScraper:
 
