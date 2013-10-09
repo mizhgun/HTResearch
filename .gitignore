@@ -7,6 +7,11 @@
 *.pyc
 local_settings.py
 
+# Ignore old Visual Studio files
+*.v11.suo
+*.v12.suo
+obj/
+
 # =========================
 # Windows detritus
 # =========================

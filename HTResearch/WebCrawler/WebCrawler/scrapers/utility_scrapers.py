@@ -29,7 +29,6 @@ class EmailScraper:
         hxs = HtmlXPathSelector(response)
 
         # body will get emails that are just text in the body
-        #b = hxs.select('//body//text()').extract()
         body = hxs.select('//body').re(email_regex)
         
         # hrefs will get emails from hrefs
@@ -86,12 +85,6 @@ class NameScraper:
 
     def __init__(self):
         self.names = []
-
-
-class OrgUsAddressScraper:
-    def parse(self, response):
-        # maybe use google maps api to check if real address?
-        return
 
 
 class OrgIndiaAddressScraper:
@@ -252,6 +245,12 @@ class OrgTypeScraper:
 
     def __init__(self):
         types = []
+
+
+class OrgUsAddressScraper:
+    def parse(self, response):
+        # maybe use google maps api to check if real address?
+        return
 
 
 class PublicationAuthorsScraper:
