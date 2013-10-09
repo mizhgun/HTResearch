@@ -5,7 +5,9 @@ from scrapy import log
 import scrapy
 import pdb
 import os
+from ..items import ScrapedOrganization
 import subprocess
+import json
 
 class ScraperTests(unittest.TestCase):
     def test_email_scraper(self):
@@ -39,6 +41,23 @@ class ScraperTests(unittest.TestCase):
 
         for test in assert_list:
             self.assertIn(test.lower(), urls, "URL " + test + " was not found")
+
+    def test_organization_scraper(self):
+        p = subprocess.Popen('scrapy crawl organization_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output, error = p.communicate()
+        """assert_value = {
+            'name': 'Bombay Teen Challenge',
+            'address': '7742 Spalding Drive',
+            'types': [ 'religious' ],
+            'phone_number': '+1 615.712.4863',
+            'email': 'tvarghese@bombayteenchallenge.org',
+            'contacts': [],
+            'organization_url': 'https://bombayteenchallenge.org/',
+            'partners': [],
+        }"""
+        organization = json.loads(output)
+
+        # TODO: Assert equality
 
 if __name__ == '__main__':
     try:

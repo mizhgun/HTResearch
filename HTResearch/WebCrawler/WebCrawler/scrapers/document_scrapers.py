@@ -10,7 +10,7 @@ class Contact:
     def __init__(self):
         contact = None
 
-class Organization:
+class OrganizationScraper:
     _scrapers = {
         'name': OrgNameScraper(),
         'address': OrgAddressScraper(),
