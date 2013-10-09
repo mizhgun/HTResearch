@@ -14,10 +14,12 @@ class ContactPositionScraper:
     def __init__(self):
         position = ""
 
+
 class ContactPublicationsScraper:
 
     def __init__(self):
         publications = []
+
 
 class EmailScraper:
     def parse(self, response):
@@ -132,55 +134,66 @@ class IndianPhoneNumberScraper:
 
         return phone_nums_list
 
+
 class NameScraper:
 
     def __init__(self):
         names = []
+
 
 class OrgAddressScraper:
 
     def __init__(self):
         addresses = []
 
+
 class OrgContactsScraper:
 
     def __init__(self):
         contacts = []
+
 
 class OrgPartnersScraper:
 
     def __init__(self):
         partners = []
 
+
 class OrgTypeScraper:
 
     def __init__(self):
         types = []
+
 
 class PublicationAuthorsScraper:
 
     def __init__(self):
         authors = []
 
+
 class PublicationDateScraper:
 
     def __init__(self):
         partners = []
+
 
 class PublicationPublisherScraper:
 
     def __init__(self):
         publisher = []
 
+
 class PublicationTitleScraper:
 
     def __init__(self):
         titles = []
 
+
 class PublicationTypeScraper:
 
     def __init__(self):
         type = []
+
 
 class USPhoneNumberScraper:
            
