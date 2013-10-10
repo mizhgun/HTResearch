@@ -88,6 +88,9 @@ class NameScraper:
 
 
 class OrgAddressScraper:
+    def __init__(self):
+        self.cities = open("../Resources/cities.txt", 'r').read().splitlines()
+
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
 
@@ -97,13 +100,10 @@ class OrgAddressScraper:
             body[i] = "".join((char if char.isalnum() else " ") for char in body[i]).split()
         body = list(self.flatten(body))
 
-        f = open("C:\Users\Brian\Documents\cities.txt", 'r')
-        cities = f.read().splitlines()
-
         # This loop will check if city is in the body, if it is, find all occurrences of that city in the body,
         # and then it will check all the occurring indices, and if the next index (or next 2 indices) is the zip code
         city_and_zip = []
-        for city in cities:
+        for city in self.cities:
             city = city.strip()
             if city in body:
                 indices = [i for i, x in enumerate(body) if x == city]
@@ -113,8 +113,8 @@ class OrgAddressScraper:
                     # EX: "Delhi" is valid and "New Delhi" is valid
                     check = body[i]
                     counter = 0
-                    while check in cities:
-                        if check in cities:
+                    while check in self.cities:
+                        if check in self.cities:
                             city = check
                         check = body[i-1-counter] + " " + city
                         counter += 1
