@@ -6,7 +6,8 @@ import os
 class LinkScraperTest(BaseSpider):
     name = "link_scraper_test"
     start_urls = [
-        'http://www.black.com/'
+        'http://www.stoptrafficking.net/',
+        'http://news.unl.edu/newsrooms/unltoday/',
     ]
     scraper = None
 
@@ -26,7 +27,7 @@ class LinkScraperTest(BaseSpider):
 
         with open("../Output/link_scraper_output.txt", 'a') as f:
             for link in links:
-                f.write(link + "\n")
-                print(link)
+                f.write(link['url'] + "\n")
+                print(link['url'])
 
         return links
