@@ -4,8 +4,8 @@ from ..items import *
 import itertools
 import re
 from urlparse import urlparse
-import string
 import os
+import string
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
