@@ -1,6 +1,6 @@
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy import log
-from HTResearch.WebCrawler.WebCrawler.items import ScrapedUrl
+from ..items import ScrapedUrl
 
 
 class LinkScraper:
