@@ -16,9 +16,27 @@ class ContactDAO(object):
         with DBConnection():
             contact_dto.delete()
 
-    def find(self, dto_id):
+    # NOTE: This method will not return an object when
+    # passed constraints that are reference types!
+    def find(self, **constraints):
         with DBConnection():
-            return ContactDTO.objects(id=dto_id).first()
+            if len(constraints.keys()) > 0:
+                return ContactDTO.objects(**constraints).first()
+            else:
+                return ContactDTO.objects().first()
+
+    # NOTE: This method will not return an object when
+    # passed constraints that are reference types!
+    def findmany(self, num_elements, *sort_fields, **constraints):
+        with DBConnection():
+            if len(constraints.keys()) > 0:
+                query = ContactDTO.objects(**constraints)
+            else:
+                query = ContactDTO.objects()
+            if len(sort_fields) > 0:
+                return query.order_by(*sort_fields)[:num_elements]
+            else:
+                return query[:num_elements]
 
 
 class OrganizationDAO(object):
@@ -34,9 +52,27 @@ class OrganizationDAO(object):
         with DBConnection():
             org_dto.delete()
 
-    def find(self, dto_id):
+    # NOTE: This method will not return an object when
+    # passed constraints that are reference types!
+    def find(self, **constraints):
         with DBConnection():
-            return OrganizationDTO.objects(id=dto_id).first()
+            if len(constraints.keys()) > 0:
+                return OrganizationDTO.objects(**constraints).first()
+            else:
+                return OrganizationDTO.objects().first()
+
+    # NOTE: This method will not return an object when
+    # passed constraints that are reference types!
+    def findmany(self, num_elements, *sort_fields, **constraints):
+        with DBConnection():
+            if len(constraints.keys()) > 0:
+                query = OrganizationDTO.objects(**constraints)
+            else:
+                query = OrganizationDTO.objects()
+            if len(sort_fields) > 0:
+                return query.order_by(*sort_fields)[:num_elements]
+            else:
+                return query[:num_elements]
 
 
 class PublicationDAO(object):
@@ -55,9 +91,28 @@ class PublicationDAO(object):
         with DBConnection():
             pub_dto.delete()
 
-    def find(self, dto_id):
+    # NOTE: This method will not return an object when
+    # passed constraints that are reference types!
+    def find(self, **constraints):
         with DBConnection():
-            return PublicationDTO.objects(id=dto_id).first()
+            if len(constraints.keys()) > 0:
+                return PublicationDTO.objects(**constraints).first()
+            else:
+                return PublicationDTO.objects().first()
+
+    # NOTE: This method will not return an object when
+    # passed constraints that are reference types!
+    def findmany(self, num_elements, *sort_fields, **constraints):
+        with DBConnection():
+            if len(constraints.keys()) > 0:
+                query = PublicationDTO.objects(**constraints)
+            else:
+                query = PublicationDTO.objects()
+            if len(sort_fields) > 0:
+                return query.order_by(*sort_fields)[:num_elements]
+            else:
+                return query[:num_elements]
+
 
 class URLMetadataDAO(object):
     """A DAO for the URLMetadata document"""
@@ -70,6 +125,24 @@ class URLMetadataDAO(object):
         with DBConnection():
             url_dto.delete()
 
-    def find(self, dto_id):
+    # NOTE: This method will not return an object when
+    # passed constraints that are reference types!
+    def find(self, **constraints):
         with DBConnection():
-            return URLMetadataDTO.objects(id=dto_id).first()
+            if len(constraints.keys()) > 0:
+                return URLMetadataDTO.objects(**constraints).first()
+            else:
+                return URLMetadataDTO.objects().first()
+
+    # NOTE: This method will not return an object when
+    # passed constraints that are reference types!
+    def findmany(self, num_elements, *sort_fields, **constraints):
+        with DBConnection():
+            if len(constraints.keys()) > 0:
+                query = URLMetadataDTO.objects(**constraints)
+            else:
+                query = URLMetadataDTO.objects()
+            if len(sort_fields) > 0:
+                return query.order_by(*sort_fields)[:num_elements]
+            else:
+                return query[:num_elements]
