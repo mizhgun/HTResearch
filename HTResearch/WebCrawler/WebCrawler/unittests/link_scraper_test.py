@@ -1,6 +1,7 @@
 from scrapy.spider import BaseSpider
 from ..scrapers.link_scraper import LinkScraper
 
+
 class LinkScraperTest(BaseSpider):
     name = "link_scraper_test"
     start_urls = ["http://black.com/"]
