@@ -89,7 +89,8 @@ class NameScraper:
 
 class OrgAddressScraper:
     def __init__(self):
-        self.cities = open("../Resources/cities.txt", 'r').read().splitlines()
+        with open("../Resources/cities.txt") as f:
+            self.cities = f.read().splitlines()
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
