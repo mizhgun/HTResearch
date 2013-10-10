@@ -60,9 +60,7 @@ class KeywordScraper:
 
         #Load words to be ignored
         with open("../Resources/stopwords.txt") as f:
-            self.stopwords = f.readlines()
-        for i in range(len(self.stopwords)):
-            self.stopwords[i] = self.stopwords[i].strip()
+            self.stopwords = f.read().splitlines()
 
     def __del__( self ):
         os.chdir( self.savedPath )
