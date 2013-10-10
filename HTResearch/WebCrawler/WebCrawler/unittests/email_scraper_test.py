@@ -15,10 +15,13 @@ class EmailScraperTest(BaseSpider):
     def __init__(self, *args, **kwargs):
         super(EmailScraperTest, self).__init__(*args, **kwargs)
         self.scraper = EmailScraper()
-        try:
-            os.remove("../Output/email_scraper_output.txt")
-        except OSError:
-            pass
+        if not os.path.exists("../Output/"):
+            os.makedirs("../Output")
+        else:
+            try:
+                os.remove("../Output/email_scraper_output.txt")
+            except OSError:
+                pass
 
     def parse(self, response):
         emails = self.scraper.parse(response)
