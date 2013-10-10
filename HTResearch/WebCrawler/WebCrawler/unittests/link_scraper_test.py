@@ -11,10 +11,13 @@ class LinkScraperTest(BaseSpider):
     def __init__(self, *args, **kwargs):
         super(LinkScraperTest, self).__init__(*args, **kwargs)
         self.scraper = LinkScraper()
-        try:
-            os.remove("../Output/link_scraper_output.txt")
-        except OSError:
-            pass
+        if not os.path.exists("../Output/"):
+            os.makedirs("../Output")
+        else:
+            try:
+                os.remove("../Output/link_scraper_output.txt")
+            except OSError:
+                pass
 
     def parse(self, response):
         links = self.scraper.parse(response)

@@ -19,10 +19,13 @@ class AddressScraperTest(BaseSpider):
     def __init__(self, *args, **kwargs):
         super(AddressScraperTest, self).__init__(*args, **kwargs)
         self.scraper = OrgAddressScraper()
-        try:
-            os.remove("../Output/address_scraper_output.txt")
-        except OSError:
-            pass
+        if not os.path.exists("../Output/"):
+            os.makedirs("../Output")
+        else:
+            try:
+                os.remove("../Output/address_scraper_output.txt")
+            except OSError:
+                pass
 
     def parse(self, response):
         addresses = self.scraper.parse(response)

@@ -11,10 +11,13 @@ class KeywordScraperTest(BaseSpider):
     def __init__(self, *args, **kwargs):
         super(KeywordScraperTest, self).__init__(*args, **kwargs)
         self.scraper = KeywordScraper()
-        try:
-            os.remove("../Output/keyword_scraper_output.txt")
-        except OSError:
-            pass
+        if not os.path.exists("../Output/"):
+            os.makedirs("../Output")
+        else:
+            try:
+                os.remove("../Output/keyword_scraper_output.txt")
+            except OSError:
+                pass
 
     def parse(self, response):
         keywords = self.scraper.parse(response)
