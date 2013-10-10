@@ -1,4 +1,5 @@
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy import log
 from ..items import ScrapedUrl
 
 

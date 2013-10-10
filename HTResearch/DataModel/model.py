@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 class Contact(object):
-    """A model class for an anti-trafficking contact."""
+    """A Model class for an anti-trafficking contact."""
 
     def __init__(self, first_name = None, last_name = None,
                  primary_phone = None, secondary_phone = None,
@@ -19,7 +19,7 @@ class Contact(object):
 
 
 class Organization(object):
-    """A model class for an anti-trafficking organization."""
+    """A Model class for an anti-trafficking organization."""
 
     def __init__(self, name = None, address = None,
                  types = [], phone_number = None,
@@ -37,7 +37,7 @@ class Organization(object):
 
 
 class Publication(object):
-    """A model class for an anti-trafficking research publication."""
+    """A Model class for an anti-trafficking research publication."""
 
     def __init__(self, title = None, authors = [],
                  publisher = None, publication_date = datetime.now(),
@@ -51,7 +51,7 @@ class Publication(object):
 
 
 class URLMetadata(object):
-    """A model class for an anti-trafficiking organization URL metadata."""
+    """A Model class for an anti-trafficiking organization URL metadata."""
 
     def __init__(self, url = None, last_visited = datetime.now(),
                  score = None, update_freq = None,
