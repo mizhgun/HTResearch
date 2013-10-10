@@ -1,5 +1,5 @@
 from scrapy.spider import BaseSpider
-from ..scrapers.utility_scrapers import EmailScraper
+from htresearch.webcrawler.webcrawler.scrapers.utility_scrapers import EmailScraper
 
 
 class EmailScraperTest(BaseSpider):
