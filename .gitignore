@@ -31,3 +31,4 @@ $RECYCLE.BIN/
 
 # Webcrawler crap
 HTResearch/env/
+*_scraper_output.txt
