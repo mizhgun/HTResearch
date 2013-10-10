@@ -1,5 +1,6 @@
 from scrapy.spider import BaseSpider
 from ..scrapers.utility_scrapers import EmailScraper
+import os
 import pdb
 
 class EmailScraperTest(BaseSpider):
@@ -14,11 +15,19 @@ class EmailScraperTest(BaseSpider):
     def __init__(self, *args, **kwargs):
         super(EmailScraperTest, self).__init__(*args, **kwargs)
         self.scraper = EmailScraper()
+        if not os.path.exists("../Output/"):
+            os.makedirs("../Output")
+        else:
+            try:
+                os.remove("../Output/email_scraper_output.txt")
+            except OSError:
+                pass
 
     def parse(self, response):
         emails = self.scraper.parse(response)
-        
-        for element in emails:
-            print(element["email"])
+        with open("../Output/email_scraper_output.txt", 'a') as f:
+            for element in emails:
+                f.write(element["email"] + "\n")
+                print(element["email"])
 
         return emails

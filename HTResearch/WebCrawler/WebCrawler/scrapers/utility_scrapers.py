@@ -3,6 +3,9 @@ from ..items import *
 import itertools
 import pdb
 import re
+import os
+import string
+from nltk import FreqDist
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
