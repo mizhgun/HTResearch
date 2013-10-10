@@ -1,9 +1,5 @@
-from scrapy.selector import HtmlXPathSelector
-from scrapy.contrib.loader import XPathItemLoader
 from ..items import *
 from utility_scrapers import *
-import pdb
-import re
 
 class Contact:
 
@@ -27,6 +23,7 @@ class OrganizationScraper:
         for field in self._scrapers.iterkeys():
             organization[field] = self._scrapers[field].parse(response)
         return organization
+
 
 class Publication:
 

@@ -1,17 +1,13 @@
 import unittest
-from scrapy.selector import HtmlXPathSelector
-from scrapy.http import HtmlResponse
-from scrapy import log
-import scrapy
-import pdb
 import os
-from ..items import ScrapedOrganization
 import subprocess
 import json
+
 
 class ScraperTests(unittest.TestCase):
     def test_email_scraper(self):
         # Runs the test spider and pipes the printed output to "output"
+        os.chdir(os.path.join(os.pardir, os.pardir))
         p = subprocess.Popen('scrapy crawl email_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
 
@@ -24,7 +20,6 @@ class ScraperTests(unittest.TestCase):
                        "covdnhrc@nic.in",
                        "anilpradhanshilong@gmail.com",
                        "snarayan1946@gmail.com",
-                       "kkdevaraj@bombayteenchallenge.org",
                        "tvarghese@bombayteenchallenge.org"]
 
         for test in assert_list:

@@ -1,24 +1,31 @@
 from scrapy.selector import HtmlXPathSelector
+<<<<<<< HEAD
 from scrapy.contrib.loader import XPathItemLoader
 from nltk.stem.porter import PorterStemmer
 from scrapy.http import TextResponse
 import math
 from ..items import *
 import pdb
+=======
+from ..items import *
+>>>>>>> R1_SeekingJustice
 import re
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
+
 
 class ContactPositionScraper:
 
     def __init__(self):
         position = ""
 
+
 class ContactPublicationsScraper:
 
     def __init__(self):
         publications = []
+
 
 class EmailScraper:
     def parse(self, response):
@@ -50,6 +57,7 @@ class EmailScraper:
 
         return email_list
 
+
 class IndianPhoneNumberScraper:
     
     def parse(self, response):
@@ -76,15 +84,22 @@ class IndianPhoneNumberScraper:
 
         return phone_nums_list
 
+<<<<<<< HEAD
 class OrgNameScraper:
+=======
+
+class NameScraper:
+>>>>>>> R1_SeekingJustice
 
     def __init__(self):
         names = []
+
 
 class OrgAddressScraper:
 
     def __init__(self):
         addresses = []
+
 
 class OrgContactsScraper:
 
@@ -100,6 +115,7 @@ class OrgPartnersScraper:
 
     def __init__(self):
         partners = []
+
 
 class OrgTypeScraper:
     
@@ -322,30 +338,36 @@ class OrgTypeScraper:
 
         return types
 
+
 class PublicationAuthorsScraper:
 
     def __init__(self):
         authors = []
+
 
 class PublicationDateScraper:
 
     def __init__(self):
         partners = []
 
+
 class PublicationPublisherScraper:
 
     def __init__(self):
         publisher = []
+
 
 class PublicationTitleScraper:
 
     def __init__(self):
         titles = []
 
+
 class PublicationTypeScraper:
 
     def __init__(self):
         type = []
+
 
 class USPhoneNumberScraper:
            
