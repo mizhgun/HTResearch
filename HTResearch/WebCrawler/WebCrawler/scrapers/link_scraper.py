@@ -1,12 +1,13 @@
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy import log
 from ..items import ScrapedUrl
+
 
 class LinkScraper:
     """A scraper to find all URLs in a page """
-    _link_extractor = None
 
     def __init__(self):
-        _link_extractor = SgmlLinkExtractor()
+        self._link_extractor = SgmlLinkExtractor()
 
     def parse(self, response):
         """Scrape a spider's HttpRequest.Response for links"""
