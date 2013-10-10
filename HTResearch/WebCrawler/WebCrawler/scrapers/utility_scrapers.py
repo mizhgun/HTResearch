@@ -1,9 +1,11 @@
+from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
 from ..items import *
 import itertools
 import re
-import urlparse
+from urlparse import urlparse
 import string
+import os
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
@@ -210,45 +212,22 @@ class OrgPartnersScraper:
 
 
 class OrgTypeScraper:
-    
-    def __init__(self):
 
+    def __init__(self):
+        # Stemmer for stemming terms
+        self._stemmer = PorterStemmer()
+        # Scraper to get common keywords from response
         self._keyword_scraper = KeywordScraper()
-        self._type_count = 3
-        self._religion_terms = [ 'God', 'spiritual', 'religion', 'worship', 'church' ]
+        # Maximum number of types
+        self._max_types = 3
+        # Obvious religious keywords. These must be lowercase
+        self._religion_words = ['god', 'spiritual', 'religion', 'worship', 'church', 'prayer']
+        # Regex for url of government websites
         self._government_detector = r'^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[Gg][Oo][Vv](\.[a-zA-Z]{2})?$'
         # Lowest (highest number) rank a keyword can have and still count towards determining organization type
-        self._max_rank = 5
-        self._type_terms = {
-            """'religious': [
-                'religious',
-                'God',
-                'worship',
-                'church',
-                'spiritual',
-            ],
-            'government': [
-                'government',
-                'act',
-                'nation',
-                'state',
-                'department',
-                'united',
-                'investigation',
-                'intervention',
-                'legislation',
-                'agency',
-                'court',
-                'bill',
-                'committee',
-                'law',
-                'enforcement',
-                'legal',
-                'conviction',
-                'ministry',
-                'secretary',
-                'agency',
-            ],"""
+        self._max_rank = 40
+        # Keywords to look for for other types. These must be lowercase
+        self._type_words = {
             'education': [
                 'education',
                 'school',
@@ -256,32 +235,21 @@ class OrgTypeScraper:
                 'teach',
             ],
             'advocacy': [
-                'lobbying',
+                'advocacy',
+                'lobby',
                 'policy',
-                'legal',
-                'media',
-                'change',
-                'government',
-                'state',
-                'court',
             ],
             'research': [
                 'research',
                 'conduct',
-                'documentation',
-                'study',
+                'document',
                 'identify',
-                'analysis',
-                'understand',
-                'find',
-                'insight',
-                'link',
-                'correlation',
+                'analyze',
+                'correlate',
                 'compile',
                 'report',
                 'data',
                 'publication',
-                'book',
                 'journal',
                 'periodical',
                 'newsletter',
@@ -305,6 +273,7 @@ class OrgTypeScraper:
                 'fulfilment',
                 'freedom',
                 'opportunity',
+                'women',
             ],
             'prosecution': [
                 'prosecution',
@@ -313,43 +282,59 @@ class OrgTypeScraper:
                 'law',
                 'enforcement',
                 'regulatory',
+                'regulation',
+                'justice',
             ],
         }
 
-        # List of document term lists
-        self._documents = []
+        # Stem search words (religious, general)
+        self._religion_words = [self._stemmer.stem(word) for word in self._religion_words]
+        for key in self._type_words.iterkeys():
+            self._type_words[key] = [self._stemmer.stem(word) for word in self._type_words[key]]
 
-    # Find the minimum
-    def _min_index_found(self, listWords, searchWords):
-        return listWords.index(min(searchWords, key=lambda word: listWords.index(word) if word in listWords else float('inf')))
+    # Find the minimum index of a term from a search list in a list
+    @staticmethod
+    def _min_index_found(listwords, searchwords):
+        index = float('inf')
+        for word in searchwords:
+            if word in listwords:
+                index = min(index, listwords.index(word))
+        return index
     
     # Get the organization type
     def parse(self, response):
             
         # Get keywords
-        keywords = self._keyword_scraper.parse(response)
+        keywords = list(self._stemmer.stem(word) for word in self._keyword_scraper.parse(response))
+
+        # Get all words
+        all_words = []
+        hxs = HtmlXPathSelector(response)
+        elements = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'b', 'code', 'em', 'italic',
+                    'small', 'strong', 'div', 'span', 'li', 'th', 'td', 'a[contains(@href, "image")]']
+        for element in elements:
+            words = hxs.select('//'+element+'/text()').extract()
+            self._keyword_scraper.append_words(all_words, words)
+
+        all_words = list(set(self._stemmer.stem(word) for word in all_words))
 
         types = []
-
-<<<<<<< HEAD
         # Government: check the URL
         if re.search(self._government_detector, urlparse(response.url).netloc):
             types.append('government')
         # Religion: check for the appearance of certain religious terms
-        # Note that government and religion are mutually exclusive
-        elif any(term in self._religion_terms for term in keywords):
-            types.append('religion')
+        # (this means that government and religion types are mutually exclusive)
+        elif any(word in self._religion_words for word in all_words):
+            types.append('religious')
         # Other types
-        #sorted(self._type_terms.iterkeys(), key=lambda searchwords: self._min_index_found(keywords, searchwords)
-        indices = {}
-        for type in self._type_terms.iterkeys():
-            rank = self._min_index_found(keywords, self._type_terms[type])
+        for type in self._type_words.iterkeys():
+            rank = self._min_index_found(keywords, self._type_words[type])
             if rank < self._max_rank:
                 types.append(type)
+            if len(types) >= self._max_types:
+                break
 
-        return types
-=======
->>>>>>> R1_SeekingJustice
+        return types or ['unknown']
 
 class PublicationAuthorsScraper:
 

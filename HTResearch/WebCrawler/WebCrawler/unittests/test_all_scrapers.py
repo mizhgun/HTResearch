@@ -70,6 +70,16 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test, keywords, "Keyword " + test + " not found or frequent enough")
 
+    def test_org_type_scraper(self):
+        p = subprocess.Popen('scrapy crawl org_type_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output, error = p.communicate()
+        types = output.splitlines()
+        types.pop()
+
+        assert_list = ['religious', 'government', 'protection']
+        for test in assert_list:
+            self.assertIn(test, types, 'Type \'' + test + '\' not found')
+
 if __name__ == '__main__':
     try:
         unittest.main()
