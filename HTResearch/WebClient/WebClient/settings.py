@@ -100,10 +100,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'htresearch.webclient.urls'
+ROOT_URLCONF = 'htresearch.WebClient.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'htresearch.webclient.wsgi.application'
+WSGI_APPLICATION = 'htresearch.WebClient.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".

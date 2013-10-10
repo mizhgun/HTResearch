@@ -1,5 +1,5 @@
 from scrapy.spider import BaseSpider
-from htresearch.webcrawler.webcrawler.scrapers.utility_scrapers import KeywordScraper
+from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import KeywordScraper
 import scrapy
 
 class KeywordScraperTest(BaseSpider):

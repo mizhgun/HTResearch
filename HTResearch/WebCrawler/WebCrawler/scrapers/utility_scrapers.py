@@ -1,5 +1,5 @@
 from scrapy.selector import HtmlXPathSelector
-from htresearch.webcrawler.webcrawler.items import *
+from HTResearch.WebCrawler.WebCrawler.items import *
 import re
 from nltk import FreqDist
 import os
@@ -59,7 +59,7 @@ class KeywordScraper:
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
         #Load words to be ignored
-        with open("stopwords.txt") as f:
+        with open("../Resources/stopwords.txt") as f:
             self.stopwords = f.readlines()
         for i in range(len(self.stopwords)):
             self.stopwords[i] = self.stopwords[i].strip()

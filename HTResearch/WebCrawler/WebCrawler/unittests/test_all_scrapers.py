@@ -5,7 +5,7 @@ import os
 
 class ScraperTests(unittest.TestCase):
     def test_email_scraper(self):
-        # Runs the test spider and pipes the printed output to "output"
+        # Runs the Test spider and pipes the printed output to "output"
         os.chdir(os.path.join(os.pardir, os.pardir))
         p = subprocess.Popen('scrapy crawl email_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
@@ -37,7 +37,7 @@ class ScraperTests(unittest.TestCase):
             self.assertIn(test.lower(), urls, "URL " + test + " was not found")
 
     def test_keyword_scraper(self):
-        # Runs the test spider and pipes the printed output to "output"
+        # Runs the Test spider and pipes the printed output to "output"
         p = subprocess.Popen('scrapy crawl keyword_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
         # Splits the results based on automatically added characters
