@@ -1,5 +1,5 @@
 from scrapy.selector import HtmlXPathSelector
-from HTResearch.WebCrawler.WebCrawler.items import *
+from ..items import *
 import re
 from nltk import FreqDist
 import os
