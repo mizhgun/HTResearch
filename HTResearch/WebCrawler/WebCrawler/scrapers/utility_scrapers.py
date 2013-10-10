@@ -1,14 +1,10 @@
 from scrapy.selector import HtmlXPathSelector
-<<<<<<< HEAD
 from scrapy.contrib.loader import XPathItemLoader
 from nltk.stem.porter import PorterStemmer
 from scrapy.http import TextResponse
 import math
 from ..items import *
 import pdb
-=======
-from ..items import *
->>>>>>> R1_SeekingJustice
 import re
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
@@ -84,12 +80,8 @@ class IndianPhoneNumberScraper:
 
         return phone_nums_list
 
-<<<<<<< HEAD
-class OrgNameScraper:
-=======
 
 class NameScraper:
->>>>>>> R1_SeekingJustice
 
     def __init__(self):
         names = []
