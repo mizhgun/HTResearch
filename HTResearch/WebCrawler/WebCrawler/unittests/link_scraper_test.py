@@ -5,7 +5,9 @@ import os
 
 class LinkScraperTest(BaseSpider):
     name = "link_scraper_test"
-    start_urls = ["http://black.com/"]
+    start_urls = [
+        'http://www.black.com/'
+    ]
     scraper = None
 
     def __init__(self, *args, **kwargs):
