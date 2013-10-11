@@ -268,7 +268,7 @@ class USPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            number=ScrapedPhoneNumber()
+            number = ScrapedPhoneNumber()
             num = re.sub("\D", "", num)
             number["phone_number"] = num
             phone_nums_list.append(number)
