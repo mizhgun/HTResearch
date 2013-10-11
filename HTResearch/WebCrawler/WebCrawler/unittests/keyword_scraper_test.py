@@ -1,7 +1,7 @@
 from scrapy.spider import BaseSpider
 from ..scrapers.utility_scrapers import KeywordScraper
 import os
-import scrapy
+
 
 class KeywordScraperTest(BaseSpider):
     name = "keyword_scraper_test"
@@ -9,6 +9,9 @@ class KeywordScraperTest(BaseSpider):
     scraper = None
 
     def __init__(self, *args, **kwargs):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
         super(KeywordScraperTest, self).__init__(*args, **kwargs)
         self.scraper = KeywordScraper()
         if not os.path.exists("../Output/"):
@@ -18,6 +21,9 @@ class KeywordScraperTest(BaseSpider):
                 os.remove("../Output/keyword_scraper_output.txt")
             except OSError:
                 pass
+
+    def __del__(self):
+        os.chdir(self.savedPath)
 
     def parse(self, response):
         keywords = self.scraper.parse(response)

@@ -136,9 +136,10 @@ class IndianPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            item = ScrapedPhoneNumber()
-            item['phone_number'] = num
-            phone_nums_list.append(item)
+            number = ScrapedPhoneNumber()
+            num = re.sub("\D", "", num)
+            number["phone_number"] = num
+            phone_nums_list.append(number)
 
         return phone_nums_list
 
@@ -151,8 +152,14 @@ class NameScraper:
 
 class OrgAddressScraper:
     def __init__(self):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
         with open("../Resources/cities.txt") as f:
             self.cities = f.read().splitlines()
+
+    def __del__(self):
+        os.chdir(self.saved_path)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -386,8 +393,9 @@ class USPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            item = ScrapedPhoneNumber()
-            item['phone_number'] = num
-            phone_nums_list.append(item)
+            number = ScrapedPhoneNumber()
+            num = re.sub("\D", "", num)
+            number["phone_number"] = num
+            phone_nums_list.append(number)
 
         return phone_nums_list
