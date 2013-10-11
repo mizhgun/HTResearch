@@ -52,8 +52,12 @@ class ScraperTests(unittest.TestCase):
         urls = output.splitlines()
         urls = [x.lower() for x in urls]
 
-        assert_list = ["http://www.black.com/"
-                       ]
+        assert_list = [
+            'http://www.stoptrafficking.net/about',
+            'http://www.stoptrafficking.net/services/training',
+            'http://visit.unl.edu/',
+            'http://www.unl.edu/ucomm/prospective/',
+        ]
 
         for test in assert_list:
             self.assertIn(test.lower(), urls, "URL " + test + " was not found")
