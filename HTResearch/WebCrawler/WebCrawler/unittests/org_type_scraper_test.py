@@ -13,9 +13,6 @@ class OrgTypeScraperTest(BaseSpider):
     ]
 
     def __init__(self, *args, **kwargs):
-        self.saved_path = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
         super(OrgTypeScraperTest, self).__init__(*args, **kwargs)
         self.scraper = OrgTypeScraper()
         if not os.path.exists("../Output/"):
@@ -25,9 +22,6 @@ class OrgTypeScraperTest(BaseSpider):
                 os.remove("../Output/org_type_scraper_output.txt")
             except OSError:
                 pass
-
-    def __del__(self):
-        os.chdir(self.saved_path)
 
     def parse(self, response):
         types = self.scraper.parse(response)

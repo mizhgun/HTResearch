@@ -23,7 +23,7 @@ class KeywordScraperTest(BaseSpider):
                 pass
 
     def __del__(self):
-        os.chdir(self.saved_path)
+        os.chdir(self.savedPath)
 
     def parse(self, response):
         keywords = self.scraper.parse(response)

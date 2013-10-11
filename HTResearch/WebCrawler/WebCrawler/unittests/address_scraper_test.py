@@ -30,7 +30,7 @@ class AddressScraperTest(BaseSpider):
                 pass
 
     def __del__(self):
-        os.chdir(self.saved_path)
+        os.chdir(self.savedPath)
 
     def parse(self, response):
         addresses = self.scraper.parse(response)
