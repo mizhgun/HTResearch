@@ -1,5 +1,5 @@
 from scrapy.spider import BaseSpider
-from WebCrawler.scrapers.utility_scrapers import OrgTypeScraper
+from ..scrapers.utility_scrapers import OrgTypeScraper
 import os
 
 class OrgTypeScraperTest(BaseSpider):
