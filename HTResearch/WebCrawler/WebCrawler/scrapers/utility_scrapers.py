@@ -157,6 +157,9 @@ class OrgAddressScraper:
         with open("../Resources/cities.txt") as f:
             self.cities = f.read().splitlines()
 
+    def __del__(self):
+        os.chdir(self.saved_path)
+
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
 
