@@ -15,37 +15,71 @@ import string
 class ContactNameScraper:
 
     def __init__(self):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
         with open("../Resources/names.txt") as f:
             self.names = f.read().splitlines()
         self.titles = ['Mr', 'Mrs', 'Ms', 'Miss']
 
+    def __del__(self):
+        os.chdir(self.saved_path)
+
+    def append_words(self, append_to, source):
+        if not source:
+            return append_to
+
+        #Split each array into sentence, and those into words
+        for line in self.format_extracted_text(source):
+            line = string.lower(line)
+            for c in string.punctuation:
+                line = line.replace(c, "")
+                for word in line.split():
+                    if not word.isdigit():
+                        append_to.append(word)
+
+        return append_to
+
+    def format_extracted_text(self, l):
+        for i in range(len(l)):
+            l[i] = l[i].encode('ascii', 'ignore')
+        return l
+
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
 
-        body = hxs.select('//body//text()').extract()
+        #body = hxs.select('//body//text()').extract()
 
-        for i in range(len(body)):
-            body[i] = (body[i].encode('ascii', 'ignore')).strip()
-            #body[i] = "".join((char if char.isalnum() else " ") for char in body[i]).split()
-        body = filter(bool, body)
-        body = [x for x in body for i in x.split() if i in self.titles or i in self.names]
-        body = list(set(body))
+        #for i in range(len(body)):
+        #    body[i] = (body[i].encode('ascii', 'ignore')).strip()
+        #    #body[i] = "".join((char if char.isalnum() else " ") for char in body[i]).split()
+        #body = filter(bool, body)
+        #body = [x for x in body for i in x.split() if i in self.titles or i in self.names]
+        #body = list(set(body))
+        #
+        #names_list = []
+        #
+        ## get the first and last name, and if it's just <title> <first_name>, include the title
+        #for element in body:
+        #    split = element.split()
+        #    for split_element in split:
+        #        index = split.index(split_element)
+        #        if split_element in self.names:
+        #            if split_element != split[-1] and split[index+1][0].isupper() and split[index+1][1:].islower():
+        #                names_list.append(split_element + " " + split[index+1])
+        #                break
+        #        if len(split) <= 2:
+        #            if split_element in self.titles and split[index+1] in self.names:
+        #                names_list.append(split_element + " " + split[index+1])
+
+        elements = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'b', 'code', 'em', 'italic',
+                    'small', 'strong', 'div', 'span', 'li', 'th', 'td', 'a[contains(@href, "image")]']
+        all_words = []
+        for element in elements:
+            words = hxs.select('//'+element+'/text()').extract()
+            all_words = self.append_words(all_words, words)
+        pdb.set_trace()
 
         names_list = []
-
-        # get the first and last name, and if it's just <title> <first_name>, include the title
-        for element in body:
-            split = element.split()
-            for split_element in split:
-                index = split.index(split_element)
-                if split_element in self.names:
-                    if split_element != split[-1] and split[index+1][0].isupper() and split[index+1][1:].islower():
-                        names_list.append(split_element + " " + split[index+1])
-                        break
-                if len(split) <= 2:
-                    if split_element in self.titles and split[index+1] in self.names:
-                        names_list.append(split_element + " " + split[index+1])
-        pdb.set_trace()
         return names_list
 
 
