@@ -1,5 +1,6 @@
 from scrapy.spider import BaseSpider
 from WebCrawler.scrapers.utility_scrapers import OrgTypeScraper
+import os
 
 class OrgTypeScraperTest(BaseSpider):
     name = "org_type_scraper_test"
@@ -14,12 +15,20 @@ class OrgTypeScraperTest(BaseSpider):
     def __init__(self, *args, **kwargs):
         super(OrgTypeScraperTest, self).__init__(*args, **kwargs)
         self.scraper = OrgTypeScraper()
-        self.on = True
+        if not os.path.exists("../Output/"):
+            os.makedirs("../Output")
+        else:
+            try:
+                os.remove("../Output/org_type_scraper_output.txt")
+            except OSError:
+                pass
 
     def parse(self, response):
         types = self.scraper.parse(response)
 
-        for type in types:
-            print(type)
+        with open('../Output/org_type_scraper_output.txt', 'a') as f:
+            for type in types:
+                f.write(type + '\n')
+                print(type)
 
         return types
