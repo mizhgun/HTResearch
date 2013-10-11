@@ -136,9 +136,10 @@ class IndianPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            item = ScrapedPhoneNumber()
-            item['phone_number'] = num
-            phone_nums_list.append(item)
+            number = ScrapedPhoneNumber()
+            num = re.sub("\D", "", num)
+            number["phone_number"] = num
+            phone_nums_list.append(number)
 
         return phone_nums_list
 
@@ -267,8 +268,7 @@ class USPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            item = ScrapedPhoneNumber()
-            item['phone_number'] = num
-            phone_nums_list.append(item)
+            num = re.sub("\D", "", num)
+            phone_nums_list.append(num)
 
         return phone_nums_list
