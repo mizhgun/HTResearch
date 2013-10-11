@@ -1,19 +1,42 @@
 import unittest
+import pdb
+import subprocess
 import os
 import subprocess
 import json
 
 
 class ScraperTests(unittest.TestCase):
-    def test_email_scraper(self):
+    def test_address_scraper(self):
         # Runs the test spider and pipes the printed output to "output"
+        p = subprocess.Popen('scrapy crawl address_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output, error = p.communicate()
+
+        # Splits the results based on automatically added characters
+        addresses = output.splitlines()
+
+        # Hardcoded results based on the sites that were crawled
+        assert_list = ["Guwahati 781001",
+                       "Tuljapur 413601",
+                       "Hyderabad 500030",
+                       "Mumbai 400088",
+                       "New Delhi 110003",
+                       "Hyderabad 500002",
+                       "Mumbai 400064",
+                       "New Delhi 110019",
+                       "Mumbai 400052"]
+
+        for test in assert_list:
+            self.assertIn(test, addresses, test + " not found")
+
+    def test_email_scraper(self):
+        # Runs the Test spider and pipes the printed output to "output"
         os.chdir(os.path.join(os.pardir, os.pardir))
         p = subprocess.Popen('scrapy crawl email_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
 
         # Splits the results based on automatically added characters
         emails = output.splitlines()
-        emails = emails[:len(emails)-1]
 
         # Hardcoded results based on the sites that were crawled
         assert_list = ["sgnhrc@nic.in",
@@ -23,7 +46,7 @@ class ScraperTests(unittest.TestCase):
                        "tvarghese@bombayteenchallenge.org"]
 
         for test in assert_list:
-            self.assertIn(test, emails, "Email " + test + "not found")
+            self.assertIn(test, emails, "Email " + test + " not found")
 
     def test_link_scraper(self):
         p = subprocess.Popen('scrapy crawl link_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -31,8 +54,12 @@ class ScraperTests(unittest.TestCase):
         urls = output.splitlines()
         urls = [x.lower() for x in urls]
 
-        assert_list = ["http://www.black.com/"
-                       ]
+        assert_list = [
+            'http://www.stoptrafficking.net/about',
+            'http://www.stoptrafficking.net/services/training',
+            'http://visit.unl.edu/',
+            'http://www.unl.edu/ucomm/prospective/',
+        ]
 
         for test in assert_list:
             self.assertIn(test.lower(), urls, "URL " + test + " was not found")
@@ -40,19 +67,22 @@ class ScraperTests(unittest.TestCase):
     def test_organization_scraper(self):
         p = subprocess.Popen('scrapy crawl organization_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
-        """assert_value = {
-            'name': 'Bombay Teen Challenge',
-            'address': '7742 Spalding Drive',
-            'types': [ 'religious' ],
-            'phone_number': '+1 615.712.4863',
-            'email': 'tvarghese@bombayteenchallenge.org',
-            'contacts': [],
-            'organization_url': 'https://bombayteenchallenge.org/',
-            'partners': [],
-        }"""
+
         organization = json.loads(output)
 
         # TODO: Assert equality
+
+    def test_keyword_scraper(self):
+        # Runs the Test spider and pipes the printed output to "output"
+        p = subprocess.Popen('scrapy crawl keyword_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output, error = p.communicate()
+        # Splits the results based on automatically added characters
+        keywords = output.splitlines()
+        keywords = keywords[:len(keywords)-1]
+
+        assert_list = ["nicolas", "cage"]
+        for test in assert_list:
+            self.assertIn(test, keywords, "Keyword " + test + " not found or frequent enough")
 
 if __name__ == '__main__':
     try:

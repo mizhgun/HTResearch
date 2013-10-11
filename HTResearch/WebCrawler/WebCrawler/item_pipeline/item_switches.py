@@ -35,9 +35,9 @@ class ItemSwitch(object):
 
     @staticmethod
     def _store_contact(scraped_contact):
-        # item to model
+        # item to Model
         contact = ModelConverter.to_model(Contact, scraped_contact)
-        # model to dto...
+        # Model to dto...
         contact_dto = DTOConverter.to_dto(ContactDTO, contact)
         # get dao
         dao = DAOFactory.get_instance(ContactDAO)
@@ -46,9 +46,9 @@ class ItemSwitch(object):
 
     @staticmethod
     def _store_organization(scraped_org):
-        # item to model
+        # item to Model
         org = ModelConverter.to_model(Organization, scraped_org)
-        # model to dto...
+        # Model to dto...
         org_dto = DTOConverter.to_dto(OrganizationDTO, org)
         # get dao
         dao = DAOFactory.get_instance(OrganizationDAO)
@@ -57,9 +57,9 @@ class ItemSwitch(object):
 
     @staticmethod
     def _store_publication(scraped_pub):
-        # item to model
+        # item to Model
         pub = ModelConverter.to_model(Publication, scraped_pub)
-        # model to dto...
+        # Model to dto...
         pub_dto = DTOConverter.to_dto(PublicationDTO, pub)
         # get dao
         dao = DAOFactory.get_instance(PublicationDAO)

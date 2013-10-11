@@ -1,4 +1,5 @@
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy import log
 from ..items import ScrapedUrl
 
 class LinkScraper:
@@ -9,7 +10,7 @@ class LinkScraper:
 
     def parse(self, response):
         """Scrape a spider's HttpRequest.Response for links"""
-        
+
         # sanity check
         if self._link_extractor is None:
             self._link_extractor = SgmlLinkExtractor()
