@@ -4,6 +4,8 @@ from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request, TextResponse
+import os
+import pdb
 
 
 class BasicCrawlSpider(BaseSpider):
@@ -33,10 +35,24 @@ class StopTraffickingSpider(BaseSpider):
     start_urls = ['http://www.stoptrafficking.in/Directory.aspx']
 
     def __init__(self, *args, **kwargs):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
         super(StopTraffickingSpider, self).__init__(*args, **kwargs)
         self.scraper = StopTraffickingDotInScraper()
         self.first = True
         self.directory_results = None
+
+        if not os.path.exists("Output/"):
+            os.makedirs("Output/")
+        else:
+            try:
+                os.remove("Output/specific_page_scraper_output.txt")
+            except OSError:
+                pass
+
+    def __del__(self):
+        os.chdir(self.saved_path)
 
     def parse(self, response):
         """Parse this super specific page"""
@@ -51,12 +67,15 @@ class StopTraffickingSpider(BaseSpider):
             return [Request(result.popup_url) for result in results]
 
         # grab corresponding table entry 
-        table_entry =  next(entry for entry in self.directory_results if entry.popup_url == response.url)
+        table_entry = next(entry for entry in self.directory_results if entry.popup_url == response.url)
 
         # cleanup
         if table_entry is not None:
             self.directory_results.remove(table_entry)
 
         items = self.scraper.parse_popup(response, table_entry)
+
+        with open("Output/specific_page_scraper_output.txt", 'a') as f:
+            f.write(str(items) + "\n\n")
 
         return items
