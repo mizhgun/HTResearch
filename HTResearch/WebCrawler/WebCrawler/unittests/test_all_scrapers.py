@@ -64,14 +64,6 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test.lower(), urls, "URL " + test + " was not found")
 
-    def test_organization_scraper(self):
-        p = subprocess.Popen('scrapy crawl organization_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        output, error = p.communicate()
-
-        organization = json.loads(output)
-
-        # TODO: Assert equality
-
     def test_keyword_scraper(self):
         # Runs the Test spider and pipes the printed output to "output"
         p = subprocess.Popen('scrapy crawl keyword_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -83,6 +75,31 @@ class ScraperTests(unittest.TestCase):
         assert_list = ["nicolas", "cage"]
         for test in assert_list:
             self.assertIn(test, keywords, "Keyword " + test + " not found or frequent enough")
+
+    def test_organization_scraper(self):
+        p = subprocess.Popen('scrapy crawl organization_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output, error = p.communicate()
+        print(output)
+        orgs = json.loads(output)
+        assert_list = [
+            {
+                'name': 'Bombay Teen Challenge',
+                'types': ['religious'],
+                'phone_number': '+91 22 2604 2242',
+                'email': 'kkdevaraj@bombayteenchallenge.org',
+                'contacts': None,
+                'organization_url': 'https://bombayteenchallenge.org',
+                'partners': None,
+            }
+        ]
+
+        for test in assert_list:
+            match = True
+            for org in orgs:
+                for attr in test.iterkeys():
+                    if attr not in org or not org[attr] not in test[attr]:
+                        match = False
+            self.assertTrue(match, 'IT FAILED YOU IDIOT')
 
 if __name__ == '__main__':
     try:

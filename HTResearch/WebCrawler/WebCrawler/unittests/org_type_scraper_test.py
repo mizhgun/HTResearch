@@ -2,8 +2,8 @@ from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http import TextResponse
 #from scrapy import log
-from WebCrawler.scrapers.utility_scrapers import EmailScraper, OrgTypeScraper
-from WebCrawler.items import ScrapedEmail
+from ..scrapers.utility_scrapers import EmailScraper, OrgTypeScraper
+from ..items import ScrapedEmail
 import scrapy
 import pdb
 
