@@ -1,6 +1,6 @@
 from scrapy.spider import BaseSpider
-#from scrapy import log
 from ..scrapers.utility_scrapers import OrgAddressScraper
+import os
 import pdb
 
 
@@ -16,13 +16,28 @@ class AddressScraperTest(BaseSpider):
     #start_urls = ["http://www.aawc.in/contact_us.html"]
 
     def __init__(self, *args, **kwargs):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
         super(AddressScraperTest, self).__init__(*args, **kwargs)
         self.scraper = OrgAddressScraper()
+        if not os.path.exists("../Output/"):
+            os.makedirs("../Output")
+        else:
+            try:
+                os.remove("../Output/address_scraper_output.txt")
+            except OSError:
+                pass
+
+    def __del__(self):
+        os.chdir(self.savedPath)
 
     def parse(self, response):
         addresses = self.scraper.parse(response)
-        for element in addresses:
-            #print('{:<15}'.format(element["city"]) + " " + element["zip_code"])
-            print(element["city"] + " " + element["zip_code"])
+
+        with open("../Output/address_scraper_output.txt", 'a') as f:
+            for element in addresses:
+                f.write(element["city"] + " " + element["zip_code"] + "\n")
+                print(element["city"] + " " + element["zip_code"])
 
         return addresses

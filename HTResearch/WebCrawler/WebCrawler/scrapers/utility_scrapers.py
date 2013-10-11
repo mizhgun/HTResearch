@@ -1,8 +1,11 @@
+from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
 from ..items import *
 import itertools
-import pdb
 import re
+from urlparse import urlparse
+import os
+import string
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
@@ -133,9 +136,10 @@ class IndianPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            item = ScrapedPhoneNumber()
-            item['phone_number'] = num
-            phone_nums_list.append(item)
+            number = ScrapedPhoneNumber()
+            num = re.sub("\D", "", num)
+            number["phone_number"] = num
+            phone_nums_list.append(number)
 
         return phone_nums_list
 
@@ -148,8 +152,14 @@ class NameScraper:
 
 class OrgAddressScraper:
     def __init__(self):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
         with open("../Resources/cities.txt") as f:
             self.cities = f.read().splitlines()
+
+    def __del__(self):
+        os.chdir(self.saved_path)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -211,8 +221,127 @@ class OrgPartnersScraper:
 class OrgTypeScraper:
 
     def __init__(self):
-        types = []
+        # Stemmer for stemming terms
+        self._stemmer = PorterStemmer()
+        # Scraper to get common keywords from response
+        self._keyword_scraper = KeywordScraper()
+        # Maximum number of types
+        self._max_types = 3
+        # Obvious religious keywords. These must be lowercase
+        self._religion_words = ['god', 'spiritual', 'religion', 'worship', 'church', 'prayer']
+        # Regex for url of government websites
+        self._government_detector = r'^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[Gg][Oo][Vv](\.[a-zA-Z]{2})?$'
+        # Lowest (highest number) rank a keyword can have and still count towards determining organization type
+        self._max_rank = 40
+        # Keywords to look for for other types. These must be lowercase
+        self._type_words = {
+            'education': [
+                'education',
+                'school',
+                'study',
+                'teach',
+            ],
+            'advocacy': [
+                'advocacy',
+                'lobby',
+                'policy',
+            ],
+            'research': [
+                'research',
+                'conduct',
+                'document',
+                'identify',
+                'analyze',
+                'correlate',
+                'compile',
+                'report',
+                'data',
+                'publication',
+                'journal',
+                'periodical',
+                'newsletter',
+            ],
+            'prevention': [
+                'prevention',
+                'intervention',
+                'education',
+                'development',
+                'community',
+                'ownership',
+            ],
+            'protection': [
+                'protection',
+                'rescue',
+                'rehabilitation',
+                'reintegration',
+                'repatriation',
+                'empowerment',
+                'repatriation',
+                'fulfilment',
+                'freedom',
+                'opportunity',
+                'women',
+            ],
+            'prosecution': [
+                'prosecution',
+                'compliance',
+                'abolish',
+                'law',
+                'enforcement',
+                'regulatory',
+                'regulation',
+                'justice',
+            ],
+        }
 
+        # Stem search words (religious, general)
+        self._religion_words = [self._stemmer.stem(word) for word in self._religion_words]
+        for key in self._type_words.iterkeys():
+            self._type_words[key] = [self._stemmer.stem(word) for word in self._type_words[key]]
+
+    # Find the minimum index of a term from a search list in a list
+    @staticmethod
+    def _min_index_found(listwords, searchwords):
+        index = float('inf')
+        for word in searchwords:
+            if word in listwords:
+                index = min(index, listwords.index(word))
+        return index
+    
+    # Get the organization type
+    def parse(self, response):
+            
+        # Get keywords
+        keywords = list(self._stemmer.stem(word) for word in self._keyword_scraper.parse(response))
+
+        # Get all words
+        all_words = []
+        hxs = HtmlXPathSelector(response)
+        elements = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'b', 'code', 'em', 'italic',
+                    'small', 'strong', 'div', 'span', 'li', 'th', 'td', 'a[contains(@href, "image")]']
+        for element in elements:
+            words = hxs.select('//'+element+'/text()').extract()
+            self._keyword_scraper.append_words(all_words, words)
+
+        all_words = list(set(self._stemmer.stem(word) for word in all_words))
+
+        types = []
+        # Government: check the URL
+        if re.search(self._government_detector, urlparse(response.url).netloc):
+            types.append('government')
+        # Religion: check for the appearance of certain religious terms
+        # (this means that government and religion types are mutually exclusive)
+        elif any(word in self._religion_words for word in all_words):
+            types.append('religious')
+        # Other types
+        for type in self._type_words.iterkeys():
+            rank = self._min_index_found(keywords, self._type_words[type])
+            if rank < self._max_rank:
+                types.append(type)
+            if len(types) >= self._max_types:
+                break
+
+        return types or ['unknown']
 
 class PublicationAuthorsScraper:
 
@@ -264,8 +393,9 @@ class USPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            item = ScrapedPhoneNumber()
-            item['phone_number'] = num
-            phone_nums_list.append(item)
+            number = ScrapedPhoneNumber()
+            num = re.sub("\D", "", num)
+            number["phone_number"] = num
+            phone_nums_list.append(number)
 
         return phone_nums_list

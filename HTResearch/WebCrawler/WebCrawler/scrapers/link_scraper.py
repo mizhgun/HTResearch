@@ -11,7 +11,7 @@ class LinkScraper:
 
     def parse(self, response):
         """Scrape a spider's HttpRequest.Response for links"""
-        
+
         # sanity check
         if self._link_extractor is None:
             self._link_extractor = SgmlLinkExtractor()
