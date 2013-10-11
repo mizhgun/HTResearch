@@ -151,8 +151,14 @@ class NameScraper:
 
 class OrgAddressScraper:
     def __init__(self):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
         with open("../Resources/cities.txt") as f:
             self.cities = f.read().splitlines()
+
+    def __del__(self):
+        os.chdir(self.saved_path)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
