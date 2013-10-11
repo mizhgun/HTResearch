@@ -9,6 +9,9 @@ class PhoneNumberScraperTest(BaseSpider):
     scraper = None
 
     def __init__(self, *args, **kwargs):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
         super(PhoneNumberScraperTest, self).__init__(*args, **kwargs)
         self.scraper = IndianPhoneNumberScraper()
         if not os.path.exists("../Output/"):
@@ -18,6 +21,9 @@ class PhoneNumberScraperTest(BaseSpider):
                 os.remove("../Output/phone_number_scraper_output.txt")
             except OSError:
                 pass
+
+    def __del__(self):
+        os.chdir(self.saved_path)
 
     def parse(self, response):
         numbers = self.scraper.parse(response)
