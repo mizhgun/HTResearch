@@ -82,7 +82,7 @@ class ScraperTests(unittest.TestCase):
         numbers = output.splitlines()
         numbers = numbers[:len(numbers)-1]
 
-        assert_list = [0402026070, 9435134726]
+        assert_list = ["0402026070", "9435134726"]
         for test in assert_list:
             self.assertIn(test, numbers, "Phone number " + str(test) + " not found")
 
