@@ -1,14 +1,52 @@
 from scrapy.selector import HtmlXPathSelector
 from ..items import *
 import itertools
+import os
+from nltk import FreqDist
+import nltk
 import pdb
 import re
-import os
 import string
-from nltk import FreqDist
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
+
+
+class ContactNameScraper:
+
+    def __init__(self):
+        with open("../Resources/names.txt") as f:
+            self.names = f.read().splitlines()
+        self.titles = ['Mr', 'Mrs', 'Ms', 'Miss']
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+
+        body = hxs.select('//body//text()').extract()
+
+        for i in range(len(body)):
+            body[i] = (body[i].encode('ascii', 'ignore')).strip()
+            #body[i] = "".join((char if char.isalnum() else " ") for char in body[i]).split()
+        body = filter(bool, body)
+        body = [x for x in body for i in x.split() if i in self.titles or i in self.names]
+        body = list(set(body))
+
+        names_list = []
+
+        # get the first and last name, and if it's just <title> <first_name>, include the title
+        for element in body:
+            split = element.split()
+            for split_element in split:
+                index = split.index(split_element)
+                if split_element in self.names:
+                    if split_element != split[-1] and split[index+1][0].isupper() and split[index+1][1:].islower():
+                        names_list.append(split_element + " " + split[index+1])
+                        break
+                if len(split) <= 2:
+                    if split_element in self.titles and split[index+1] in self.names:
+                        names_list.append(split_element + " " + split[index+1])
+        pdb.set_trace()
+        return names_list
 
 
 class ContactPositionScraper:
@@ -56,22 +94,50 @@ class EmailScraper:
 
         return email_list
 
+
+class IndianPhoneNumberScraper:
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+        india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?[0-9]{5}[0-9]?\b')
+        # body will get phone numbers that are just text in the body
+        body = hxs.select('//body').re(india_format_regex)
+
+        phone_nums = body
+
+        # Remove unicode indicators
+        for i in range(len(phone_nums)):
+            phone_nums[i] = phone_nums[i].encode('ascii','ignore')
+
+        # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
+        phone_nums = list(set(phone_nums))
+
+        # Make the list an item
+        phone_nums_list = []
+        for num in phone_nums:
+            item = ScrapedPhoneNumber()
+            item['phone_number'] = num
+            phone_nums_list.append(item)
+
+        return phone_nums_list
+
+
 class KeywordScraper:
     NUM_KEYWORDS = 50
     stopwords = []
+
     def __init__(self):
-        self.savedPath = os.getcwd()
+        self.saved_path = os.getcwd()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
         #Load words to be ignored
         with open("../Resources/stopwords.txt") as f:
             self.stopwords = f.read().splitlines()
 
-    def __del__( self ):
-        os.chdir( self.savedPath )
+    def __del__(self):
+        os.chdir(self.saved_path)
 
     def format_extracted_text(self, list):
-
         for i in range(len(list)):
             list[i] = list[i].encode('ascii','ignore')
         return list
@@ -116,38 +182,6 @@ class KeywordScraper:
         most_freq_keywords = parsed_keywords[:self.NUM_KEYWORDS]
         return most_freq_keywords
 
-class IndianPhoneNumberScraper:
-    
-    def parse(self, response):
-        hxs = HtmlXPathSelector(response)
-        india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?[0-9]{5}[0-9]?\b')
-        # body will get phone numbers that are just text in the body
-        body = hxs.select('//body').re(india_format_regex)
-
-        phone_nums = body 
-
-        # Remove unicode indicators
-        for i in range(len(phone_nums)):
-            phone_nums[i] = phone_nums[i].encode('ascii','ignore')
-
-        # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
-        phone_nums = list(set(phone_nums))
-
-        # Make the list an item
-        phone_nums_list = []
-        for num in phone_nums:
-            item = ScrapedPhoneNumber()
-            item['phone_number'] = num
-            phone_nums_list.append(item)
-
-        return phone_nums_list
-
-
-class NameScraper:
-
-    def __init__(self):
-        self.names = []
-
 
 class OrgAddressScraper:
     def __init__(self):
@@ -161,7 +195,7 @@ class OrgAddressScraper:
         for i in range(len(body)):
             body[i] = (body[i].encode('ascii', 'ignore')).strip()
             body[i] = "".join((char if char.isalnum() else " ") for char in body[i]).split()
-        body = list(self.flatten(body))
+        body = list(flatten(body))
 
         # This loop will check if city is in the body, if it is, find all occurrences of that city in the body,
         # and then it will check all the occurring indices, and if the next index (or next 2 indices) is the zip code
@@ -193,16 +227,21 @@ class OrgAddressScraper:
             address_list.append(item)
         return address_list
 
-    @staticmethod
-    def flatten(l):
-        # Flatten one level of nesting
-        return itertools.chain.from_iterable(l)
-
 
 class OrgContactsScraper:
 
     def __init__(self):
         self.contacts = []
+
+
+class OrgNameScraper:
+
+    def __init__(self):
+        self.names = []
+
+    def parse(self, response):
+        names_list = []
+        return names_list
 
 
 class OrgPartnersScraper:
@@ -272,3 +311,8 @@ class USPhoneNumberScraper:
             phone_nums_list.append(item)
 
         return phone_nums_list
+
+
+def flatten(l):
+    # Flatten one level of nesting
+    return itertools.chain.from_iterable(l)
