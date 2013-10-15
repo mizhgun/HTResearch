@@ -1,32 +1,52 @@
 from urlparse import urljoin
+from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import LinkScraper
 
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request, TextResponse
+from scrapy import log
 import os
 import pdb
 
 
 class BasicCrawlSpider(BaseSpider):
     name = 'ht_research'
-    allowed_domains = ['shaktivahini.org']
-    start_urls = ['http://www.shaktivahini.org/']
+    # empty list means all domains allowed
+    allowed_domains = []
+    start_urls = []
+    link_scraper = LinkScraper()
+
+    def start_requests(self):
+        """
+        This method is called once by Scrapy to kick things off.
+        We will get the first url to crawl from this.
+        """
+
+        # first URL to begin crawling
+        # TODO: use the actual URL Frontier, for now use test data
+        # start_url = url_frontier.next_url()
+        start_url = 'http://www.shaktivahini.org/'
+
+        if __debug__:
+            log.msg('START_REQUESTS : start_url = %s' % start_url)
+
+        request = Request(start_url, dont_filter=True)
+
+        # Scrapy is expecting a list of Item/Requests, so use yield
+        yield request
 
     def parse(self, response):
         if isinstance(response, TextResponse):
-            hxs = HtmlXPathSelector(response)
-            links = hxs.select('//a')
-            urls = []
-            # Get unique urls from links
+            links = self.link_scraper.parse(response)
+            # Note: These links are ScrapedURL Items, NOT Requests
             for link in links:
-                hrefs = link.select('@href').extract()
-                for href in hrefs:
-                    url = urljoin(response.url, href)
-                    if url not in urls:
-                        urls.append(url)
+                yield link
 
-            return [ Request(url) for url in urls ]
+        # TODO: Yield the next url from URL Frontier
+        # yield Request(url_frontier.next_url())
+        for link in links:
+            yield Request(link['url'], dont_filter=True)
 
 
 class StopTraffickingSpider(BaseSpider):
