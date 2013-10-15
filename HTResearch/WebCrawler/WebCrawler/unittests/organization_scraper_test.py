@@ -24,10 +24,10 @@ class OrganizationScraperTest(BaseSpider):
                 pass
 
     def parse(self, response):
-        orgs = self.scraper.parse(response)
+        org = self.scraper.parse(response)
         with open("../Output/organization_scraper_output.txt", 'a') as f:
-            json_str = json.dumps(orgs)
-            f.write(json.dumps(orgs))
-            print(json_str)
+            string = str(org)
+            f.write(string)
+            print(string)
 
-        return orgs
+        return org

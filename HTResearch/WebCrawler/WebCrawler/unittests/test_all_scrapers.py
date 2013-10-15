@@ -4,7 +4,7 @@ import subprocess
 import os
 import subprocess
 import json
-
+import ast
 
 class ScraperTests(unittest.TestCase):
     def test_address_scraper(self):
@@ -31,7 +31,6 @@ class ScraperTests(unittest.TestCase):
 
     def test_email_scraper(self):
         # Runs the Test spider and pipes the printed output to "output"
-        os.chdir(os.path.join(os.pardir, os.pardir))
         p = subprocess.Popen('scrapy crawl email_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
 
@@ -80,26 +79,46 @@ class ScraperTests(unittest.TestCase):
         p = subprocess.Popen('scrapy crawl organization_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
         print(output)
-        orgs = json.loads(output)
-        assert_list = [
-            {
-                'name': 'Bombay Teen Challenge',
-                'types': ['religious'],
-                'phone_number': '+91 22 2604 2242',
-                'email': 'kkdevaraj@bombayteenchallenge.org',
-                'contacts': None,
-                'organization_url': 'https://bombayteenchallenge.org',
-                'partners': None,
-            }
-        ]
+        org = ast.literal_eval(output)
+        assert_val = {
+            'name': 'Bombay Teen Challenge',
+            'types': ['religious'],
+            'phone_number': '+91 22 2604 2242',
+            'email': 'kkdevaraj@bombayteenchallenge.org',
+            'contacts': None,
+            'organization_url': 'https://bombayteenchallenge.org',
+            'partners': None,
+        }
 
+        for attr in assert_val.iterkeys():
+            self.assertIn(attr, org, 'Organization does not match')
+            if type(assert_val[attr]) == list:
+                for item in assert_val[attr]:
+                    self.assertIn(item, org[attr], 'Organization does not match')
+            else:
+                self.assertEqual(assert_val[attr], org[attr], 'Organization does not match')
+
+    def test_org_type_scraper(self):
+        p = subprocess.Popen('scrapy crawl org_type_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output, error = p.communicate()
+        types = output.splitlines()
+        types.pop()
+
+        assert_list = ['religious', 'government', 'protection']
         for test in assert_list:
-            match = True
-            for org in orgs:
-                for attr in test.iterkeys():
-                    if attr not in org or not org[attr] not in test[attr]:
-                        match = False
-            self.assertTrue(match, 'IT FAILED YOU IDIOT')
+            self.assertIn(test, types, 'Type \'' + test + '\' not found')
+
+    def test_phone_number_scraper(self):
+        # Runs the Test spider and pipes the printed output to "output"
+        p = subprocess.Popen('scrapy crawl phone_number_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output, error = p.communicate()
+        # Splits the results based on automatically added characters
+        numbers = output.splitlines()
+        numbers = numbers[:len(numbers)-1]
+
+        assert_list = ["0402026070", "9435134726"]
+        for test in assert_list:
+            self.assertIn(test, numbers, "Phone number " + str(test) + " not found")
 
 if __name__ == '__main__':
     try:

@@ -20,13 +20,9 @@ class OrganizationScraper:
 
     def parse(self, response):
         organization = ScrapedOrganization()
-        print('BEFORE')
         for field in self._scrapers.iterkeys():
-            print(field)
             if self._scrapers[field]:
                 organization[field] = self._scrapers[field].parse(response)
-                print(organization[field])
-        print('AFTER')
         return organization
 
 
