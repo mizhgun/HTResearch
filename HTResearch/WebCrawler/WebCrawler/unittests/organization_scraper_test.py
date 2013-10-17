@@ -1,7 +1,5 @@
 from scrapy.spider import BaseSpider
-from ..scrapers.link_scraper import LinkScraper
 import os
-import json
 from ..scrapers.document_scrapers import OrganizationScraper
 
 
