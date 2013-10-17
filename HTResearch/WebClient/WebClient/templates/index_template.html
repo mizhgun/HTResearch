@@ -2,29 +2,48 @@
 <html>
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <style type="text/css">
-      html { height: 100% }
-      body { height: 100%; margin: 0; padding: 0 }
-      #map-canvas { height: 100% }
-    </style>
-    <script type="text/javascript"
-      src="https://maps.googleapis.com/maps/api/js?key={{key}}&sensor=false">
-    </script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{key}}&sensor=false"></script>
+    <link href="static/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/index.css" rel="stylesheet">
     <script type="text/javascript">
       function initialize() {
         var mapOptions = {
           center: new google.maps.LatLng(21, 78),
           zoom: 5,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          panControl: false,
+          zoomControl: false,
+          scaleControl: false,
         };
-        var map = new google.maps.Map(document.getElementById("map-canvas"),
-            mapOptions);
+
+        var map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
+        //var mapControls = new GLargeMapControl3D();
+        //var bottomLeft = new GControlPosition(G_ANCHOR_BOTTOM_LEFT, new GSize(10,10));
+        //map.removeControl(mapTypeControl)
+        //map.addControl(mapControls, bottomLeft);
       }
+
       google.maps.event.addDomListener(window, 'load', initialize);
     </script>
   </head>
+
   <body>
-    <div>Testing</div>
-    <div id="map-canvas"/>
+    <div id="wrapper">
+        <button id="get-started-btn" type="button" class="btn btn-lg btn-primary">Get started</button>
+        <button id="laws-by-region-btn" type="button" class="btn btn-lg btn-default">Laws by Region</button>
+        <div id="login-signup-div" class="jumbotron">
+            <button id="login-btn" type="button" class="btn btn-lg btn-primary">Login</button>
+            <button id="signup-btn" type="button" class="btn btn-lg btn-default">Sign Up</button>
+
+            <form id="custom-search-form" class="form-search form-horizontal pull-right">
+                <div class="input-append span12">
+                    <input type="text" class="search-query" placeholder="Search">
+                    <button type="submit" class="btn"><i class="icon-search"></i></button>
+                </div>
+            </form>
+        </div>
+        <div id="map-canvas"/>
+    </div>
   </body>
+
 </html>
