@@ -26,7 +26,7 @@ class LinkScraperTest(BaseSpider):
                 pass
 
     def __del__(self):
-        os.chdir(self.savedPath)
+        os.chdir(self.saved_path)
 
     def parse(self, response):
         links = self.scraper.parse(response)
