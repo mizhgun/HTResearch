@@ -8,21 +8,22 @@ class Contact:
 
 class OrganizationScraper:
     _scrapers = {
-        'name': None,
-        'address': OrgAddressScraper(),
-        'types': OrgTypeScraper(),
-        'phone_number': USPhoneNumberScraper(),
-        'email': EmailScraper(),
-        'contacts': None,
-        'organization_url': None,
-        'partners': None,
+        'name': [],
+        'address': [OrgAddressScraper()],
+        'types': [OrgTypeScraper()],
+        'phone_number': [USPhoneNumberScraper(), IndianPhoneNumberScraper()],
+        'email': [EmailScraper()],
+        'contacts': [],
+        'organization_url': [],
+        'partners': [],
     }
 
     def parse(self, response):
         organization = ScrapedOrganization()
         for field in self._scrapers.iterkeys():
-            if self._scrapers[field]:
-                organization[field] = self._scrapers[field].parse(response)
+            organization[field] = []
+            for scraper in self._scrapers[field]:
+                organization[field] += scraper.parse(response)
         return organization
 
 
