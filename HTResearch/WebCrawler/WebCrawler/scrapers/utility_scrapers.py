@@ -33,10 +33,10 @@ class EmailScraper:
 
         # body will get emails that are just text in the body
         body = hxs.select('//body').re(email_regex)
-        
+
         # hrefs will get emails from hrefs
         hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(email_regex)
-        
+
         emails = body+hrefs
 
         # Take out the unicode or whatever, and substitute [at] for @ and [dot] for .
@@ -75,7 +75,7 @@ class KeywordScraper:
         for i in range(len(list)):
             list[i] = list[i].encode('ascii','ignore')
         return list
-            
+
     def append_words(self, append_to, source):
         if not source:
             return append_to
@@ -90,7 +90,7 @@ class KeywordScraper:
                         append_to.append(word)
 
         return append_to
-            
+
     def parse(self, response):
         all_words = []
 
@@ -117,14 +117,14 @@ class KeywordScraper:
         return most_freq_keywords
 
 class IndianPhoneNumberScraper:
-    
+
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
         india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?[0-9]{5}[0-9]?\b')
         # body will get phone numbers that are just text in the body
         body = hxs.select('//body').re(india_format_regex)
 
-        phone_nums = body 
+        phone_nums = body
 
         # Remove unicode indicators
         for i in range(len(phone_nums)):
@@ -147,7 +147,19 @@ class IndianPhoneNumberScraper:
 class NameScraper:
 
     def __init__(self):
-        self.names = []
+        pass
+
+    def parse(self, response):
+        return [] # not yet implemented
+
+
+class OrgNameScraper:
+
+    def __init__(self):
+        pass
+
+    def parse(self, response):
+        return []
 
 
 class OrgAddressScraper:
@@ -209,13 +221,32 @@ class OrgAddressScraper:
 class OrgContactsScraper:
 
     def __init__(self):
-        self.contacts = []
+        pass
+
+    def parse(self, response):
+        return [] # not yet implemented
+
+
+class OrgUrlScraper:
+
+    def __init__(self):
+        pass
+
+    def parse(self, response):
+        parse = urlparse(response.url)
+        urls = [
+            '%s://%s/' % (parse.scheme, parse.netloc),
+        ]
+        return urls
 
 
 class OrgPartnersScraper:
 
     def __init__(self):
-        self.partners = []
+        pass
+
+    def parse(self, response):
+        return [] # not yet implemented
 
 
 class OrgTypeScraper:
@@ -307,10 +338,10 @@ class OrgTypeScraper:
             if word in listwords:
                 index = min(index, listwords.index(word))
         return index
-    
+
     # Get the organization type
     def parse(self, response):
-            
+
         # Get keywords
         keywords = list(self._stemmer.stem(word) for word in self._keyword_scraper.parse(response))
 
@@ -374,14 +405,14 @@ class PublicationTypeScraper:
 
 
 class USPhoneNumberScraper:
-           
+
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
         us_format_regex = re.compile(r'\b(?! )1?\s?[(-./]?\s?[2-9][0-8][0-9]\s?[)-./]?\s?[2-9][0-9]{2}\s?\W?\s?[0-9]{4}\b')
         # body will get phone numbers that are just text in the body
         body = hxs.select('//body').re(us_format_regex)
 
-        phone_nums = body 
+        phone_nums = body
 
         # Remove unicode indicators
         for i in range(len(phone_nums)):

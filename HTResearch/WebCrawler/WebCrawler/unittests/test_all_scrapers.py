@@ -80,9 +80,7 @@ class ScraperTests(unittest.TestCase):
         output, error = p.communicate()
         org = ast.literal_eval(output)
         assert_val = {
-            'name': [
-                #'Bombay Teen Challenge', # not yet implemented
-            ],
+            'name': [], #'Bombay Teen Challenge', # not yet implemented
             'types': [
                 'religious',
                 'protection',
@@ -103,9 +101,7 @@ class ScraperTests(unittest.TestCase):
             'contacts': [
                 # not yet implemented
             ],
-            'organization_url': [
-                #'https://bombayteenchallenge.org', # not yet implemented
-            ],
+            'organization_url': 'https://bombayteenchallenge.org/',
             'partners': [
                 # not yet implemented
             ],
