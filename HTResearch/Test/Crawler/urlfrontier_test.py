@@ -63,3 +63,10 @@ class URLFrontierTest(unittest.TestCase):
 
         self.assertEqual(next_url, "http://test2.com")
         self.assertEqual(len(frontier), 0)
+
+if __name__ == '__main__':
+    try:
+        unittest.main()
+    except SystemExit as inst:
+        if inst.args[0]:
+            raise
