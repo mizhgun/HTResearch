@@ -38,7 +38,7 @@ class ScrapedOrganization(Item):
 
 
 class ScrapedPhoneNumber(Item):
-    phone_number = Field()
+    phone_number=Field()
 
 
 class ScrapedPublication(Item):
