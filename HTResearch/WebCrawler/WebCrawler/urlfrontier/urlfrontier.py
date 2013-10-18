@@ -16,8 +16,7 @@ class URLFrontier(object):
         self._size = 0
         self._populate()
 
-    @property
-    def size(self):
+    def __len__(self):
         return self._size
 
     @property
@@ -30,13 +29,10 @@ class URLFrontier(object):
         finally:
             self._size -= 1
 
-    @property
-    def urls(self):
-        return self._urls
-
     def put_url(self, url):
         try:
             self._urls.put(url)
+            self._size += 1
         except Full:
             url_obj = URLMetadata(url=url)
             url_dto = DTOConverter.to_dto(URLMetadataDTO, url_obj)

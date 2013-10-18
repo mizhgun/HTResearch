@@ -46,13 +46,13 @@ class URLFrontierTest(unittest.TestCase):
         # Assert that the last visited date matches the last element in urllist
         # and that the size of the queue is 999
         self.assertEqual(old_url.last_visited, url_list[1999].last_visited)
-        self.assertEqual(frontier.size, 999)
+        self.assertEqual(len(frontier), 999)
 
         # Push a new URL to the queue
         frontier.put_url("http://test2.com")
 
         # Assert that the queue is now full
-        self.assertTrue(frontier.urls.full())
+        self.assertEqual(len(frontier), 1000)
 
         # Pop every URL
         for i in range(1000):
@@ -62,4 +62,4 @@ class URLFrontierTest(unittest.TestCase):
         # that the queue is empty
 
         self.assertEqual(next_url, "http://test2.com")
-        self.assertTrue(frontier.urls.empty())
+        self.assertEqual(len(frontier), 0)
