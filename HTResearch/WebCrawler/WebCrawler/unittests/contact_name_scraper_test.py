@@ -10,7 +10,7 @@ class ContactScraperTest(BaseSpider):
     #              "http://www.ijm.org/who-we-are/leadership",
     #              "http://www.tiss.edu/lefttop/faculty-staff/Administrators",
     #              "http://www.bba.org.in/?q=content/team"]
-    start_urls = ["http://www.tiss.edu/lefttop/faculty-staff/Administrators"]
+    start_urls = ["http://www.ijm.org/who-we-are/leadership"]
 
     def __init__(self, *args, **kwargs):
         super(ContactScraperTest, self).__init__(*args, **kwargs)

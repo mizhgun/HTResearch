@@ -20,9 +20,125 @@ class ContactNameScraper:
         with open("../Resources/names.txt") as f:
             self.names = f.read().splitlines()
         self.titles = ['Mr', 'Mrs', 'Ms', 'Miss']
+        self.tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
 
     def __del__(self):
         os.chdir(self.saved_path)
+
+    """ Just formats the tags and adds a > to the elements that don't have it """
+    @staticmethod
+    def add_closing_symbol(tag_list):
+        # since the regex finds either tags but not attributes, some elements might have just the <a part,
+        # so add the > if needed (such as <a href=...)
+        for i, t in enumerate(tag_list):
+            if t[-1] != '>':
+                tag_list[i] = t + '>'
+        return tag_list
+
+    """ Counts the parent divs, if there is a <div><a></a><p>hello</p>, only parents would be <div><p>, counter of 2 """
+    @staticmethod
+    def count_parent_tags(tag_list):
+        parent_counter = 0
+        for i, t in enumerate(tag_list):
+            if '/' not in t:
+                parent_counter += 1
+            else:
+                parent_counter -= 1
+        return parent_counter
+
+    """ This function uses other class functions to find the xpath of potential names
+     returns the xpath as far as some threshold % of all the found xpaths """
+    def find_all_xpaths(self, hxs):
+        body = hxs.select('//body').extract()
+        body_text = hxs.select('//body//text()').extract()
+        for i in range(len(body_text)):
+            body_text[i] = (body_text[i].encode('ascii', 'ignore')).strip()
+        body_text = filter(bool, body_text)
+        body_text = ' '.join(body_text)
+
+        potential_names = []
+
+        body = (body[0].encode('ascii', 'ignore')).strip()
+
+        all_paired_tags = list(set(re.findall(self.tag, body)))
+        all_paired_tags = self.add_closing_symbol(all_paired_tags)
+        all_paired_tags = self.remove_unpaired_tags(all_paired_tags)
+
+        xpaths = []
+        for item in body.split():
+            if (item in self.titles or item in self.names) and item in body_text:
+
+                potential_names.append(item)
+                tags = re.findall(self.tag, body[:body.index(item)])
+                tags = self.add_closing_symbol(tags)
+
+                # this part is to check if there's a tag that does not close or doesn't have an open tag (such as </br>)
+                # remove the tags that don't have a match
+                check_tags = list(set(tags))
+                for t in check_tags:
+                    if '/' not in t and (t[0] + '/' + t[1:]) not in all_paired_tags:
+                        tags = [x for x in tags if x != t]
+                    elif '/' in t and (t[0] + t[2:]) not in all_paired_tags:
+                        tags = [x for x in tags if x != t]
+
+                parent_counter = self.count_parent_tags(tags)
+
+                s = ''.join(self.find_xpath(tags, parent_counter))
+                s = s.replace('<', '')
+                s = s.replace('>', '/')
+                s = '//' + s
+                s += 'text()'
+                xpaths.append(s)
+
+        # go as far as 40% of the xpaths potential names
+        #threshold = 0.4
+        #size = len(xpaths)
+        #for i in range(len(xpaths)-1):
+        #    count = 0
+        #    tag_split = (xpaths[i]).split('/')
+        #    for j, tag in enumerate(tag_split):
+        #        j = i + 1
+        #        tag = tag.strip()
+        #        if xpaths[i] == xpaths[j]:
+        #            count += 1
+
+        xpaths = list(set(xpaths))
+
+        return xpaths
+
+    """ Returns the list of tags of one 'xpath', does not combine into a string or anything yet """
+    @staticmethod
+    def find_xpath(tag_list, parent_counter):
+        i = 0
+        while i <= parent_counter:
+            tag = tag_list[i]
+            if '/' in tag:
+                tag_list.remove(tag)
+                tag_list.reverse()
+                try:
+                    index = tag_list[len(tag_list)-i:].index(tag[0] + tag[2:])
+                    tag_list.reverse()
+                    tag_list.pop(index + i - 1)
+                except ValueError:
+                    pass
+                i -= 1
+            else:
+                i += 1
+
+        tag_list = tag_list[:parent_counter+2]
+        return tag_list
+
+    """ Take out the tags that don't have an ending tag, such as <input> """
+    @staticmethod
+    def remove_unpaired_tags(tag_list):
+        # this part is to check if there's a tag that does not close or doesn't have an open tag (such as </br>)
+        # remove the tags that don't have a match
+        for t in tag_list:
+            if '/' not in t and (t[0] + '/' + t[1:]) not in tag_list:
+                tag_list = [x for x in tag_list if x != t]
+            elif '/' in t and (t[0] + t[2:]) not in tag_list:
+                tag_list = [x for x in tag_list if x != t]
+        return tag_list
 
     def parse(self, response):
         # Could I confirm a name is actually a name and then grab the tag that name is in and assume that other names
@@ -30,37 +146,15 @@ class ContactNameScraper:
 
         hxs = HtmlXPathSelector(response)
 
-        body = hxs.select('//body//text()').extract()
-
-        body = filter(bool, body)
-        potential_names = []
-
-        for i in range(len(body)):
-            body[i] = (body[i].encode('ascii', 'ignore')).strip()
-            for item in body[i].split():
-                if item in self.titles or item in self.names:
-                    potential_names.append(body[i])
-                    break
+        xpaths = self.find_all_xpaths(hxs)
 
         names_list = []
+        for xpath in xpaths:
+            names_list += hxs.select(xpath).extract()
 
-        pdb.set_trace()
-        # get the first and last name, and if it's just <title> <first_name>, include the title
-        #
-        for element in potential_names:
-            split = element.split()
-            for split_element in split:
-                index = split.index(split_element)
-                if split_element in self.names:
-                    if split_element != split[-1] and split[index+1][0].isupper() and split[index+1][1:].islower():
-                        names_list.append(split_element + " " + split[index+1])
-                        break
-                if len(split) <= 2:
-                    if split_element != split[-1] and split_element in self.titles and split[index+1] in self.names:
-                        names_list.append(split_element + " " + split[index+1])
-
-        for x in names_list:
-            print(x)
+        for i, name in enumerate(names_list):
+            names_list[i] = (names_list[i].encode('ascii', 'ignore')).strip()
+            print(name)
 
         pdb.set_trace()
         return names_list
