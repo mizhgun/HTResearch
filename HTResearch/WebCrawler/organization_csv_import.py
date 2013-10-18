@@ -11,7 +11,7 @@ with open('C:\Users\s-athomp44\Documents\organization.csv') as csv_file:
     for row in reader:
         new_org = Organization(name=row[0],
                                organization_url=row[1],
-                               address=row[2],
+                               address=row[2].replace(u'\xa0', u' '),
                                phone_number=row[3],
                                email=row[4])
         org_dto = DTOConverter.to_dto(OrganizationDTO, new_org)
