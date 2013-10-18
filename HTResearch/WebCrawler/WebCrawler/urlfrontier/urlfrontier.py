@@ -11,26 +11,40 @@ from HTResearch.DataAccess.factory import DAOFactory
 class URLFrontier(object):
 
     def __init__(self):
-        self.urls = Queue(maxsize=1000)
-        self.factory = DAOFactory.get_instance(URLMetadataDAO)
+        self._urls = Queue(maxsize=1000)
+        self._factory = DAOFactory.get_instance(URLMetadataDAO)
+        self._size = 0
         self._populate()
 
-    def push_url(self, url):
+    @property
+    def size(self):
+        return self._size
+
+    @property
+    def next_url(self):
         try:
-            self.urls.put(url)
+            return self._urls.get()
+        except Empty:
+            self._populate()
+            return self._urls.get()
+        finally:
+            self._size -= 1
+
+    @property
+    def urls(self):
+        return self._urls
+
+    def put_url(self, url):
+        try:
+            self._urls.put(url)
         except Full:
             url_obj = URLMetadata(url=url)
             url_dto = DTOConverter.to_dto(URLMetadataDTO, url_obj)
-            self.factory.create_update(url_dto)
-
-    def pop_url(self):
-        try:
-            return self.urls.get()
-        except Empty:
-            self._populate()
-            return self.urls.get()
+            self._factory.create_update(url_dto)
 
     def _populate(self):
-        urls = self.factory.findmany(1000, "last_visited")
+        urls = self._factory.findmany(1000, "last_visited")
 
-        [self.urls.put(u) for u in urls]
+        for u in urls:
+            self._urls.put(u)
+            self._size += 1

@@ -25,22 +25,41 @@ class URLFrontierTest(unittest.TestCase):
         url_dao = DAOFactory.get_instance(URLMetadataDAO)
 
         # Store URLs with an increasing timedelta from the start time of the test
-        urllist = []
-        [urllist.append(URLMetadata(url="http://test.com",
-                                    last_visited=(start_time - timedelta(days=x))))
-         for x in range(2000)]
+        url_list = []
+        for x in range(2000):
+            url_list.append(URLMetadata(url="http://test.com",
+                                        last_visited=(start_time - timedelta(days=x))))
 
         # To DTOs
-        url_dtos = [DTOConverter.to_dto(URLMetadataDTO, u) for u in urllist]
+        url_dtos = [DTOConverter.to_dto(URLMetadataDTO, u) for u in url_list]
 
-        # Save to the daterbase
-        [url_dao.create_update(dto) for dto in url_dtos]
+        # Save to the database
+        for dto in url_dtos:
+            url_dao.create_update(dto)
 
         # Create the URLFrontier
         frontier = URLFrontier()
 
         # Pop the least recently visited URL
-        old_url = frontier.pop_url()
+        old_url = frontier.next_url
 
-        # Assert that the size of the URL queue is 1000
-        self.assertEquals(old_url.last_visited, urllist[1999].last_visited)
+        # Assert that the last visited date matches the last element in urllist
+        # and that the size of the queue is 999
+        self.assertEqual(old_url.last_visited, url_list[1999].last_visited)
+        self.assertEqual(frontier.size, 999)
+
+        # Push a new URL to the queue
+        frontier.put_url("http://test2.com")
+
+        # Assert that the queue is now full
+        self.assertTrue(frontier.urls.full())
+
+        # Pop every URL
+        for i in range(1000):
+            next_url = frontier.next_url
+
+        # Make sure the URL we just pushed is what we get last and
+        # that the queue is empty
+
+        self.assertEqual(next_url, "http://test2.com")
+        self.assertTrue(frontier.urls.empty())
