@@ -15,8 +15,23 @@ function initialize() {
 	//map.addControl(mapControls, bottomLeft);
 
 	$("#signup-btn").click(function(e) {
-		$('#test-div').show().animate({top: $("#test-div").parent().height() / 3 - $("#test-div").height() / 3, 
-			left: $("#test-div").parent().width() / 2 - $("#test-div").width() / 2}, 300);
+		$('#signup-div').easyModal({
+			autoOpen: true,
+			overlayOpacity: 0.3,
+			overlayColor: "#333",
+			overlayClose: false
+		});
+
+	});
+
+	$("#login-btn").click(function(e) {
+		$('#login-div').easyModal({
+			autoOpen: true,
+			overlayOpacity: 0.3,
+			overlayColor: "#333",
+			overlayClose: false
+		});
+
 	});
 }
 

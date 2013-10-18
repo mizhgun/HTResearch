@@ -97,7 +97,14 @@ body {
     z-index: 3;
 }
 
-#test-div {
+#signup-div {
+    position:absolute;
+    z-index: 1;
+    height: 45%;
+    width: 30%;
+}
+
+#login-div {
     position:absolute;
     z-index: 1;
     height: 45%;
@@ -105,9 +112,39 @@ body {
 }
 
 #create-an-account {
-    position: relative;
+    position: absolute;
     font-size: xx-large;
-    top: 0px;
-    margin: 0;
-    padding: 0;
+    left: 20%;
+    top: 5%;
+}
+
+#login-header {
+    position: absolute;
+    font-size: xx-large;
+    left: 25%;
+    top: 3%;
+}
+
+#username-field {
+    position: relative;
+    top: 40px;
+    margin-bottom: 10px;
+}
+
+#email-field {
+    position: relative;
+    top: 50px;
+    margin-bottom: 10px;
+}
+
+#password-field {
+    position: relative;
+    top: 60px;
+    margin-bottom: 10px;
+}
+
+#create-account-btn {
+    position: relative;
+    top: 50px;
+    margin-top: 50px;
 }
