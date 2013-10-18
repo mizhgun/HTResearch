@@ -6,6 +6,7 @@ import re
 from urlparse import urlparse
 import os
 import string
+from link_scraper import LinkScraper
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
@@ -215,7 +216,22 @@ class OrgContactsScraper:
 class OrgPartnersScraper:
 
     def __init__(self):
-        self.partners = []
+        self._link_scraper = LinkScraper()
+
+    def parse(self, response):
+        partners = []
+
+        links = self._link_scraper.parse(response)
+        page_url = urlparse(response.url)
+
+        for link in links:
+            link_url = urlparse(link['url'])
+            if page_url.netloc != link_url.netloc:
+                partner = ScrapedOrganization()
+                partner['organization_url'] = '%s://%s/' % (link_url.scheme, link_url.netloc)
+                partners.append(partner)
+
+        return partners
 
 
 class OrgTypeScraper:

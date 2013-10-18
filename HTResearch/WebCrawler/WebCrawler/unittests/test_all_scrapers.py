@@ -1,8 +1,6 @@
 import unittest
-import pdb
 import subprocess
-import os
-
+from ast import literal_eval
 
 class ScraperTests(unittest.TestCase):
     def test_address_scraper(self):
@@ -94,6 +92,20 @@ class ScraperTests(unittest.TestCase):
         assert_list = ["0402026070", "9435134726"]
         for test in assert_list:
             self.assertIn(test, numbers, "Phone number " + str(test) + " not found")
+
+    def test_org_partners_scraper(self):
+        p = subprocess.Popen('scrapy crawl org_partners_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output, error = p.communicate()
+        print(error)
+        orgs = literal_eval(output)
+
+        assert_list = [
+            'http://www.acumenfund.org/',
+            'http://www.afghaninstituteoflearning.org/',
+            'http://www.ajws.org/',
+        ]
+        for test in assert_list:
+            self.assertIn(test, map(lambda org: org['organization_url'], orgs), 'Organization with URL %s not found' % test)
 
 if __name__ == '__main__':
     try:
