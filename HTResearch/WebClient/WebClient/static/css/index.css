@@ -1,3 +1,11 @@
+html { height: 100% }
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0
+}
+
 #map-canvas {
     display: block;
     width: inherit;
@@ -7,15 +15,7 @@
 #wrapper {
     height: 100%;
     margin: 0;
-    padding: 0
-}
-
-html { height: 100% }
-
-body {
-    height: 100%;
-    margin: 0;
-    padding: 0
+    padding: 0;
 }
 
 #get-started-btn {
@@ -86,7 +86,6 @@ body {
     margin-top: 2px;
     position: relative;
     height: 20%;
-        weight: 20%;
     /* IE7-8 doesn't have border-radius, so don't indent the padding */
     margin-bottom: 0;
     -webkit-border-radius: 3px;
@@ -96,4 +95,19 @@ body {
 
 .search-query:focus + button {
     z-index: 3;
+}
+
+#test-div {
+    position:absolute;
+    z-index: 1;
+    height: 45%;
+    width: 30%;
+}
+
+#create-an-account {
+    position: relative;
+    font-size: xx-large;
+    top: 0px;
+    margin: 0;
+    padding: 0;
 }
