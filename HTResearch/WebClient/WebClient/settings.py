@@ -1,3 +1,4 @@
+import os.path
 # Django settings for HTResearch.WebClient project.
 
 DEBUG = True
@@ -70,6 +71,8 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(os.path.dirname(__file__), "static"),
+    '/var/www/static/',
 )
 
 # List of finder classes that know how to find static files in
@@ -82,6 +85,7 @@ STATICFILES_FINDERS = (
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'n(bd1f1c%e8=_xad02x5qtfn%wgwpi492e$8_erx+d)!tpeoim'
+GOOGLE_MAPS_API_KEY = 'AIzaSyCSFnFpEICYiiz_v7iSLQC8E3Z2KpX9qu8'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -100,15 +104,17 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'HTResearch.WebClient.urls'
+ROOT_URLCONF = 'webclient.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'HTResearch.WebClient.wsgi.application'
+WSGI_APPLICATION = 'webclient.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+
+    os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
 )
 
 INSTALLED_APPS = (
