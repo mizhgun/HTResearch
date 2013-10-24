@@ -42,4 +42,4 @@ function searchShowDiv(e)
 	console.log($('#search-box').val());
 }
 
-google.maps.event.addDomListener(window, 'load', initialize);
+google.maps.event.addDomListener(window, 'load', _.once(initialize));
