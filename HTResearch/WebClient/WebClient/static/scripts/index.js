@@ -34,12 +34,12 @@ function initialize() {
 
 	});
 
-	$('#search-box').keypress(searchShowDiv);
+	$('#search-box').keypress(_.debounce(searchShowDiv, 300));
 }
 
 function searchShowDiv(e)
 {
-	console.log(e);
+	console.log($('#search-box').val());
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
