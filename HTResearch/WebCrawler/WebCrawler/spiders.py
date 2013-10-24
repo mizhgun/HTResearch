@@ -1,5 +1,6 @@
 from urlparse import urljoin
 
+from scrapers.document_scrapers import *
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
@@ -27,6 +28,36 @@ class BasicCrawlSpider(BaseSpider):
                         urls.append(url)
 
             return [ Request(url) for url in urls ]
+
+
+class OrgSpider(BaseSpider):
+    name = 'org_spider'
+    start_urls = ['']
+
+    def __init__(self, *args, **kwargs):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+        super(OrgSpider, self).__init__(*args, **kwargs)
+        self.scraper = OrganizationScraper()
+
+        if not os.path.exists("Output/"):
+            os.makedirs("Output/")
+        else:
+            try:
+                os.remove("Output/org_scraper_output.txt")
+            except OSError:
+                pass
+
+    def __del__(self):
+        os.chdir(self.saved_path)
+
+    def parse(self, response):
+        results = self.scraper.parse(response)
+
+        with open("Output/org_scraper_output.txt", 'a') as f:
+            f.write(results)
+        return results
 
 
 class StopTraffickingSpider(BaseSpider):

@@ -6,7 +6,7 @@ class Contact:
     def __init__(self):
         contact = None
 
-class OrganizationScraper:
+class OrganizationScraper():
     _scrapers = {
         'name': [OrgNameScraper()],
         'address': [OrgAddressScraper()],
