@@ -164,7 +164,6 @@ class ContactNameScraper:
             item = ScrapedContactName()
             item['name'] = names[i]
             items.append(item)
-        pdb.set_trace()
         return items
 
     """ Take out the tags that don't have an ending tag, such as <input> """
