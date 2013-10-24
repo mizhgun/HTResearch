@@ -172,12 +172,27 @@ body {
     position: absolute;
     top: 0px;
     left: 0px;
-    padding-bottom: 10px;
+    padding-bottom: 5px;
     font-size: x-large;
 }
 
 #organization-search-list {
     position: absolute;
     left: 5px;
+    padding-bottom: 5px;
+    font-size: medium;
+}
+
+#contact-list-header {
+    position: absolute;
+    left: 0px;
+    padding-bottom: 5px;
+    font-size: x-large;
+}
+
+#contact-search-list {
+    position: relative;
+    left: 5px;
+    padding-bottom: 5px;
     font-size: medium;
 }
