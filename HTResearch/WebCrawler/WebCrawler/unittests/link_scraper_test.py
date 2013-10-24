@@ -12,6 +12,9 @@ class LinkScraperTest(BaseSpider):
     scraper = None
 
     def __init__(self, *args, **kwargs):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
         super(LinkScraperTest, self).__init__(*args, **kwargs)
         self.scraper = LinkScraper()
         if not os.path.exists("../Output/"):
@@ -21,6 +24,9 @@ class LinkScraperTest(BaseSpider):
                 os.remove("../Output/link_scraper_output.txt")
             except OSError:
                 pass
+
+    def __del__(self):
+        os.chdir(self.saved_path)
 
     def parse(self, response):
         links = self.scraper.parse(response)

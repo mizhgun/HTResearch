@@ -11,12 +11,6 @@ class ScrapedAddress(Item):
     zip_code = Field()
 
 
-class ScrapedUrl(Item):
-    # define the fields for your item here like:
-    # name = Field()
-    url = Field()
-
-
 class ScrapedContact(Item):
     first_name = Field()
     last_name = Field()
@@ -48,7 +42,7 @@ class ScrapedOrganization(Item):
 
 
 class ScrapedPhoneNumber(Item):
-    phone_number = Field()
+    phone_number=Field()
 
 
 class ScrapedPublication(Item):
