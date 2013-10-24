@@ -37,7 +37,7 @@ function initialize() {
 	});
 
 	$('#search-box').keypress(_.debounce(showSearchResults, 300));
-	$('#search-box').keyup(_.debounce(hideSearchResults, 300));
+	$('#search-box').keyup(_.debounce(hideSearchResults, 100));
 }
 
 function showSearchResults() {
