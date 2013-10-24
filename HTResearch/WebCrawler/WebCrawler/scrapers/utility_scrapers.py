@@ -152,12 +152,11 @@ class ContactNameScraper:
                 highest.append(i)
 
         names = []
-        for i in highest:
-            names += names_list[i]
         pdb.set_trace()
-
-        for i in range(len(names)):
-            names[i] = (names[i].encode('ascii', 'ignore')).strip()
+        for i in highest:
+            for j in range(len(names_list[i])):
+                names_list[i][j] = names_list[i][j].encode('ascii', 'ignore').strip()
+            names += names_list[i]
         names = filter(bool, names)
 
         items = []
