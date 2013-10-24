@@ -1,3 +1,5 @@
+var searchResultsVisible = false;
+
 function initialize() {
 	var mapOptions = {
 	  center: new google.maps.LatLng(21, 78),
@@ -34,12 +36,31 @@ function initialize() {
 
 	});
 
-	$('#search-box').keypress(_.debounce(searchShowDiv, 300));
+	$('#search-box').keypress(_.debounce(showSearchResults, 300));
+	$('#search-box').keyup(_.debounce(hideSearchResults, 300));
 }
 
-function searchShowDiv(e)
-{
-	console.log($('#search-box').val());
+function showSearchResults() {
+	if($('#search-box').val().length > 0 && searchResultsVisible == false) {
+		$('#search-results-div').toggle("slide", {
+	        direction: "left",
+	        distance: 220
+	    }, 500);
+
+		searchResultsVisible = true;
+	}
+}
+
+function hideSearchResults(e) {
+	//Falsy bullcrap
+	if($('#search-box').val().length == 0) {
+		$('#search-results-div').toggle("slide", {
+	        direction: "left",
+	        distance: 220
+	    }, 500);
+
+		searchResultsVisible = false;
+	}
 }
 
 google.maps.event.addDomListener(window, 'load', _.once(initialize));
