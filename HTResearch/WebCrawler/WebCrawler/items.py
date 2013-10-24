@@ -29,8 +29,7 @@ class ScrapedContact(Item):
 
 
 class ScrapedContactName(Item):
-    first_name = Field()
-    last_name = Field()
+    name = Field()
 
 
 class ScrapedEmail(Item):

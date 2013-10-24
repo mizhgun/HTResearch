@@ -27,6 +27,40 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test, addresses, test + " not found")
 
+    def test_contact_name_scraper(self):
+        # Runs the test spider and pipes the printed output to "output"
+        p = subprocess.Popen('scrapy crawl contact_name_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output, error = p.communicate()
+
+        # Splits the results based on automatically added characters
+        contacts = output.splitlines()
+
+        # Hardcoded results based on the sites that were crawled
+        assert_list = ['Gloria Steinem',
+                    'Jennifer Buffett',
+                    'Peter Buffett',
+                    'Vishakha Desai',
+                    'Leslie Bluhm',
+                    'Judy Gold',
+                    'Ashley Judd',
+                    'Jounghoon Lee',
+                    'Pamela Shifman',
+                    'Lekha Poddar',
+                    'Namita Saraf',
+                    'Nayantara Palchoudhuri',
+                    'Pallavi Shroff',
+                    'Sujata Prasad',
+                    'Suresh Neotia',
+                    'Lata Bajoria',
+                    'Raju Bharat',
+                    'Manish Agarwal',
+                    'Lela Goren',
+                    'Ellyson Perkins',
+                    'Mona Sinha']
+
+        for test in assert_list:
+            self.assertIn(test, contacts, test + " not found")
+
     def test_email_scraper(self):
         # Runs the Test spider and pipes the printed output to "output"
         os.chdir(os.path.join(os.pardir, os.pardir))

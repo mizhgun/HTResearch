@@ -154,11 +154,19 @@ class ContactNameScraper:
         names = []
         for i in highest:
             names += names_list[i]
+        pdb.set_trace()
 
         for i in range(len(names)):
             names[i] = (names[i].encode('ascii', 'ignore')).strip()
         names = filter(bool, names)
-        return names
+
+        items = []
+        for i in range(len(names)):
+            item = ScrapedContactName()
+            item['name'] = names[i]
+            items.append(item)
+        pdb.set_trace()
+        return items
 
     """ Take out the tags that don't have an ending tag, such as <input> """
     @staticmethod
