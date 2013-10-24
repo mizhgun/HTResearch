@@ -53,7 +53,7 @@ function showSearchResults() {
 
 function hideSearchResults(e) {
 	//Falsy bullcrap
-	if($('#search-box').val().length == 0) {
+	if($('#search-box').val().length == 0 && searchResultsVisible == true) {
 		$('#search-results-div').toggle("slide", {
 	        direction: "left",
 	        distance: 220
