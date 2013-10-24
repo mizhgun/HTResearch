@@ -42,8 +42,8 @@ body {
     z-index: 1;
     top: 50px;
     left: 5px;
-    width: 15%;
-    height: 15%;
+    width: 205px;
+    height: 120px;
     opacity: 0.75;
     border: 0;
 }
@@ -155,14 +155,29 @@ body {
 #search-results-div {
     position: absolute;
     z-index: 1;
-    top: 155px;
-    left: px;
+    top: 170px;
+    left: 5px;
+    width: 205px;
     height: 100%;
-    width: 220px;
     opacity: 0.75;
+    overflow: auto;
 }
 
 #search-results-div:hover {
     opacity:1.0;
     filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
+#organization-list-header {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    padding-bottom: 10px;
+    font-size: x-large;
+}
+
+#organization-search-list {
+    position: absolute;
+    left: 5px;
+    font-size: medium;
 }

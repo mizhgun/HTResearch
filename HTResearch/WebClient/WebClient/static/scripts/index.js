@@ -43,8 +43,8 @@ function initialize() {
 function showSearchResults() {
 	if($('#search-box').val().length > 0 && searchResultsVisible == false) {
 		$('#search-results-div').toggle("slide", {
-	        direction: "left",
-	        distance: 220
+	        direction: "up",
+	        distance: window.height - $('#search-box').css('top')
 	    }, 500);
 
 		searchResultsVisible = true;
@@ -55,8 +55,8 @@ function hideSearchResults(e) {
 	//Falsy bullcrap
 	if($('#search-box').val().length == 0 && searchResultsVisible == true) {
 		$('#search-results-div').toggle("slide", {
-	        direction: "left",
-	        distance: 220
+	        direction: "up",
+	        distance: window.height - $('#search-box').css('top')
 	    }, 500);
 
 		searchResultsVisible = false;
