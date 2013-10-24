@@ -3,7 +3,7 @@ import unittest
 from datetime import datetime, timedelta
 
 # Project imports
-from HTResearch.WebCrawler.WebCrawler.urlfrontier.urlfrontier import URLFrontier
+from HTResearch.URLFrontier.urlfrontier import URLFrontier
 from HTResearch.DataAccess.connection import DBConnection
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.DataAccess.factory import DAOFactory
