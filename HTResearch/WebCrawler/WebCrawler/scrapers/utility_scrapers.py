@@ -152,7 +152,6 @@ class ContactNameScraper:
                 highest.append(i)
 
         names = []
-        pdb.set_trace()
         for i in highest:
             for j in range(len(names_list[i])):
                 names_list[i][j] = names_list[i][j].encode('ascii', 'ignore').strip()
@@ -164,7 +163,6 @@ class ContactNameScraper:
             item = ScrapedContactName()
             item['name'] = names[i]
             items.append(item)
-        pdb.set_trace()
         return items
 
     """ Take out the tags that don't have an ending tag, such as <input> """
