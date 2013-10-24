@@ -6,8 +6,7 @@ import pdb
 
 class EmailScraperTest(BaseSpider):
     name = "email_scraper_test"
-    start_urls = ["http://nhrc.nic.in/ContactUs.htm",
-                  "http://bombayteenchallenge.org/",
+    start_urls = ["http://bombayteenchallenge.org/",
                   "http://www.tiss.edu/TopMenuBar/contact-us/location-1",
                   "http://apneaap.org/contact/",
                   "http://www.aawc.in/contact_us.html"

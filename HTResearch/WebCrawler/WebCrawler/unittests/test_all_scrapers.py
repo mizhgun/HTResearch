@@ -34,9 +34,7 @@ class ScraperTests(unittest.TestCase):
         emails = output.splitlines()
 
         # Hardcoded results based on the sites that were crawled
-        assert_list = ["sgnhrc@nic.in",
-                       "covdnhrc@nic.in",
-                       "anilpradhanshilong@gmail.com",
+        assert_list = ["anilpradhanshilong@gmail.com",
                        "snarayan1946@gmail.com",
                        "tvarghese@bombayteenchallenge.org"]
 
