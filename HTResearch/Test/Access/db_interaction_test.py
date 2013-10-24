@@ -146,6 +146,24 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'URLMetadataDAO tests passed'
 
+    def test_merge_records(self):
+        contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)
+        contact_dao = DAOFactory.get_instance(ContactDAO)
+
+        print 'Saving initial record ...'
+        contact_dao.create_update(contact_dto)
+
+        print 'Creating a duplicate and attempting an insert ...'
+        new_contact = Contact(email="jdegner0129@gmail.com",
+                              primary_phone=4029813230)
+        new_contact_dto = DTOConverter.to_dto(ContactDTO, new_contact)
+        contact_dao.create_update(new_contact_dto)
+
+        print 'Asserting that the old contact was updated'
+        assert_contact = contact_dao.find(id=contact_dto.id)
+        self.assertEqual(assert_contact.primary_phone, new_contact_dto.primary_phone)
+
+        print 'Merge records tests passed'
 
 if __name__ == '__main__':
     try:
