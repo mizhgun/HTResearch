@@ -14,7 +14,7 @@ function initialize() {
 	//map.removeControl(mapTypeControl)
 	//map.addControl(mapControls, bottomLeft);
 
-	$("#signup-btn").click(function(e) {
+	$('#signup-btn').click(function(e) {
 		$('#signup-div').easyModal({
 			autoOpen: true,
 			overlayOpacity: 0.3,
@@ -24,7 +24,7 @@ function initialize() {
 
 	});
 
-	$("#login-btn").click(function(e) {
+	$('#login-btn').click(function(e) {
 		$('#login-div').easyModal({
 			autoOpen: true,
 			overlayOpacity: 0.3,
@@ -33,6 +33,13 @@ function initialize() {
 		});
 
 	});
+
+	$('#search-box').keypress(searchShowDiv);
+}
+
+function searchShowDiv(e)
+{
+	console.log(e);
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
