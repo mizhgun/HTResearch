@@ -13,7 +13,7 @@ import string
 
 
 class ContactNameScraper:
-
+    # TODO: Find list of Indian names and add them to names.txt
     def __init__(self):
         self.saved_path = os.getcwd()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -21,6 +21,7 @@ class ContactNameScraper:
             self.names = f.read().splitlines()
         self.titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr']
         self.tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
+        self.remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
 
     def __del__(self):
         os.chdir(self.saved_path)
@@ -53,17 +54,11 @@ class ContactNameScraper:
         # name should be visible
         body = hxs.select('//body').extract()
 
-        body_text = hxs.select('//body//text()').extract()
-        for i in range(len(body_text)):
-            body_text[i] = (body_text[i].encode('ascii', 'ignore')).strip()
-        body_text = filter(bool, body_text)
-        body_text = ' '.join(body_text)
-
         potential_names = []
 
         body = (body[0].encode('ascii', 'ignore')).strip()
         # keep the tags but remove the tag attributes such as name and class
-        body = re.sub(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>', r'<\1>', body)
+        body = re.sub(self.remove_attributes, r'<\1>', body)
 
         # find the paired tags, remove the ones that don't have a pair such as <input>
         all_paired_tags = list(set(re.findall(self.tag, body)))
@@ -77,8 +72,7 @@ class ContactNameScraper:
         xpaths = []
         for item in no_tags.split():
 
-            if (item in self.titles or item in self.names) and item in body_text and item in body:
-                #pdb.set_trace()
+            if (item in self.titles or item in self.names) and item in body:
                 potential_names.append(item)
                 tags = re.findall(self.tag, body[:body.index(item)])
                 tags = self.add_closing_symbol(tags)
@@ -95,20 +89,7 @@ class ContactNameScraper:
                 parent_counter = self.count_parent_tags(tags)
                 xpaths.append(self.find_xpath(tags, parent_counter))
 
-        # go as far as 40% of the xpaths potential names
-        #threshold = 0.4
-        #size = len(xpaths)
-        #for i in range(len(xpaths)-1):
-        #    count = 0
-        #    tag_split = (xpaths[i]).split('/')
-        #    for j, tag in enumerate(tag_split):
-        #        j = i + 1
-        #        tag = tag.strip()
-        #        if xpaths[i] == xpaths[j]:
-        #            count += 1
-
         xpaths = list(set(xpaths))
-
         return xpaths
 
     """ Returns one 'xpath' string """
@@ -177,7 +158,6 @@ class ContactNameScraper:
         for i in range(len(names)):
             names[i] = (names[i].encode('ascii', 'ignore')).strip()
         names = filter(bool, names)
-
         return names
 
     """ Take out the tags that don't have an ending tag, such as <input> """
