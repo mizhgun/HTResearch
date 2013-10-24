@@ -81,8 +81,6 @@ class ScraperTests(unittest.TestCase):
                 else:
                     emails.append(ret)
 
-        print emails
-
         # Hardcoded results based on the sites that were crawled
         assert_list = [{'email': "sgnhrc@nic.in"},
                        {'email': "covdnhrc@nic.in"},
@@ -94,21 +92,32 @@ class ScraperTests(unittest.TestCase):
             self.assertIn(test, emails, 'Email {0} not found'.format(str(test)))
 
     def test_link_scraper(self):
-        p = subprocess.Popen('scrapy crawl link_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                             shell=True)
-        output, error = p.communicate()
-        urls = output.splitlines()
-        urls = [x.lower() for x in urls]
+        test_files = [
+            "httpwwwstoptraffickingnet",
+            "httpnewsunledunewsroomsunltoday",
+            ]
+
+        link_scraper = LinkScraper()
+        links = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = link_scraper.parse(response)
+                if isinstance(ret, type([])):
+                    links = links + ret
+                else:
+                    links.append(ret)
 
         assert_list = [
-            'http://www.stoptrafficking.net/about',
-            'http://www.stoptrafficking.net/services/training',
-            'http://visit.unl.edu/',
-            'http://www.unl.edu/ucomm/prospective/',
+            {'url': 'http://www.stoptrafficking.net/about'},
+            {'url': 'http://www.stoptrafficking.net/services/training'},
+            {'url': 'http://visit.unl.edu/'},
+            {'url': 'http://www.unl.edu/ucomm/prospective/'},
         ]
 
         for test in assert_list:
-            self.assertIn(test.lower(), urls, "URL " + test + " was not found")
+            self.assertIn(test, links, "URL " + str(test) + " was not found")
 
     def test_keyword_scraper(self):
         # Runs the Test spider and pipes the printed output to "output"
