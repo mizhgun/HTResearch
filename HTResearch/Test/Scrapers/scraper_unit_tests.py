@@ -3,18 +3,14 @@ import pickle
 
 import os.path
 
-from scrapy.http import Response
-
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import *
-from HTResearch.WebCrawler.WebCrawler.scrapers.site_specific import *
-from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import *
-
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
 
 
 def file_to_response(test_file):
+    """Convert filename to the scrapy.http.Response stored object"""
     fullpath = os.path.join(TEST_FILE_DIR, test_file)
     if os.path.isfile(fullpath):
         with open(fullpath, mode='r') as input_file:
@@ -90,6 +86,27 @@ class ScraperTests(unittest.TestCase):
 
         for test in assert_list:
             self.assertIn(test, emails, 'Email {0} not found'.format(str(test)))
+
+    def test_indian_phone_number_scraper(self):
+        test_files = [
+            "httpwwwstoptraffickinginDirectoryaspx",
+        ]
+
+        indian_phone_scraper = IndianPhoneNumberScraper()
+        numbers = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = indian_phone_scraper.parse(response)
+                if isinstance(ret, type([])):
+                    numbers = numbers + ret
+                else:
+                    numbers.append(ret)
+
+        assert_list = [{'phone_number': "0402026070"}, {'phone_number': "9435134726"}]
+        for test in assert_list:
+            self.assertIn(test, numbers, "Phone number " + str(test) + " not found")
 
     def test_keyword_scraper(self):
         test_files = [
@@ -180,8 +197,6 @@ class ScraperTests(unittest.TestCase):
                 else:
                     orgs.append(ret)
 
-        print orgs
-
         assert_list = [{
             'name': None, #'Bombay Teen Challenge', # not yet implemented
             'types': [
@@ -212,19 +227,6 @@ class ScraperTests(unittest.TestCase):
 
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
-
-    def test_phone_number_scraper(self):
-        # Runs the Test spider and pipes the printed output to "output"
-        p = subprocess.Popen('scrapy crawl phone_number_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                             shell=True)
-        output, error = p.communicate()
-        # Splits the results based on automatically added characters
-        numbers = output.splitlines()
-        numbers = numbers[:len(numbers) - 1]
-
-        assert_list = ["0402026070", "9435134726"]
-        for test in assert_list:
-            self.assertIn(test, numbers, "Phone number " + str(test) + " not found")
 
 
 if __name__ == '__main__':
