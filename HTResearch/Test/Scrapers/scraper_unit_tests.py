@@ -91,6 +91,27 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test, emails, 'Email {0} not found'.format(str(test)))
 
+    def test_keyword_scraper(self):
+        test_files = [
+            "httpenwikipediaorgwikiNicolasCage",
+        ]
+
+        keyword_scraper = KeywordScraper()
+        keywords = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = keyword_scraper.parse(response)
+                if isinstance(ret, type([])):
+                    keywords = keywords + ret
+                else:
+                    keywords.append(ret)
+
+        assert_list = ["nicolas", "cage"]
+        for test in assert_list:
+            self.assertIn(test, keywords, "Keyword " + test + " not found or frequent enough")
+
     def test_link_scraper(self):
         test_files = [
             "httpwwwstoptraffickingnet",
@@ -118,19 +139,6 @@ class ScraperTests(unittest.TestCase):
 
         for test in assert_list:
             self.assertIn(test, links, "URL " + str(test) + " was not found")
-
-    def test_keyword_scraper(self):
-        # Runs the Test spider and pipes the printed output to "output"
-        p = subprocess.Popen('scrapy crawl keyword_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                             shell=True)
-        output, error = p.communicate()
-        # Splits the results based on automatically added characters
-        keywords = output.splitlines()
-        keywords = keywords[:len(keywords) - 1]
-
-        assert_list = ["nicolas", "cage"]
-        for test in assert_list:
-            self.assertIn(test, keywords, "Keyword " + test + " not found or frequent enough")
 
     def test_organization_scraper(self):
         p = subprocess.Popen('scrapy crawl organization_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE,
