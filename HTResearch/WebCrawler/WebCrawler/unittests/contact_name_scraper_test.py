@@ -9,8 +9,10 @@ class ContactScraperTest(BaseSpider):
     #start_urls = ["http://www.prajwalaindia.com/contactus.html",
     #              "http://www.ijm.org/who-we-are/leadership",
     #              "http://www.tiss.edu/lefttop/faculty-staff/Administrators",
-    #              "http://www.bba.org.in/?q=content/team"]
-    start_urls = ["http://www.ijm.org/who-we-are/leadership"]
+    #              "http://www.bba.org.in/?q=content/team",
+    #              "http://apneaap.org/about-us/our-board/" ]
+    #start_urls = ["http://apneaap.org/about-us/our-board/"]
+    start_urls = ["http://www.prajwalaindia.com/contactus.html"]
 
     def __init__(self, *args, **kwargs):
         super(ContactScraperTest, self).__init__(*args, **kwargs)

@@ -19,7 +19,7 @@ class ContactNameScraper:
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
         with open("../Resources/names.txt") as f:
             self.names = f.read().splitlines()
-        self.titles = ['Mr', 'Mrs', 'Ms', 'Miss']
+        self.titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr']
         self.tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
 
     def __del__(self):
@@ -35,7 +35,7 @@ class ContactNameScraper:
                 tag_list[i] = t + '>'
         return tag_list
 
-    """ Counts the parent divs, if there is a <div><a></a><p>hello</p>, only parents would be <div><p>, counter of 2 """
+    """ Counts the parent divs, if there is a <div><a></a><p>hello</p>, only parents would be <div><p>, return 2 """
     @staticmethod
     def count_parent_tags(tag_list):
         parent_counter = 0
@@ -49,7 +49,10 @@ class ContactNameScraper:
     """ This function uses other class functions to find the xpath of potential names
      returns the xpath as far as some threshold % of all the found xpaths """
     def find_all_xpaths(self, hxs):
+        # Gets the body (including html tags) and body_text (no tags), whatever gets found should be in both, since a
+        # name should be visible
         body = hxs.select('//body').extract()
+
         body_text = hxs.select('//body//text()').extract()
         for i in range(len(body_text)):
             body_text[i] = (body_text[i].encode('ascii', 'ignore')).strip()
@@ -59,15 +62,23 @@ class ContactNameScraper:
         potential_names = []
 
         body = (body[0].encode('ascii', 'ignore')).strip()
+        # keep the tags but remove the tag attributes such as name and class
+        body = re.sub(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>', r'<\1>', body)
 
+        # find the paired tags, remove the ones that don't have a pair such as <input>
         all_paired_tags = list(set(re.findall(self.tag, body)))
         all_paired_tags = self.add_closing_symbol(all_paired_tags)
         all_paired_tags = self.remove_unpaired_tags(all_paired_tags)
 
-        xpaths = []
-        for item in body.split():
-            if (item in self.titles or item in self.names) and item in body_text:
+        # Get literally just the text, so when checking each element, it won't grab any tags
+        no_tags = (re.sub(r'<.*?>', '', body)).splitlines()
+        no_tags = ' '.join(no_tags)
 
+        xpaths = []
+        for item in no_tags.split():
+
+            if (item in self.titles or item in self.names) and item in body_text and item in body:
+                #pdb.set_trace()
                 potential_names.append(item)
                 tags = re.findall(self.tag, body[:body.index(item)])
                 tags = self.add_closing_symbol(tags)
@@ -82,13 +93,7 @@ class ContactNameScraper:
                         tags = [x for x in tags if x != t]
 
                 parent_counter = self.count_parent_tags(tags)
-
-                s = ''.join(self.find_xpath(tags, parent_counter))
-                s = s.replace('<', '')
-                s = s.replace('>', '/')
-                s = '//' + s
-                s += 'text()'
-                xpaths.append(s)
+                xpaths.append(self.find_xpath(tags, parent_counter, item, hxs))
 
         # go as far as 40% of the xpaths potential names
         #threshold = 0.4
@@ -106,13 +111,14 @@ class ContactNameScraper:
 
         return xpaths
 
-    """ Returns the list of tags of one 'xpath', does not combine into a string or anything yet """
+    """ Returns one 'xpath' string """
     @staticmethod
-    def find_xpath(tag_list, parent_counter):
+    def find_xpath(tag_list, parent_counter, item, hxs):
         i = 0
-        while i <= parent_counter:
+        while i < parent_counter or i < len(tag_list):
             tag = tag_list[i]
             if '/' in tag:
+                # remove ending tag
                 tag_list.remove(tag)
                 tag_list.reverse()
                 try:
@@ -125,8 +131,54 @@ class ContactNameScraper:
             else:
                 i += 1
 
-        tag_list = tag_list[:parent_counter+2]
-        return tag_list
+        tag_list = tag_list[:parent_counter+3]
+
+        s = ''.join(tag_list)
+        s = s.replace('<', '')
+        s = s.replace('>', '/')
+        s = '//' + s
+        s += 'text()'
+
+        return s
+
+    def parse(self, response):
+        # Could I confirm a name is actually a name and then grab the tag that name is in and assume that other names
+        # on the page will also be in the same tags?
+
+        hxs = HtmlXPathSelector(response)
+
+        xpaths = self.find_all_xpaths(hxs)
+
+        names_list = []
+        for xpath in xpaths:
+            names_list.append(hxs.select(xpath).extract())
+
+        # check which xpath has the most names
+        # if the xpath has at least 5 valid names, then keep it, otherwise it may be catching a wrong thing
+        highest = []
+        for i, checker in enumerate(names_list):
+            count = 0
+            for name in checker:
+                if name.strip():
+                    if len(name.split()) > 5:
+                        names_list[i].remove(name)
+                        continue
+                    first = (name.encode('ascii', 'ignore')).split()[0]
+                    first = first.translate(string.maketrans('', ''), string.punctuation)
+                    if first != [] and (first in self.names or first in self.titles):
+                        count += 1
+            if count > 3:
+                highest.append(i)
+
+        names = []
+        for i in highest:
+            names += names_list[i]
+
+        for i in range(len(names)):
+            names[i] = (names[i].encode('ascii', 'ignore')).strip()
+        names = filter(bool, names)
+
+        return names
 
     """ Take out the tags that don't have an ending tag, such as <input> """
     @staticmethod
@@ -139,25 +191,6 @@ class ContactNameScraper:
             elif '/' in t and (t[0] + t[2:]) not in tag_list:
                 tag_list = [x for x in tag_list if x != t]
         return tag_list
-
-    def parse(self, response):
-        # Could I confirm a name is actually a name and then grab the tag that name is in and assume that other names
-        # on the page will also be in the same tags?
-
-        hxs = HtmlXPathSelector(response)
-
-        xpaths = self.find_all_xpaths(hxs)
-
-        names_list = []
-        for xpath in xpaths:
-            names_list += hxs.select(xpath).extract()
-
-        for i, name in enumerate(names_list):
-            names_list[i] = (names_list[i].encode('ascii', 'ignore')).strip()
-            print(name)
-
-        pdb.set_trace()
-        return names_list
 
 
 class ContactPositionScraper:
