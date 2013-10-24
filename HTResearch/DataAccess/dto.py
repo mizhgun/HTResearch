@@ -45,4 +45,4 @@ class URLMetadataDTO(mongo.Document):
     last_visited = mongo.DateTimeField(db_field='v')
     score = mongo.IntField(db_field='s')
     update_freq = mongo.IntField(db_field='f')
-    checksum = mongo.IntField(db_field='c')
+    checksum = mongo.BinaryField(max_bytes=16, db_field='c')

@@ -8,6 +8,10 @@ import os
 import string
 import datetime
 import hashlib
+from HTResearch.DataAccess.dao import *
+from HTResearch.DataAccess.factory import *
+from HTResearch.DataModel.converter import *
+from bson.binary import Binary, MD5_SUBTYPE
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
@@ -392,10 +396,20 @@ class UrlMetadataScraper:
         # python hashlib doesn't output integers, so we have to do it ourselves.
         hex_hash = md5.hexdigest()
         # this will be a 128 bit number
-        metadata['checksum'] = int(hex_hash, 16)
+        metadata['checksum'] = Binary(data=bytes(int(hex_hash, 16)), subtype=MD5_SUBTYPE)
 
         # TODO: Make DAO call to check if this URL was in the database.
-        # Compare checksums and update last_visited and update_freq using the existing URL
+        # default values for first time
+        metadata['update_freq'] = 0
+
+        # Compare checksums and update update_freq using the existing URL
+        dao = DAOFactory.get_instance(URLMetadataDAO)
+        exist_url_dto = dao.find(url=response.url)
+        if exist_url_dto is not None:
+            exist_url = DTOConverter.from_dto(URLMetadataDTO, exist_url_dto)
+            if exist_url.checksum is not None and exist_url.checksum != metadata['checksum']:
+                metadata['update_freq'] = exist_url.update_freq + 1
+
         # TODO: Score the page.
         # Ideas for page scoring:  Simple Google PageRank using references to/from other pages; Keyword Search;
         # Update frequency; User Feedback (the more a page is clicked the more we want to keep it updated)
