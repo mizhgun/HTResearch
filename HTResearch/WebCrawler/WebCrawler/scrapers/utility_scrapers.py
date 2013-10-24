@@ -93,7 +93,7 @@ class ContactNameScraper:
                         tags = [x for x in tags if x != t]
 
                 parent_counter = self.count_parent_tags(tags)
-                xpaths.append(self.find_xpath(tags, parent_counter, item, hxs))
+                xpaths.append(self.find_xpath(tags, parent_counter))
 
         # go as far as 40% of the xpaths potential names
         #threshold = 0.4
@@ -113,7 +113,7 @@ class ContactNameScraper:
 
     """ Returns one 'xpath' string """
     @staticmethod
-    def find_xpath(tag_list, parent_counter, item, hxs):
+    def find_xpath(tag_list, parent_counter):
         i = 0
         while i < parent_counter or i < len(tag_list):
             tag = tag_list[i]
@@ -142,9 +142,6 @@ class ContactNameScraper:
         return s
 
     def parse(self, response):
-        # Could I confirm a name is actually a name and then grab the tag that name is in and assume that other names
-        # on the page will also be in the same tags?
-
         hxs = HtmlXPathSelector(response)
 
         xpaths = self.find_all_xpaths(hxs)
@@ -154,12 +151,15 @@ class ContactNameScraper:
             names_list.append(hxs.select(xpath).extract())
 
         # check which xpath has the most names
-        # if the xpath has at least 5 valid names, then keep it, otherwise it may be catching a wrong thing
+        # if the xpath has at least 4 valid names (maybe change this in the future somehow?),
+        # then keep it, otherwise it may be catching a wrong thing
         highest = []
         for i, checker in enumerate(names_list):
             count = 0
             for name in checker:
                 if name.strip():
+                    # Maybe change the below too? If the name is a link's text, then it will catch other links text,
+                    # which can be a sentence, so assume a certain amount of words for a name? In this case 5 or less
                     if len(name.split()) > 5:
                         names_list[i].remove(name)
                         continue
