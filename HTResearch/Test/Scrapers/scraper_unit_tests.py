@@ -140,6 +140,29 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test, links, "URL " + str(test) + " was not found")
 
+    def test_org_type_scraper(self):
+        test_files = [
+            "httpbombayteenchallengeorg",
+            "httpwwwnsagov",
+            "httpwwwhalftheskymovementorg",
+        ]
+
+        org_type_scraper = OrgTypeScraper()
+        types = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = org_type_scraper.parse(response)
+                if isinstance(ret, type([])):
+                    types = types + ret
+                else:
+                    types.append(ret)
+
+        assert_list = ['religious', 'government', 'protection']
+        for test in assert_list:
+            self.assertIn(test, types, 'Type \'' + test + '\' not found')
+
     def test_organization_scraper(self):
         p = subprocess.Popen('scrapy crawl organization_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              shell=True)
@@ -184,17 +207,6 @@ class ScraperTests(unittest.TestCase):
                 self.assertEqual(assert_val[attr], org[attr],
                                  'Organization does not match - attribute \'' + attr + '\' is ' + str(
                                      org[attr]) + ', should be ' + str(assert_val[attr]))
-
-    def test_org_type_scraper(self):
-        p = subprocess.Popen('scrapy crawl org_type_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                             shell=True)
-        output, error = p.communicate()
-        types = output.splitlines()
-        types.pop()
-
-        assert_list = ['religious', 'government', 'protection']
-        for test in assert_list:
-            self.assertIn(test, types, 'Type \'' + test + '\' not found')
 
     def test_phone_number_scraper(self):
         # Runs the Test spider and pipes the printed output to "output"
