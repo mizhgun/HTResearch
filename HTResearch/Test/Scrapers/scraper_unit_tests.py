@@ -160,8 +160,12 @@ class ScraperTests(unittest.TestCase):
     def test_org_name_scraper(self):
         test_files = [
             "httpbombayteenchallengeorg",
-            "httpwwwnsagov",
+            "httpwwwprajwalaindiacomhomehtml",
             "httpwwwhalftheskymovementorg",
+            "httpapneaaporg",
+            "httpwwwbbaorgin",
+            "httpwwwijmorg",
+            "httpwwwtissedu",
         ]
 
         org_name_scraper = OrgNameScraper()
@@ -176,9 +180,17 @@ class ScraperTests(unittest.TestCase):
                 else:
                     names.append(ret)
 
-        assert_list = []
+        assert_list = [
+            {'name': "Bombay Teen Challenge"},
+            {'name': "PRAJWALA"},
+            {'name': "Half the Sky"},
+            {'name': "Apne Aap"},
+            {'name': "Bachpan Bachao Andolan"},
+            {'name': "Tata Institute of Social Sciences"},
+            {'name': "International Justice Mission"},
+        ]
         for test in assert_list:
-            self.assertIn(test, names, 'Name \'' + test + '\' not found')
+            self.assertIn(test, names, 'Name \'' + str(test['name']) + '\' not found')
 
     def test_org_type_scraper(self):
         test_files = [
