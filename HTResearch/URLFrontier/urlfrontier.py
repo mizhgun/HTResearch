@@ -33,6 +33,10 @@ class URLFrontier(object):
             pass
         return self._urls.get()
 
+    @property
+    def empty(self):
+        return self._urls.empty()
+
     def put_url(self, url):
         if not self._urls.full():
             self._urls.put(url)
