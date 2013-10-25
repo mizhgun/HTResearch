@@ -3,10 +3,11 @@ from scrapy.selector import HtmlXPathSelector
 from ..items import *
 import itertools
 import re
-from urlparse import urlparse
+from urlparse import urlparse, urljoin
 import os
 import string
 from link_scraper import LinkScraper
+import scrapy
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
@@ -245,19 +246,84 @@ class OrgPartnersScraper:
 
     def __init__(self):
         self._link_scraper = LinkScraper()
+        self._partner_text = 'partner'
+        self._netloc_ignore = [
+            'google.com',
+            'www.google.com',
+            'twitter.com',
+            'www.twitter.com',
+            'facebook.com',
+            'www.facebook.com',
+            'bit.ly',
+            'ow.ly',
+        ]
+
+    # Find the path to selected node(s)
+    def _path_to(self, sel):
+        path = ''
+        while sel:
+            tags = sel.select('name()').extract()
+            path = '/%s%s' % (tags[0], path)
+            sel = sel.select('..')
+        return path
+
+    # Find out how many external links are in a list
+    # (returns 0 if not all external links)
+    def _external_link_count(self, page_url, sel):
+        count = 0
+        checked_netlocs = []
+        for href in sel.select('@href').extract():
+            link_url = urlparse(urljoin(page_url.geturl(), href))
+            # link is external
+            if link_url.netloc != page_url.netloc:
+                # link is not to an ignored netloc
+                if link_url.netloc not in self._netloc_ignore:
+                    checked_netlocs.append(link_url.netloc)
+                    count += 1
+        return count
 
     def parse(self, response):
+
+        hxs = HtmlXPathSelector(response)
         partners = []
 
-        links = self._link_scraper.parse(response)
-        page_url = urlparse(response.url)
+        # Look for a tag indicating partnerships (not inside links)
+        elements = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
+        partner_page = False
+        for e in elements:
+            found = hxs.select("//%s[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'partner')]" % e)
+            if found and '/a/' not in self._path_to(found):
+                partner_page = True
+                break
 
-        for link in links:
-            link_url = urlparse(link['url'])
-            if page_url.netloc != link_url.netloc:
-                partner = ScrapedOrganization()
-                partner['organization_url'] = '%s://%s/' % (link_url.scheme, link_url.netloc)
-                partners.append(partner)
+        # Only scrape partner organizations if this page indicates that it lists partners
+        if partner_page:
+            page_url = urlparse(response.url)
+
+            # Find the largest group of external links on the page
+            partner_links = []
+            checked_paths = []
+            max_count = 0
+            all_links = hxs.select('//a')
+            for link in all_links:
+                path = self._path_to(link)
+                # Don't check groups of links more than once
+                if path not in checked_paths:
+                    checked_paths.append(path)
+                    related_links = hxs.select(path)
+                    count = self._external_link_count(page_url, related_links)
+                    if count > max_count:
+                        max_count = count
+                        partner_links = related_links
+
+            # Add organizations with links' URLs
+            partner_hrefs = partner_links.select('@href').extract()
+            for href in partner_hrefs:
+                link_url = urlparse(urljoin(page_url.geturl(), href))
+                if link_url.netloc not in self._netloc_ignore + [page_url.netloc]:
+                    partner = ScrapedOrganization()
+                    partner['organization_url'] = '%s://%s/' % (link_url.scheme, link_url.netloc)
+                    partners.append(partner)
 
         return partners
 

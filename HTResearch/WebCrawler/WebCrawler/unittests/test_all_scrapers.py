@@ -74,6 +74,7 @@ class ScraperTests(unittest.TestCase):
     def test_organization_scraper(self):
         p = subprocess.Popen('scrapy crawl organization_scraper_test', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
+        print(error)
         org = literal_eval(output)
         assert_val = {
             'name': [], #'Bombay Teen Challenge', # not yet implemented
@@ -139,13 +140,22 @@ class ScraperTests(unittest.TestCase):
         print(error)
         orgs = literal_eval(output)
 
+        # Make sure organizations with these URLs were found
         assert_list = [
             'http://www.acumenfund.org/',
             'http://www.afghaninstituteoflearning.org/',
-            'http://www.ajws.org/',
         ]
+        print(map(lambda org: org['organization_url'], orgs))
         for test in assert_list:
             self.assertIn(test, map(lambda org: org['organization_url'], orgs), 'Organization with URL %s not found' % test)
+
+        # Make sure these urls were NOT found - they are not partner organizations
+        assert_list = [
+            'http://www.pbs.org/',
+            'http://www.cpb.org/',
+        ]
+        for test in assert_list:
+            self.assertNotIn(test, map(lambda org: org['organization_url'], orgs), 'Invalid URL (not a partner org): %s' % test)
 
 if __name__ == '__main__':
     try:
