@@ -1,9 +1,12 @@
 var searchResultsVisible = false;
-var dummyOrganization;
+var map;
+var initialLatLng = new google.maps.LatLng(21,78);
+var geocoder = new google.maps.Geocoder();
+var dummyAddress = "9-10-11 Nehru Place, New Delhi - 110019 India";
 
 function initialize() {
 	var mapOptions = {
-	  center: new google.maps.LatLng(21, 78),
+	  center: initialLatLng,
 	  zoom: 5,
 	  mapTypeId: google.maps.MapTypeId.ROADMAP,
 	  panControl: false,
@@ -11,7 +14,8 @@ function initialize() {
 	  scaleControl: false,
 	};
 
-	var map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
+	//Didn't accept a jquery selector
+	map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
 	//var mapControls = new GLargeMapControl3D();
 	//var bottomLeft = new GControlPosition(G_ANCHOR_BOTTOM_LEFT, new GSize(10,10));
 	//map.removeControl(mapTypeControl)
@@ -39,7 +43,7 @@ function initialize() {
 
 	$('#search-box').keypress(_.debounce(showSearchResults, 300));
 	$('#search-box').keyup(_.debounce(hideSearchResults, 100));
-	$('a').click(function(e){console.log(this.innerHTML)});
+	$('a').click(function(e){geocoder.geocode({'latLng': initialLatLng, 'address': dummyAddress}, plotOrganization)});
 }
 
 function showSearchResults() {
@@ -63,6 +67,18 @@ function hideSearchResults(e) {
 
 		searchResultsVisible = false;
 	}
+}
+
+function plotOrganization(results, status) {
+	if (status == google.maps.GeocoderStatus.OK) {
+        map.setCenter(results[0].geometry.location);
+        var marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
+        });
+      } else {
+        alert("Geocode was not successful for the following reason: " + status);
+      }
 }
 
 google.maps.event.addDomListener(window, 'load', _.once(initialize));
