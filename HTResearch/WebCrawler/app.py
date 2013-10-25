@@ -5,7 +5,7 @@ from scrapy.utils.project import get_project_settings
 from WebCrawler.spiders import *
 
 
-spider = OrgSpider()
+spider = StopTraffickingSpider()
 settings = get_project_settings()
 crawler = Crawler(settings)
 crawler.configure()
