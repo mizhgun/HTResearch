@@ -27,10 +27,12 @@ class OrgSpider(BaseSpider):
         We will get the first url to crawl from this.
         """
 
+        print "sup"
         # first URL to begin crawling
         # Returns a URLMetadata model, so we have to pull the url field
-        start_url = self.url_frontier.next_url().url
+        start_url = "https://bombayteenchallenge.org/"  ##self.url_frontier.next_url().url
 
+        print start_url
         if __debug__:
             log.msg('START_REQUESTS : start_url = %s' % start_url)
 
@@ -48,6 +50,7 @@ class OrgSpider(BaseSpider):
             else:
                 yield ret
 
+        print response.url
         yield Request(self.url_frontier.next_url().url, dont_filter=True)
 
 
