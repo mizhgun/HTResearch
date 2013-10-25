@@ -6,6 +6,7 @@ import re
 from urlparse import urlparse
 import os
 import string
+import pdb
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
@@ -144,23 +145,39 @@ class IndianPhoneNumberScraper:
         return phone_nums_list
 
 
-class NameScraper:
-
-    def __init__(self):
-        pass
-
-    def parse(self, response):
-        return [] # not yet implemented
-
-
 class OrgNameScraper:
 
     def __init__(self):
+        self.split_punctuation = re.compile(r"[ \w']+")
         pass
 
     def parse(self, response):
-        return []
+        hxs = HtmlXPathSelector(response)
 
+        url = response.url
+        url_split = re.findall(self.split_punctuation, url)
+
+        # first check the <title> tag as a whole, then split it by punctuation, then check if any of the split elements
+        # are in the url by splitting again and if a whole word is, then take that split element,
+        # also check if the initials make the url (not only are in the url), get teh initials using the stopwords.txt
+        # and removing them from the split element, so Tata Institute of Social Sciences would be Tata Institute Social
+        # Sciences, making the initials TISS for tiss.edu
+        title_tag = hxs.select('//./title/text()').extract()[0]
+        title_tag = re.findall(self.split_punctuation, title_tag)
+
+        for potential_name in title_tag:
+            # first check if whole string is the url
+            whole_string = potential_name.replace(' ', '').lower()
+            for split_element in url_split:
+                if whole_string == split_element:
+                    return potential_name.encode('ascii', 'ignore')
+
+            # check if parts of the string is in the url
+            potential_name_split = potential_name.split()
+            for split_element.lower() in potential_name_split:
+
+
+            # check if the initials are the url
 
 class OrgAddressScraper:
     def __init__(self):
