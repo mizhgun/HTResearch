@@ -54,6 +54,50 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test, addresses, str(test) + " not found")
 
+    def test_contact_name_scraper(self):
+        test_files = [
+            "httpapneaaporgaboutusourboard",
+        ]
+
+        contact_name_scraper = ContactNameScraper()
+        names = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = contact_name_scraper.parse(response)
+                if isinstance(ret, type([])):
+                    names = names + ret
+                else:
+                    names.append(ret)
+
+        # Hardcoded results based on the sites that were crawled
+        assert_list = [{'name': "Gloria Steinem"},
+                       {'name': "Jennifer Buffett"},
+                       {'name': "Peter Buffett"},
+                       {'name': "Vishakha Desai"},
+                       {'name': "Leslie Bluhm"},
+                       {'name': "Judy Gold"},
+                       {'name': "Ashley Judd"},
+                       {'name': "Jounghoon Lee"},
+                       {'name': "Pamela Shifman"},
+                       {'name': "Lekha Poddar"},
+                       {'name': "Namita Saraf"},
+                       {'name': "Nayantara Palchoudhuri"},
+                       {'name': "Pallavi Shroff"},
+                       {'name': "Sujata Prasad"},
+                       {'name': "Suresh Neotia"},
+                       {'name': "Lata Bajoria"},
+                       {'name': "Raju Bharat"},
+                       {'name': "Manish Agarwal"},
+                       {'name': "Lela Goren"},
+                       {'name': "Ellyson Perkins"},
+                       {'name': "Mona Sinha"},
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, names, 'Name {0} not found'.format(str(test)))
+
     def test_email_scraper(self):
         test_files = [
             "httpnhrcnicinContactUshtm",
