@@ -71,7 +71,7 @@ class OrganizationDAO(DAO):
             [ContactDAO().create_update(c) for c in org_dto.contacts]
 
             if org_dto.id is None:
-                existing_dto = OrganizationDTO.objects(email=org_dto.email).first()
+                existing_dto = OrganizationDTO.objects(email_key__in=org_dto.emails).first()
                 if existing_dto is not None:
                     self.merge_documents(existing_dto, org_dto)
                     return

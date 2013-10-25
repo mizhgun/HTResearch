@@ -18,7 +18,13 @@ class DatabaseInteractionTest(unittest.TestCase):
                                email="jdegner0129@gmail.com")
         self.organization = Organization(name="Yee University",
                                          organization_url="http://com.bee.yee",
-                                         contacts=[self.contact])
+                                         contacts=[self.contact],
+                                         email_key="bee@yee.com",
+                                         emails=["info@yee.com", "stuff@yee.com"],
+                                         phone_numbers=[5555555555, "(555)555-5555"],
+                                         facebook="http://www.facebook.com/yee",
+                                         twitter="http://www.twitter.com/yee"
+                                         )
         self.publication = Publication(title="The Book of Yee",
                                        authors=[self.contact])
         self.urlmetadata = URLMetadata(url="http://google.com")
@@ -67,10 +73,20 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         assert_org = org_dao.find(id=org_dto.id,
                                   name=org_dto.name,
-                                  organization_url=org_dto.organization_url)
+                                  organization_url=org_dto.organization_url,
+                                  email_key=org_dto.email_key,
+                                  emails=org_dto.emails,
+                                  phone_numbers=org_dto.phone_numbers,
+                                  facebook=org_dto.facebook,
+                                  twitter=org_dto.twitter)
         self.assertEqual(assert_org.name, org_dto.name)
         self.assertEqual(assert_org.organization_url, org_dto.organization_url)
         self.assertEqual(assert_org.contacts, org_dto.contacts)
+        self.assertEqual(assert_org.email_key, org_dto.email_key)
+        self.assertEqual(assert_org.emails, org_dto.emails)
+        self.assertEqual(assert_org.phone_numbers, org_dto.phone_numbers)
+        self.assertEqual(assert_org.facebook, org_dto.facebook)
+        self.assertEqual(assert_org.twitter, org_dto.twitter)
 
         print 'Testing organization editing ...'
         org_dto.name = "Yee Universityee"
