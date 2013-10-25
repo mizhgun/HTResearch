@@ -176,9 +176,9 @@ class ScraperTests(unittest.TestCase):
                 else:
                     types.append(ret)
 
-        assert_list = ['religious', 'government', 'protection']
+        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PROTECTION]
         for test in assert_list:
-            self.assertIn(test, types, 'Type \'' + test + '\' not found')
+            self.assertIn(test, types, 'Type \'' + OrgTypesEnum.reverse_mapping[test] + '\' not found')
 
     def test_organization_scraper(self):
         test_files = [
@@ -200,9 +200,9 @@ class ScraperTests(unittest.TestCase):
         assert_list = [{
             'name': None, #'Bombay Teen Challenge', # not yet implemented
             'types': [
-                'religious',
-                'protection',
-                'education'
+                OrgTypesEnum.RELIGIOUS,
+                OrgTypesEnum.EDUCATION,
+                OrgTypesEnum.PREVENTION,
             ],
             'phone_number': [
                 {'phone_number': '16157124863'},

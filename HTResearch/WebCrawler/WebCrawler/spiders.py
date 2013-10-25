@@ -1,6 +1,7 @@
 from urlparse import urljoin
 
 from scrapers.document_scrapers import *
+from scrapers.link_scraper import *
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
@@ -32,31 +33,23 @@ class BasicCrawlSpider(BaseSpider):
 
 class OrgSpider(BaseSpider):
     name = 'org_spider'
-    start_urls = ['']
+    start_urls = ['http://www.stoptrafficking.in']
 
     def __init__(self, *args, **kwargs):
-        self.saved_path = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
         super(OrgSpider, self).__init__(*args, **kwargs)
-        self.scraper = OrganizationScraper()
-
-        if not os.path.exists("Output/"):
-            os.makedirs("Output/")
-        else:
-            try:
-                os.remove("Output/org_scraper_output.txt")
-            except OSError:
-                pass
-
-    def __del__(self):
-        os.chdir(self.saved_path)
+        self.scrapers = []
+        self.scrapers.append(OrganizationScraper())
+        self.scrapers.append(LinkScraper())
 
     def parse(self, response):
-        results = self.scraper.parse(response)
+        results = []
+        for scraper in self.scrapers:
+            ret = scraper.parse(response)
+            if isinstance(ret, type([])):
+                results = results + ret
+            else:
+                results.append(ret)
 
-        with open("Output/org_scraper_output.txt", 'a') as f:
-            f.write(results)
         return results
 
 

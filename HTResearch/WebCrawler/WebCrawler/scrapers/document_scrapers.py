@@ -1,10 +1,12 @@
 from ..items import *
 from utility_scrapers import *
 
+
 class Contact:
 
     def __init__(self):
         contact = None
+
 
 class OrganizationScraper():
     _scrapers = {
