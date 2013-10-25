@@ -14,7 +14,8 @@ from HTResearch.DataModel.converter import DTOConverter
 
 class URLFrontierTest(unittest.TestCase):
     def setUp(self):
-        pass
+        with DBConnection() as c:
+            c.dropall()
 
     def tearDown(self):
         with DBConnection() as c:
@@ -24,45 +25,25 @@ class URLFrontierTest(unittest.TestCase):
         start_time = datetime.now()
         url_dao = DAOFactory.get_instance(URLMetadataDAO)
 
-        # Store URLs with an increasing timedelta from the start time of the test
+        print 'Creating 2000 URLs'
         url_list = []
         for x in range(2000):
             url_list.append(URLMetadata(url="http://test" + str(x) + ".com",
                                         last_visited=(start_time - timedelta(days=x))))
 
-        # To DTOs
+        print 'Converting these URLs to DTOs'
         url_dtos = [DTOConverter.to_dto(URLMetadataDTO, u) for u in url_list]
 
-        # Save to the database
+        print 'Saving...'
         for dto in url_dtos:
             url_dao.create_update(dto)
 
-        # Create the URLFrontier
-        frontier = URLFrontier()
-
-        # Pop the least recently visited URL
-        old_url = frontier.next_url
-
-        # Assert that the last visited date matches the last element in urllist
-        # and that the size of the queue is 999
-        self.assertEqual(old_url.last_visited, url_list[1999].last_visited)
-        self.assertEqual(len(frontier), 999)
-
-        # Push a new URL to the queue
-        frontier.put_url("http://test2.com")
-
-        # Assert that the queue is now full
-        self.assertEqual(len(frontier), 1000)
-
-        # Pop every URL
-        for i in range(1000):
-            next_url = frontier.next_url
-
-        # Make sure the URL we just pushed is what we get last and
-        # that the queue is empty
-
-        self.assertEqual(next_url, "http://test2.com")
-        self.assertEqual(len(frontier), 0)
+        print 'Create the URLFrontier'
+        with URLFrontier() as frontier:
+            print 'Pop the least recently visited URL'
+            old_url = frontier.next_url
+            print 'Assert that the last visited date matches the last element in urllist'
+            self.assertEqual(old_url.last_visited, url_list[1999].last_visited)
 
 if __name__ == '__main__':
     try:

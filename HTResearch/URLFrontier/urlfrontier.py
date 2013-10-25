@@ -1,6 +1,4 @@
-from Queue import Queue
-from Queue import Empty
-from Queue import Full
+from multiprocessing import Queue, Process
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.DataModel.converter import DTOConverter
 from HTResearch.DataAccess.dao import URLMetadataDAO
@@ -13,34 +11,31 @@ class URLFrontier(object):
     def __init__(self):
         self._urls = Queue(maxsize=1000)
         self._factory = DAOFactory.get_instance(URLMetadataDAO)
-        self._size = 0
-        self._populate()
+        self._cache_process = Process(target=self._monitor_cache, args=(self._urls,))
 
-    def __len__(self):
-        return self._size
+    def __enter__(self):
+        self._cache_process.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._cache_process.terminate()
+
+    def _monitor_cache(self, queue):
+        while True:
+            if queue.empty():
+                urls = self._factory.findmany(1000, "last_visited")
+                for u in urls:
+                    queue.put(u)
 
     @property
     def next_url(self):
-        try:
-            return self._urls.get()
-        except Empty:
-            self._populate()
-            return self._urls.get()
-        finally:
-            self._size -= 1
+        while self._urls.empty():
+            pass
+        return self._urls.get()
 
     def put_url(self, url):
-        try:
+        if not self._urls.full():
             self._urls.put(url)
-            self._size += 1
-        except Full:
-            url_obj = URLMetadata(url=url)
-            url_dto = DTOConverter.to_dto(URLMetadataDTO, url_obj)
-            self._factory.create_update(url_dto)
-
-    def _populate(self):
-        urls = self._factory.findmany(1000, "last_visited")
-
-        for u in urls:
-            self._urls.put(u)
-            self._size += 1
+        url_obj = URLMetadata(url=url)
+        url_dto = DTOConverter.to_dto(URLMetadataDTO, url_obj)
+        self._factory.create_update(url_dto)
