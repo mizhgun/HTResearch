@@ -22,18 +22,22 @@ class Organization(object):
     """A Model class for an anti-trafficking organization."""
 
     def __init__(self, name=None, address=None,
-                 types=[], phone_number=None,
-                 email=None, contacts=[],
+                 types=[], phone_numbers=[], email_key=None,
+                 emails=[], contacts=[],
                  organization_url=None,
-                 partners=[]):
+                 partners=[], facebook=None, twitter=None):
         self.name = name
         self.address = address
         self.types = types
-        self.phone_number = phone_number
-        self.email = email
+        self.phone_numbers = phone_numbers
+        self.email_key = email_key
+        self.emails = emails
         self.contacts = contacts
         self.organization_url = organization_url
         self.partners = partners
+        self.facebook = facebook
+        self.twitter = twitter
+
 
 
 class Publication(object):
