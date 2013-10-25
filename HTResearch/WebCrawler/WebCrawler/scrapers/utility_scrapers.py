@@ -211,7 +211,8 @@ class OrgAddressScraper:
             item['city'] = city_and_zip[i][0]
             item['zip_code'] = city_and_zip[i][1]
             address_list.append(item)
-        return address_list
+        # the database is expecting a single string, so I'm going to just return first for now -Paul-
+        return address_list[0]['city'] + " " + address_list[0]['zip_code'] if len(address_list) > 0 else ''
 
     @staticmethod
     def flatten(l):
