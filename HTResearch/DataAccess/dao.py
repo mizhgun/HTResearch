@@ -2,13 +2,42 @@ from dto import *
 from connection import DBConnection
 
 
-class ContactDAO(object):
-    """A DAO for the Contact document"""
+class DAO(object):
+    """
+    A generic DAO class that may be subclassed by DAOs for operations on
+    specific documents.
+    """
+
+    @staticmethod
+    def merge_documents(dto, merge_dto):
+        with DBConnection():
+            attributes = merge_dto._data
+            for key in attributes:
+                if attributes[key] is not None:
+                    cur_attr = getattr(dto, key)
+                    if cur_attr is None:
+                        setattr(dto, key, attributes[key])
+                    else:
+                        # TODO: Maybe we should merge all reference documents, as well?
+                        pass
+            dto.save()
+
+
+class ContactDAO(DAO):
+    """
+    A DAO for the Contact document
+    """
 
     def create_update(self, contact_dto):
         with DBConnection():
             [OrganizationDAO().create_update(o) for o in contact_dto.organizations]
             [PublicationDAO().create_update(p) for p in contact_dto.publications]
+
+            if contact_dto.id is None:
+                existing_dto = ContactDTO.objects(email=contact_dto.email).first()
+                if existing_dto is not None:
+                    self.merge_documents(existing_dto, contact_dto)
+                    return
 
             contact_dto.save()
 
@@ -32,12 +61,20 @@ class ContactDAO(object):
                 return ContactDTO.objects(**constraints)[:num_elements]
 
 
-class OrganizationDAO(object):
-    """A DAO for the Organization document"""
+class OrganizationDAO(DAO):
+    """
+    A DAO for the Organization document
+    """
 
     def create_update(self, org_dto):
         with DBConnection():
             [ContactDAO().create_update(c) for c in org_dto.contacts]
+
+            if org_dto.id is None:
+                existing_dto = OrganizationDTO.objects(email=org_dto.email).first()
+                if existing_dto is not None:
+                    self.merge_documents(existing_dto, org_dto)
+                    return
 
             org_dto.save()
 
@@ -61,12 +98,20 @@ class OrganizationDAO(object):
                 return OrganizationDTO.objects(**constraints)[:num_elements]
 
 
-class PublicationDAO(object):
-    """A DAO for the Publication document"""
+class PublicationDAO(DAO):
+    """
+    A DAO for the Publication document
+    """
 
     def create_update(self, pub_dto):
         with DBConnection():
             [ContactDAO().create_update(c) for c in pub_dto.authors]
+
+            if pub_dto.id is None:
+                existing_dto = PublicationDTO.objects(title=pub_dto.title).first()
+                if existing_dto is not None:
+                    self.merge_documents(existing_dto, pub_dto)
+                    return
 
             if pub_dto.publisher is not None:
                 ContactDAO().create_update(pub_dto.publisher)
@@ -93,12 +138,20 @@ class PublicationDAO(object):
                 return PublicationDTO.objects(**constraints)[:num_elements]
 
 
-class URLMetadataDAO(object):
-    """A DAO for the URLMetadata document"""
+class URLMetadataDAO(DAO):
+    """
+    A DAO for the URLMetadata document
+    """
 
     def create_update(self, url_dto):
         with DBConnection():
-            url_dto.save(cascade=True)
+            if url_dto.id is None:
+                existing_dto = URLMetadataDTO.objects(url=url_dto.url).first()
+                if existing_dto is not None:
+                    self.merge_documents(existing_dto, url_dto)
+                    return
+
+            url_dto.save()
 
     def delete(self, url_dto):
         with DBConnection():

@@ -27,7 +27,7 @@ class URLFrontierTest(unittest.TestCase):
         # Store URLs with an increasing timedelta from the start time of the test
         url_list = []
         for x in range(2000):
-            url_list.append(URLMetadata(url="http://test.com",
+            url_list.append(URLMetadata(url="http://test" + str(x) + ".com",
                                         last_visited=(start_time - timedelta(days=x))))
 
         # To DTOs
