@@ -1,23 +1,25 @@
-from urlparse import urljoin
+from HTResearch.URLFrontier.urlfrontier import URLFrontier
 from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import LinkScraper
 
 from scrapers.document_scrapers import *
-from scrapers.link_scraper import *
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
-from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request, TextResponse
 from scrapy import log
 import os
-import pdb
 
 
-class BasicCrawlSpider(BaseSpider):
-    name = 'ht_research'
-    # empty list means all domains allowed
-    allowed_domains = []
+class OrgSpider(BaseSpider):
+    name = 'org_spider'
+    # empty start_urls, we're setting our own
     start_urls = []
-    link_scraper = LinkScraper()
+
+    def __init__(self, *args, **kwargs):
+        super(OrgSpider, self).__init__(*args, **kwargs)
+        self.scrapers = []
+        self.scrapers.append(OrganizationScraper())
+        self.scrapers.append(LinkScraper())
+        self.url_frontier = URLFrontier()
 
     def start_requests(self):
         """
@@ -26,9 +28,8 @@ class BasicCrawlSpider(BaseSpider):
         """
 
         # first URL to begin crawling
-        # TODO: use the actual URL Frontier, for now use test data
-        # start_url = url_frontier.next_url()
-        start_url = 'http://www.shaktivahini.org/'
+        # Returns a URLMetadata model, so we have to pull the url field
+        start_url = self.url_frontier.next_url().url
 
         if __debug__:
             log.msg('START_REQUESTS : start_url = %s' % start_url)
@@ -39,38 +40,15 @@ class BasicCrawlSpider(BaseSpider):
         yield request
 
     def parse(self, response):
-        if isinstance(response, TextResponse):
-            links = self.link_scraper.parse(response)
-            # Note: These links are ScrapedURL Items, NOT Requests
-            for link in links:
-                yield link
-
-        # TODO: Yield the next url from URL Frontier
-        # yield Request(url_frontier.next_url())
-        for link in links:
-            yield Request(link['url'], dont_filter=True)
-
-
-class OrgSpider(BaseSpider):
-    name = 'org_spider'
-    start_urls = ['http://www.stoptrafficking.in']
-
-    def __init__(self, *args, **kwargs):
-        super(OrgSpider, self).__init__(*args, **kwargs)
-        self.scrapers = []
-        self.scrapers.append(OrganizationScraper())
-        self.scrapers.append(LinkScraper())
-
-    def parse(self, response):
-        results = []
         for scraper in self.scrapers:
             ret = scraper.parse(response)
             if isinstance(ret, type([])):
-                results = results + ret
+                for item in ret:
+                    yield item
             else:
-                results.append(ret)
+                yield ret
 
-        return results
+        yield Request(self.url_frontier.next_url().url, dont_filter=True)
 
 
 class StopTraffickingSpider(BaseSpider):
