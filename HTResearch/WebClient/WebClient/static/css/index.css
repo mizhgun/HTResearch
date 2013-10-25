@@ -172,27 +172,41 @@ body {
     position: absolute;
     top: 0px;
     left: 0px;
-    padding-bottom: 5px;
     font-size: x-large;
 }
 
 #organization-search-list {
     position: absolute;
     left: 5px;
+    top: 50px;
     padding-bottom: 5px;
-    font-size: medium;
+    font-size: small;
 }
 
 #contact-list-header {
     position: absolute;
+    top: 175px;
     left: 0px;
-    padding-bottom: 5px;
     font-size: x-large;
 }
 
 #contact-search-list {
-    position: relative;
+    position: absolute;
     left: 5px;
-    padding-bottom: 5px;
-    font-size: medium;
+    top: 225px;
+    font-size: small;
+}
+
+#publication-list-header {
+    position: absolute;
+    top: 350px;
+    left: 0px;
+    font-size: x-large;
+}
+
+#publication-search-list {
+    position: absolute;
+    left: 5px;
+    top: 400px;
+    font-size: small;
 }

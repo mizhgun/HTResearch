@@ -1,4 +1,5 @@
 var searchResultsVisible = false;
+var dummyOrganization;
 
 function initialize() {
 	var mapOptions = {
@@ -38,10 +39,11 @@ function initialize() {
 
 	$('#search-box').keypress(_.debounce(showSearchResults, 300));
 	$('#search-box').keyup(_.debounce(hideSearchResults, 100));
+	$('a').click(function(e){console.log(this.innerHTML)});
 }
 
 function showSearchResults() {
-	if($('#search-box').val().length > 0 && searchResultsVisible == false) {
+	if($('#search-box').val().length > 0 && !searchResultsVisible) {
 		$('#search-results-div').toggle("slide", {
 	        direction: "up",
 	        distance: window.height - $('#search-box').css('top')
@@ -53,7 +55,7 @@ function showSearchResults() {
 
 function hideSearchResults(e) {
 	//Falsy bullcrap
-	if($('#search-box').val().length == 0 && searchResultsVisible == true) {
+	if($('#search-box').val().length === 0 && searchResultsVisible) {
 		$('#search-results-div').toggle("slide", {
 	        direction: "up",
 	        distance: window.height - $('#search-box').css('top')
