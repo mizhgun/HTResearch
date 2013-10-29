@@ -343,61 +343,6 @@ class IndianPhoneNumberScraper:
         return phone_nums_list
 
 
-class OrgNameScraper:
-
-    def __init__(self):
-        self._split_punctuation = re.compile(r"[ \w']+")
-        self._saved_path = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-        #Load words to be ignored
-        with open("../Resources/stopwords.txt") as f:
-            self._stopwords = f.read().splitlines()
-
-    def __del__(self):
-        os.chdir(self._saved_path)
-
-    def parse(self, response):
-        hxs = HtmlXPathSelector(response)
-
-        url = response.url
-        url = urlparse(url).netloc
-        url = url.split('.')
-
-        # url contains a www. or something like that
-        if len(url) > 2:
-            url = url[1]
-        # otherwise there's no www.
-        else:
-            url = url[0]
-
-        title_tag = hxs.select('//./title/text()').extract()[0]
-        title_tag = re.findall(self._split_punctuation, title_tag)
-
-        org_name = ScrapedOrgName()
-        org_name['name'] = ''
-        for potential_name in title_tag:
-            # first check if whole string is the url
-            whole_string = potential_name.replace(' ', '').lower()
-            if whole_string == url:
-                org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
-                break
-
-            # check if parts of the string is the url
-            potential_name_split = potential_name.split()
-            for i, split_element in enumerate(potential_name_split):
-                split_element = split_element.lower()
-                if split_element in url:
-                    org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
-                    break
-
-            # check if the initials are the url (not just in it)
-            acronym = "".join(item[0].lower() for item in potential_name_split if item not in self._stopwords)
-            if acronym == url:
-                org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
-                break
-        return org_name
-
 class OrgAddressScraper:
     def __init__(self):
         self._saved_path = os.getcwd()
@@ -457,27 +402,60 @@ class OrgContactsScraper:
         return [] # not yet implemented
 
 
-class OrgUrlScraper:
-
-    def __init__(self):
-        pass
-
-    def parse(self, response):
-        parse = urlparse(response.url)
-        urls = [
-            '%s://%s/' % (parse.scheme, parse.netloc),
-        ]
-        return urls
-
-
 class OrgNameScraper:
 
     def __init__(self):
-        self.names = []
+        self._split_punctuation = re.compile(r"[ \w']+")
+        self._saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+        #Load words to be ignored
+        with open("../Resources/stopwords.txt") as f:
+            self._stopwords = f.read().splitlines()
+
+    def __del__(self):
+        os.chdir(self._saved_path)
 
     def parse(self, response):
-        names_list = []
-        return names_list
+        hxs = HtmlXPathSelector(response)
+
+        url = response.url
+        url = urlparse(url).netloc
+        url = url.split('.')
+
+        # url contains a www. or something like that
+        if len(url) > 2:
+            url = url[1]
+        # otherwise there's no www.
+        else:
+            url = url[0]
+
+        title_tag = hxs.select('//./title/text()').extract()[0]
+        title_tag = re.findall(self._split_punctuation, title_tag)
+
+        org_name = ScrapedOrgName()
+        org_name['name'] = ''
+        for potential_name in title_tag:
+            # first check if whole string is the url
+            whole_string = potential_name.replace(' ', '').lower()
+            if whole_string == url:
+                org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
+                break
+
+            # check if parts of the string is the url
+            potential_name_split = potential_name.split()
+            for i, split_element in enumerate(potential_name_split):
+                split_element = split_element.lower()
+                if split_element in url:
+                    org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
+                    break
+
+            # check if the initials are the url (not just in it)
+            acronym = "".join(item[0].lower() for item in potential_name_split if item not in self._stopwords)
+            if acronym == url:
+                org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
+                break
+        return org_name
 
 
 class OrgPartnersScraper:
@@ -613,6 +591,20 @@ class OrgTypeScraper:
                 break
 
         return types or ['unknown']
+
+
+class OrgUrlScraper:
+
+    def __init__(self):
+        pass
+
+    def parse(self, response):
+        parse = urlparse(response.url)
+        urls = [
+            '%s://%s/' % (parse.scheme, parse.netloc),
+        ]
+        return urls
+
 
 class PublicationAuthorsScraper:
 
