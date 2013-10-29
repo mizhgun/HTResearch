@@ -1,12 +1,14 @@
 from ..items import *
 from utility_scrapers import *
 
+
 class Contact:
 
     def __init__(self):
         contact = None
 
-class OrganizationScraper:
+
+class OrganizationScraper():
     _scrapers = {
         'name': [OrgNameScraper()],
         'address': [OrgAddressScraper()],
@@ -18,7 +20,7 @@ class OrganizationScraper:
         'partners': [OrgPartnersScraper()],
     }
 
-    _multiple = ['address', 'types', 'phone_number', 'email', 'contacts', 'partners', ]
+    _multiple = ['types', 'phone_number', 'email', 'contacts', 'partners', ]
 
     def parse(self, response):
         organization = ScrapedOrganization()
@@ -32,7 +34,10 @@ class OrganizationScraper:
             else:
                 # Get single field (e.g. name)
                 results = self._scrapers[field][0].parse(response)
-                organization[field] = results[0] if results else None
+                if results:
+                    organization[field] = results[0] if isinstance(results, type([])) else results
+                else:
+                    organization[field] = None
         return organization
 
 

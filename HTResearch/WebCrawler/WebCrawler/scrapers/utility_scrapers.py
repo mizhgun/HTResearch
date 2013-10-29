@@ -9,6 +9,7 @@ import pdb
 import re
 from urlparse import urlparse
 import string
+from HTResearch.DataModel.enums import OrgTypesEnum
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
@@ -406,7 +407,8 @@ class OrgAddressScraper:
             item['city'] = city_and_zip[i][0]
             item['zip_code'] = city_and_zip[i][1]
             address_list.append(item)
-        return address_list
+        # the database is expecting a single string, so I'm going to just return first for now -Paul-
+        return address_list[0]['city'] + " " + address_list[0]['zip_code'] if len(address_list) > 0 else ''
 
 
 class OrgContactsScraper:
@@ -467,18 +469,18 @@ class OrgTypeScraper:
         self._max_rank = 40
         # Keywords to look for for other types. These must be lowercase
         self._type_words = {
-            'education': [
+            OrgTypesEnum.EDUCATION: [
                 'education',
                 'school',
                 'study',
                 'teach',
             ],
-            'advocacy': [
+            OrgTypesEnum.ADVOCACY: [
                 'advocacy',
                 'lobby',
                 'policy',
             ],
-            'research': [
+            OrgTypesEnum.RESEARCH: [
                 'research',
                 'conduct',
                 'document',
@@ -493,7 +495,7 @@ class OrgTypeScraper:
                 'periodical',
                 'newsletter',
             ],
-            'prevention': [
+            OrgTypesEnum.PREVENTION: [
                 'prevention',
                 'intervention',
                 'education',
@@ -501,7 +503,7 @@ class OrgTypeScraper:
                 'community',
                 'ownership',
             ],
-            'protection': [
+            OrgTypesEnum.PROTECTION: [
                 'protection',
                 'rescue',
                 'rehabilitation',
@@ -514,7 +516,7 @@ class OrgTypeScraper:
                 'opportunity',
                 'women',
             ],
-            'prosecution': [
+            OrgTypesEnum.PROSECUTION: [
                 'prosecution',
                 'compliance',
                 'abolish',
@@ -560,11 +562,11 @@ class OrgTypeScraper:
         types = []
         # Government: check the URL
         if re.search(self._government_detector, urlparse(response.url).netloc):
-            types.append('government')
+            types.append(OrgTypesEnum.GOVERNMENT)
         # Religion: check for the appearance of certain religious terms
         # (this means that government and religion types are mutually exclusive)
         elif any(word in self._religion_words for word in all_words):
-            types.append('religious')
+            types.append(OrgTypesEnum.RELIGIOUS)
         # Other types
         for type in self._type_words.iterkeys():
             rank = self._min_index_found(keywords, self._type_words[type])

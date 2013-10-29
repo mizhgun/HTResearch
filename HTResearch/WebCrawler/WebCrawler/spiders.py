@@ -1,32 +1,56 @@
-from urlparse import urljoin
+from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import LinkScraper
 
+from scrapers.document_scrapers import *
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
-from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request, TextResponse
+from scrapy import log
 import os
-import pdb
 
 
-class BasicCrawlSpider(BaseSpider):
-    name = 'ht_research'
-    allowed_domains = ['shaktivahini.org']
-    start_urls = ['http://www.shaktivahini.org/']
+class OrgSpider(BaseSpider):
+    name = 'org_spider'
+    # empty start_urls, we're setting our own
+    start_urls = []
+
+    def __init__(self, *args, **kwargs):
+        super(OrgSpider, self).__init__(*args, **kwargs)
+        self.scrapers = []
+        self.scrapers.append(OrganizationScraper())
+        self.scrapers.append(LinkScraper())
+        self.url_frontier = URLFrontier()
+
+    def start_requests(self):
+        """
+        This method is called once by Scrapy to kick things off.
+        We will get the first url to crawl from this.
+        """
+
+        # first URL to begin crawling
+        # Returns a URLMetadata model, so we have to pull the url field
+        start_url = self.url_frontier.next_url().url
+
+        print start_url
+        if __debug__:
+            log.msg('START_REQUESTS : start_url = %s' % start_url)
+
+        request = Request(start_url, dont_filter=True)
+
+        # Scrapy is expecting a list of Item/Requests, so use yield
+        yield request
 
     def parse(self, response):
-        if isinstance(response, TextResponse):
-            hxs = HtmlXPathSelector(response)
-            links = hxs.select('//a')
-            urls = []
-            # Get unique urls from links
-            for link in links:
-                hrefs = link.select('@href').extract()
-                for href in hrefs:
-                    url = urljoin(response.url, href)
-                    if url not in urls:
-                        urls.append(url)
+        for scraper in self.scrapers:
+            ret = scraper.parse(response)
+            if isinstance(ret, type([])):
+                for item in ret:
+                    yield item
+            else:
+                yield ret
 
-            return [ Request(url) for url in urls ]
+        print response.url
+        yield Request(self.url_frontier.next_url().url, dont_filter=True)
 
 
 class StopTraffickingSpider(BaseSpider):
