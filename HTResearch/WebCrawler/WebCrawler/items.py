@@ -22,6 +22,10 @@ class ScrapedContact(Item):
     position = Field()
 
 
+class ScrapedContactName(Item):
+    name = Field()
+
+
 class ScrapedEmail(Item):
     email = Field()
 

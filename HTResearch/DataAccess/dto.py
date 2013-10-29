@@ -20,11 +20,14 @@ class OrganizationDTO(mongo.Document):
     name = mongo.StringField(db_field='n')
     address = mongo.StringField(db_field='a')
     types = mongo.ListField(mongo.IntField(), db_field='ts')
-    phone_number = mongo.IntField(db_field='p')
-    email = mongo.EmailField(db_field='e')
+    phone_numbers = mongo.ListField(db_field='ns')
+    email_key = mongo.EmailField(db_field='ek')
+    emails = mongo.ListField(db_field='es')
     contacts = mongo.ListField(mongo.ReferenceField(ContactDTO), db_field='cs')
     organization_url = mongo.URLField(db_field='u')
     partners = mongo.ListField(mongo.ReferenceField('self'), db_field='ps')
+    facebook = mongo.URLField(db_field='f')
+    twitter = mongo.URLField(db_field='t')
 
 
 class PublicationDTO(mongo.Document):
