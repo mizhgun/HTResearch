@@ -43,15 +43,12 @@ class ScraperTests(unittest.TestCase):
                     addresses.append(ret)
 
         # Hardcoded results based on the sites that were crawled
-        assert_list = [{'city': "Guwahati", 'zip_code': '781001'},
-                       {'city': "Tuljapur", 'zip_code': '413601'},
-                       {'city': "Hyderabad", 'zip_code': '500030'},
-                       {'city': "Mumbai", 'zip_code': '400088'},
-                       {'city': "New Delhi", 'zip_code': '110003'},
-                       {'city': "Hyderabad", 'zip_code': '500002'},
-                       {'city': "Mumbai", 'zip_code': '400064'},
-                       {'city': "New Delhi", 'zip_code': '110019'},
-                       {'city': "Mumbai", 'zip_code': '400052'},
+        assert_list = ["Guwahati 781001",
+                       "New Delhi 110003",
+                       "Hyderabad 500002",
+                       "Mumbai 400064",
+                       "New Delhi 110019",
+                       "Mumbai 400052",
         ]
 
         for test in assert_list:
@@ -220,9 +217,9 @@ class ScraperTests(unittest.TestCase):
                 else:
                     types.append(ret)
 
-        assert_list = ['religious', 'government', 'protection']
+        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PROTECTION]
         for test in assert_list:
-            self.assertIn(test, types, 'Type \'' + test + '\' not found')
+            self.assertIn(test, types, 'Type \'' + OrgTypesEnum.reverse_mapping[test] + '\' not found')
 
     def test_org_partners_scraper(self):
         test_files = [
@@ -279,9 +276,9 @@ class ScraperTests(unittest.TestCase):
         assert_list = [{
             'name': None, #'Bombay Teen Challenge', # not yet implemented
             'types': [
-                'religious',
-                'protection',
-                'education'
+                OrgTypesEnum.RELIGIOUS,
+                OrgTypesEnum.EDUCATION,
+                OrgTypesEnum.PREVENTION,
             ],
             'phone_number': [
                 {'phone_number': '16157124863'},
@@ -291,10 +288,8 @@ class ScraperTests(unittest.TestCase):
                 {'email': 'tvarghese@bombayteenchallenge.org'},
                 {'email': 'kkdevaraj@bombayteenchallenge.org'},
             ],
-            'address': [
-                {'city': 'Mumbai', 'zip_code': '400052'},
-                #{'city': 'Norcross', 'zip_code': '30092'}, # Georgia address for BTC not currently found by address scraper
-            ],
+            'address':
+                'Mumbai 400052',
             'contacts': [
                 # not yet implemented
             ],
