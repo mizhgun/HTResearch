@@ -233,7 +233,7 @@ class ScraperTests(unittest.TestCase):
                     orgs.append(ret)
 
         assert_list = [{
-            'name': None, #'Bombay Teen Challenge', # not yet implemented
+            'name': 'Bombay Teen Challenge',
             'types': [
                 'religious',
                 'protection',

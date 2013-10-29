@@ -237,8 +237,7 @@ class OrgAddressScraper:
                     check = body[i]
                     counter = 0
                     while check in self._cities:
-                        if check in self._cities:
-                            city = check
+                        city = check
                         check = body[i-1-counter] + " " + city
                         counter += 1
                     if len(body[i+1]) == 6 and body[i+1].isdigit():
