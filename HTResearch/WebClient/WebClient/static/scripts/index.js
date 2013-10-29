@@ -38,7 +38,8 @@ function initialize() {
 			autoOpen: true,
 			overlayOpacity: 0.3,
 			overlayColor: "#333",
-			overlayClose: false
+			overlayClose: false,
+			closeButtonClass: ".btn-link"
 		});
 
 	});
@@ -48,7 +49,8 @@ function initialize() {
 			autoOpen: true,
 			overlayOpacity: 0.3,
 			overlayColor: "#333",
-			overlayClose: false
+			overlayClose: false,
+			closeButtonClass: ".btn-link"
 		});
 
 	});

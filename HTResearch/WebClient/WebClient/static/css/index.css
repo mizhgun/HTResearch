@@ -103,15 +103,15 @@ body {
 #signup-div {
     position:absolute;
     z-index: 1;
-    height: 45%;
-    width: 30%;
+    height: 400px;
+    width: 400px;
 }
 
 #login-div {
     position:absolute;
     z-index: 1;
-    height: 45%;
-    width: 30%;
+    height: 300px;
+    width: 400px;
 }
 
 #create-an-account {
@@ -150,6 +150,7 @@ body {
     position: relative;
     top: 50px;
     margin-top: 50px;
+    margin-bottom: 10px;
 }
 
 #search-results-div {
@@ -209,4 +210,11 @@ body {
     left: 5px;
     top: 400px;
     font-size: small;
+}
+
+#modal-cancel {
+    position: absolute;
+    margin-top: 5px;
+    bottom: 1px;
+    left: 165px;
 }
