@@ -2,10 +2,14 @@ from scrapy.exceptions import DropItem
 from HTResearch.DataAccess.dao import *
 from HTResearch.DataAccess.factory import *
 from HTResearch.DataModel.converter import *
+from HTResearch.URLFrontier.urlfrontier import URLFrontier
 
 
 class ItemSwitch(object):
     """Redirect Items to Appropriate Pipeline Handler"""
+
+    # TODO: This needs to be a singleton
+    url_frontier = URLFrontier()
 
     def __init__(self):
         pass
@@ -19,7 +23,8 @@ class ItemSwitch(object):
         # switch to handle item based on class type
         if item_class == "ScrapedUrl":
             # Create DAO for URL with empty fields
-            # Pass it to URLFrontier, which will add it iff it is new 
+            # Pass it to URLFrontier, which will add it iff it is new
+            self._store_url(item)
             pass 
         elif item_class == "ScrapedContact":
             self._store_contact(item)
@@ -66,3 +71,7 @@ class ItemSwitch(object):
         #store
         dao.create_update(pub_dto)
 
+    @staticmethod
+    def _store_url(scraped_url):
+        #TODO: Need to be able to store all metadata through URLFrontier, not just URL
+        ItemSwitch.url_frontier.put_url(scraped_url['url'])
