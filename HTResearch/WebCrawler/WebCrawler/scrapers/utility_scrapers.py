@@ -179,12 +179,13 @@ class OrgNameScraper:
         title_tag = re.findall(self._split_punctuation, title_tag)
 
         org_name = ScrapedOrgName()
+        org_name['name'] = ''
         for potential_name in title_tag:
             # first check if whole string is the url
             whole_string = potential_name.replace(' ', '').lower()
             if whole_string == url:
                 org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
-                return org_name
+                break
 
             # check if parts of the string is the url
             potential_name_split = potential_name.split()
@@ -192,13 +193,14 @@ class OrgNameScraper:
                 split_element = split_element.lower()
                 if split_element in url:
                     org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
-                    return org_name
+                    break
 
             # check if the initials are the url (not just in it)
             acronym = "".join(item[0].lower() for item in potential_name_split if item not in self._stopwords)
             if acronym == url:
                 org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
-                return org_name
+                break
+        return org_name
 
 
 class OrgAddressScraper:
