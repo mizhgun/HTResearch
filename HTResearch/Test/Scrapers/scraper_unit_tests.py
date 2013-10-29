@@ -198,6 +198,41 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test, links, "URL " + str(test) + " was not found")
 
+    def test_org_name_scraper(self):
+        test_files = [
+            "httpbombayteenchallengeorg",
+            "httpwwwprajwalaindiacomhomehtml",
+            "httpwwwhalftheskymovementorg",
+            "httpapneaaporg",
+            "httpwwwbbaorgin",
+            "httpwwwijmorg",
+            "httpwwwtissedu",
+        ]
+
+        org_name_scraper = OrgNameScraper()
+        names = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = org_name_scraper.parse(response)
+                if isinstance(ret, type([])):
+                    names = names + ret
+                else:
+                    names.append(ret)
+
+        assert_list = [
+            {'name': "Bombay Teen Challenge"},
+            {'name': "PRAJWALA"},
+            {'name': "Half the Sky"},
+            {'name': "Apne Aap"},
+            {'name': "Bachpan Bachao Andolan"},
+            {'name': "Tata Institute of Social Sciences"},
+            {'name': "International Justice Mission"},
+        ]
+        for test in assert_list:
+            self.assertIn(test, names, 'Name \'' + str(test['name']) + '\' not found')
+
     def test_org_type_scraper(self):
         test_files = [
             "httpbombayteenchallengeorg",
@@ -239,7 +274,7 @@ class ScraperTests(unittest.TestCase):
                     orgs.append(ret)
 
         assert_list = [{
-            'name': None, #'Bombay Teen Challenge', # not yet implemented
+            'name': 'Bombay Teen Challenge',
             'types': [
                 OrgTypesEnum.RELIGIOUS,
                 OrgTypesEnum.EDUCATION,

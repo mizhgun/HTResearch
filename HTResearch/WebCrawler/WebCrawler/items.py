@@ -30,6 +30,10 @@ class ScrapedEmail(Item):
     email = Field()
 
 
+class ScrapedOrgName(Item):
+    name = Field()
+
+
 class ScrapedOrganization(Item):
     name = Field()
     address = Field()
@@ -42,7 +46,7 @@ class ScrapedOrganization(Item):
 
 
 class ScrapedPhoneNumber(Item):
-    phone_number=Field()
+    phone_number = Field()
 
 
 class ScrapedPublication(Item):

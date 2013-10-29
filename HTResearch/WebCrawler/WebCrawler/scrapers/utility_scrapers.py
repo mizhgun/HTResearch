@@ -18,20 +18,20 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 class ContactNameScraper:
     # TODO: Find list of Indian names and add them to names.txt
     def __init__(self):
-        self.saved_path = os.getcwd()
+        self._saved_path = os.getcwd()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
         with open("../Resources/names.txt") as f:
-            self.names = f.read().splitlines()
-        self.titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr']
-        self.tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
-        self.remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
+            self._names = f.read().splitlines()
+        self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr']
+        self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
+        self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
 
     def __del__(self):
-        os.chdir(self.saved_path)
+        os.chdir(self._saved_path)
 
     """ Just formats the tags and adds a > to the elements that don't have it """
     @staticmethod
-    def add_closing_symbol(tag_list):
+    def _add_closing_symbol(tag_list):
         # since the regex finds either tags but not attributes, some elements might have just the <a part,
         # so add the > if needed (such as <a href=...)
         for i, t in enumerate(tag_list):
@@ -41,7 +41,7 @@ class ContactNameScraper:
 
     """ Counts the parent divs, if there is a <div><a></a><p>hello</p>, only parents would be <div><p>, return 2 """
     @staticmethod
-    def count_parent_tags(tag_list):
+    def _count_parent_tags(tag_list):
         parent_counter = 0
         for i, t in enumerate(tag_list):
             if '/' not in t:
@@ -52,7 +52,7 @@ class ContactNameScraper:
 
     """ This function uses other class functions to find the xpath of potential names
      returns the xpath as far as some threshold % of all the found xpaths """
-    def find_all_xpaths(self, hxs):
+    def _find_all_xpaths(self, hxs):
         # Gets the body (including html tags) and body_text (no tags), whatever gets found should be in both, since a
         # name should be visible
         body = hxs.select('//body').extract()
@@ -61,12 +61,12 @@ class ContactNameScraper:
 
         body = (body[0].encode('ascii', 'ignore')).strip()
         # keep the tags but remove the tag attributes such as name and class
-        body = re.sub(self.remove_attributes, r'<\1>', body)
+        body = re.sub(self._remove_attributes, r'<\1>', body)
 
         # find the paired tags, remove the ones that don't have a pair such as <input>
-        all_paired_tags = list(set(re.findall(self.tag, body)))
-        all_paired_tags = self.add_closing_symbol(all_paired_tags)
-        all_paired_tags = self.remove_unpaired_tags(all_paired_tags)
+        all_paired_tags = list(set(re.findall(self._tag, body)))
+        all_paired_tags = self._add_closing_symbol(all_paired_tags)
+        all_paired_tags = self._remove_unpaired_tags(all_paired_tags)
 
         # Get literally just the text, so when checking each element, it won't grab any tags
         no_tags = (re.sub(r'<.*?>', '', body)).splitlines()
@@ -75,10 +75,10 @@ class ContactNameScraper:
         xpaths = []
         for item in no_tags.split():
 
-            if (item in self.titles or item in self.names) and item in body:
+            if (item in self._titles or item in self._names) and item in body:
                 potential_names.append(item)
-                tags = re.findall(self.tag, body[:body.index(item)])
-                tags = self.add_closing_symbol(tags)
+                tags = re.findall(self._tag, body[:body.index(item)])
+                tags = self._add_closing_symbol(tags)
 
                 # this part is to check if there's a tag that does not close or doesn't have an open tag (such as </br>)
                 # remove the tags that don't have a match
@@ -89,15 +89,15 @@ class ContactNameScraper:
                     elif '/' in t and (t[0] + t[2:]) not in all_paired_tags:
                         tags = [x for x in tags if x != t]
 
-                parent_counter = self.count_parent_tags(tags)
-                xpaths.append(self.find_xpath(tags, parent_counter))
+                parent_counter = self._count_parent_tags(tags)
+                xpaths.append(self._find_xpath(tags, parent_counter))
 
         xpaths = list(set(xpaths))
         return xpaths
 
     """ Returns one 'xpath' string """
     @staticmethod
-    def find_xpath(tag_list, parent_counter):
+    def _find_xpath(tag_list, parent_counter):
         i = 0
         while i < parent_counter or i < len(tag_list):
             tag = tag_list[i]
@@ -128,7 +128,7 @@ class ContactNameScraper:
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
 
-        xpaths = self.find_all_xpaths(hxs)
+        xpaths = self._find_all_xpaths(hxs)
 
         names_list = []
         for xpath in xpaths:
@@ -149,7 +149,7 @@ class ContactNameScraper:
                         continue
                     first = (name.encode('ascii', 'ignore')).split()[0]
                     first = first.translate(string.maketrans('', ''), string.punctuation)
-                    if first != [] and (first in self.names or first in self.titles):
+                    if first != [] and (first in self._names or first in self._titles):
                         count += 1
             if count > 3:
                 highest.append(i)
@@ -170,7 +170,7 @@ class ContactNameScraper:
 
     """ Take out the tags that don't have an ending tag, such as <input> """
     @staticmethod
-    def remove_unpaired_tags(tag_list):
+    def _remove_unpaired_tags(tag_list):
         # this part is to check if there's a tag that does not close or doesn't have an open tag (such as </br>)
         # remove the tags that don't have a match
         for t in tag_list:
@@ -259,7 +259,7 @@ class KeywordScraper:
     stopwords = []
 
     def __init__(self):
-        self.saved_path = os.getcwd()
+        self._saved_path = os.getcwd()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
         #Load words to be ignored
@@ -267,7 +267,7 @@ class KeywordScraper:
             self.stopwords = f.read().splitlines()
 
     def __del__(self):
-        os.chdir(self.saved_path)
+        os.chdir(self._saved_path)
 
     def format_extracted_text(self, list):
         for i in range(len(list)):
@@ -314,6 +314,7 @@ class KeywordScraper:
         most_freq_keywords = parsed_keywords[:self.NUM_KEYWORDS]
         return most_freq_keywords
 
+
 class IndianPhoneNumberScraper:
 
     def parse(self, response):
@@ -342,33 +343,16 @@ class IndianPhoneNumberScraper:
         return phone_nums_list
 
 
-class NameScraper:
-
-    def __init__(self):
-        pass
-
-    def parse(self, response):
-        return [] # not yet implemented
-
-
-class OrgNameScraper:
-
-    def __init__(self):
-        pass
-
-    def parse(self, response):
-        return []
-
 class OrgAddressScraper:
     def __init__(self):
-        self.saved_path = os.getcwd()
+        self._saved_path = os.getcwd()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
         with open("../Resources/cities.txt") as f:
-            self.cities = f.read().splitlines()
+            self._cities = f.read().splitlines()
 
     def __del__(self):
-        os.chdir(self.saved_path)
+        os.chdir(self._saved_path)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -382,7 +366,7 @@ class OrgAddressScraper:
         # This loop will check if city is in the body, if it is, find all occurrences of that city in the body,
         # and then it will check all the occurring indices, and if the next index (or next 2 indices) is the zip code
         city_and_zip = []
-        for city in self.cities:
+        for city in self._cities:
             city = city.strip()
             if city in body:
                 indices = [i for i, x in enumerate(body) if x == city]
@@ -392,9 +376,8 @@ class OrgAddressScraper:
                     # EX: "Delhi" is valid and "New Delhi" is valid
                     check = body[i]
                     counter = 0
-                    while check in self.cities:
-                        if check in self.cities:
-                            city = check
+                    while check in self._cities:
+                        city = check
                         check = body[i-1-counter] + " " + city
                         counter += 1
                     if len(body[i+1]) == 6 and body[i+1].isdigit():
@@ -420,27 +403,60 @@ class OrgContactsScraper:
         return [] # not yet implemented
 
 
-class OrgUrlScraper:
-
-    def __init__(self):
-        pass
-
-    def parse(self, response):
-        parse = urlparse(response.url)
-        urls = [
-            '%s://%s/' % (parse.scheme, parse.netloc),
-        ]
-        return urls
-
-
 class OrgNameScraper:
 
     def __init__(self):
-        self.names = []
+        self._split_punctuation = re.compile(r"[ \w']+")
+        self._saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+        #Load words to be ignored
+        with open("../Resources/stopwords.txt") as f:
+            self._stopwords = f.read().splitlines()
+
+    def __del__(self):
+        os.chdir(self._saved_path)
 
     def parse(self, response):
-        names_list = []
-        return names_list
+        hxs = HtmlXPathSelector(response)
+
+        url = response.url
+        url = urlparse(url).netloc
+        url = url.split('.')
+
+        # url contains a www. or something like that
+        if len(url) > 2:
+            url = url[1]
+        # otherwise there's no www.
+        else:
+            url = url[0]
+
+        title_tag = hxs.select('//./title/text()').extract()[0]
+        title_tag = re.findall(self._split_punctuation, title_tag)
+
+        org_name = ScrapedOrgName()
+        org_name['name'] = ''
+        for potential_name in title_tag:
+            # first check if whole string is the url
+            whole_string = potential_name.replace(' ', '').lower()
+            if whole_string == url:
+                org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
+                break
+
+            # check if parts of the string is the url
+            potential_name_split = potential_name.split()
+            for i, split_element in enumerate(potential_name_split):
+                split_element = split_element.lower()
+                if split_element in url:
+                    org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
+                    break
+
+            # check if the initials are the url (not just in it)
+            acronym = "".join(item[0].lower() for item in potential_name_split if item not in self._stopwords)
+            if acronym == url:
+                org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
+                break
+        return org_name
 
 
 class OrgPartnersScraper:
@@ -576,6 +592,20 @@ class OrgTypeScraper:
                 break
 
         return types or ['unknown']
+
+
+class OrgUrlScraper:
+
+    def __init__(self):
+        pass
+
+    def parse(self, response):
+        parse = urlparse(response.url)
+        urls = [
+            '%s://%s/' % (parse.scheme, parse.netloc),
+        ]
+        return urls
+
 
 class PublicationAuthorsScraper:
 
