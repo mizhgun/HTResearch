@@ -57,22 +57,23 @@ class EmailScraper:
 
         return email_list
 
+
 class KeywordScraper:
     NUM_KEYWORDS = 50
     stopwords = []
+
     def __init__(self):
-        self.savedPath = os.getcwd()
+        self._saved_path = os.getcwd()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
         #Load words to be ignored
         with open("../Resources/stopwords.txt") as f:
             self.stopwords = f.read().splitlines()
 
-    def __del__( self ):
-        os.chdir( self.savedPath )
+    def __del__(self):
+        os.chdir(self._saved_path)
 
     def format_extracted_text(self, list):
-
         for i in range(len(list)):
             list[i] = list[i].encode('ascii','ignore')
         return list
@@ -117,6 +118,7 @@ class KeywordScraper:
         most_freq_keywords = parsed_keywords[:self.NUM_KEYWORDS]
         return most_freq_keywords
 
+
 class IndianPhoneNumberScraper:
 
     def parse(self, response):
@@ -148,16 +150,16 @@ class IndianPhoneNumberScraper:
 class OrgNameScraper:
 
     def __init__(self):
-        self.split_punctuation = re.compile(r"[ \w']+")
-        self.saved_path = os.getcwd()
+        self._split_punctuation = re.compile(r"[ \w']+")
+        self._saved_path = os.getcwd()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
         #Load words to be ignored
         with open("../Resources/stopwords.txt") as f:
-            self.stopwords = f.read().splitlines()
+            self._stopwords = f.read().splitlines()
 
     def __del__(self):
-        os.chdir(self.saved_path)
+        os.chdir(self._saved_path)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -174,7 +176,7 @@ class OrgNameScraper:
             url = url[0]
 
         title_tag = hxs.select('//./title/text()').extract()[0]
-        title_tag = re.findall(self.split_punctuation, title_tag)
+        title_tag = re.findall(self._split_punctuation, title_tag)
 
         org_name = ScrapedOrgName()
         for potential_name in title_tag:
@@ -193,7 +195,7 @@ class OrgNameScraper:
                     return org_name
 
             # check if the initials are the url (not just in it)
-            acronym = "".join(item[0].lower() for item in potential_name_split if item not in self.stopwords)
+            acronym = "".join(item[0].lower() for item in potential_name_split if item not in self._stopwords)
             if acronym == url:
                 org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
                 return org_name
@@ -201,14 +203,14 @@ class OrgNameScraper:
 
 class OrgAddressScraper:
     def __init__(self):
-        self.saved_path = os.getcwd()
+        self._saved_path = os.getcwd()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
         with open("../Resources/cities.txt") as f:
-            self.cities = f.read().splitlines()
+            self._cities = f.read().splitlines()
 
     def __del__(self):
-        os.chdir(self.saved_path)
+        os.chdir(self._saved_path)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -222,7 +224,7 @@ class OrgAddressScraper:
         # This loop will check if city is in the body, if it is, find all occurrences of that city in the body,
         # and then it will check all the occurring indices, and if the next index (or next 2 indices) is the zip code
         city_and_zip = []
-        for city in self.cities:
+        for city in self._cities:
             city = city.strip()
             if city in body:
                 indices = [i for i, x in enumerate(body) if x == city]
@@ -232,8 +234,8 @@ class OrgAddressScraper:
                     # EX: "Delhi" is valid and "New Delhi" is valid
                     check = body[i]
                     counter = 0
-                    while check in self.cities:
-                        if check in self.cities:
+                    while check in self._cities:
+                        if check in self._cities:
                             city = check
                         check = body[i-1-counter] + " " + city
                         counter += 1
