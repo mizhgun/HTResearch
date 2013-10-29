@@ -274,7 +274,9 @@ class ScraperTests(unittest.TestCase):
                     orgs.append(ret)
 
         assert_list = [{
-            'name': 'Bombay Teen Challenge',
+            'name': {
+                'name': 'Bombay Teen Challenge'
+            },
             'types': [
                 OrgTypesEnum.RELIGIOUS,
                 OrgTypesEnum.EDUCATION,
