@@ -16,9 +16,13 @@ class OrgSpider(BaseSpider):
 
     def __init__(self, *args, **kwargs):
         super(OrgSpider, self).__init__(*args, **kwargs)
+
+        # Define our Scrapers
         self.scrapers = []
         self.scrapers.append(OrganizationScraper())
         self.scrapers.append(LinkScraper())
+        self.scrapers.append(UrlMetadataScraper())
+
         self.url_frontier = URLFrontier()
 
     def start_requests(self):
