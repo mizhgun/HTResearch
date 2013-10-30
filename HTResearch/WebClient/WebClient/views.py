@@ -9,4 +9,6 @@ def index(request):
     return HttpResponse(html)
 
 def organization_profile(request):
-    return HttpResponse("test")
+    t = get_template('organization_profile_template.html')
+    html = t.render(Context({}))
+    return HttpResponse(html)
