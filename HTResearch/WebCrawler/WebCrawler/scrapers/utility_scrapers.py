@@ -19,16 +19,11 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 class ContactNameScraper:
     # TODO: Find list of Indian names and add them to names.txt
     def __init__(self):
-        self._saved_path = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-        with open("../Resources/names.txt") as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt')) as f:
             self._names = f.read().splitlines()
         self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr']
         self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
         self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
-
-    def __del__(self):
-        os.chdir(self._saved_path)
 
     """ Just formats the tags and adds a > to the elements that don't have it """
     @staticmethod
@@ -260,15 +255,9 @@ class KeywordScraper:
     stopwords = []
 
     def __init__(self):
-        self._saved_path = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
         #Load words to be ignored
-        with open("../Resources/stopwords.txt") as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/stopwords.txt')) as f:
             self.stopwords = f.read().splitlines()
-
-    def __del__(self):
-        os.chdir(self._saved_path)
 
     def format_extracted_text(self, list):
         for i in range(len(list)):
@@ -346,14 +335,8 @@ class IndianPhoneNumberScraper:
 
 class OrgAddressScraper:
     def __init__(self):
-        self._saved_path = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-        with open("../Resources/cities.txt") as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/cities.txt')) as f:
             self._cities = f.read().splitlines()
-
-    def __del__(self):
-        os.chdir(self._saved_path)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -408,15 +391,9 @@ class OrgNameScraper:
 
     def __init__(self):
         self._split_punctuation = re.compile(r"[ \w']+")
-        self._saved_path = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
         #Load words to be ignored
-        with open("../Resources/stopwords.txt") as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/stopwords.txt')) as f:
             self._stopwords = f.read().splitlines()
-
-    def __del__(self):
-        os.chdir(self._saved_path)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
