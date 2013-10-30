@@ -320,7 +320,9 @@ class IndianPhoneNumberScraper:
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-        india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?[0-9]{5}[0-9]?\b')
+        india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?'
+                                        r'[0-9]{5}[0-9]?\b|\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?'
+                                        r'[-./\s]?[0-9]{4}[-./\s]?[0-9]{4}\b')
         # body will get phone numbers that are just text in the body
         body = hxs.select('//body').re(india_format_regex)
 
