@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from HTResearch.WebClient.webclient.views import index
+from HTResearch.WebClient.WebClient.views import index
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
