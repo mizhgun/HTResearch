@@ -259,6 +259,8 @@ class ScraperTests(unittest.TestCase):
     def test_org_partners_scraper(self):
         test_files = [
             "httpwwwhalftheskymovementorgpartners",
+            "httpwwwassetindiafoundationorgwhoweare",
+            "httpapneaaporgaboutusourpartnersnetworks",
         ]
 
         org_partners_scraper = OrgPartnersScraper()
@@ -279,6 +281,9 @@ class ScraperTests(unittest.TestCase):
         assert_list = [
             'http://www.acumenfund.org/',
             'http://www.afghaninstituteoflearning.org/',
+            'http://www.prajwalaindia.com/',
+            'http://www.mencanstoprape.org/',
+            'http://novofoundation.org/',
         ]
         for test in assert_list:
             self.assertIn(test, partner_urls, 'Partner with URL %s not found' % test)
