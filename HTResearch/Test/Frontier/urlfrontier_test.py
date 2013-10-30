@@ -15,7 +15,8 @@ from HTResearch.DataModel.converter import DTOConverter
 
 class URLFrontierTest(unittest.TestCase):
     def setUp(self):
-        pass
+        with DBConnection() as c:
+            c.dropall()
 
     def tearDown(self):
         with DBConnection() as c:
@@ -40,19 +41,26 @@ class URLFrontierTest(unittest.TestCase):
 
         print 'Create the URLFrontier'
         with URLFrontier() as frontier:
-            print 'Pop the least recently visited URL'
+
+            print 'Wait for the cache to populate and get the least recently visited URL'
+            sleep(2)
             old_url = frontier.next_url
 
             print 'Assert that the last visited date matches the last element in urllist'
-            self.assertEqual(old_url.last_visited, url_list[1999].last_visited)
+            self.assertEqual(url_list[1999].url, old_url.url)
+
+            print 'Push an even older URL'
+            oldest_url = URLMetadata(url="http://test2001.com",
+                                     last_visited=(start_time - timedelta(days=x+1)))
+            frontier.put_url(oldest_url)
 
             print 'Empty the cache'
-            for x in range(1999):
-                url = frontier.next_url
+            frontier.empty_cache()
 
-            print 'Wait one second and verify that the cache is being repopulated'
-            sleep(1)
-            self.assertFalse(frontier.empty)
+            print 'Wait a couple more seconds and verify that the next URL is the oldest one'
+            sleep(2)
+            next_url = frontier.next_url
+            self.assertEqual(oldest_url.url, next_url.url)
 
 if __name__ == '__main__':
     try:

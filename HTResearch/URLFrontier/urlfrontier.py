@@ -1,4 +1,8 @@
+# Library imports
 from multiprocessing import Queue, Process
+from Queue import Empty, Full
+
+# Project imports
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.DataModel.converter import DTOConverter
 from HTResearch.DataAccess.dao import URLMetadataDAO
@@ -6,40 +10,61 @@ from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataAccess.factory import DAOFactory
 
 
+class CacheJobs():
+    Fill, Empty = range(2)
+
+
 class URLFrontier(object):
 
     def __init__(self):
-        self._urls = Queue(maxsize=1000)
+        self._max_size = 1000
+        self._urls = Queue(maxsize=self._max_size)
+        self._jobs = Queue()
+        self._jobs.put(CacheJobs.Fill)
         self._factory = DAOFactory.get_instance(URLMetadataDAO)
-        self._cache_process = Process(target=self._monitor_cache, args=(self._urls,))
+        self._cache_proc = Process(target=self._monitor_cache, args=(self._urls, self._jobs))
 
     def __enter__(self):
-        self._cache_process.start()
+        self._cache_proc.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._cache_process.terminate()
+        self._cache_proc.terminate()
 
-    def _monitor_cache(self, queue):
+    def _monitor_cache(self, url_queue, job_queue):
         while True:
-            if queue.empty():
+            try:
+                next_job = job_queue.get(block=False)
+            except Empty:
+                continue
+
+            if next_job == CacheJobs.Fill:
                 urls = self._factory.findmany(1000, "last_visited")
                 for u in urls:
-                    queue.put(u)
+                    url_obj = DTOConverter.from_dto(URLMetadata, u)
+                    url_queue.put(url_obj)
+            elif next_job == CacheJobs.Empty:
+                while True:
+                    try:
+                        self._urls.get(block=False)
+                    except Empty:
+                        break
 
     @property
     def next_url(self):
-        while self._urls.empty():
+        while True:
+            try:
+                return self._urls.get(block=False)
+            except Empty:
+                self._jobs.put(CacheJobs.Fill)
+
+    def put_url(self, u):
+        try:
+            self._urls.put(u, block=False)
+        except Full:
             pass
-        return self._urls.get()
-
-    @property
-    def empty(self):
-        return self._urls.empty()
-
-    def put_url(self, url):
-        if not self._urls.full():
-            self._urls.put(url)
-        url_obj = URLMetadata(url=url)
-        url_dto = DTOConverter.to_dto(URLMetadataDTO, url_obj)
+        url_dto = DTOConverter.to_dto(URLMetadataDTO, u)
         self._factory.create_update(url_dto)
+
+    def empty_cache(self):
+        self._jobs.put(CacheJobs.Empty)
