@@ -64,7 +64,7 @@ class URLFrontierTest(unittest.TestCase):
         frontier.empty_cache()
 
         print 'Wait a couple more seconds and verify that the next URL is the oldest one'
-        sleep(2)
+        sleep(10)
         next_url = frontier.next_url
         self.assertEqual(oldest_url.url, next_url.url)
 
