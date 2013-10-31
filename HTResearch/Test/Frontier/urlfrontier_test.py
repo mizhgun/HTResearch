@@ -49,7 +49,6 @@ class URLFrontierTest(unittest.TestCase):
         self.assertEqual(frontier, frontier2)
 
         print 'Wait for the cache to populate and get the least recently visited URL'
-        sleep(2)
         old_url = frontier.next_url
 
         print 'Assert that the last visited date matches the last element in urllist'
@@ -64,7 +63,6 @@ class URLFrontierTest(unittest.TestCase):
         frontier.empty_cache()
 
         print 'Wait a couple more seconds and verify that the next URL is the oldest one'
-        sleep(10)
         next_url = frontier.next_url
         self.assertEqual(oldest_url.url, next_url.url)
 
