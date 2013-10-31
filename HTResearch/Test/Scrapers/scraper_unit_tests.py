@@ -346,32 +346,32 @@ class ScraperTests(unittest.TestCase):
                     orgs.append(ret)
 
         assert_list = [{
-                           'name': {
-                               'name': 'Bombay Teen Challenge'
-                           },
-                           'types': [
-                               OrgTypesEnum.RELIGIOUS,
-                               OrgTypesEnum.EDUCATION,
-                               OrgTypesEnum.PREVENTION,
-                           ],
-                           'phone_number': [
-                               {'phone_number': '16157124863'},
-                               #{'phone_number': '912226042242'}, # Indian phone number for BTC not currently found by Indian phone number scraper
-                           ],
-                           'email': [
-                               {'email': 'tvarghese@bombayteenchallenge.org'},
-                               {'email': 'kkdevaraj@bombayteenchallenge.org'},
-                           ],
-                           'address':
-                               'Mumbai 400052',
-                           'contacts': [
-                               # not yet implemented
-                           ],
-                           'organization_url': 'http://bombayteenchallenge.org/',
-                           'partners': [
-                               # not yet implemented
-                           ],
-                       }]
+            'name': {
+                'name': 'Bombay Teen Challenge'
+            },
+            'types': [
+                OrgTypesEnum.RELIGIOUS,
+                OrgTypesEnum.EDUCATION,
+                OrgTypesEnum.PREVENTION,
+            ],
+            'phone_number': [
+                {'phone_number': '16157124863'},  # US number
+                {'phone_number': '912226042242'}  # indian number
+            ],
+            'email': [
+                {'email': 'tvarghese@bombayteenchallenge.org'},
+                {'email': 'kkdevaraj@bombayteenchallenge.org'},
+            ],
+            'address':
+                'Mumbai 400052',
+            'contacts': [
+                # not yet implemented
+            ],
+            'organization_url': 'http://bombayteenchallenge.org/',
+            'partners': [
+                # not yet implemented
+            ],
+        }]
 
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
