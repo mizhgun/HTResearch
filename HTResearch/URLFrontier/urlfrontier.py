@@ -8,13 +8,15 @@ from HTResearch.DataModel.converter import DTOConverter
 from HTResearch.DataAccess.dao import URLMetadataDAO
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataAccess.factory import DAOFactory
+from HTResearch.Utilities.types import Singleton
 
 
 class CacheJobs():
     Fill, Empty = range(2)
 
 
-class URLFrontier(object):
+class URLFrontier:
+    __metaclass__ = Singleton
 
     def __init__(self):
         self._max_size = 1000
@@ -24,12 +26,13 @@ class URLFrontier(object):
         self._factory = DAOFactory.get_instance(URLMetadataDAO)
         self._cache_proc = Process(target=self._monitor_cache, args=(self._urls, self._jobs))
 
-    def __enter__(self):
-        self._cache_proc.start()
-        return self
+    def start_cache_process(self):
+        if not self._cache_proc.is_alive():
+            self._cache_proc.start()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._cache_proc.terminate()
+    def terminate_cache_process(self):
+        if self._cache_proc.is_alive():
+            self._cache_proc.terminate()
 
     def _monitor_cache(self, url_queue, job_queue):
         while True:

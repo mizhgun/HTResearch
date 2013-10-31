@@ -15,8 +15,7 @@ from HTResearch.DataModel.converter import DTOConverter
 
 class URLFrontierTest(unittest.TestCase):
     def setUp(self):
-        with DBConnection() as c:
-            c.dropall()
+        pass
 
     def tearDown(self):
         with DBConnection() as c:
@@ -40,27 +39,37 @@ class URLFrontierTest(unittest.TestCase):
             url_dao.create_update(dto)
 
         print 'Create the URLFrontier'
-        with URLFrontier() as frontier:
+        frontier = URLFrontier()
 
-            print 'Wait for the cache to populate and get the least recently visited URL'
-            sleep(2)
-            old_url = frontier.next_url
+        print 'Start the cache process'
+        frontier.start_cache_process()
 
-            print 'Assert that the last visited date matches the last element in urllist'
-            self.assertEqual(url_list[1999].url, old_url.url)
+        print '"Create" a second frontier and verify that the frontier is a singleton'
+        frontier2 = URLFrontier()
+        self.assertEqual(frontier, frontier2)
 
-            print 'Push an even older URL'
-            oldest_url = URLMetadata(url="http://test2001.com",
-                                     last_visited=(start_time - timedelta(days=x+1)))
-            frontier.put_url(oldest_url)
+        print 'Wait for the cache to populate and get the least recently visited URL'
+        sleep(2)
+        old_url = frontier.next_url
 
-            print 'Empty the cache'
-            frontier.empty_cache()
+        print 'Assert that the last visited date matches the last element in urllist'
+        self.assertEqual(url_list[1999].url, old_url.url)
 
-            print 'Wait a couple more seconds and verify that the next URL is the oldest one'
-            sleep(2)
-            next_url = frontier.next_url
-            self.assertEqual(oldest_url.url, next_url.url)
+        print 'Push an even older URL'
+        oldest_url = URLMetadata(url="http://test2001.com",
+                                 last_visited=(start_time - timedelta(days=x+1)))
+        frontier.put_url(oldest_url)
+
+        print 'Empty the cache'
+        frontier.empty_cache()
+
+        print 'Wait a couple more seconds and verify that the next URL is the oldest one'
+        sleep(2)
+        next_url = frontier.next_url
+        self.assertEqual(oldest_url.url, next_url.url)
+
+        print 'Stop the cache process'
+        frontier.terminate_cache_process()
 
 if __name__ == '__main__':
     try:
