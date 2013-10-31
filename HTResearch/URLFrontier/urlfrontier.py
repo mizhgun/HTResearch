@@ -23,6 +23,7 @@ class URLFrontier:
         self._urls = Queue(maxsize=self._max_size)
         self._jobs = Queue()
         self._factory = DAOFactory.get_instance(URLMetadataDAO)
+        self._next_url_lock = RLock()
         self._fill_cond = Condition()
         self._empty_cond = Condition()
         self._job_cond = Condition()
@@ -72,15 +73,17 @@ class URLFrontier:
 
     @property
     def next_url(self):
-        try:
-            return self._urls.get(block=False)
-        except Empty:
-            with self._fill_cond:
-                with self._job_cond:
-                    self._jobs.put(CacheJobs.Fill)
-                    self._job_cond.notify()
-                self._fill_cond.wait()
-            return self._urls.get(block=False)
+        with self._next_url_lock:
+            with self._empty_cond:
+                try:
+                    return self._urls.get(block=False)
+                except Empty:
+                    with self._fill_cond:
+                        with self._job_cond:
+                            self._jobs.put(CacheJobs.Fill)
+                            self._job_cond.notify()
+                        self._fill_cond.wait()
+                    return self._urls.get(block=False)
 
     def put_url(self, u):
         try:
