@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col-md-4"></div>
             <h1 class="col-md-6">{{organization.name}}</h1>
-            <button type="button" class="btn btn-lg btn-warning col-md-1">Back to Map </button>
+            <button type="button" class="btn btn-lg btn-warning col-md-1" onclick="location.href='/';">Back to Map </button>
         </div>
 
         <div class="row">
@@ -19,18 +19,18 @@
         </div>
 
         <div class="row">
-            <div class="col-md-3"></div>
+            <div class="col-md-2"></div>
             <div class="col-md-6">
                 <p>Address: {{organization.address}}</p>
                 <p>Phone Numbers: {{organization.phone_numbers}}</p>
-                <p>Facebook: <a href="http://www.twitter.com/{{organization.twitter}}">
+                <p>Facebook: <a href="http://www.facebook.com/{{organization.twitter}}">
                     {{organization.facebook}}</a></p>
                 <p>Twitter: <a href="http://www.twitter.com/{{organization.twitter}}">
                     www.twitter.com/{{organization.twitter}}
                 </a>
                 </p>
             </div>
-            <div class="col-md-2 sidebar-offcanvas" id="sidebar">
+            <div class="col-md-3 sidebar-offcanvas" id="sidebar">
               <div class="well sidebar-nav">
                 <ul class="nav">
                   <li>Sidebar</li>
@@ -50,13 +50,23 @@
             <div class="col-lg-1"></div>
             <div class="col-lg-3">
                 <h2>People</h2>
-                <p>This will list the organization's people.</p>
+                {% for contact in organization.contacts %}
+                    <p><a href="#CONTACT_URL_HERE">{{contact.first_name}} {{contact.last_name}}</a></p>
+                {% endfor %}
             </div>
             <div class="col-lg-3">
                 <h2>Partners</h2>
-                <p>This will list the organization's partners.</p>
+                {% for partner in organization.partners %}
+                    <p><a href="#PARTNER_ORGANIZATION_URL_HERE">{{partner.name}}</a></p>
+                {% endfor %}
             </div>
         </div>
+    </div>
+
+    <div id="footer" style="background-color: #eee; height: 60px;">
+        <center class="text-muted credit" style="position: relative; top:50%; margin-top:-5e;">
+            Human Trafficking Research, 2013
+        </center>
     </div>
 </body>
 </html>
