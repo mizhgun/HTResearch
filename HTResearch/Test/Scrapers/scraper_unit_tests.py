@@ -1,3 +1,4 @@
+from bson.binary import Binary
 import unittest
 import pickle
 
@@ -5,6 +6,10 @@ import os.path
 
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import *
+from HTResearch.DataAccess.factory import DAOFactory
+from HTResearch.DataAccess.dto import URLMetadataDTO
+from HTResearch.DataModel.model import URLMetadata
+from HTResearch.DataModel.converter import DTOConverter
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
 
@@ -20,6 +25,33 @@ def file_to_response(test_file):
 
 
 class ScraperTests(unittest.TestCase):
+    def set_up_url_metadata_scraper_test(self):
+        """Set up database for URLMetadataScraper test. Not called automatically"""
+        urlmetadata = URLMetadata(
+            url="http://www.google.com",
+            last_visited=datetime(1, 1, 1),
+            update_freq=5,
+            score=0,
+            checksum=Binary('154916369406075238760605425088915003118'),
+        )
+        urlmetadata2 = URLMetadata(
+            checksum=Binary('199553381546012383114562002951261892300'),
+            last_visited=datetime(1, 1, 1),
+            update_freq=1,
+            url='http://www.halftheskymovement.org/partners'
+        )
+
+        self.url_dto = DTOConverter.to_dto(URLMetadataDTO, urlmetadata)
+        self.url_dto2 = DTOConverter.to_dto(URLMetadataDTO, urlmetadata2)
+        self.url_dao = DAOFactory.get_instance(URLMetadataDAO)
+        self.url_dao.create_update(self.url_dto)
+        self.url_dao.create_update(self.url_dto2)
+
+    def tear_down_url_metadata_scraper_test(self):
+        """Undo setup to database for URLMetadataScraper test. Not called automatically"""
+        self.url_dao.delete(self.url_dto)
+        self.url_dao.delete(self.url_dto2)
+
     def test_address_scraper(self):
         test_files = [
             "httpwwwtisseduTopMenuBarcontactuslocation1",
@@ -314,35 +346,88 @@ class ScraperTests(unittest.TestCase):
                     orgs.append(ret)
 
         assert_list = [{
-            'name': {
-                'name': 'Bombay Teen Challenge'
-            },
-            'types': [
-                OrgTypesEnum.RELIGIOUS,
-                OrgTypesEnum.EDUCATION,
-                OrgTypesEnum.PREVENTION,
-            ],
-            'phone_number': [
-                {'phone_number': '16157124863'},
-                #{'phone_number': '912226042242'}, # Indian phone number for BTC not currently found by Indian phone number scraper
-            ],
-            'email': [
-                {'email': 'tvarghese@bombayteenchallenge.org'},
-                {'email': 'kkdevaraj@bombayteenchallenge.org'},
-            ],
-            'address':
-                'Mumbai 400052',
-            'contacts': [
-                # not yet implemented
-            ],
-            'organization_url': 'http://bombayteenchallenge.org/',
-            'partners': [
-                # not yet implemented
-            ],
-        }]
+                           'name': {
+                               'name': 'Bombay Teen Challenge'
+                           },
+                           'types': [
+                               OrgTypesEnum.RELIGIOUS,
+                               OrgTypesEnum.EDUCATION,
+                               OrgTypesEnum.PREVENTION,
+                           ],
+                           'phone_number': [
+                               {'phone_number': '16157124863'},
+                               #{'phone_number': '912226042242'}, # Indian phone number for BTC not currently found by Indian phone number scraper
+                           ],
+                           'email': [
+                               {'email': 'tvarghese@bombayteenchallenge.org'},
+                               {'email': 'kkdevaraj@bombayteenchallenge.org'},
+                           ],
+                           'address':
+                               'Mumbai 400052',
+                           'contacts': [
+                               # not yet implemented
+                           ],
+                           'organization_url': 'http://bombayteenchallenge.org/',
+                           'partners': [
+                               # not yet implemented
+                           ],
+                       }]
 
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
+
+    def test_urlmetadata_scraper(self):
+        self.set_up_url_metadata_scraper_test()
+
+        test_files = [
+            "httpbombayteenchallengeorg",
+            "httpwwwgooglecom",
+            "httpwwwhalftheskymovementorgpartners",
+        ]
+
+        url_mds = UrlMetadataScraper()
+        scraped_urls = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = url_mds.parse(response)
+                if isinstance(ret, type([])):
+                    scraped_urls = scraped_urls + ret
+                else:
+                    scraped_urls.append(ret)
+
+        # We can't possibly get the last_visited time exactly right, so set to date
+        for scraped_url in scraped_urls:
+            scraped_url['last_visited'] = scraped_url['last_visited'].date()
+
+        assert_list = [
+            {
+                'checksum': Binary('154916369406075238760605425088915003118'),
+                'last_visited': datetime.now().date(),
+                'update_freq': 0,
+                'url': 'http://bombayteenchallenge.org/'
+            },
+            {
+                'checksum': Binary('94565939257467841022060717122642335157'),
+                'last_visited': datetime.now().date(),
+                'update_freq': 6, # incremented one from setup b/c diff checksum
+                'url': 'http://www.google.com'
+            },
+            {
+                'checksum': Binary('199553381546012383114562002951261892300'),
+                'last_visited': datetime.now().date(),
+                'update_freq': 1,  # not incremented b/c checksum is same
+                'url': 'http://www.halftheskymovement.org/partners'
+            },
+        ]
+
+        # do teardown now in case of failure
+        self.tear_down_url_metadata_scraper_test()
+
+        for test in assert_list:
+            self.assertIn(test, scraped_urls, 'Invalid URL Metadata Didn\'t Find: %s' % str(test))
+
 
 
 if __name__ == '__main__':
