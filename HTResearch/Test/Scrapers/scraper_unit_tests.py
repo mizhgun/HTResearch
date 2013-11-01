@@ -345,8 +345,6 @@ class ScraperTests(unittest.TestCase):
                 else:
                     orgs.append(ret)
 
-        print orgs
-
         assert_list = [{
             'name': 'Bombay Teen Challenge',
             'types': [

@@ -43,7 +43,6 @@ class URLFrontier:
             self._cache_proc.terminate()
 
     def _monitor_cache(self, cache, job_queue, job_cond, fill_cond, empty_cond):
-        print "something"
         while True:
             try:
                 next_job = job_queue.get(block=False)
