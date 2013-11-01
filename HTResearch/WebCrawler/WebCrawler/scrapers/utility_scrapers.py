@@ -222,9 +222,11 @@ class EmailScraper:
         # Make the list an item
         email_list = []
         for email in emails:
-            item = ScrapedEmail()
-            item['email'] = email
-            email_list.append(item)
+            # removing ScrapedEmail() item in favor of returning exactly what DB expects
+            # Paul Poulsen
+            #item = ScrapedEmail()
+            #item['email'] = email
+            email_list.append(email)
 
         return email_list
 
@@ -249,9 +251,11 @@ class IndianPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            item = ScrapedPhoneNumber()
-            item['phone_number'] = num
-            phone_nums_list.append(item)
+            # removing ScrapedPhoneNumber() item in favor of returning exactly what DB expects
+            # Paul Poulsen
+            #item = ScrapedPhoneNumber()
+            #item['phone_number'] = num
+            phone_nums_list.append(num)
 
         return phone_nums_list
 
@@ -442,7 +446,8 @@ class OrgNameScraper:
             if acronym == url:
                 org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
                 break
-        return org_name
+        # Returning string instead of ScrapedOrgName to make transition to DB easier
+        return org_name['name']
 
 
 class OrgPartnersScraper:
@@ -451,6 +456,8 @@ class OrgPartnersScraper:
         self._link_scraper = LinkScraper()
         self._partner_text = 'partner'
         self._netloc_ignore = [
+            'youtube.com',
+            'www.youtube.com',
             'google.com',
             'www.google.com',
             'twitter.com',
@@ -654,7 +661,7 @@ class OrgTypeScraper:
             if len(types) >= self._max_types:
                 break
 
-        return types or ['unknown']
+        return types or [OrgTypesEnum.UNKNOWN]
 
 
 class OrgUrlScraper:
@@ -729,7 +736,8 @@ class UrlMetadataScraper:
         if exist_url_dto is not None:
             exist_url = DTOConverter.from_dto(URLMetadataDTO, exist_url_dto)
             if exist_url.checksum is not None and exist_url.checksum != metadata['checksum']:
-                metadata['update_freq'] = exist_url.update_freq + 1
+                if exist_url.update_freq is not None:
+                    metadata['update_freq'] = exist_url.update_freq + 1
             elif exist_url.checksum is not None:
                 metadata['update_freq'] = exist_url.update_freq
 
@@ -760,10 +768,12 @@ class USPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            number = ScrapedPhoneNumber()
             num = re.sub("\D", "", num)
-            number["phone_number"] = num
-            phone_nums_list.append(number)
+            # Removing item in favor of giving data ready for DB
+            # Paul Poulsen
+            #number = ScrapedPhoneNumber()
+            #number["phone_number"] = num
+            phone_nums_list.append(num)
 
         return phone_nums_list
 

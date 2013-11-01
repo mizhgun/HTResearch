@@ -73,12 +73,12 @@ class ItemSwitch(object):
 
     @staticmethod
     def _store_url(scraped_url):
-        #TODO: Need to be able to store all metadata through URLFrontier, not just URL
-        ItemSwitch.url_frontier.put_url(scraped_url['url'])
-
         # For now, store the new metadata ourselves
         # item to Model
         url = ModelConverter.to_model(URLMetadata, scraped_url)
+
+        ItemSwitch.url_frontier.put_url(url)
+
         # Model to dto...
         url_dto = DTOConverter.to_dto(URLMetadataDTO, url)
         # get dao

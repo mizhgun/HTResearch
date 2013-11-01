@@ -43,6 +43,7 @@ class URLFrontier:
             self._cache_proc.terminate()
 
     def _monitor_cache(self, cache, job_queue, job_cond, fill_cond, empty_cond):
+        print "something"
         while True:
             try:
                 next_job = job_queue.get(block=False)
@@ -83,7 +84,10 @@ class URLFrontier:
                             self._jobs.put(CacheJobs.Fill)
                             self._job_cond.notify()
                         self._fill_cond.wait()
-                    return self._urls.get(block=False)
+                    if not self._urls.empty():
+                        return self._urls.get(block=False)
+                    else:
+                        return None
 
     def put_url(self, u):
         try:
