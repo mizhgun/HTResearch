@@ -2,9 +2,9 @@
     <div id="content">
     <div id="siteNotice">
     </div>
-    <h3 id="firstHeading" class="firstHeading" style="padding:5px">${org_name}</h3>
+    <h3 id="firstHeading" class="firstHeading"">${org_name}</h3>
     <div id="bodyContent">
-        <img src="${img_path}" class="col-md-3" style="margin-right: 5px;">
+        <img id ="type-image" src="${img_path}" class="col-md-3">
         <table class="table-condensed">
             <tr>
                 <td>Tel:</td>
@@ -15,11 +15,11 @@
                 <td>${org_email}</td>
             </tr>
             <tr>
-                <td style="vertical-align:top">Address:</td>
+                <td id="addr-cell">Address:</td>
                 <td>${addr}</td>
             </tr>
         </table>
-        <a id="moreInfo" href="#" style="float:right">More Info</a>
+        <a id="moreInfo" href="#" >More Info</a>
     </div>
 </div>
 </script>

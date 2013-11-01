@@ -46,7 +46,7 @@ function initialize() {
 
 	$('#search-box').keypress(_.debounce(showSearchResults, 300));
 	$('#search-box').keyup(_.debounce(hideSearchResults, 100));
-	$('a').click(function(e){
+	$('a.org_link').click(function(e){
         geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization)
     });
 }

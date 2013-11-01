@@ -218,3 +218,19 @@ body {
     bottom: 1px;
     left: 165px;
 }
+
+#type-image {
+    margin-right: 5px;
+}
+
+#firstHeading {
+    padding: 5px;
+}
+
+#addre-cell{
+    vertical-align: top;
+}
+
+#moreInfo {
+    float: right;
+}
