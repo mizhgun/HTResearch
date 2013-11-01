@@ -151,11 +151,11 @@ class ScraperTests(unittest.TestCase):
                     emails.append(ret)
 
         # Hardcoded results based on the sites that were crawled
-        assert_list = [{'email': "sgnhrc@nic.in"},
-                       {'email': "covdnhrc@nic.in"},
-                       {'email': "anilpradhanshilong@gmail.com"},
-                       {'email': "snarayan1946@gmail.com"},
-                       {'email': "tvarghese@bombayteenchallenge.org"}]
+        assert_list = ["sgnhrc@nic.in",
+                       "covdnhrc@nic.in",
+                       "anilpradhanshilong@gmail.com",
+                       "snarayan1946@gmail.com",
+                       "tvarghese@bombayteenchallenge.org"]
 
         for test in assert_list:
             self.assertIn(test, emails, 'Email {0} not found'.format(str(test)))
@@ -177,7 +177,7 @@ class ScraperTests(unittest.TestCase):
                 else:
                     numbers.append(ret)
 
-        assert_list = [{'phone_number': "0402026070"}, {'phone_number': "9435134726"}]
+        assert_list = ["0402026070", "9435134726"]
         for test in assert_list:
             self.assertIn(test, numbers, "Phone number " + str(test) + " not found")
 
@@ -254,16 +254,16 @@ class ScraperTests(unittest.TestCase):
                     names.append(ret)
 
         assert_list = [
-            {'name': "Bombay Teen Challenge"},
-            {'name': "PRAJWALA"},
-            {'name': "Half the Sky"},
-            {'name': "Apne Aap"},
-            {'name': "Bachpan Bachao Andolan"},
-            {'name': "Tata Institute of Social Sciences"},
-            {'name': "International Justice Mission"},
+            "Bombay Teen Challenge",
+            "PRAJWALA",
+            "Half the Sky",
+            "Apne Aap",
+            "Bachpan Bachao Andolan",
+            "Tata Institute of Social Sciences",
+            "International Justice Mission",
         ]
         for test in assert_list:
-            self.assertIn(test, names, 'Name \'' + str(test['name']) + '\' not found')
+            self.assertIn(test, names, 'Name \'' + test + '\' not found')
 
     def test_org_type_scraper(self):
         test_files = [
@@ -345,22 +345,22 @@ class ScraperTests(unittest.TestCase):
                 else:
                     orgs.append(ret)
 
+        print orgs
+
         assert_list = [{
-            'name': {
-                'name': 'Bombay Teen Challenge'
-            },
+            'name': 'Bombay Teen Challenge',
             'types': [
                 OrgTypesEnum.RELIGIOUS,
                 OrgTypesEnum.EDUCATION,
                 OrgTypesEnum.PREVENTION,
             ],
             'phone_number': [
-                {'phone_number': '16157124863'},  # US number
-                {'phone_number': '912226042242'}  # indian number
+                '16157124863',  # US number
+                '912226042242'  # indian number
             ],
             'email': [
-                {'email': 'tvarghese@bombayteenchallenge.org'},
-                {'email': 'kkdevaraj@bombayteenchallenge.org'},
+                'tvarghese@bombayteenchallenge.org',
+                'kkdevaraj@bombayteenchallenge.org',
             ],
             'address':
                 'Mumbai 400052',
