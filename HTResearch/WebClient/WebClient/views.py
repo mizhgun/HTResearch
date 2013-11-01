@@ -53,4 +53,3 @@ def organization_profile(request):
     #END DUMMY DATA
     html = t.render(Context({"organization": org}))
     return HttpResponse(html)
->>>>>>> R2_BangkokDangerous
