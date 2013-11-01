@@ -1,6 +1,6 @@
 var searchResultsVisible = false;
 var map;
-var initialLatLng = new google.maps.LatLng(21, 73);
+var initialLatLng = new google.maps.LatLng(21, 78);
 var searchedLatLng;
 var geocoder = new google.maps.Geocoder();
 var address;
