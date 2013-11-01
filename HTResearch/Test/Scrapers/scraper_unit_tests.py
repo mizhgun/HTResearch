@@ -323,8 +323,8 @@ class ScraperTests(unittest.TestCase):
                 OrgTypesEnum.PREVENTION,
             ],
             'phone_number': [
-                {'phone_number': '16157124863'},
-                #{'phone_number': '912226042242'}, # Indian phone number for BTC not currently found by Indian phone number scraper
+                {'phone_number': '16157124863'},  # US number
+                {'phone_number': '912226042242'}  # indian number
             ],
             'email': [
                 {'email': 'tvarghese@bombayteenchallenge.org'},
