@@ -708,23 +708,24 @@ class UrlMetadataScraper:
         exist_url_dto = dao.find(url=response.url)
         if exist_url_dto is not None:
             exist_url = DTOConverter.from_dto(URLMetadataDTO, exist_url_dto)
-            if exist_url.checksum is not None and exist_url.checksum != metadata['checksum']:
+            if exist_url.checksum is not None:
                 if exist_url.update_freq is not None:
-                    # Checksums differ and update_freq has been initialized, so increment
-                    metadata['update_freq'] = exist_url.update_freq + 1
+                    if exist_url.checksum != metadata['checksum']:
+                        # Checksums differ and update_freq has been initialized, so increment
+                        metadata['update_freq'] = exist_url.update_freq + 1
+                    else:
+                        # Checksums are the same and update_freq was initialized, so set
+                        metadata['update_freq'] = exist_url.update_freq
                 else:
-                    # Checksums differ but update_freq was not initialized to zero, so set to 1
-                    metadata['update_freq'] = 1
-            elif exist_url.checksum is not None:
-                if exist_url.update_freq is not None:
-                    # Checksums are the same and update_freq was initialized, so set
-                    metadata['update_freq'] = exist_url.update_freq
-                else:
-                    # Checksums are the same but update_freq wasn't initialized, so initialize to 0
-                    metadata['update_freq'] = 0
+                    if exist_url.checksum != metadata['checksum']:
+                        # Checksums differ but update_freq was not initialized to zero, so set to 1
+                        metadata['update_freq'] = 1
+                    else:
+                        # Checksums are the same but update_freq wasn't initialized, so initialize to 0
+                        metadata['update_freq'] = 0
 
-        # if the existing checksum was None, set the checksum and update_freq to 0, as this should be the first time
-        # we've seen this page
+        # if the existing checksum was None, set the checksum and update_freq to 0 (above),
+        # as this should be the first time we've seen this page
 
         # TODO: Score the page.
         # Ideas for page scoring:  Simple Google PageRank using references to/from other pages; Keyword Search;
