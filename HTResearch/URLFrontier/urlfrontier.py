@@ -83,7 +83,10 @@ class URLFrontier:
                             self._jobs.put(CacheJobs.Fill)
                             self._job_cond.notify()
                         self._fill_cond.wait()
-                    return self._urls.get(block=False)
+                    if not self._urls.empty():
+                        return self._urls.get(block=False)
+                    else:
+                        return None
 
     def put_url(self, u):
         try:

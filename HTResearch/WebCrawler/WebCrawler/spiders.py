@@ -13,12 +13,17 @@ class OrgSpider(BaseSpider):
     name = 'org_spider'
     # empty start_urls, we're setting our own
     start_urls = []
+    default_seed = "https://bombayteenchallenge.org/"
 
     def __init__(self, *args, **kwargs):
         super(OrgSpider, self).__init__(*args, **kwargs)
+
+        # Define our Scrapers
         self.scrapers = []
         self.scrapers.append(OrganizationScraper())
         self.scrapers.append(LinkScraper())
+        self.scrapers.append(UrlMetadataScraper())
+
         self.url_frontier = URLFrontier()
 
     def start_requests(self):
@@ -29,9 +34,14 @@ class OrgSpider(BaseSpider):
 
         # first URL to begin crawling
         # Returns a URLMetadata model, so we have to pull the url field
-        start_url = self.url_frontier.next_url().url
+        start_url_obj = self.url_frontier.next_url
 
-        print start_url
+        start_url = None
+        if start_url_obj is None:
+            start_url = OrgSpider.default_seed
+        else:
+            start_url = start_url_obj.url
+
         if __debug__:
             log.msg('START_REQUESTS : start_url = %s' % start_url)
 
@@ -50,7 +60,9 @@ class OrgSpider(BaseSpider):
                 yield ret
 
         print response.url
-        yield Request(self.url_frontier.next_url().url, dont_filter=True)
+        next_url = self.url_frontier.next_url
+        if next_url is not None:
+            yield Request(next_url.url, dont_filter=True)
 
 
 class StopTraffickingSpider(BaseSpider):

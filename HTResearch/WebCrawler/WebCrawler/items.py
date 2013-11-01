@@ -60,3 +60,7 @@ class ScrapedPublication(Item):
 
 class ScrapedUrl(Item):
     url = Field()
+    last_visited = Field()
+    score = Field()
+    update_freq = Field()
+    checksum = Field()
