@@ -98,4 +98,5 @@ class URLFrontier:
             self._jobs.put(CacheJobs.Empty)
             self._job_cond.notify()
         with self._empty_cond:
-            self._empty_cond.wait()
+            if not self._urls.empty():
+                self._empty_cond.wait()
