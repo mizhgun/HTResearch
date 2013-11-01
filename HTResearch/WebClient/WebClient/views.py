@@ -24,7 +24,8 @@ def search(request):
         search_text = ''
 
     org_dao = DAOFactory.get_instance(OrganizationDAO)
-    organizations = [org_dao.find(name=search_text)]
 
-    params = {'organizations': organizations}
+    organizations_name = org_dao.findmany(num_elements=10, name__contains=search_text)
+
+    params = {'organizations': organizations_name}
     return render_to_response('search_results.html', params)
