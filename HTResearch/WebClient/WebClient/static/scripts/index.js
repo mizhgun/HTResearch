@@ -1,6 +1,5 @@
 var searchResultsVisible = false;
 var map;
-var organizationImg = createImageHtml('static/images/office_building_icon.png');
 var initialLatLng = new google.maps.LatLng(21, 73);
 var searchedLatLng;
 var geocoder = new google.maps.Geocoder();
@@ -15,7 +14,7 @@ function initialize() {
 	  zoomControl: false,
 	  scaleControl: false,
 	};
-
+        
 	//Didn't accept a jquery selector
 	map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
 	//var mapControls = new GLargeMapControl3D();
@@ -63,12 +62,11 @@ function showSearchResults() {
         address = '9-10-11 Nehru Place, New Delhi - 110019 India';
         
         // Get the lat, long values of the address
-        var point = geocoder.geocode({'address': address}, function(results, status){
+        geocoder.geocode({'address': address}, function(results, status){
             lat = results[0].geometry.location.lat();
             lng = results[0].geometry.location.lng();
             searchedLatLng = new google.maps.LatLng(lat, lng);
         });
-        // initialLatLng = new google.maps.LatLng(point);
 		searchResultsVisible = true;
 	}
 }
@@ -117,10 +115,6 @@ function plotOrganization(results, status) {
       } else {
         alert("Geocode was not successful for the following reason: " + status);
       }
-}
-
-function createImageHtml(imgUrl) {
-	return '<img src="'+imgUrl+'" class="col-md-3" style="margin-right: 10px;">';
 }
 
 google.maps.event.addDomListener(window, 'load', _.once(initialize));
