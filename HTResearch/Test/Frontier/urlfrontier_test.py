@@ -21,7 +21,7 @@ class URLFrontierTest(unittest.TestCase):
         with DBConnection() as c:
             c.dropall()
 
-    def urlfrontier_test(self):
+    def test_urlfrontier(self):
         start_time = datetime.now()
         url_dao = DAOFactory.get_instance(URLMetadataDAO)
 
