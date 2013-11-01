@@ -14,12 +14,12 @@ Backup 2 (Pale Mint Green): 66aa88;
 
 /* title */
 .navbar-default .navbar-brand {
-    color: #ffdd99; 
+    color: white; 
 }
 
 /* link */
 .navbar .nav > li > a {
-    color:  #ffdd99; 
+    color:  white; 
 }
 
 .navbar-default .navbar-nav > li > a:hover {
@@ -29,13 +29,13 @@ Backup 2 (Pale Mint Green): 66aa88;
 .navbar-default .navbar-nav > .active > a, 
 .navbar-default .navbar-nav > .active > a:hover, 
 .navbar-default .navbar-nav > .active > a:focus {
-    color: #ffdd99;
+    color: white;
     background-color: #008888; 
 }
 .navbar-default .navbar-nav > .open > a, 
 .navbar-default .navbar-nav > .open > a:hover, 
 .navbar-default .navbar-nav > .open > a:focus {
-    color: #ffdd99;
+    color: white;
     background-color: #008888; 
 }
 
@@ -53,8 +53,8 @@ Backup 2 (Pale Mint Green): 66aa88;
 .navbar-default .navbar-nav > .open > a .caret, 
 .navbar-default .navbar-nav > .open > a:hover .caret, 
 .navbar-default .navbar-nav > .open > a:focus .caret {
-    border-top-color: #ffdd99;
-    border-bottom-color: #ffdd99;
+    border-top-color: white;
+    border-bottom-color: white;
 }
 
 .dropdown-menu {
@@ -62,5 +62,5 @@ Backup 2 (Pale Mint Green): 66aa88;
 }
 
 .dropdown-menu > li > a {
-	color: #ffdd99;
+	color: white;
 }
