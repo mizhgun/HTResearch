@@ -4,7 +4,7 @@ from mongoengine.connection import connect, disconnect, get_connection
 class DBConnection(object):
     """A class that encapsulates the MongoDB connection"""
     
-    DB_NAME = "db_test"
+    DB_NAME = "researchData"
 
     def __enter__(self):
         disconnect()

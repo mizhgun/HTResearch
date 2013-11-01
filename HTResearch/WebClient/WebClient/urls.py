@@ -1,11 +1,10 @@
 from django.conf.urls import patterns, include, url
-from HTResearch.WebClient.webclient.views import index
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns('HTResearch.WebClient.WebClient.views',
     # Examples:
     # url(r'^$', 'htresearch.WebClient.views.home', name='home'),
     # url(r'^htresearch.WebClient/', include('htresearch.WebClient.htresearch.WebClient.urls')),
@@ -15,5 +14,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', index, name='index'),
+    url(r'^$', 'index', name='index'),
+    url(r'^search/$', 'search', name='search'),
 )

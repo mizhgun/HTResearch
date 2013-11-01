@@ -22,6 +22,7 @@
 
             <form id="custom-search-form" class="form-search form-horizontal pull-right">
                 <div class="input-append span12">
+                    {% csrf_token %}
                     <input type="text" id="search-box" class="search-query" placeholder="Search...">
                 </div>
             </form>
@@ -30,19 +31,19 @@
         <div id="search-results-div" class="jumbotron" style="display: none">
         	<h2 id="organization-list-header">Organizations</h2>
         		<ul id="organization-search-list" style="list-style-type: none;">
-					<li>
+					<!--<li>
 						<a href="#">Save the Children</a>
 					</li>
-					<li>Bombay Teen Challenge</li>
+					<li>Bombay Teen Challenge</li>-->
 				</ul>
         	<h2 id="contact-list-header">People</h2>
         		<ul id="contact-search-list" style="list-style-type: none;">
-					<li>John Marth</li>
-					<li>Mike Jones</li>
+					<!--<li>John Marth</li>
+					<li>Mike Jones</li>-->
 				</ul>
         	<h2 id="publication-list-header">Publications</h2>
         		<ul id="publication-search-list" style="list-style-type: none;">
-					<li>Stop Human Trafficking</li>
+					<!--<li>Stop Human Trafficking</li>-->
 				</ul>
         </div>
 

@@ -1,0 +1,7 @@
+{% if organizations.count > 0 %}
+    {% for organization in organizations %}
+        <li><a href="/organizations/get/{{ organization.id }}/">{{ organization.name }}</a></li>
+    {% endfor %}
+{% else %}
+    <li>None</li>
+{% endif %}

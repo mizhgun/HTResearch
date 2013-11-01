@@ -56,23 +56,45 @@ function initialize() {
 	});
 
 	$('#search-box').keypress(_.debounce(showSearchResults, 300));
-	$('#search-box').keyup(_.debounce(hideSearchResults, 100));
+	//$('#search-box').keyup(_.debounce(hideSearchResults, 100));
 	$('a').click(function(e){geocoder.geocode({'latLng': initialLatLng, 'address': dummyAddress}, plotOrganization)});
 }
 
 function showSearchResults() {
-	if($('#search-box').val().length > 0 && !searchResultsVisible) {
-		$('#search-results-div').toggle("slide", {
-	        direction: "up",
-	        distance: window.height - $('#search-box').css('top')
-	    }, 500);
+    $.ajax({
+        type: 'POST',
+        url: '/search/',
+        data: {
+            'search_text': $('#search-box').val(),
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function (data) {
+            $('#organization-search-list').html(data);
+        },
+        dataType: 'html'
+    });
+    if($('#search-box').val().length > 0) {
+        if(!searchResultsVisible) {
+            $('#search-results-div').toggle("slide", {
+                direction: "up",
+                distance: window.height - $('#search-box').css('top')
+            }, 500);
 
-		searchResultsVisible = true;
+            searchResultsVisible = true;
+        }
+	} else {
+	    if (searchResultsVisible) {
+	        $('#search-results-div').toggle('slide', {
+	            direction: 'up',
+	            distance: window.height - $('#search-box').css('top')
+	        }, 500);
+
+	        searchResultsVisible = false;
+	    }
 	}
 }
 
-function hideSearchResults(e) {
-	//Falsy bullcrap
+/*function hideSearchResults(e) {
 	if($('#search-box').val().length === 0 && searchResultsVisible) {
 		$('#search-results-div').toggle("slide", {
 	        direction: "up",
@@ -81,7 +103,7 @@ function hideSearchResults(e) {
 
 		searchResultsVisible = false;
 	}
-}
+}*/
 
 function plotOrganization(results, status) {
 	if (status == google.maps.GeocoderStatus.OK) {
@@ -93,17 +115,17 @@ function plotOrganization(results, status) {
 
         var infowindow = new google.maps.InfoWindow({
 		      content: dummyContent
-		  });
+		});
 
         infowindow.open(map,marker);
 
         google.maps.event.addListener(marker, 'click', function() {
 		    infowindow.open(map,marker);
-		  });
+		});
 
-      } else {
+    } else {
         alert("Geocode was not successful for the following reason: " + status);
-      }
+    }
 }
 
 function createImageHtml(imgUrl) {
