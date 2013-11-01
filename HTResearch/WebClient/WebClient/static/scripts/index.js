@@ -1,20 +1,10 @@
 var searchResultsVisible = false;
 var map;
 var organizationImg = createImageHtml('static/images/office_building_icon.png');
-var initialLatLng = new google.maps.LatLng(21,78);
+var initialLatLng = new google.maps.LatLng(21, 73);
+var searchedLatLng;
 var geocoder = new google.maps.Geocoder();
-var dummyAddress = "9-10-11 Nehru Place, New Delhi - 110019 India";
-var dummyContent = '<div id="content">'+
-      '<div id="siteNotice">'+
-      '</div>'+
-      '<h3 id="firstHeading" class="firstHeading">Save the Children India</h3>'+
-      '<div id="bodyContent">'+
-      organizationImg+
-      '<p>Tel: (+91) 11 4229 4900</p>'+
-      '<p>Email: info@savethechildren.in</p>'+
-      '<p>'+dummyAddress+'</p>'+
-      '</div>'+
-      '</div>';
+var address;
 
 function initialize() {
 	var mapOptions = {
@@ -57,7 +47,9 @@ function initialize() {
 
 	$('#search-box').keypress(_.debounce(showSearchResults, 300));
 	$('#search-box').keyup(_.debounce(hideSearchResults, 100));
-	$('a').click(function(e){geocoder.geocode({'latLng': initialLatLng, 'address': dummyAddress}, plotOrganization)});
+	$('a').click(function(e){
+        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization)
+    });
 }
 
 function showSearchResults() {
@@ -66,7 +58,17 @@ function showSearchResults() {
 	        direction: "up",
 	        distance: window.height - $('#search-box').css('top')
 	    }, 500);
-
+        
+        // Need to get the address based on the search results
+        address = '9-10-11 Nehru Place, New Delhi - 110019 India';
+        
+        // Get the lat, long values of the address
+        var point = geocoder.geocode({'address': address}, function(results, status){
+            lat = results[0].geometry.location.lat();
+            lng = results[0].geometry.location.lng();
+            searchedLatLng = new google.maps.LatLng(lat, lng);
+        });
+        // initialLatLng = new google.maps.LatLng(point);
 		searchResultsVisible = true;
 	}
 }
@@ -90,9 +92,20 @@ function plotOrganization(results, status) {
             map: map,
             position: results[0].geometry.location
         });
-
+        
+        // the values will be replaced by results from the search
+        var org = {
+            'org_name': 'Save The Children India', 
+            'img_path': 'static/images/office_building_icon.png',
+            'phone_num': '(+91) 11 4229 4900',
+            'org_email': 'info@savethechildren.in',
+            'addr': address
+        };
+        
+        html = $("#modal-template").tmpl(org);
+        
         var infowindow = new google.maps.InfoWindow({
-		      content: dummyContent
+		      content : html.html()
 		  });
 
         infowindow.open(map,marker);
