@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from HTResearch.WebClient.webclient.views import *
+from HTResearch.WebClient.WebClient.views import *
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -7,8 +7,8 @@ from HTResearch.WebClient.webclient.views import *
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'htresearch.WebClient.views.home', name='home'),
-    # url(r'^htresearch.WebClient/', include('htresearch.WebClient.htresearch.WebClient.urls')),
+    # url(r'^$', 'HTResearch.WebClient.views.home', name='home'),
+    # url(r'^HTResearch.WebClient/', include('HTResearch.WebClient.HTResearch.WebClient.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
