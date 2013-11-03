@@ -3,10 +3,9 @@ from multiprocessing import Queue, Process, Condition, RLock
 from Queue import Empty, Full
 
 # project imports
+from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
-from HTResearch.DataAccess.dao import URLMetadataDAO
-from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.Utilities.types import Singleton
 
 
@@ -18,10 +17,8 @@ class URLFrontier:
     __metaclass__ = Singleton
 
     def __init__(self):
-        # Public members
-        self.dao = URLMetadataDAO()
-        self.dto = URLMetadataDTO
-        self.model = URLMetadata
+        # Injected dependencies
+        self.dao = None
 
         # Private members
         self._max_size = 1000
@@ -58,9 +55,9 @@ class URLFrontier:
 
             if next_job == CacheJobs.Fill:
                 with fill_cond:
-                    urls = self.dao.findmany(self._max_size - cache.qsize(), "last_visited")
+                    urls = self.dao().findmany(self._max_size - cache.qsize(), "last_visited")
                     for u in urls:
-                        url_obj = DTOConverter.from_dto(self.model, u)
+                        url_obj = DTOConverter.from_dto(URLMetadata, u)
                         try:
                             cache.put(url_obj)
                         except Full:
@@ -98,8 +95,8 @@ class URLFrontier:
             self._urls.put(u, block=False)
         except Full:
             pass
-        url_dto = DTOConverter.to_dto(self.dto, u)
-        self.dao.create_update(url_dto)
+        url_dto = DTOConverter.to_dto(URLMetadataDTO, u)
+        self.dao().create_update(url_dto)
 
     def empty_cache(self):
         with self._job_cond:

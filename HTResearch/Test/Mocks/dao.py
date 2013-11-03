@@ -10,6 +10,9 @@ class MockDAO(object):
     def __init__(self):
         self.conn = MockDBConnection
 
+        # Implemented in children
+        self.dto = None
+
     def merge_documents(self, dto, merge_dto):
         with self.conn():
             attributes = merge_dto._data
@@ -47,7 +50,7 @@ class MockDAO(object):
                 return self.dto.objects(**constraints)[:num_elements]
 
 
-class MockContactDAO(DAO):
+class MockContactDAO(MockDAO):
     """
     A DAO for the Contact document
     """
@@ -76,14 +79,14 @@ class MockContactDAO(DAO):
         return contact_dto
 
 
-class MockOrganizationDAO(DAO):
+class MockOrganizationDAO(MockDAO):
     """
     A DAO for the Organization document
     """
     def __init__(self):
         super(MockOrganizationDAO, self).__init__()
         self.dto = OrganizationDTO
-        self.contact_dao = ContactDAO
+        self.contact_dao = MockContactDAO
 
     def create_update(self, org_dto):
         with self.conn():
@@ -101,14 +104,14 @@ class MockOrganizationDAO(DAO):
         return org_dto
 
 
-class MockPublicationDAO(DAO):
+class MockPublicationDAO(MockDAO):
     """
     A DAO for the Publication document
     """
     def __init__(self):
-        super(PublicationDAO, self).__init__()
+        super(MockPublicationDAO, self).__init__()
         self.dto = PublicationDTO
-        self.contact_dao = ContactDAO
+        self.contact_dao = MockContactDAO
 
     def create_update(self, pub_dto):
         with self.conn():
@@ -129,12 +132,12 @@ class MockPublicationDAO(DAO):
         return pub_dto
 
 
-class MockURLMetadataDAO(DAO):
+class MockURLMetadataDAO(MockDAO):
     """
     A DAO for the URLMetadata document
     """
     def __init__(self):
-        super(URLMetadataDAO, self).__init__()
+        super(MockURLMetadataDAO, self).__init__()
         self.dto = URLMetadataDTO
 
     def create_update(self, url_dto):

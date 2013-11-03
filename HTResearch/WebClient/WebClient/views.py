@@ -25,12 +25,7 @@ def organization_profile(request):
                              email="marth@yeemail.com",
                              position="Tipper")
 
-    people = []
-    people.append(my_contact)
-    people.append(my_contact2)
-    people.append(my_contact2)
-    people.append(my_contact2)
-    people.append(my_contact)
+    people = [my_contact, my_contact2, my_contact2, my_contact2, my_contact]
     partner = Organization(name="Melee it on Me",
                              address="Turtle Drive",
                              contacts= people,
@@ -39,8 +34,7 @@ def organization_profile(request):
                              organization_url="http://www.smashboards.com",
                              facebook="facebook.com/smashboards",
                              twitter="smashboards")
-    partners = []
-    partners.append(partner)
+    partners = [partner]
     org = Organization(name="Bee Yee Foundation",
                              address="1313 Yee Drive",
                              contacts= people,

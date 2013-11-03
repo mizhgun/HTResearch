@@ -5,28 +5,25 @@ from springpython.config import Object
 from springpython.context import ApplicationContext
 
 # Project imports
-from HTResearch.URLFrontier.urlfrontier import URLFrontier
 from HTResearch.DataModel.model import URLMetadata
-from HTResearch.DataAccess.dao import URLMetadataDAO
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext, URLFrontierContext
 from HTResearch.Test.Mocks.connection import MockDBConnection
+from HTResearch.Test.Mocks.dao import MockURLMetadataDAO
 
 
 class TestableURLFrontierContext(URLFrontierContext):
 
     @Object()
-    def URLMetadataDAO(self):
-        dao = URLMetadataDAO()
-        dao.conn = MockDBConnection
-        return dao
+    def RegisteredURLMetadataDAO(self):
+        return MockURLMetadataDAO
 
 
 class TestableDAOContext(DAOContext):
 
     @Object()
-    def DBConnection(self):
+    def RegisteredDBConnection(self):
         return MockDBConnection
 
 
@@ -36,7 +33,8 @@ class URLFrontierTest(unittest.TestCase):
         self.dao_ctx = ApplicationContext(TestableDAOContext())
 
     def tearDown(self):
-        pass
+        with MockDBConnection() as db:
+            db.dropall()
 
     def test_urlfrontier(self):
         start_time = datetime.now()
@@ -62,7 +60,7 @@ class URLFrontierTest(unittest.TestCase):
         frontier.start_cache_process()
 
         print '"Create" a second frontier and verify that the frontier is a singleton'
-        frontier2 = URLFrontier()
+        frontier2 = self.frontier_ctx.get_object("URLFrontier")
         self.assertEqual(frontier, frontier2)
 
         print 'Wait for the cache to populate and get the least recently visited URL'

@@ -9,13 +9,30 @@ from HTResearch.DataModel.model import *
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Test.Mocks.connection import MockDBConnection
+from HTResearch.Test.Mocks.dao import *
 
 
 class TestableDAOContext(DAOContext):
 
     @Object()
-    def DBConnection(self):
+    def RegisteredDBConnection(self):
         return MockDBConnection
+
+    @Object()
+    def RegisteredContactDAO(self):
+        return MockContactDAO
+
+    @Object()
+    def RegisteredOrganizationDAO(self):
+        return MockOrganizationDAO
+
+    @Object()
+    def RegisteredPublicationDAO(self):
+        return MockPublicationDAO
+
+    @Object()
+    def RegisteredURLMetadataDAO(self):
+        return MockURLMetadataDAO
 
 
 class DatabaseInteractionTest(unittest.TestCase):
@@ -42,7 +59,8 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.ctx = ApplicationContext(TestableDAOContext())
 
     def tearDown(self):
-        pass
+        with MockDBConnection() as db:
+            db.dropall()
 
     def test_contact_dao(self):
         contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)

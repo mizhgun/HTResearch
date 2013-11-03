@@ -54,8 +54,10 @@ class ContactDAO(DAO):
     def __init__(self):
         super(ContactDAO, self).__init__()
         self.dto = ContactDTO
-        self.org_dao = OrganizationDAO
-        self.pub_dao = PublicationDAO
+
+        # Injected dependencies
+        self.org_dao = None
+        self.pub_dao = None
 
     def create_update(self, contact_dto):
         with self.conn():
@@ -83,7 +85,9 @@ class OrganizationDAO(DAO):
     def __init__(self):
         super(OrganizationDAO, self).__init__()
         self.dto = OrganizationDTO
-        self.contact_dao = ContactDAO
+
+        # Injected dependencies
+        self.contact_dao = None
 
     def create_update(self, org_dto):
         with self.conn():
@@ -108,7 +112,9 @@ class PublicationDAO(DAO):
     def __init__(self):
         super(PublicationDAO, self).__init__()
         self.dto = PublicationDTO
-        self.contact_dao = ContactDAO
+
+        # Injected dependencies
+        self.contact_dao = None
 
     def create_update(self, pub_dto):
         with self.conn():
