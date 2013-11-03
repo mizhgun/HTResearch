@@ -1,14 +1,14 @@
-from dto import *
-from connection import DBConnection
+from HTResearch.DataAccess.dto import *
+from connection import MockDBConnection
 
 
-class DAO(object):
+class MockDAO(object):
     """
     A generic DAO class that may be subclassed by DAOs for operations on
     specific documents.
     """
     def __init__(self):
-        self.conn = DBConnection
+        self.conn = MockDBConnection
 
     def merge_documents(self, dto, merge_dto):
         with self.conn():
@@ -47,15 +47,15 @@ class DAO(object):
                 return self.dto.objects(**constraints)[:num_elements]
 
 
-class ContactDAO(DAO):
+class MockContactDAO(DAO):
     """
     A DAO for the Contact document
     """
     def __init__(self):
-        super(ContactDAO, self).__init__()
+        super(MockContactDAO, self).__init__()
         self.dto = ContactDTO
-        self.org_dao = OrganizationDAO
-        self.pub_dao = PublicationDAO
+        self.org_dao = MockOrganizationDAO
+        self.pub_dao = MockPublicationDAO
 
     def create_update(self, contact_dto):
         with self.conn():
@@ -76,12 +76,12 @@ class ContactDAO(DAO):
         return contact_dto
 
 
-class OrganizationDAO(DAO):
+class MockOrganizationDAO(DAO):
     """
     A DAO for the Organization document
     """
     def __init__(self):
-        super(OrganizationDAO, self).__init__()
+        super(MockOrganizationDAO, self).__init__()
         self.dto = OrganizationDTO
         self.contact_dao = ContactDAO
 
@@ -101,7 +101,7 @@ class OrganizationDAO(DAO):
         return org_dto
 
 
-class PublicationDAO(DAO):
+class MockPublicationDAO(DAO):
     """
     A DAO for the Publication document
     """
@@ -129,7 +129,7 @@ class PublicationDAO(DAO):
         return pub_dto
 
 
-class URLMetadataDAO(DAO):
+class MockURLMetadataDAO(DAO):
     """
     A DAO for the URLMetadata document
     """

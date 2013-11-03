@@ -1,7 +1,7 @@
 from scrapy.exceptions import DropItem
 from HTResearch.DataAccess.dao import *
 from HTResearch.DataAccess.factory import *
-from HTResearch.DataModel.converter import *
+from HTResearch.Utilities.converter import *
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
 
 

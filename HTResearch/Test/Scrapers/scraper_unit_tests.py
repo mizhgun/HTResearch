@@ -1,15 +1,15 @@
-from bson.binary import Binary
 import unittest
 import pickle
-
 import os.path
 
+from bson.binary import Binary
+
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
-from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import *
 from HTResearch.DataAccess.factory import DAOFactory
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
-from HTResearch.DataModel.converter import DTOConverter
+from HTResearch.Utilities.converter import DTOConverter
+
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
 

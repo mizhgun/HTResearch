@@ -1,22 +1,22 @@
-from nltk import FreqDist, PorterStemmer
-from scrapy.selector import HtmlXPathSelector
-from ..items import *
 import itertools
 import os
-from nltk import FreqDist
-import nltk
-import pdb
 import re
 from urlparse import urlparse, urljoin
 import string
 import datetime
 import hashlib
+
+from nltk import FreqDist, PorterStemmer
+from scrapy.selector import HtmlXPathSelector
+from bson.binary import Binary
+
+from ..items import *
 from HTResearch.DataAccess.dao import *
 from HTResearch.DataAccess.factory import *
-from HTResearch.DataModel.converter import *
-from bson.binary import Binary, MD5_SUBTYPE
+from HTResearch.Utilities.converter import *
 from link_scraper import LinkScraper
 from HTResearch.DataModel.enums import OrgTypesEnum
+
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.

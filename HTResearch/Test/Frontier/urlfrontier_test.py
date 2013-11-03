@@ -1,29 +1,46 @@
 # Library imports
 import unittest
 from datetime import datetime, timedelta
-from time import sleep
+from springpython.config import Object
+from springpython.context import ApplicationContext
 
 # Project imports
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
-from HTResearch.DataAccess.connection import DBConnection
 from HTResearch.DataModel.model import URLMetadata
-from HTResearch.DataAccess.factory import DAOFactory
 from HTResearch.DataAccess.dao import URLMetadataDAO
 from HTResearch.DataAccess.dto import URLMetadataDTO
-from HTResearch.DataModel.converter import DTOConverter
+from HTResearch.Utilities.converter import DTOConverter
+from HTResearch.Utilities.context import DAOContext, URLFrontierContext
+from HTResearch.Test.Mocks.connection import MockDBConnection
+
+
+class TestableURLFrontierContext(URLFrontierContext):
+
+    @Object()
+    def URLMetadataDAO(self):
+        dao = URLMetadataDAO()
+        dao.conn = MockDBConnection
+        return dao
+
+
+class TestableDAOContext(DAOContext):
+
+    @Object()
+    def DBConnection(self):
+        return MockDBConnection
 
 
 class URLFrontierTest(unittest.TestCase):
     def setUp(self):
-        pass
+        self.frontier_ctx = ApplicationContext(TestableURLFrontierContext())
+        self.dao_ctx = ApplicationContext(TestableDAOContext())
 
     def tearDown(self):
-        with DBConnection() as c:
-            c.dropall()
+        pass
 
     def test_urlfrontier(self):
         start_time = datetime.now()
-        url_dao = DAOFactory.get_instance(URLMetadataDAO)
+        url_dao = self.dao_ctx.get_object("URLMetadataDAO")
 
         print 'Creating 2000 URLs'
         url_list = []
@@ -39,7 +56,7 @@ class URLFrontierTest(unittest.TestCase):
             url_dao.create_update(dto)
 
         print 'Create the URLFrontier'
-        frontier = URLFrontier()
+        frontier = self.frontier_ctx.get_object("URLFrontier")
 
         print 'Start the cache process'
         frontier.start_cache_process()
