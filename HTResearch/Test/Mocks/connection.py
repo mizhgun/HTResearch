@@ -6,7 +6,7 @@ class MockDBConnection(object):
 
     def __init__(self):
         disconnect()
-        connect("db_test")
+        connect("ht_test")
         self.conn = get_connection()
 
     def __enter__(self):
@@ -17,4 +17,4 @@ class MockDBConnection(object):
 
     # NOTE: This method should NEVER be defined for a normal DBConnection.
     def dropall(self):
-        self.conn.drop_database("db_test")
+        self.conn.drop_database("ht_test")
