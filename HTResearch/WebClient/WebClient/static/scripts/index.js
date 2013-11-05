@@ -108,14 +108,14 @@ function plotOrganization(results, status) {
 		  });
 
         infowindow.open(map,marker);
-
+        
         google.maps.event.addListener(marker, 'click', function() {
 		    infowindow.open(map,marker);
 		  });
 
-      } else {
+    } else {
         alert("Geocode was not successful for the following reason: " + status);
-      }
+    }
 }
 
 google.maps.event.addDomListener(window, 'load', _.once(initialize));
