@@ -56,8 +56,8 @@ class ContactDAO(DAO):
         self.dto = ContactDTO
 
         # Injected dependencies
-        self.org_dao = None
-        self.pub_dao = None
+        self.org_dao = OrganizationDAO
+        self.pub_dao = PublicationDAO
 
     def create_update(self, contact_dto):
         with self.conn():
@@ -87,7 +87,7 @@ class OrganizationDAO(DAO):
         self.dto = OrganizationDTO
 
         # Injected dependencies
-        self.contact_dao = None
+        self.contact_dao = ContactDAO
 
     def create_update(self, org_dto):
         with self.conn():
@@ -114,7 +114,7 @@ class PublicationDAO(DAO):
         self.dto = PublicationDTO
 
         # Injected dependencies
-        self.contact_dao = None
+        self.contact_dao = ContactDAO
 
     def create_update(self, pub_dto):
         with self.conn():
