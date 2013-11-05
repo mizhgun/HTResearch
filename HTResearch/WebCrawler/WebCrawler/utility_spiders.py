@@ -4,7 +4,6 @@ import os
 import pickle
 
 from scrapy.spider import BaseSpider
-from scrapy.http import Response
 
 OUTPUT_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Output')
 

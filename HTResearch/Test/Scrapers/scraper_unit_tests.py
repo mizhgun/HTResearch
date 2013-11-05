@@ -1,15 +1,14 @@
-from bson.binary import Binary
 import unittest
 import pickle
-
 import os.path
 
+from bson.binary import Binary
+
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
-from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import *
-from HTResearch.DataAccess.factory import DAOFactory
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
-from HTResearch.DataModel.converter import DTOConverter
+from HTResearch.Utilities.converter import DTOConverter
+
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
 
@@ -41,9 +40,11 @@ class ScraperTests(unittest.TestCase):
             url='http://www.halftheskymovement.org/partners'
         )
 
+        ctx = ApplicationContext(DAOContext())
+
         self.url_dto = DTOConverter.to_dto(URLMetadataDTO, urlmetadata)
         self.url_dto2 = DTOConverter.to_dto(URLMetadataDTO, urlmetadata2)
-        self.url_dao = DAOFactory.get_instance(URLMetadataDAO)
+        self.url_dao = ctx.get_object("URLMetadataDAO")
         self.url_dao.create_update(self.url_dto)
         self.url_dao.create_update(self.url_dto2)
 

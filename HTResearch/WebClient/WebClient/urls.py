@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 from HTResearch.WebClient.WebClient.views import *
 
 # Uncomment the next two lines to enable the admin:

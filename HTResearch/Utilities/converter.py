@@ -1,4 +1,4 @@
-from model import *
+from HTResearch.DataModel.model import *
 from HTResearch.DataAccess.dto import *
 
 
