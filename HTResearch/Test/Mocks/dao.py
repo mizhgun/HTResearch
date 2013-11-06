@@ -1,14 +1,17 @@
-from dto import *
-from connection import DBConnection
+from HTResearch.DataAccess.dto import *
+from connection import MockDBConnection
 
 
-class DAO(object):
+class MockDAO(object):
     """
     A generic DAO class that may be subclassed by DAOs for operations on
     specific documents.
     """
     def __init__(self):
-        self.conn = DBConnection
+        self.conn = MockDBConnection
+
+        # Implemented in children
+        self.dto = None
 
     def merge_documents(self, dto, merge_dto):
         with self.conn():
@@ -47,17 +50,15 @@ class DAO(object):
                 return self.dto.objects(**constraints)[:num_elements]
 
 
-class ContactDAO(DAO):
+class MockContactDAO(MockDAO):
     """
     A DAO for the Contact document
     """
     def __init__(self):
-        super(ContactDAO, self).__init__()
+        super(MockContactDAO, self).__init__()
         self.dto = ContactDTO
-
-        # Injected dependencies
-        self.org_dao = OrganizationDAO
-        self.pub_dao = PublicationDAO
+        self.org_dao = MockOrganizationDAO
+        self.pub_dao = MockPublicationDAO
 
     def create_update(self, contact_dto):
         with self.conn():
@@ -78,16 +79,14 @@ class ContactDAO(DAO):
         return contact_dto
 
 
-class OrganizationDAO(DAO):
+class MockOrganizationDAO(MockDAO):
     """
     A DAO for the Organization document
     """
     def __init__(self):
-        super(OrganizationDAO, self).__init__()
+        super(MockOrganizationDAO, self).__init__()
         self.dto = OrganizationDTO
-
-        # Injected dependencies
-        self.contact_dao = ContactDAO
+        self.contact_dao = MockContactDAO
 
     def create_update(self, org_dto):
         with self.conn():
@@ -105,16 +104,14 @@ class OrganizationDAO(DAO):
         return org_dto
 
 
-class PublicationDAO(DAO):
+class MockPublicationDAO(MockDAO):
     """
     A DAO for the Publication document
     """
     def __init__(self):
-        super(PublicationDAO, self).__init__()
+        super(MockPublicationDAO, self).__init__()
         self.dto = PublicationDTO
-
-        # Injected dependencies
-        self.contact_dao = ContactDAO
+        self.contact_dao = MockContactDAO
 
     def create_update(self, pub_dto):
         with self.conn():
@@ -135,12 +132,12 @@ class PublicationDAO(DAO):
         return pub_dto
 
 
-class URLMetadataDAO(DAO):
+class MockURLMetadataDAO(MockDAO):
     """
     A DAO for the URLMetadata document
     """
     def __init__(self):
-        super(URLMetadataDAO, self).__init__()
+        super(MockURLMetadataDAO, self).__init__()
         self.dto = URLMetadataDTO
 
     def create_update(self, url_dto):

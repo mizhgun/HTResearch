@@ -1,10 +1,14 @@
 import unittest
 import pickle
-
 import os.path
 
+from bson.binary import Binary
+
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
-from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import *
+from HTResearch.DataAccess.dto import URLMetadataDTO
+from HTResearch.DataModel.model import URLMetadata
+from HTResearch.Utilities.converter import DTOConverter
+
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
 
@@ -20,6 +24,35 @@ def file_to_response(test_file):
 
 
 class ScraperTests(unittest.TestCase):
+    def set_up_url_metadata_scraper_test(self):
+        """Set up database for URLMetadataScraper test. Not called automatically"""
+        urlmetadata = URLMetadata(
+            url="http://www.google.com",
+            last_visited=datetime(1, 1, 1),
+            update_freq=5,
+            score=0,
+            checksum=Binary('154916369406075238760605425088915003118'),
+        )
+        urlmetadata2 = URLMetadata(
+            checksum=Binary('199553381546012383114562002951261892300'),
+            last_visited=datetime(1, 1, 1),
+            update_freq=1,
+            url='http://www.halftheskymovement.org/partners'
+        )
+
+        ctx = ApplicationContext(DAOContext())
+
+        self.url_dto = DTOConverter.to_dto(URLMetadataDTO, urlmetadata)
+        self.url_dto2 = DTOConverter.to_dto(URLMetadataDTO, urlmetadata2)
+        self.url_dao = ctx.get_object("URLMetadataDAO")
+        self.url_dao.create_update(self.url_dto)
+        self.url_dao.create_update(self.url_dto2)
+
+    def tear_down_url_metadata_scraper_test(self):
+        """Undo setup to database for URLMetadataScraper test. Not called automatically"""
+        self.url_dao.delete(self.url_dto)
+        self.url_dao.delete(self.url_dto2)
+
     def test_address_scraper(self):
         test_files = [
             "httpwwwtisseduTopMenuBarcontactuslocation1",
@@ -119,11 +152,11 @@ class ScraperTests(unittest.TestCase):
                     emails.append(ret)
 
         # Hardcoded results based on the sites that were crawled
-        assert_list = [{'email': "sgnhrc@nic.in"},
-                       {'email': "covdnhrc@nic.in"},
-                       {'email': "anilpradhanshilong@gmail.com"},
-                       {'email': "snarayan1946@gmail.com"},
-                       {'email': "tvarghese@bombayteenchallenge.org"}]
+        assert_list = ["sgnhrc@nic.in",
+                       "covdnhrc@nic.in",
+                       "anilpradhanshilong@gmail.com",
+                       "snarayan1946@gmail.com",
+                       "tvarghese@bombayteenchallenge.org"]
 
         for test in assert_list:
             self.assertIn(test, emails, 'Email {0} not found'.format(str(test)))
@@ -145,7 +178,7 @@ class ScraperTests(unittest.TestCase):
                 else:
                     numbers.append(ret)
 
-        assert_list = [{'phone_number': "0402026070"}, {'phone_number': "9435134726"}]
+        assert_list = ["0402026070", "9435134726"]
         for test in assert_list:
             self.assertIn(test, numbers, "Phone number " + str(test) + " not found")
 
@@ -222,16 +255,16 @@ class ScraperTests(unittest.TestCase):
                     names.append(ret)
 
         assert_list = [
-            {'name': "Bombay Teen Challenge"},
-            {'name': "PRAJWALA"},
-            {'name': "Half the Sky"},
-            {'name': "Apne Aap"},
-            {'name': "Bachpan Bachao Andolan"},
-            {'name': "Tata Institute of Social Sciences"},
-            {'name': "International Justice Mission"},
+            "Bombay Teen Challenge",
+            "PRAJWALA",
+            "Half the Sky",
+            "Apne Aap",
+            "Bachpan Bachao Andolan",
+            "Tata Institute of Social Sciences",
+            "International Justice Mission",
         ]
         for test in assert_list:
-            self.assertIn(test, names, 'Name \'' + str(test['name']) + '\' not found')
+            self.assertIn(test, names, 'Name \'' + test + '\' not found')
 
     def test_org_type_scraper(self):
         test_files = [
@@ -314,21 +347,19 @@ class ScraperTests(unittest.TestCase):
                     orgs.append(ret)
 
         assert_list = [{
-            'name': {
-                'name': 'Bombay Teen Challenge'
-            },
+            'name': 'Bombay Teen Challenge',
             'types': [
                 OrgTypesEnum.RELIGIOUS,
                 OrgTypesEnum.EDUCATION,
                 OrgTypesEnum.PREVENTION,
             ],
             'phone_number': [
-                {'phone_number': '16157124863'},
-                #{'phone_number': '912226042242'}, # Indian phone number for BTC not currently found by Indian phone number scraper
+                '16157124863',  # US number
+                '912226042242'  # indian number
             ],
             'email': [
-                {'email': 'tvarghese@bombayteenchallenge.org'},
-                {'email': 'kkdevaraj@bombayteenchallenge.org'},
+                'tvarghese@bombayteenchallenge.org',
+                'kkdevaraj@bombayteenchallenge.org',
             ],
             'address':
                 'Mumbai 400052',
@@ -343,6 +374,59 @@ class ScraperTests(unittest.TestCase):
 
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
+
+    def test_urlmetadata_scraper(self):
+        self.set_up_url_metadata_scraper_test()
+
+        test_files = [
+            "httpbombayteenchallengeorg",
+            "httpwwwgooglecom",
+            "httpwwwhalftheskymovementorgpartners",
+        ]
+
+        url_mds = UrlMetadataScraper()
+        scraped_urls = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = url_mds.parse(response)
+                if isinstance(ret, type([])):
+                    scraped_urls = scraped_urls + ret
+                else:
+                    scraped_urls.append(ret)
+
+        # We can't possibly get the last_visited time exactly right, so set to date
+        for scraped_url in scraped_urls:
+            scraped_url['last_visited'] = scraped_url['last_visited'].date()
+
+        assert_list = [
+            {
+                'checksum': Binary('154916369406075238760605425088915003118'),
+                'last_visited': datetime.now().date(),
+                'update_freq': 0,
+                'url': 'http://bombayteenchallenge.org/'
+            },
+            {
+                'checksum': Binary('94565939257467841022060717122642335157'),
+                'last_visited': datetime.now().date(),
+                'update_freq': 6, # incremented one from setup b/c diff checksum
+                'url': 'http://www.google.com'
+            },
+            {
+                'checksum': Binary('199553381546012383114562002951261892300'),
+                'last_visited': datetime.now().date(),
+                'update_freq': 1,  # not incremented b/c checksum is same
+                'url': 'http://www.halftheskymovement.org/partners'
+            },
+        ]
+
+        # do teardown now in case of failure
+        self.tear_down_url_metadata_scraper_test()
+
+        for test in assert_list:
+            self.assertIn(test, scraped_urls, 'Invalid URL Metadata Didn\'t Find: %s' % str(test))
+
 
 
 if __name__ == '__main__':

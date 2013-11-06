@@ -1,15 +1,16 @@
 from scrapy.exceptions import DropItem
+from springpython.context import ApplicationContext
+
 from HTResearch.DataAccess.dao import *
-from HTResearch.DataAccess.factory import *
-from HTResearch.DataModel.converter import *
-from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from HTResearch.Utilities.converter import *
+from HTResearch.Utilities.context import DAOContext, URLFrontierContext
 
 
 class ItemSwitch(object):
     """Redirect Items to Appropriate Pipeline Handler"""
 
-    # TODO: This needs to be a singleton
-    url_frontier = URLFrontier()
+    frontier_ctx = ApplicationContext(URLFrontierContext())
+    dao_ctx = ApplicationContext(DAOContext())
 
     def __init__(self):
         pass
@@ -45,7 +46,7 @@ class ItemSwitch(object):
         # Model to dto...
         contact_dto = DTOConverter.to_dto(ContactDTO, contact)
         # get dao
-        dao = DAOFactory.get_instance(ContactDAO)
+        dao = ItemSwitch.dao_ctx.get_object("ContactDAO")
         #store
         dao.create_update(contact_dto)
 
@@ -56,7 +57,7 @@ class ItemSwitch(object):
         # Model to dto...
         org_dto = DTOConverter.to_dto(OrganizationDTO, org)
         # get dao
-        dao = DAOFactory.get_instance(OrganizationDAO)
+        dao = ItemSwitch.dao_ctx.get_object("OrganizationDAO")
         #store
         dao.create_update(org_dto)
 
@@ -67,11 +68,22 @@ class ItemSwitch(object):
         # Model to dto...
         pub_dto = DTOConverter.to_dto(PublicationDTO, pub)
         # get dao
-        dao = DAOFactory.get_instance(PublicationDAO)
+        dao = ItemSwitch.dao_ctx.get_object("PublicationDAO")
         #store
         dao.create_update(pub_dto)
 
     @staticmethod
     def _store_url(scraped_url):
-        #TODO: Need to be able to store all metadata through URLFrontier, not just URL
-        ItemSwitch.url_frontier.put_url(scraped_url['url'])
+        # For now, store the new metadata ourselves
+        # item to Model
+        url = ModelConverter.to_model(URLMetadata, scraped_url)
+
+        frontier = ItemSwitch.frontier_ctx.get_object("URLFrontier")
+        frontier.put_url(url)
+
+        # Model to dto...
+        url_dto = DTOConverter.to_dto(URLMetadataDTO, url)
+        # get dao
+        dao = ItemSwitch.dao_ctx.get_object("URLMetadataDAO")
+        #store
+        dao.create_update(url_dto)

@@ -1,16 +1,23 @@
-from nltk import FreqDist, PorterStemmer
-from scrapy.selector import HtmlXPathSelector
-from ..items import *
 import itertools
 import os
-from nltk import FreqDist
-import nltk
-import pdb
 import re
 from urlparse import urlparse, urljoin
 import string
+import datetime
+import hashlib
+
+from nltk import FreqDist, PorterStemmer
+from scrapy.selector import HtmlXPathSelector
+from bson.binary import Binary
+from springpython.context import ApplicationContext
+
+from ..items import *
+from HTResearch.DataAccess.dao import *
+from HTResearch.Utilities.converter import *
+from HTResearch.Utilities.context import DAOContext
 from link_scraper import LinkScraper
 from HTResearch.DataModel.enums import OrgTypesEnum
+
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
@@ -19,16 +26,11 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 class ContactNameScraper:
     # TODO: Find list of Indian names and add them to names.txt
     def __init__(self):
-        self._saved_path = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-        with open("../Resources/names.txt") as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt')) as f:
             self._names = f.read().splitlines()
         self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr']
         self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
         self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
-
-    def __del__(self):
-        os.chdir(self._saved_path)
 
     """ Just formats the tags and adds a > to the elements that don't have it """
     @staticmethod
@@ -221,38 +223,13 @@ class EmailScraper:
         # Make the list an item
         email_list = []
         for email in emails:
-            item = ScrapedEmail()
-            item['email'] = email
-            email_list.append(item)
+            # removing ScrapedEmail() item in favor of returning exactly what DB expects
+            # Paul Poulsen
+            #item = ScrapedEmail()
+            #item['email'] = email
+            email_list.append(email)
 
         return email_list
-
-
-class IndianPhoneNumberScraper:
-
-    def parse(self, response):
-        hxs = HtmlXPathSelector(response)
-        india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?[0-9]{5}[0-9]?\b')
-        # body will get phone numbers that are just text in the body
-        body = hxs.select('//body').re(india_format_regex)
-
-        phone_nums = body
-
-        # Remove unicode indicators
-        for i in range(len(phone_nums)):
-            phone_nums[i] = phone_nums[i].encode('ascii','ignore')
-
-        # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
-        phone_nums = list(set(phone_nums))
-
-        # Make the list an item
-        phone_nums_list = []
-        for num in phone_nums:
-            item = ScrapedPhoneNumber()
-            item['phone_number'] = num
-            phone_nums_list.append(item)
-
-        return phone_nums_list
 
 
 class KeywordScraper:
@@ -260,15 +237,9 @@ class KeywordScraper:
     stopwords = []
 
     def __init__(self):
-        self._saved_path = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
         #Load words to be ignored
-        with open("../Resources/stopwords.txt") as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/stopwords.txt')) as f:
             self.stopwords = f.read().splitlines()
-
-    def __del__(self):
-        os.chdir(self._saved_path)
 
     def format_extracted_text(self, list):
         for i in range(len(list)):
@@ -320,7 +291,9 @@ class IndianPhoneNumberScraper:
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-        india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?[0-9]{5}[0-9]?\b')
+        india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?'
+                                        r'[0-9]{5}[0-9]?\b|\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?'
+                                        r'[-./\s]?[0-9]{4}[-./\s]?[0-9]{4}\b')
         # body will get phone numbers that are just text in the body
         body = hxs.select('//body').re(india_format_regex)
 
@@ -336,24 +309,20 @@ class IndianPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            number = ScrapedPhoneNumber()
             num = re.sub("\D", "", num)
-            number["phone_number"] = num
-            phone_nums_list.append(number)
+            # removing ScrapedPhoneNumber() item in favor of returning exactly what DB expects
+            # Paul Poulsen
+            #number = ScrapedPhoneNumber()
+            #number["phone_number"] = num
+            phone_nums_list.append(num)
 
         return phone_nums_list
 
 
 class OrgAddressScraper:
     def __init__(self):
-        self._saved_path = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-        with open("../Resources/cities.txt") as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/cities.txt')) as f:
             self._cities = f.read().splitlines()
-
-    def __del__(self):
-        os.chdir(self._saved_path)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -408,15 +377,9 @@ class OrgNameScraper:
 
     def __init__(self):
         self._split_punctuation = re.compile(r"[ \w']+")
-        self._saved_path = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
         #Load words to be ignored
-        with open("../Resources/stopwords.txt") as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/stopwords.txt')) as f:
             self._stopwords = f.read().splitlines()
-
-    def __del__(self):
-        os.chdir(self._saved_path)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -457,7 +420,8 @@ class OrgNameScraper:
             if acronym == url:
                 org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
                 break
-        return org_name
+        # Returning string instead of ScrapedOrgName to make transition to DB easier
+        return org_name['name']
 
 
 class OrgPartnersScraper:
@@ -466,6 +430,8 @@ class OrgPartnersScraper:
         self._link_scraper = LinkScraper()
         self._partner_text = 'partner'
         self._netloc_ignore = [
+            'youtube.com',
+            'www.youtube.com',
             'google.com',
             'www.google.com',
             'twitter.com',
@@ -669,7 +635,7 @@ class OrgTypeScraper:
             if len(types) >= self._max_types:
                 break
 
-        return types or ['unknown']
+        return types or [OrgTypesEnum.UNKNOWN]
 
 
 class OrgUrlScraper:
@@ -715,6 +681,63 @@ class PublicationTypeScraper:
         type = []
 
 
+class UrlMetadataScraper:
+
+    def __init__(self):
+        pass
+
+    def parse(self, response):
+        # Initialize the DAO context
+        dao_ctx = ApplicationContext(DAOContext())
+
+        # Initialize item and set url
+        metadata = ScrapedUrl()
+        metadata['url'] = response.url
+        metadata['last_visited'] = datetime.now()
+
+        # calculate new hash
+        md5 = hashlib.md5()
+        md5.update(response.body)
+        # python hashlib doesn't output integers, so we have to do it ourselves.
+        hex_hash = md5.hexdigest()
+        # this will be a 128 bit number
+        # Don't use the subtype argument, as it doesn't get stored to mongo and makes comparisons harder
+        metadata['checksum'] = Binary(data=bytes(int(hex_hash, 16)))
+
+        # default values for first time
+        metadata['update_freq'] = 0
+
+        # Compare checksums and update update_freq using the existing URL
+        dao = dao_ctx.get_object("URLMetadataDAO")
+        exist_url_dto = dao.find(url=response.url)
+        if exist_url_dto is not None:
+            exist_url = DTOConverter.from_dto(URLMetadataDTO, exist_url_dto)
+            if exist_url.checksum is not None:
+                if exist_url.update_freq is not None:
+                    if exist_url.checksum != metadata['checksum']:
+                        # Checksums differ and update_freq has been initialized, so increment
+                        metadata['update_freq'] = exist_url.update_freq + 1
+                    else:
+                        # Checksums are the same and update_freq was initialized, so set
+                        metadata['update_freq'] = exist_url.update_freq
+                else:
+                    if exist_url.checksum != metadata['checksum']:
+                        # Checksums differ but update_freq was not initialized to zero, so set to 1
+                        metadata['update_freq'] = 1
+                    else:
+                        # Checksums are the same but update_freq wasn't initialized, so initialize to 0
+                        metadata['update_freq'] = 0
+
+        # if the existing checksum was None, set the checksum and update_freq to 0 (above),
+        # as this should be the first time we've seen this page
+
+        # TODO: Score the page.
+        # Ideas for page scoring:  Simple Google PageRank using references to/from other pages; Keyword Search;
+        # Update frequency; User Feedback (the more a page is clicked the more we want to keep it updated)
+
+        return metadata
+
+
 class USPhoneNumberScraper:
 
     def parse(self, response):
@@ -735,10 +758,12 @@ class USPhoneNumberScraper:
         # Make the list an item
         phone_nums_list = []
         for num in phone_nums:
-            number = ScrapedPhoneNumber()
             num = re.sub("\D", "", num)
-            number["phone_number"] = num
-            phone_nums_list.append(number)
+            # Removing item in favor of giving data ready for DB
+            # Paul Poulsen
+            #number = ScrapedPhoneNumber()
+            #number["phone_number"] = num
+            phone_nums_list.append(num)
 
         return phone_nums_list
 

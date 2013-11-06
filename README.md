@@ -4,7 +4,7 @@
 To work on this project, you'll probably want at least the following:
 
 1. Git for Windows (http://msysgit.github.io/)
-2. Python 3.3.2 (http://www.python.org/download/)
+2. Python 2.7.5 (http://www.python.org/download/)
 3. MongoDB (http://www.mongodb.org/downloads)
 4. Robomongo (http://www.robomongo.org/)
 5. Scrapy (http://scrapy.org/download/)
