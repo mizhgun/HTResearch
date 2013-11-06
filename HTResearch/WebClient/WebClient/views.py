@@ -24,9 +24,6 @@ def organization_profile(request):
         print e.message
         return get_http_404_page()
 
-    if org_lookup_key <= 0 or org is None:
-        return get_http_404_page()
-
     t = get_template('organization_profile_template.html')
     html = t.render(Context({"organization": org}))
     return HttpResponse(html)
