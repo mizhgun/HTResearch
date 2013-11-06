@@ -1,6 +1,6 @@
 # Library imports
 import hashlib
-from multiprocessing import Queue, Process, Condition, RLock, Manager, Array
+from multiprocessing import Queue, Process, Condition, RLock, Array
 from Queue import Empty, Full
 
 # Project imports
@@ -21,11 +21,23 @@ class URLFrontierRules:
         self._required_domains = required_domains
         self._blocked_domains = blocked_domains
         self._sort_list = sort_list
-        self.checksum = self._generate_checksum()
+        self._checksum = self._generate_checksum()
 
     @property
     def checksum(self):
-        return self.checksum
+        return self._checksum
+
+    @property
+    def required_domains(self):
+        return self._required_domains
+
+    @property
+    def blocked_domains(self):
+        return self._blocked_domains
+
+    @property
+    def sort_list(self):
+        return ",".join(self._sort_list)
 
     def _generate_checksum(self):
         md5 = hashlib.md5()
@@ -69,7 +81,10 @@ class URLFrontier:
                                                       self._job_queues[cs],
                                                       self._job_conds[cs],
                                                       self._fill_conds[cs],
-                                                      self._empty_conds[cs]))
+                                                      self._empty_conds[cs],
+                                                      rules.required_domains,
+                                                      rules.blocked_domains,
+                                                      rules.sort_list))
                 self._proc_counts[cs] = 0
             if not self._cache_procs[cs].is_alive():
                 self._cache_procs[cs].start()
@@ -93,7 +108,8 @@ class URLFrontier:
                 del self._empty_conds[cs]
                 del self._job_conds[cs]
 
-    def _monitor_cache(self, cache, job_queue, job_cond, fill_cond, empty_cond):
+    def _monitor_cache(self, cache, job_queue, job_cond, fill_cond, empty_cond,
+                       req_doms, blk_doms, srt_list):
         while True:
             try:
                 next_job = job_queue.get(block=False)
@@ -104,7 +120,8 @@ class URLFrontier:
 
             if next_job == CacheJobs.Fill:
                 with fill_cond:
-                    urls = self._factory.findmany(self._max_size - cache.qsize(), "last_visited")
+                    urls = self._factory.findmany_by_domains(self._max_size - cache.qsize(),
+                                                             req_doms, blk_doms, srt_list)
                     for u in urls:
                         url_obj = DTOConverter.from_dto(URLMetadata, u)
                         try:

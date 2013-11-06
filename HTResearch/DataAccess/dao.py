@@ -1,3 +1,4 @@
+from mongoengine import Q
 from dto import *
 from connection import DBConnection
 
@@ -184,3 +185,19 @@ class URLMetadataDAO(DAO):
                 return URLMetadataDTO.objects(**constraints).order_by(*sort_fields)[:num_elements]
             else:
                 return URLMetadataDTO.objects(**constraints)[:num_elements]
+
+    def findmany_by_domains(self, num_elements, required_domains, blocked_domains, *sort_fields):
+        if len(required_domains) > 0:
+            req_query = Q(domain__in=required_domains)
+        else:
+            req_query = Q()
+        if len(blocked_domains) > 0:
+            blk_query = Q(domain__nin=blocked_domains)
+        else:
+            blk_query = Q()
+
+        with DBConnection():
+            if len(sort_fields) > 0:
+                return URLMetadataDTO.objects(req_query & blk_query).order_by(*sort_fields)[:num_elements]
+            else:
+                return URLMetadataDTO.objects(req_query & blk_query)[:num_elements]
