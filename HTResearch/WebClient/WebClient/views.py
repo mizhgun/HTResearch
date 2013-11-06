@@ -1,8 +1,9 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.template.loader import get_template
 from django.template import Context
 from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
 from HTResearch.DataModel.model import *
+import string
 
 
 def index(request):
@@ -12,7 +13,14 @@ def index(request):
 
 
 def organization_profile(request):
-    t = get_template('organization_profile_template.html')
+    uri = request.build_absolute_uri()
+    org_lookup_key = 0
+    org = None
+    try:
+        org_lookup_key = int(string.split(uri,'/')[4])
+    except ValueError:
+        return get_http_404_page()
+
     #DUMMY DATA BEGINS
     my_contact = Contact(first_name="Jordan",
                              last_name="Degner",
@@ -45,5 +53,15 @@ def organization_profile(request):
                              facebook="facebook.com/yeeeeeee",
                              twitter="BYeeeeeee")
     #END DUMMY DATA
+
+    if org_lookup_key == 0 or org is None:
+        return get_http_404_page()
+
+    t = get_template('organization_profile_template.html')
     html = t.render(Context({"organization": org}))
     return HttpResponse(html)
+
+def get_http_404_page():
+    template = get_template('http_404.html')
+    html = template.render(Context({}))
+    return HttpResponseNotFound(html)
