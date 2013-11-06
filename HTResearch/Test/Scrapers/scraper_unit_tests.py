@@ -221,10 +221,10 @@ class ScraperTests(unittest.TestCase):
                     links.append(ret)
 
         assert_list = [
-            {'url': 'http://www.stoptrafficking.net/about'},
-            {'url': 'http://www.stoptrafficking.net/services/training'},
-            {'url': 'http://visit.unl.edu/'},
-            {'url': 'http://www.unl.edu/ucomm/prospective/'},
+            {'url': 'http://www.stoptrafficking.net/about', 'domain': 'stoptrafficking.net'},
+            {'url': 'http://www.stoptrafficking.net/services/training', 'domain': 'stoptrafficking.net'},
+            {'url': 'http://visit.unl.edu/', 'domain': 'unl.edu'},
+            {'url': 'http://www.unl.edu/ucomm/prospective/', 'domain': 'unl.edu'},
         ]
 
         for test in assert_list:

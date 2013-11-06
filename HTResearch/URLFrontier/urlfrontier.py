@@ -50,6 +50,43 @@ class URLFrontierRules:
         return md5.hexdigest()
 
 
+def _monitor_cache(max_size, cache, job_queue, job_cond, fill_cond, empty_cond,
+                   req_doms, blk_doms, srt_list):
+
+    factory = DAOFactory.get_instance(URLMetadataDAO)
+    while True:
+        try:
+            next_job = job_queue.get(block=False)
+        except Empty:
+            with job_cond:
+                job_cond.wait()
+                try:
+                    next_job = job_queue.get(block=False)
+                except Empty:
+                    continue
+
+        if next_job == CacheJobs.Fill:
+            with fill_cond:
+                urls = factory.findmany_by_domains(max_size - cache.qsize(),
+                                                   req_doms, blk_doms, srt_list)
+                for u in urls:
+                    url_obj = DTOConverter.from_dto(URLMetadata, u)
+                    try:
+                        cache.put(url_obj)
+                    except Full:
+                        break
+                fill_cond.notify_all()
+
+        elif next_job == CacheJobs.Empty:
+            with empty_cond:
+                while True:
+                    try:
+                        cache.get(block=False)
+                    except Empty:
+                        empty_cond.notify()
+                        break
+
+
 class URLFrontier:
     __metaclass__ = Singleton
 
@@ -76,8 +113,9 @@ class URLFrontier:
                 self._fill_conds[cs] = Condition()
                 self._empty_conds[cs] = Condition()
                 self._job_conds[cs] = Condition()
-                self._cache_procs[cs] = Process(target=self._monitor_cache,
-                                                args=(self._url_queues[cs],
+                self._cache_procs[cs] = Process(target=_monitor_cache,
+                                                args=(self._max_size,
+                                                      self._url_queues[cs],
                                                       self._job_queues[cs],
                                                       self._job_conds[cs],
                                                       self._fill_conds[cs],
@@ -108,37 +146,6 @@ class URLFrontier:
                 del self._empty_conds[cs]
                 del self._job_conds[cs]
 
-    def _monitor_cache(self, cache, job_queue, job_cond, fill_cond, empty_cond,
-                       req_doms, blk_doms, srt_list):
-        while True:
-            try:
-                next_job = job_queue.get(block=False)
-            except Empty:
-                with job_cond:
-                    job_cond.wait()
-                    next_job = job_queue.get(block=False)
-
-            if next_job == CacheJobs.Fill:
-                with fill_cond:
-                    urls = self._factory.findmany_by_domains(self._max_size - cache.qsize(),
-                                                             req_doms, blk_doms, srt_list)
-                    for u in urls:
-                        url_obj = DTOConverter.from_dto(URLMetadata, u)
-                        try:
-                            cache.put(url_obj)
-                        except Full:
-                            break
-                    fill_cond.notify_all()
-
-            elif next_job == CacheJobs.Empty:
-                with empty_cond:
-                    while True:
-                        try:
-                            cache.get(block=False)
-                        except Empty:
-                            empty_cond.notify()
-                            break
-
     def next_url(self, rules=URLFrontierRules()):
         cs = rules.checksum
         start_process = False
@@ -147,7 +154,7 @@ class URLFrontier:
             if cs not in self._cache_procs.keys():
                 start_process = True
         if start_process:
-            start_process(rules=rules)
+            self.start_cache_process(rules=rules)
 
         with self._next_url_locks[cs]:
             with self._empty_conds[cs]:

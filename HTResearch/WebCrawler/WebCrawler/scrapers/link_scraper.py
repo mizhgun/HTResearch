@@ -1,6 +1,7 @@
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy import log
 from ..items import ScrapedUrl
+from HTResearch.Utilities.url_tools import UrlUtility
 
 class LinkScraper:
     """A scraper to find all URLs in a page """
@@ -23,6 +24,7 @@ class LinkScraper:
         for link in links:
             url = ScrapedUrl()
             url['url'] = link.url
+            url['domain'] = UrlUtility.get_domain(link.url)
             if url not in urls:
                 urls.append(url)
 

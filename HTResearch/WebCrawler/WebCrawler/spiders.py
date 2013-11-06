@@ -1,4 +1,4 @@
-from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from HTResearch.URLFrontier.urlfrontier import URLFrontier, URLFrontierRules
 from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import LinkScraper
 
 from scrapers.document_scrapers import *
@@ -23,8 +23,16 @@ class OrgSpider(BaseSpider):
         self.scrapers.append(OrganizationScraper())
         self.scrapers.append(LinkScraper())
         self.scrapers.append(UrlMetadataScraper())
-
+        self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
         self.url_frontier = URLFrontier()
+
+    @staticmethod
+    def _get_blocked_domains():
+        blocked_domains = []
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Resources/blocked_org_domains.txt')) as f:
+            for line in f:
+                blocked_domains.append(line.rstrip())
+        return blocked_domains
 
     def start_requests(self):
         """
@@ -34,7 +42,7 @@ class OrgSpider(BaseSpider):
 
         # first URL to begin crawling
         # Returns a URLMetadata model, so we have to pull the url field
-        start_url_obj = self.url_frontier.next_url
+        start_url_obj = self.url_frontier.next_url(self.url_frontier_rules)
 
         start_url = None
         if start_url_obj is None:
@@ -60,7 +68,7 @@ class OrgSpider(BaseSpider):
                 yield ret
 
         print response.url
-        next_url = self.url_frontier.next_url
+        next_url = self.url_frontier.next_url(self.url_frontier_rules)
         if next_url is not None:
             yield Request(next_url.url, dont_filter=True)
 
