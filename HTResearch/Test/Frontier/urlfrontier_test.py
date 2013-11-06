@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from time import sleep
 
 # Project imports
-from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from HTResearch.URLFrontier.urlfrontier import URLFrontier, URLFrontierRules
 from HTResearch.DataAccess.connection import DBConnection
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.DataAccess.factory import DAOFactory
@@ -24,6 +24,7 @@ class URLFrontierTest(unittest.TestCase):
     def test_urlfrontier(self):
         start_time = datetime.now()
         url_dao = DAOFactory.get_instance(URLMetadataDAO)
+        rules = URLFrontierRules()
 
         print 'Creating 2000 URLs'
         url_list = []
@@ -49,7 +50,7 @@ class URLFrontierTest(unittest.TestCase):
         self.assertEqual(frontier, frontier2)
 
         print 'Wait for the cache to populate and get the least recently visited URL'
-        old_url = frontier.next_url
+        old_url = frontier.next_url()
 
         print 'Assert that the last visited date matches the last element in urllist'
         self.assertEqual(url_list[1999].url, old_url.url)
@@ -63,7 +64,7 @@ class URLFrontierTest(unittest.TestCase):
         frontier.empty_cache()
 
         print 'Wait a couple more seconds and verify that the next URL is the oldest one'
-        next_url = frontier.next_url
+        next_url = frontier.next_url()
         self.assertEqual(oldest_url.url, next_url.url)
 
         print 'Stop the cache process'
