@@ -97,7 +97,8 @@ function plotOrganization(results, status) {
             'img_path': 'static/images/office_building_icon.png',
             'phone_num': '(+91) 11 4229 4900',
             'org_email': 'info@savethechildren.in',
-            'addr': address
+            'addr': address,
+            'org_id': 4
         };
         
         html = $("#modal-template").tmpl(org);
@@ -107,14 +108,14 @@ function plotOrganization(results, status) {
 		  });
 
         infowindow.open(map,marker);
-
+        
         google.maps.event.addListener(marker, 'click', function() {
 		    infowindow.open(map,marker);
 		  });
 
-      } else {
+    } else {
         alert("Geocode was not successful for the following reason: " + status);
-      }
+    }
 }
 
 google.maps.event.addDomListener(window, 'load', _.once(initialize));

@@ -39,7 +39,6 @@ class Organization(object):
         self.twitter = twitter
 
 
-
 class Publication(object):
     """A Model class for an anti-trafficking research publication."""
 

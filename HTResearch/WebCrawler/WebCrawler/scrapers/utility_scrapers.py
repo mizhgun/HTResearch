@@ -1,22 +1,23 @@
-from nltk import FreqDist, PorterStemmer
-from scrapy.selector import HtmlXPathSelector
-from ..items import *
 import itertools
 import os
-from nltk import FreqDist
-import nltk
-import pdb
 import re
 from urlparse import urlparse, urljoin
 import string
 import datetime
 import hashlib
+
+from nltk import FreqDist, PorterStemmer
+from scrapy.selector import HtmlXPathSelector
+from bson.binary import Binary
+from springpython.context import ApplicationContext
+
+from ..items import *
 from HTResearch.DataAccess.dao import *
-from HTResearch.DataAccess.factory import *
-from HTResearch.DataModel.converter import *
-from bson.binary import Binary, MD5_SUBTYPE
+from HTResearch.Utilities.converter import *
+from HTResearch.Utilities.context import DAOContext
 from link_scraper import LinkScraper
 from HTResearch.DataModel.enums import OrgTypesEnum
+
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
@@ -686,6 +687,9 @@ class UrlMetadataScraper:
         pass
 
     def parse(self, response):
+        # Initialize the DAO context
+        dao_ctx = ApplicationContext(DAOContext())
+
         # Initialize item and set url
         metadata = ScrapedUrl()
         metadata['url'] = response.url
@@ -704,7 +708,7 @@ class UrlMetadataScraper:
         metadata['update_freq'] = 0
 
         # Compare checksums and update update_freq using the existing URL
-        dao = DAOFactory.get_instance(URLMetadataDAO)
+        dao = dao_ctx.get_object("URLMetadataDAO")
         exist_url_dto = dao.find(url=response.url)
         if exist_url_dto is not None:
             exist_url = DTOConverter.from_dto(URLMetadataDTO, exist_url_dto)

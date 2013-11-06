@@ -1,14 +1,14 @@
 # Library imports
 import hashlib
 from multiprocessing import Queue, Process, Condition, RLock, Array
+# stdlib imports
+from multiprocessing import Queue, Process, Condition, RLock
 from Queue import Empty, Full
 
-# Project imports
-from HTResearch.DataModel.model import URLMetadata
-from HTResearch.DataModel.converter import DTOConverter
-from HTResearch.DataAccess.dao import URLMetadataDAO
+# project imports
 from HTResearch.DataAccess.dto import URLMetadataDTO
-from HTResearch.DataAccess.factory import DAOFactory
+from HTResearch.DataModel.model import URLMetadata
+from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.types import Singleton
 
 
@@ -50,10 +50,9 @@ class URLFrontierRules:
         return md5.hexdigest()
 
 
-def _monitor_cache(max_size, cache, job_queue, job_cond, fill_cond, empty_cond,
+def _monitor_cache(dao, max_size, cache, job_queue, job_cond, fill_cond, empty_cond,
                    req_doms, blk_doms, srt_list):
 
-    factory = DAOFactory.get_instance(URLMetadataDAO)
     while True:
         try:
             next_job = job_queue.get(block=False)
@@ -67,7 +66,7 @@ def _monitor_cache(max_size, cache, job_queue, job_cond, fill_cond, empty_cond,
 
         if next_job == CacheJobs.Fill:
             with fill_cond:
-                urls = factory.findmany_by_domains(max_size - cache.qsize(),
+                urls = dao().findmany_by_domains(max_size - cache.qsize(),
                                                    req_doms, blk_doms, srt_list)
                 for u in urls:
                     url_obj = DTOConverter.from_dto(URLMetadata, u)
@@ -91,8 +90,11 @@ class URLFrontier:
     __metaclass__ = Singleton
 
     def __init__(self):
+        # Injected dependencies
+        self.dao = None
+
+        # Private members
         self._max_size = 1000
-        self._factory = DAOFactory.get_instance(URLMetadataDAO)
         self._start_term_lock = RLock()
         self._url_queues = dict()
         self._job_queues = dict()
@@ -114,7 +116,8 @@ class URLFrontier:
                 self._empty_conds[cs] = Condition()
                 self._job_conds[cs] = Condition()
                 self._cache_procs[cs] = Process(target=_monitor_cache,
-                                                args=(self._max_size,
+                                                args=(self.dao,
+                                                      self._max_size,
                                                       self._url_queues[cs],
                                                       self._job_queues[cs],
                                                       self._job_conds[cs],
@@ -173,7 +176,7 @@ class URLFrontier:
 
     def put_url(self, u):
         url_dto = DTOConverter.to_dto(URLMetadataDTO, u)
-        self._factory.create_update(url_dto)
+        self.dao().create_update(url_dto)
 
     def empty_cache(self, rules=URLFrontierRules()):
         cs = rules.checksum

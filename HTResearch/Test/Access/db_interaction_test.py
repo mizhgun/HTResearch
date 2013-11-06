@@ -1,11 +1,38 @@
+# stdlib imports
 import unittest
+from springpython.context import ApplicationContext
+from springpython.config import Object
 
+# project imports
 from HTResearch.DataAccess.dto import *
-from HTResearch.DataAccess.dao import *
-from HTResearch.DataAccess.connection import DBConnection
-from HTResearch.DataAccess.factory import DAOFactory
 from HTResearch.DataModel.model import *
-from HTResearch.DataModel.converter import DTOConverter
+from HTResearch.Utilities.converter import DTOConverter
+from HTResearch.Utilities.context import DAOContext
+from HTResearch.Test.Mocks.connection import MockDBConnection
+from HTResearch.Test.Mocks.dao import *
+
+
+class TestableDAOContext(DAOContext):
+
+    @Object()
+    def RegisteredDBConnection(self):
+        return MockDBConnection
+
+    @Object()
+    def RegisteredContactDAO(self):
+        return MockContactDAO
+
+    @Object()
+    def RegisteredOrganizationDAO(self):
+        return MockOrganizationDAO
+
+    @Object()
+    def RegisteredPublicationDAO(self):
+        return MockPublicationDAO
+
+    @Object()
+    def RegisteredURLMetadataDAO(self):
+        return MockURLMetadataDAO
 
 
 class DatabaseInteractionTest(unittest.TestCase):
@@ -29,13 +56,15 @@ class DatabaseInteractionTest(unittest.TestCase):
                                        authors=[self.contact])
         self.urlmetadata = URLMetadata(url="http://google.com")
 
+        self.ctx = ApplicationContext(TestableDAOContext())
+
     def tearDown(self):
-        with DBConnection() as c:
-            c.dropall()
+        with MockDBConnection() as db:
+            db.dropall()
 
     def test_contact_dao(self):
         contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)
-        contact_dao = DAOFactory.get_instance(ContactDAO)
+        contact_dao = self.ctx.get_object("ContactDAO")
 
         print 'Testing contact creation ...'
         contact_dao.create_update(contact_dto)
@@ -66,7 +95,7 @@ class DatabaseInteractionTest(unittest.TestCase):
 
     def test_organization_dao(self):
         org_dto = DTOConverter.to_dto(OrganizationDTO, self.organization)
-        org_dao = DAOFactory.get_instance(OrganizationDAO)
+        org_dao = self.ctx.get_object("OrganizationDAO")
 
         print 'Testing organization creation ...'
         org_dao.create_update(org_dto)
@@ -109,7 +138,7 @@ class DatabaseInteractionTest(unittest.TestCase):
 
     def test_publication_dao(self):
         pub_dto = DTOConverter.to_dto(PublicationDTO, self.publication)
-        pub_dao = DAOFactory.get_instance(PublicationDAO)
+        pub_dao = self.ctx.get_object("PublicationDAO")
 
         print 'Testing publication creation ...'
         pub_dao.create_update(pub_dto)
@@ -137,7 +166,7 @@ class DatabaseInteractionTest(unittest.TestCase):
 
     def test_urlmetadata_dao(self):
         url_dto = DTOConverter.to_dto(URLMetadataDTO, self.urlmetadata)
-        url_dao = DAOFactory.get_instance(URLMetadataDAO)
+        url_dao = self.ctx.get_object("URLMetadataDAO")
 
         print 'Testing URL creation ...'
         url_dao.create_update(url_dto)
@@ -164,7 +193,7 @@ class DatabaseInteractionTest(unittest.TestCase):
 
     def test_merge_records(self):
         contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)
-        contact_dao = DAOFactory.get_instance(ContactDAO)
+        contact_dao = self.ctx.get_object("ContactDAO")
 
         print 'Saving initial record ...'
         contact_dao.create_update(contact_dto)

@@ -1,7 +1,7 @@
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
-from scrapy import log
 from ..items import ScrapedUrl
 from HTResearch.Utilities.url_tools import UrlUtility
+
 
 class LinkScraper:
     """A scraper to find all URLs in a page """

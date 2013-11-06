@@ -1,10 +1,12 @@
 from HTResearch.URLFrontier.urlfrontier import URLFrontier, URLFrontierRules
 from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import LinkScraper
+from HTResearch.Utilities.context import URLFrontierContext
 
+from springpython.context import ApplicationContext
 from scrapers.document_scrapers import *
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
-from scrapy.http import Request, TextResponse
+from scrapy.http import Request
 from scrapy import log
 import os
 
@@ -24,7 +26,9 @@ class OrgSpider(BaseSpider):
         self.scrapers.append(LinkScraper())
         self.scrapers.append(UrlMetadataScraper())
         self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
-        self.url_frontier = URLFrontier()
+        self.ctx = ApplicationContext(URLFrontierContext())
+        self.url_frontier = self.ctx.get_object("URLFrontier")
+
 
     @staticmethod
     def _get_blocked_domains():
