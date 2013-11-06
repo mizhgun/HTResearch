@@ -14,13 +14,12 @@ def index(request):
 def organization_profile(request):
     uri = request.build_absolute_uri()
     org_dao = OrganizationDAO()
-    org_lookup_key = 0
-    org = None
 
     try:
         org_lookup_key = int(string.split(uri,'/')[4])
         org = org_dao.find(id=org_lookup_key)
     except Exception as e:
+        #If we ever hook up logging, this is where we would log the message
         print e.message
         return get_http_404_page()
 
