@@ -12,8 +12,8 @@ class Contact:
 
 class OrganizationScraper():
     def __init__(self):
-        self._required_words = ['trafficking', 'prostitution', 'sex trafficking', 'domestic', 'child labor',
-                                'child labour', 'slavery', 'trafficked']
+        self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',
+                                'human trafficking', 'brothel', 'child trafficking', 'anti-trafficking']
         self._punctuation = re.compile('[%s]' % re.escape(string.punctuation))
 
     _scrapers = {
@@ -53,14 +53,15 @@ class OrganizationScraper():
     def check_valid_org(self, response):
         hxs = HtmlXPathSelector(response)
         site_text = hxs.select('//html//text()').extract()
-        site_text = [element for element in site_text if element.strip() != '']
-        
-        for sentence in site_text:
-            for word in sentence.split():
-                word = self._punctuation.sub('', word)
-                if word in self._required_words:
+        site_text = [element.strip() for element in site_text if element.strip() != '']
+
+        for word in self._required_words:
+            for sentence in site_text:
+                sentence = self._punctuation.sub('', sentence)
+                if word in sentence.lower():
                     return True
         return False
+
 
 class Publication:
 
