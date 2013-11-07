@@ -24,7 +24,7 @@ class OrganizationDTO(mongo.Document):
     email_key = mongo.EmailField(db_field='ek')
     emails = mongo.ListField(db_field='es')
     contacts = mongo.ListField(mongo.ReferenceField(ContactDTO), db_field='cs')
-    organization_url = mongo.URLField(db_field='u')
+    organization_url = mongo.StringField(db_field='u')
     partners = mongo.ListField(mongo.ReferenceField('self'), db_field='ps')
     facebook = mongo.URLField(db_field='f')
     twitter = mongo.URLField(db_field='t')

@@ -353,11 +353,11 @@ class ScraperTests(unittest.TestCase):
                 OrgTypesEnum.EDUCATION,
                 OrgTypesEnum.PREVENTION,
             ],
-            'phone_number': [
+            'phone_numbers': [
                 '16157124863',  # US number
                 '912226042242'  # indian number
             ],
-            'email': [
+            'emails': [
                 'tvarghese@bombayteenchallenge.org',
                 'kkdevaraj@bombayteenchallenge.org',
             ],
