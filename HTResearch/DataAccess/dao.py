@@ -165,7 +165,7 @@ class URLMetadataDAO(DAO):
         else:
             blk_query = Q()
 
-        with DBConnection():
+        with self.conn():
             if len(sort_fields) > 0:
                 return URLMetadataDTO.objects(req_query & blk_query).order_by(*sort_fields)[:num_elements]
             else:
