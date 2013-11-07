@@ -117,13 +117,21 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_org.facebook, org_dto.facebook)
         self.assertEqual(assert_org.twitter, org_dto.twitter)
 
+        print 'Testing organization text search ...'
+
+        assert_orgs = org_dao.text_search(num_elements=10, text='bEe YeE university ers')
+        self.assertEqual(assert_orgs[0].name, org_dto.name)
+
+        assert_orgs = org_dao.text_search(num_elements=10, text='yee adfgh905w')
+        self.assertEqual(assert_orgs, [])
+
         print 'Testing organization editing ...'
         org_dto.name = "Yee Universityee"
         org_dto.contacts = []
         org_dao.create_update(org_dto)
 
         assert_org = org_dao.find(id=org_dto.id,
-                                  name=org_dto.name)
+                                  name=u'Yee Universityee')
         self.assertEqual(assert_org.name, org_dto.name)
         self.assertEqual(assert_org.organization_url, org_dto.organization_url)
         self.assertEqual(assert_org.contacts, org_dto.contacts)
@@ -163,6 +171,7 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertTrue(assert_pub is None)
 
         print 'PublicationDAO tests passed'
+
 
     def test_urlmetadata_dao(self):
         url_dto = DTOConverter.to_dto(URLMetadataDTO, self.urlmetadata)
