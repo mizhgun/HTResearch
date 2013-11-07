@@ -5,8 +5,6 @@ from springpython.config import Object
 from springpython.context import ApplicationContext
 
 # Project imports
-from HTResearch.URLFrontier.urlfrontier import URLFrontier, URLFrontierRules
-from HTResearch.DataAccess.connection import DBConnection
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.Utilities.converter import DTOConverter

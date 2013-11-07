@@ -155,26 +155,6 @@ class URLMetadataDAO(DAO):
             url_dto.save()
         return url_dto
 
-    def delete(self, url_dto):
-        with DBConnection():
-            url_dto.delete()
-        return url_dto
-
-    # NOTE: This method will not return an object when
-    # passed constraints that are reference types!
-    def find(self, **constraints):
-        with DBConnection():
-            return URLMetadataDTO.objects(**constraints).first()
-
-    # NOTE: This method will not return an object when
-    # passed constraints that are reference types!
-    def findmany(self, num_elements, *sort_fields, **constraints):
-        with DBConnection():
-            if len(sort_fields) > 0:
-                return URLMetadataDTO.objects(**constraints).order_by(*sort_fields)[:num_elements]
-            else:
-                return URLMetadataDTO.objects(**constraints)[:num_elements]
-
     def findmany_by_domains(self, num_elements, required_domains, blocked_domains, *sort_fields):
         if len(required_domains) > 0:
             req_query = Q(domain__in=required_domains)
