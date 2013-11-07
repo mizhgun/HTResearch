@@ -2,7 +2,7 @@ from ..items import *
 from utility_scrapers import *
 
 
-class Contact:
+class ContactScraper():
 
     def __init__(self):
         contact = None
@@ -41,7 +41,7 @@ class OrganizationScraper():
         return organization
 
 
-class Publication:
+class PublicationScraper():
 
     def __init__(self):
         publication = None

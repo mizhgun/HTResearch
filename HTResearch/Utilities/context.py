@@ -60,6 +60,95 @@ class DAOContext(PythonConfig):
         return URLMetadataDAO
 
 
+class DocumentScraperContext(PythonConfig):
+    @Object()
+    def RegisteredContactScraper(self):
+        return self.ContactScraper
+
+    @Object()
+    def RegisteredOrganizationScraper(self):
+        return self.OrganizationScraper
+
+    @Object()
+    def RegisteredPublicationScraper(self):
+        return self.PublicationScraper
+
+
+class UtilityScraperContext(PythonConfig):
+
+    @Object()
+    def RegisteredContactNameScraper(self):
+        return self.ContactNameScraper
+
+    @Object()
+    def RegisteredContactPositionScraper(self):
+        return self.ContactPositionScraper
+
+    @Object()
+    def RegisteredContactPublicationScraper(self):
+        return self.ContactPublicationScraper
+
+    @Object()
+    def RegisteredEmailScraper(self):
+        return self.EmailScraper
+
+    @Object()
+    def RegisteredKeywordScraper(self):
+        return self.KeywordScraper
+
+    @Object()
+    def RegisteredIndianPhoneNumberScraper(self):
+        return self.IndianPhoneNumberScraper
+
+    @Object()
+    def RegisteredOrgAddressScraper(self):
+        return self.OrgAddressScraper
+
+    @Object()
+    def RegisteredOrgContactsScraper(self):
+        return self.OrgContactsScraper
+
+    @Object()
+    def RegisteredOrgNameScraper(self):
+        return self.OrgNameScraper
+
+    @Object()
+    def RegisteredOrgPartnersScraper(self):
+        return self.OrgPartnersScraper
+
+    @Object()
+    def RegisteredOrgTypeScraper(self):
+        return self.OrgTypeScraper
+
+    @Object()
+    def RegisteredOrgUrlScraper(self):
+        return self.OrgUrlScraper
+
+    @Object()
+    def RegisteredPublicationAuthorsScraper(self):
+        return self.PublicationAuthorsScraper
+
+    @Object()
+    def RegisteredPublicationDateScraper(self):
+        return self.PublicationDateScraper
+
+    @Object()
+    def RegisteredPublicationPublisherScraper(self):
+        return self.PublicationPublisherScraper
+
+    @Object()
+    def RegisteredPublicationTitleScraper(self):
+        return self.PublicationTitleScraper
+
+    @Object()
+    def RegisteredPublicationTypeScraper(self):
+        return self.PublicationTypeScraper
+
+    @Object()
+    def RegisteredURLMetadataScraper(self):
+        return self.URLMetadataScraper
+
+
 class URLFrontierContext(PythonConfig):
 
     @Object()
