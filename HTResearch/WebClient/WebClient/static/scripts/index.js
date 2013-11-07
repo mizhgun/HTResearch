@@ -55,8 +55,17 @@ function initialize() {
 
 	});
 
-	$('#search-box').keypress(_.debounce(showSearchResults, 300));
-	//$('#search-box').keyup(_.debounce(hideSearchResults, 100));
+    // update search when changing text input
+    $('#search-box').bind("keyup change", _.debounce(showSearchResults, 300));
+
+    // prevent form submit on enter
+    $('#search-box').bind('keyup keypress', function (e) {
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
 	$('a').click(function(e){geocoder.geocode({'latLng': initialLatLng, 'address': dummyAddress}, plotOrganization)});
 }
 
@@ -93,17 +102,6 @@ function showSearchResults() {
 	    }
 	}
 }
-
-/*function hideSearchResults(e) {
-	if($('#search-box').val().length === 0 && searchResultsVisible) {
-		$('#search-results-div').toggle("slide", {
-	        direction: "up",
-	        distance: window.height - $('#search-box').css('top')
-	    }, 500);
-
-		searchResultsVisible = false;
-	}
-}*/
 
 function plotOrganization(results, status) {
 	if (status == google.maps.GeocoderStatus.OK) {

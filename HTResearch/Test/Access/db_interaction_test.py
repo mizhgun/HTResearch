@@ -88,6 +88,14 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_org.facebook, org_dto.facebook)
         self.assertEqual(assert_org.twitter, org_dto.twitter)
 
+        print 'Testing organization text search ...'
+
+        assert_orgs = org_dao.text_search(num_elements=10, text='bEe YeE university ers')
+        self.assertEqual(assert_orgs[0].name, org_dto.name)
+
+        assert_orgs = org_dao.text_search(num_elements=10, text='yee adfgh905w')
+        self.assertEqual(assert_orgs, [])
+
         print 'Testing organization editing ...'
         org_dto.name = "Yee Universityee"
         org_dto.contacts = []
