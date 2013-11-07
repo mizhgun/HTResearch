@@ -101,6 +101,7 @@ class URLFrontier:
         self._next_url_locks = dict()
         self._fill_conds = dict()
         self._empty_conds = dict()
+        self._mid_empty_conds = dict()
         self._job_conds = dict()
         self._cache_procs = dict()
         self._proc_counts = dict()
@@ -114,6 +115,7 @@ class URLFrontier:
                 self._next_url_locks[cs] = RLock()
                 self._fill_conds[cs] = Condition()
                 self._empty_conds[cs] = Condition()
+                self._mid_empty_conds[cs] = Condition()
                 self._job_conds[cs] = Condition()
                 self._cache_procs[cs] = Process(target=_monitor_cache,
                                                 args=(self.dao,
@@ -160,7 +162,7 @@ class URLFrontier:
             self.start_cache_process(rules=rules)
 
         with self._next_url_locks[cs]:
-            with self._empty_conds[cs]:
+            with self._mid_empty_conds[cs]:
                 try:
                     return self._url_queues[cs].get(block=False)
                 except Empty:
@@ -168,7 +170,7 @@ class URLFrontier:
                         with self._job_conds[cs]:
                             self._job_queues[cs].put(CacheJobs.Fill)
                             self._job_conds[cs].notify()
-                        self._fill_conds[cs].wait()
+                        self._fill_conds[cs].wait(10)
                     if not self._url_queues[cs].empty():
                         return self._url_queues[cs].get(block=False)
                     else:
@@ -180,9 +182,10 @@ class URLFrontier:
 
     def empty_cache(self, rules=URLFrontierRules()):
         cs = rules.checksum
-        with self._job_conds[cs]:
-            self._job_queues[cs].put(CacheJobs.Empty)
-            self._job_conds[cs].notify()
-        with self._empty_conds[cs]:
-            if not self._url_queues[cs].empty():
-                self._empty_conds[cs].wait()
+        with self._mid_empty_conds[cs]:
+            with self._job_conds[cs]:
+                self._job_queues[cs].put(CacheJobs.Empty)
+                self._job_conds[cs].notify()
+            with self._empty_conds[cs]:
+                if not self._url_queues[cs].empty():
+                    self._empty_conds[cs].wait()
