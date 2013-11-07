@@ -1,4 +1,4 @@
-from model import *
+from HTResearch.DataModel.model import *
 from HTResearch.DataAccess.dto import *
 
 
@@ -54,7 +54,7 @@ class ModelConverter(object):
                     setattr(new_model, key, [ModelConverter.to_model(Contact, c) for c in value])
                 elif key == 'publisher' and value is not None:
                     setattr(new_model, key, ModelConverter.to_model(Contact, value))
-                elif key == 'organizations':
+                elif key == 'organizations' or key == 'partners':
                     setattr(new_model, key, [ModelConverter.to_model(Organization, o) for o in value])
                 elif key == 'publications':
                     setattr(new_model, key, [ModelConverter.to_model(Publication, p) for p in value])

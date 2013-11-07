@@ -1,20 +1,9 @@
 var searchResultsVisible = false;
 var map;
-var organizationImg = createImageHtml('static/images/office_building_icon.png');
-var initialLatLng = new google.maps.LatLng(21,78);
+var initialLatLng = new google.maps.LatLng(21, 78);
+var searchedLatLng;
 var geocoder = new google.maps.Geocoder();
-var dummyAddress = "9-10-11 Nehru Place, New Delhi - 110019 India";
-var dummyContent = '<div id="content">'+
-      '<div id="siteNotice">'+
-      '</div>'+
-      '<h3 id="firstHeading" class="firstHeading">Save the Children India</h3>'+
-      '<div id="bodyContent">'+
-      organizationImg+
-      '<p>Tel: (+91) 11 4229 4900</p>'+
-      '<p>Email: info@savethechildren.in</p>'+
-      '<p>'+dummyAddress+'</p>'+
-      '</div>'+
-      '</div>';
+var address;
 
 function initialize() {
 	var mapOptions = {
@@ -23,9 +12,9 @@ function initialize() {
 	  mapTypeId: google.maps.MapTypeId.ROADMAP,
 	  panControl: false,
 	  zoomControl: false,
-	  scaleControl: false,
+	  scaleControl: false
 	};
-
+        
 	//Didn't accept a jquery selector
 	map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
 	//var mapControls = new GLargeMapControl3D();
@@ -70,19 +59,20 @@ function initialize() {
 }
 
 function showSearchResults() {
-    $.ajax({
-        type: 'POST',
-        url: '/search/',
-        data: {
-            'search_text': $('#search-box').val(),
-            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
-        },
-        success: function (data) {
-            $('#organization-search-list').html(data);
-        },
-        dataType: 'html'
-    });
-    if($('#search-box').val().length > 0) {
+    var searchText = $('#search-box').val();
+    if(searchText) {
+        $.ajax({
+            type: 'POST',
+            url: '/search/',
+            data: {
+                'search_text': $('#search-box').val(),
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function (data) {
+                $('#organization-search-list').html(data);
+            },
+            dataType: 'html'
+        });
         if(!searchResultsVisible) {
             $('#search-results-div').toggle("slide", {
                 direction: "up",
@@ -110,13 +100,25 @@ function plotOrganization(results, status) {
             map: map,
             position: results[0].geometry.location
         });
-
+        
+        // the values will be replaced by results from the search
+        var org = {
+            'org_name': 'Save The Children India', 
+            'img_path': 'static/images/office_building_icon.png',
+            'phone_num': '(+91) 11 4229 4900',
+            'org_email': 'info@savethechildren.in',
+            'addr': address,
+            'org_id': 4
+        };
+        
+        html = $("#modal-template").tmpl(org);
+        
         var infowindow = new google.maps.InfoWindow({
-		      content: dummyContent
+		      content : html.html()
 		});
 
         infowindow.open(map,marker);
-
+        
         google.maps.event.addListener(marker, 'click', function() {
 		    infowindow.open(map,marker);
 		});

@@ -45,7 +45,8 @@ class URLMetadataDTO(mongo.Document):
     """A DTO wrapper for URLMetadata documents"""
 
     url = mongo.URLField(db_field='u')
+    domain = mongo.StringField(db_field='d')
     last_visited = mongo.DateTimeField(db_field='v')
     score = mongo.IntField(db_field='s')
     update_freq = mongo.IntField(db_field='f')
-    checksum = mongo.IntField(db_field='c')
+    checksum = mongo.BinaryField(db_field='c')

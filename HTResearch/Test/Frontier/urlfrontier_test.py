@@ -1,29 +1,44 @@
 # Library imports
 import unittest
 from datetime import datetime, timedelta
-from time import sleep
+from springpython.config import Object
+from springpython.context import ApplicationContext
 
 # Project imports
-from HTResearch.URLFrontier.urlfrontier import URLFrontier
-from HTResearch.DataAccess.connection import DBConnection
 from HTResearch.DataModel.model import URLMetadata
-from HTResearch.DataAccess.factory import DAOFactory
-from HTResearch.DataAccess.dao import URLMetadataDAO
 from HTResearch.DataAccess.dto import URLMetadataDTO
-from HTResearch.DataModel.converter import DTOConverter
+from HTResearch.Utilities.converter import DTOConverter
+from HTResearch.Utilities.context import DAOContext, URLFrontierContext
+from HTResearch.Test.Mocks.connection import MockDBConnection
+from HTResearch.Test.Mocks.dao import MockURLMetadataDAO
+
+
+class TestableURLFrontierContext(URLFrontierContext):
+
+    @Object()
+    def RegisteredURLMetadataDAO(self):
+        return MockURLMetadataDAO
+
+
+class TestableDAOContext(DAOContext):
+
+    @Object()
+    def RegisteredDBConnection(self):
+        return MockDBConnection
 
 
 class URLFrontierTest(unittest.TestCase):
     def setUp(self):
-        pass
+        self.frontier_ctx = ApplicationContext(TestableURLFrontierContext())
+        self.dao_ctx = ApplicationContext(TestableDAOContext())
 
     def tearDown(self):
-        with DBConnection() as c:
-            c.dropall()
+        with MockDBConnection() as db:
+            db.dropall()
 
     def test_urlfrontier(self):
         start_time = datetime.now()
-        url_dao = DAOFactory.get_instance(URLMetadataDAO)
+        url_dao = self.dao_ctx.get_object("URLMetadataDAO")
 
         print 'Creating 2000 URLs'
         url_list = []
@@ -39,17 +54,17 @@ class URLFrontierTest(unittest.TestCase):
             url_dao.create_update(dto)
 
         print 'Create the URLFrontier'
-        frontier = URLFrontier()
+        frontier = self.frontier_ctx.get_object("URLFrontier")
 
         print 'Start the cache process'
         frontier.start_cache_process()
 
         print '"Create" a second frontier and verify that the frontier is a singleton'
-        frontier2 = URLFrontier()
+        frontier2 = self.frontier_ctx.get_object("URLFrontier")
         self.assertEqual(frontier, frontier2)
 
         print 'Wait for the cache to populate and get the least recently visited URL'
-        old_url = frontier.next_url
+        old_url = frontier.next_url()
 
         print 'Assert that the last visited date matches the last element in urllist'
         self.assertEqual(url_list[1999].url, old_url.url)
@@ -63,7 +78,7 @@ class URLFrontierTest(unittest.TestCase):
         frontier.empty_cache()
 
         print 'Wait a couple more seconds and verify that the next URL is the oldest one'
-        next_url = frontier.next_url
+        next_url = frontier.next_url()
         self.assertEqual(oldest_url.url, next_url.url)
 
         print 'Stop the cache process'

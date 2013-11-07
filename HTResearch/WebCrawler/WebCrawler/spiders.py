@@ -1,10 +1,11 @@
-from HTResearch.URLFrontier.urlfrontier import URLFrontier
-from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import LinkScraper
+from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
+from HTResearch.Utilities.context import URLFrontierContext
 
+from springpython.context import ApplicationContext
 from scrapers.document_scrapers import *
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
-from scrapy.http import Request, TextResponse
+from scrapy.http import Request
 from scrapy import log
 import os
 
@@ -13,13 +14,28 @@ class OrgSpider(BaseSpider):
     name = 'org_spider'
     # empty start_urls, we're setting our own
     start_urls = []
+    default_seed = "https://bombayteenchallenge.org/"
 
     def __init__(self, *args, **kwargs):
         super(OrgSpider, self).__init__(*args, **kwargs)
+
+        # Define our Scrapers
         self.scrapers = []
         self.scrapers.append(OrganizationScraper())
         self.scrapers.append(LinkScraper())
-        self.url_frontier = URLFrontier()
+        self.scrapers.append(UrlMetadataScraper())
+        self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
+        self.ctx = ApplicationContext(URLFrontierContext())
+        self.url_frontier = self.ctx.get_object("URLFrontier")
+
+
+    @staticmethod
+    def _get_blocked_domains():
+        blocked_domains = []
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Resources/blocked_org_domains.txt')) as f:
+            for line in f:
+                blocked_domains.append(line.rstrip())
+        return blocked_domains
 
     def start_requests(self):
         """
@@ -29,9 +45,14 @@ class OrgSpider(BaseSpider):
 
         # first URL to begin crawling
         # Returns a URLMetadata model, so we have to pull the url field
-        start_url = self.url_frontier.next_url().url
+        start_url_obj = self.url_frontier.next_url(self.url_frontier_rules)
 
-        print start_url
+        start_url = None
+        if start_url_obj is None:
+            start_url = OrgSpider.default_seed
+        else:
+            start_url = start_url_obj.url
+
         if __debug__:
             log.msg('START_REQUESTS : start_url = %s' % start_url)
 
@@ -50,7 +71,9 @@ class OrgSpider(BaseSpider):
                 yield ret
 
         print response.url
-        yield Request(self.url_frontier.next_url().url, dont_filter=True)
+        next_url = self.url_frontier.next_url(self.url_frontier_rules)
+        if next_url is not None:
+            yield Request(next_url.url, dont_filter=True)
 
 
 class StopTraffickingSpider(BaseSpider):

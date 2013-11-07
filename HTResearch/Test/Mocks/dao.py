@@ -1,16 +1,18 @@
 from mongoengine import Q
-from dto import *
-from connection import DBConnection
-from mongoengine.fields import StringField, URLField
+from HTResearch.DataAccess.dto import *
+from connection import MockDBConnection
 
 
-class DAO(object):
+class MockDAO(object):
     """
     A generic DAO class that may be subclassed by DAOs for operations on
     specific documents.
     """
     def __init__(self):
-        self.conn = DBConnection
+        self.conn = MockDBConnection
+
+        # Implemented in children
+        self.dto = None
 
     def merge_documents(self, dto, merge_dto):
         with self.conn():
@@ -48,51 +50,31 @@ class DAO(object):
             else:
                 return self.dto.objects(**constraints)[:num_elements]
 
-    # Search all string fields for text and return list of results
-    # NOTE: may be slower than MongoDB's text search feature, which is unfortunately unusable because it is in beta
-    def text_search(self, text, num_elements, *sort_fields):
-        with DBConnection():
-            # Find all string fields
-            fields_dict = self.dto._fields
-            string_types = (StringField, URLField)
-            search_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) in string_types]
+    def findmany_by_domains(self, num_elements, required_domains, blocked_domains, *sort_fields):
+        if len(required_domains) > 0:
+            req_query = Q(domain__in=required_domains)
+        else:
+            req_query = Q()
+        if len(blocked_domains) > 0:
+            blk_query = Q(domain__nin=blocked_domains)
+        else:
+            blk_query = Q()
 
-            # Search for each term in all string fields
-            result_lists = []
-            for term in text.split():
-                results = [list(self.dto.objects(**{field + '__icontains': term})) for field in search_fields]
-                results = reduce(lambda x, y: x + y, results)  # flatten to list of results
-                result_lists.append(results)
+        with self.conn():
+            if len(sort_fields) > 0:
+                return URLMetadataDTO.objects(req_query & blk_query).order_by(*sort_fields)[:num_elements]
+            else:
+                return URLMetadataDTO.objects(req_query & blk_query)[:num_elements]
 
-            # Search by "AND" with search terms (change to any if you want "OR")
-            combo = all
-            results = []
-            if result_lists:
-                results = [item for item in result_lists[0] if combo(item in list for list in result_lists)]
-
-            # Remove duplicates
-            results = list(set(results))
-
-            # sort by fields
-            if sort_fields:
-                for field in reversed(sort_fields):
-                    results.sort(key=lambda result: result[field])
-
-            # return the last num_elements
-            return results[:num_elements]
-
-
-class ContactDAO(DAO):
+class MockContactDAO(MockDAO):
     """
     A DAO for the Contact document
     """
     def __init__(self):
-        super(ContactDAO, self).__init__()
+        super(MockContactDAO, self).__init__()
         self.dto = ContactDTO
-
-        # Injected dependencies
-        self.org_dao = OrganizationDAO
-        self.pub_dao = PublicationDAO
+        self.org_dao = MockOrganizationDAO
+        self.pub_dao = MockPublicationDAO
 
     def create_update(self, contact_dto):
         with self.conn():
@@ -113,16 +95,14 @@ class ContactDAO(DAO):
         return contact_dto
 
 
-class OrganizationDAO(DAO):
+class MockOrganizationDAO(MockDAO):
     """
     A DAO for the Organization document
     """
     def __init__(self):
-        super(OrganizationDAO, self).__init__()
+        super(MockOrganizationDAO, self).__init__()
         self.dto = OrganizationDTO
-
-        # Injected dependencies
-        self.contact_dao = ContactDAO
+        self.contact_dao = MockContactDAO
 
     def create_update(self, org_dto):
         with self.conn():
@@ -140,16 +120,14 @@ class OrganizationDAO(DAO):
         return org_dto
 
 
-class PublicationDAO(DAO):
+class MockPublicationDAO(MockDAO):
     """
     A DAO for the Publication document
     """
     def __init__(self):
-        super(PublicationDAO, self).__init__()
+        super(MockPublicationDAO, self).__init__()
         self.dto = PublicationDTO
-
-        # Injected dependencies
-        self.contact_dao = ContactDAO
+        self.contact_dao = MockContactDAO
 
     def create_update(self, pub_dto):
         with self.conn():
@@ -170,12 +148,12 @@ class PublicationDAO(DAO):
         return pub_dto
 
 
-class URLMetadataDAO(DAO):
+class MockURLMetadataDAO(MockDAO):
     """
     A DAO for the URLMetadata document
     """
     def __init__(self):
-        super(URLMetadataDAO, self).__init__()
+        super(MockURLMetadataDAO, self).__init__()
         self.dto = URLMetadataDTO
 
     def create_update(self, url_dto):
@@ -188,19 +166,3 @@ class URLMetadataDAO(DAO):
 
             url_dto.save()
         return url_dto
-
-    def findmany_by_domains(self, num_elements, required_domains, blocked_domains, *sort_fields):
-        if len(required_domains) > 0:
-            req_query = Q(domain__in=required_domains)
-        else:
-            req_query = Q()
-        if len(blocked_domains) > 0:
-            blk_query = Q(domain__nin=blocked_domains)
-        else:
-            blk_query = Q()
-
-        with self.conn():
-            if len(sort_fields) > 0:
-                return URLMetadataDTO.objects(req_query & blk_query).order_by(*sort_fields)[:num_elements]
-            else:
-                return URLMetadataDTO.objects(req_query & blk_query)[:num_elements]
