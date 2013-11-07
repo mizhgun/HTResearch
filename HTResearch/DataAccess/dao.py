@@ -51,7 +51,7 @@ class DAO(object):
     # Search all string fields for text and return list of results
     # NOTE: may be slower than MongoDB's text search feature, which is unfortunately unusable because it is in beta
     def text_search(self, text, num_elements, *sort_fields):
-        with DBConnection():
+        with self.conn():
             # Find all string fields
             fields_dict = self.dto._fields
             string_types = (StringField, URLField)

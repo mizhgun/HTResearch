@@ -128,8 +128,4 @@ function plotOrganization(results, status) {
     }
 }
 
-function createImageHtml(imgUrl) {
-	return '<img src="'+imgUrl+'" class="col-md-3" style="margin-right: 10px;">';
-}
-
 google.maps.event.addDomListener(window, 'load', _.once(initialize));
