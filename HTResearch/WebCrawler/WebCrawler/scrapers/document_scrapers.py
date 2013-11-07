@@ -31,19 +31,8 @@ class OrganizationScraper():
 
     def parse(self, response):
         organization = ScrapedOrganization()
-        hxs = HtmlXPathSelector(response)
-        site_text = hxs.select('//html//text()').extract()
-        site_text = [element for element in site_text if element.strip() != '']
-        flag = False
-        for sentence in site_text:
-            for word in sentence.split():
-                word = self._punctuation.sub('', word)
-                if word in self._required_words:
-                    flag = True
-                    break
-            if flag:
-                break
 
+        flag = self.check_valid_org(response)
         if flag:
             # Collect each field of organization model
             for field in self._scrapers.iterkeys():
@@ -61,6 +50,17 @@ class OrganizationScraper():
                         organization[field] = None
         return organization
 
+    def check_valid_org(self, response):
+        hxs = HtmlXPathSelector(response)
+        site_text = hxs.select('//html//text()').extract()
+        site_text = [element for element in site_text if element.strip() != '']
+        
+        for sentence in site_text:
+            for word in sentence.split():
+                word = self._punctuation.sub('', word)
+                if word in self._required_words:
+                    return True
+        return False
 
 class Publication:
 
