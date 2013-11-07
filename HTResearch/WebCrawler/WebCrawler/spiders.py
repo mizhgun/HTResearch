@@ -1,8 +1,6 @@
-from HTResearch.URLFrontier.urlfrontier import URLFrontier, URLFrontierRules
-from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import LinkScraper
+from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
 from HTResearch.Utilities.context import URLFrontierContext
 
-from springpython.context import ApplicationContext
 from scrapers.document_scrapers import *
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
