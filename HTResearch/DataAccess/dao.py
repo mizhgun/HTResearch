@@ -1,6 +1,7 @@
 from mongoengine import Q
 from dto import *
 from connection import DBConnection
+from HTResearch.DataModel.enums import OrgTypesEnum
 from mongoengine.fields import StringField, URLField
 
 
@@ -124,6 +125,23 @@ class OrganizationDAO(DAO):
         # Injected dependencies
         self.contact_dao = ContactDAO
 
+    def merge_documents(self, existing_org_dto, new_org_dto):
+        with self.conn():
+            attributes = new_org_dto._data
+            for key in attributes:
+                if attributes[key]:
+                    cur_attr = getattr(existing_org_dto, key)
+                    if not cur_attr:
+                        setattr(existing_org_dto, key, attributes[key])
+                    elif type(cur_attr) is list:
+                        merged_list = list(set(cur_attr + attributes[key]))
+                        # if this is org types and we have more than one org type, make sure unknown isn't a type :P
+                        if key == "types" and len(merged_list) > 1 and OrgTypesEnum.UNKNOWN in merged_list:
+                            merged_list.remove(OrgTypesEnum.UNKNOWN)
+                        setattr(existing_org_dto, key, attributes[key])
+            existing_org_dto.save()
+            return existing_org_dto
+
     def create_update(self, org_dto):
         with self.conn():
             for i in range(len(org_dto.contacts)):
@@ -131,13 +149,49 @@ class OrganizationDAO(DAO):
                 org_dto.contacts[i] = self.contact_dao().create_update(c)
 
             if org_dto.id is None:
-                existing_dto = self.dto.objects(email_key__in=org_dto.emails).first()
+                existing_dto = self._smart_search_orgs(org_dto)
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, org_dto)
                     return saved_dto
 
             org_dto.save()
         return org_dto
+
+    def _smart_search_orgs(self, org_dto):
+        # organizations have unique phone numbers
+        if org_dto.phone_numbers:
+            same_phone = Q(phone_numbers__in=org_dto.phone_numbers)
+        else:
+            same_phone = Q()
+
+        # organizations have unique emails
+        if org_dto.emails:
+            same_email = Q(emails__in=org_dto.emails)
+        else:
+            same_email = Q()
+
+        # organizations have unique URLs
+        if org_dto.organization_url:
+            same_url = Q(organization_url=org_dto.organization_url)
+        else:
+            same_url = Q()
+
+        # organizations have unique Facebooks
+        if org_dto.facebook:
+            same_fb = Q(facebook=org_dto.facebook)
+        else:
+            same_fb = Q()
+
+        # organizations have unique Twitters
+        if org_dto.twitter:
+            same_twitter = Q(twitter=org_dto.twitter)
+        else:
+            same_twitter = Q()
+
+        existing_dto = self.dto.objects(same_phone | same_email | same_url | same_fb | same_twitter).first()
+        return existing_dto
+
+
 
 
 class PublicationDAO(DAO):
