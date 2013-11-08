@@ -73,6 +73,11 @@ function showSearchResults() {
             },
             success: function (data) {
                 $('#organization-search-list').html(data);
+
+                $('#organization-results').css({
+                    height: $('#organization-search-list').height()
+                }):
+
                 var $modal = $('.modal').modal({
                     show: false
                 });
