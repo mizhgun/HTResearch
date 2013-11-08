@@ -55,7 +55,9 @@ function initialize() {
             return false;
         }
     });
-	$('a').click(function(e){geocoder.geocode({'latLng': initialLatLng, 'address': dummyAddress}, plotOrganization)});
+	$('a.org_link').click(function(e){
+        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization)
+    });
 }
 
 function showSearchResults() {
@@ -91,7 +93,18 @@ function showSearchResults() {
 	        searchResultsVisible = false;
 	    }
 	}
+    // Need to get the address based on the search results
+    address = '9-10-11 Nehru Place, New Delhi - 110019 India';
+
+    // Get the lat, long values of the address
+    geocoder.geocode({'address': address}, function(results, status){
+        lat = results[0].geometry.location.lat();
+        lng = results[0].geometry.location.lng();
+        searchedLatLng = new google.maps.LatLng(lat, lng);
+    });
+    searchResultsVisible = true;
 }
+
 
 function plotOrganization(results, status) {
 	if (status == google.maps.GeocoderStatus.OK) {
@@ -103,7 +116,7 @@ function plotOrganization(results, status) {
         
         // the values will be replaced by results from the search
         var org = {
-            'org_name': 'Save The Children India', 
+            'org_name': 'Save The Children India',
             'img_path': 'static/images/office_building_icon.png',
             'phone_num': '(+91) 11 4229 4900',
             'org_email': 'info@savethechildren.in',
