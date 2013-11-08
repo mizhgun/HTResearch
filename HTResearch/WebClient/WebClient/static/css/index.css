@@ -223,3 +223,7 @@ body {
 .navbar {
     margin-bottom: 0px;
 }
+
+.modal-row {
+    vertical-align: top;
+}

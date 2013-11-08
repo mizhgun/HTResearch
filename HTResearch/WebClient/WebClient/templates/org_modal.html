@@ -6,16 +6,24 @@
     <div id="bodyContent">
         <img id ="type-image" src="${img_path}" class="col-md-3">
         <table class="table-condensed">
-            <tr>
+            <tr class="modal-row">
                 <td>Tel:</td>
-                <td>${phone_numbers}</td>
+                <td>
+                {% templatetag openvariable %}each phone_numbers{% templatetag closevariable %}
+                ${$value}</br>
+                {% templatetag openvariable %}/each{% templatetag closevariable %}
+                </td>
             </tr>
-            <tr>
+            <tr class="modal-row">
                 <td>Email:</td>
-                <td>${emails}</td>
+                <td>
+                {% templatetag openvariable %}each emails{% templatetag closevariable %}
+                ${$value}</br>
+                {% templatetag openvariable %}/each{% templatetag closevariable %}
+                </td>
             </tr>
-            <tr>
-                <td id="addr-cell">Address:</td>
+            <tr class="modal-row">
+                <td>Address:</td>
                 <td>${address}</td>
             </tr>
         </table>

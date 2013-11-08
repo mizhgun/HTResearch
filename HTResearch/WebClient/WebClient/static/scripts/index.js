@@ -116,7 +116,7 @@ function plotOrganization(results, status) {
             position: results[0].geometry.location
         });
         
-        orgData.img_path = "/static/images/office_building_icon.png"
+        orgData.img_path = "/static/images/office_building_icon.png";
 
         var html = $("#modal-template").tmpl(orgData);
 

@@ -71,8 +71,6 @@ def organization_profile(request):
         print e.message
         return get_http_404_page()
 
-    encode_org(org)
-
     t = get_template('organization_profile_template.html')
     html = t.render(Context({"organization": org}))
     return HttpResponse(html)
@@ -82,6 +80,7 @@ def get_http_404_page():
     template = get_template('http_404.html')
     html = template.render(Context({}))
     return HttpResponseNotFound(html)
+
 
 # Encodes the fields to JSON
 def encode_org(org):
