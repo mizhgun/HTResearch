@@ -3,6 +3,7 @@ from HTResearch.Utilities.context import URLFrontierContext
 
 from springpython.context import ApplicationContext
 from scrapers.document_scrapers import *
+from scrapers.utility_scrapers import OrgUrlScraper
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
 from scrapy.http import Request
@@ -15,15 +16,17 @@ class OrgSpider(BaseSpider):
     # empty start_urls, we're setting our own
     start_urls = []
     default_seed = "https://bombayteenchallenge.org/"
+    # don't block on error codes
+    handle_httpstatus_list = list(xrange(1, 999))
 
     def __init__(self, *args, **kwargs):
         super(OrgSpider, self).__init__(*args, **kwargs)
 
         # Define our Scrapers
         self.scrapers = []
-        self.scrapers.append(OrganizationScraper())
+        self.org_scraper = OrganizationScraper()
+        self.meta_data_scraper = UrlMetadataScraper()
         self.scrapers.append(LinkScraper())
-        self.scrapers.append(UrlMetadataScraper())
         self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
         self.ctx = ApplicationContext(URLFrontierContext())
         self.url_frontier = self.ctx.get_object("URLFrontier")
@@ -63,13 +66,19 @@ class OrgSpider(BaseSpider):
         yield request
 
     def parse(self, response):
-        for scraper in self.scrapers:
-            ret = scraper.parse(response)
-            if isinstance(ret, type([])):
-                for item in ret:
-                    yield item
-            else:
-                yield ret
+        ret = self.meta_data_scraper.parse(response)
+        if ret is not None:
+            yield ret
+        ret = self.org_scraper.parse(response)
+        if ret is not None:
+            yield ret
+            for scraper in self.scrapers:
+                ret = scraper.parse(response)
+                if isinstance(ret, type([])):
+                    for item in ret:
+                        yield item
+                else:
+                    yield ret
 
         next_url = self.url_frontier.next_url(self.url_frontier_rules)
         timeout = 0
