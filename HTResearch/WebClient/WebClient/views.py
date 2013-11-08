@@ -9,23 +9,8 @@ from HTResearch.DataAccess.dto import OrganizationDTO
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from mongoengine.fields import StringField, URLField
+from HTResearch.Utilities.encoder import MongoJSONEncoder
 import string
-import json
-from mongoengine.fields import ObjectId
-import pdb
-
-
-class MongoJSONEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, ObjectId):
-            return str(o)
-        return json.JSONEncoder.default(self, o)
-
-    def encode(self, o):
-        result = super(MongoJSONEncoder, self).encode(o)
-        if isinstance(o, ObjectId):
-            result = result[1:-1]
-        return result
 
 
 def index(request):
