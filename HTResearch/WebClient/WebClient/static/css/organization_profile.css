@@ -1,4 +1,4 @@
-#info-wrap {
+h2 {
   text-align: center;
 }
 
@@ -11,4 +11,9 @@
   position: relative;
   top: 5px;
   left: 80%;
+}
+
+#sidebar {
+  margin-left: auto;
+  margin-right: auto;
 }
