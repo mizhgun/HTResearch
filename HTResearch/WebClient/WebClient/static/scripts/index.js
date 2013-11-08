@@ -73,16 +73,61 @@ function showSearchResults() {
             },
             success: function (data) {
                 $('#organization-search-list').html(data);
+                var $modal = $('.modal').modal({
+                    show: false
+                });
                 $('a.org_link').click(function(e){
                     orgData = $(this).data();
+                    if (orgData.address != '') {
+                        // Get the lat, long values of the address
+                        geocoder.geocode({'address': orgData.address}, function(results, status){
+                            lat = results[0].geometry.location.lat();
+                            lng = results[0].geometry.location.lng();
+                            searchedLatLng = new google.maps.LatLng(lat, lng);
+                        });
+                        geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
+                    }
+                    else{
+                        // Do a bootstrap modal
+                        $('#modal-header').text(orgData.name);
 
-                    // Get the lat, long values of the address
-                    geocoder.geocode({'address': orgData.address}, function(results, status){
-                        lat = results[0].geometry.location.lat();
-                        lng = results[0].geometry.location.lng();
-                        searchedLatLng = new google.maps.LatLng(lat, lng);
-                    });
-                    geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization)
+                        var html = '<table class="table-condensed">'+
+                                '<tr class="modal-row">'+
+                                    '<td>Tel:</td>'+
+                                    '<td>'
+                        if (orgData['phone_numbers'].length == 0){
+                            html += 'None found for this organization'
+                        }
+                        else {
+                            for (var i=0; i < orgData['phone_numbers'].length; i++){
+                                html += orgData['phone_numbers'][i] + '</br>'
+                            }
+                        }
+                        html += '</td>'+
+                                '</tr>'+
+                                '<tr class="modal-row">'+
+                                    '<td>Email:</td>'+
+                                    '<td>'
+                        if (orgData['emails'].length == 0){
+                            html += 'None found for this organization'
+                        }
+                        else {
+                            for (var i=0; i < orgData['emails'].length; i++){
+                                html += orgData['emails'][i] + '</br>'
+                            }
+                        }
+                        html +=     '</td>'+
+                                '</tr>'+
+                                '<tr class="modal-row">'+
+                                    '<td>Address:</td>'+
+                                    '<td>None found for this organization</td>'+
+                                '</tr>'+
+                            '</table>'+
+                            '<a id="moreInfo" href="/organization/' + orgData.id + '">More Info</a>'
+
+                        $('#modal-body').html(html);
+                        $modal.modal('show');
+                    }
                 });
             },
             dataType: 'html'
