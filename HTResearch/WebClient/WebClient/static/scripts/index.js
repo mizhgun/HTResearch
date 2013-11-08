@@ -138,9 +138,7 @@ function plotOrganization(results, status) {
 		});
 
     } else {
-        var $modal = $('.modal').modal({
-            show: false
-        });
+        var $modal = $('.modal').modal();
         bootstrapModal($modal)
     }
 }
