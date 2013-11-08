@@ -1,6 +1,7 @@
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from ..items import ScrapedUrl
 from HTResearch.Utilities.url_tools import UrlUtility
+from datetime import datetime
 
 
 class LinkScraper:
@@ -25,6 +26,7 @@ class LinkScraper:
             url = ScrapedUrl()
             url['url'] = link.url
             url['domain'] = UrlUtility.get_domain(link.url)
+            url['last_visited'] = datetime(1, 1, 1)
             if url not in urls:
                 urls.append(url)
 
