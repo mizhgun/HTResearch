@@ -1,18 +1,26 @@
 from twisted.internet import reactor
 from scrapy.crawler import Crawler
-from scrapy import log
 from scrapy.utils.project import get_project_settings
-from WebCrawler.unittests.phone_number_scraper_test import PhoneNumberScraperTest
-from WebCrawler.unittests.keyword_scraper_test import KeywordScraperTest
-from WebCrawler.spiders import StopTraffickingSpider
+from springpython.context import ApplicationContext
+
+from WebCrawler.spiders import *
+from HTResearch.Utilities.context import URLFrontierContext
 
 
-# TODO: define spiders we want to use
-spider = StopTraffickingSpider()
-settings = get_project_settings()
-crawler = Crawler(settings)
-crawler.configure()
-crawler.crawl(spider)
-crawler.start()
-log.start()
-reactor.run()
+if __name__ == '__main__':
+    #"There exist limitless opportunities in every industry.
+    #Where there is an open mind, there will always be a frontier."
+    ctx = ApplicationContext(URLFrontierContext())
+    frontier = ctx.get_object("URLFrontier")
+    frontier.start_cache_process()
+
+    spider = OrgSpider()
+    settings = get_project_settings()
+    crawler = Crawler(settings)
+    crawler.configure()
+    crawler.crawl(spider)
+    crawler.start()
+    log.start()
+    reactor.run()
+
+
