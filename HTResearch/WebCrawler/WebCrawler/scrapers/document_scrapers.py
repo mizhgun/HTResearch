@@ -13,7 +13,7 @@ class Contact:
 class OrganizationScraper():
     def __init__(self):
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',
-                                'human trafficking', 'brothel', 'child trafficking', 'anti-trafficking']
+                                'human trafficking', 'brothel', 'child trafficking', 'anti trafficking']
         self._punctuation = re.compile('[%s]' % re.escape(string.punctuation))
 
     _scrapers = {
@@ -57,7 +57,7 @@ class OrganizationScraper():
 
         for word in self._required_words:
             for sentence in site_text:
-                sentence = self._punctuation.sub('', sentence)
+                sentence = self._punctuation.sub(' ', sentence)
                 if word in sentence.lower():
                     return True
         return False
