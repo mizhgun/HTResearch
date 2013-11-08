@@ -366,7 +366,7 @@ class ScraperTests(unittest.TestCase):
             'contacts': [
                 # not yet implemented
             ],
-            'organization_url': 'http://bombayteenchallenge.org/',
+            'organization_url': 'bombayteenchallenge.org/',
             'partners': [
                 # not yet implemented
             ],
