@@ -1,0 +1,14 @@
+#info-wrap {
+  text-align: center;
+}
+
+ #experience-input {
+  position: relative;
+  width: 100%;
+}
+
+#experience-submit-btn {
+  position: relative;
+  top: 5px;
+  left: 80%;
+}
