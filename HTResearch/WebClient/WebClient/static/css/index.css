@@ -205,6 +205,12 @@ body {
 
 #type-image {
     margin-right: 5px;
+    height: 146px;
+    width: 124px;
+}
+
+#img-div {
+    float: left;
 }
 
 #firstHeading {
@@ -215,11 +221,17 @@ body {
     vertical-align: top;
 }
 
-#moreInfo {
-    float: right;
+#more-info {
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 /*Navbar override*/
 .navbar {
     margin-bottom: 0px;
+}
+
+.modal-row {
+    vertical-align: top;
 }

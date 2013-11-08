@@ -4,6 +4,7 @@ var initialLatLng = new google.maps.LatLng(21, 78);
 var searchedLatLng;
 var geocoder = new google.maps.Geocoder();
 var address;
+var orgData;
 
 function initialize() {
 	var mapOptions = {
@@ -55,7 +56,9 @@ function initialize() {
             return false;
         }
     });
-	$('a').click(function(e){geocoder.geocode({'latLng': initialLatLng, 'address': dummyAddress}, plotOrganization)});
+	$('a.org_link').click(function(e){
+        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization)
+    });
 }
 
 function showSearchResults() {
@@ -70,6 +73,24 @@ function showSearchResults() {
             },
             success: function (data) {
                 $('#organization-search-list').html(data);
+                var $modal = $('.modal').modal({
+                    show: false
+                });
+                $('a.org_link').click(function(e){
+                    orgData = $(this).data();
+                    if (orgData.address != '') {
+                        // Get the lat, long values of the address
+                        geocoder.geocode({'address': orgData.address}, function(results, status){
+                            lat = results[0].geometry.location.lat();
+                            lng = results[0].geometry.location.lng();
+                            searchedLatLng = new google.maps.LatLng(lat, lng);
+                        });
+                        geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
+                    }
+                    else{
+                        bootstrapModal($modal)
+                    }
+                });
             },
             dataType: 'html'
         });
@@ -93,6 +114,7 @@ function showSearchResults() {
 	}
 }
 
+
 function plotOrganization(results, status) {
 	if (status == google.maps.GeocoderStatus.OK) {
         map.setCenter(results[0].geometry.location);
@@ -101,18 +123,10 @@ function plotOrganization(results, status) {
             position: results[0].geometry.location
         });
         
-        // the values will be replaced by results from the search
-        var org = {
-            'org_name': 'Save The Children India', 
-            'img_path': 'static/images/office_building_icon.png',
-            'phone_num': '(+91) 11 4229 4900',
-            'org_email': 'info@savethechildren.in',
-            'addr': address,
-            'org_id': 4
-        };
-        
-        html = $("#modal-template").tmpl(org);
-        
+        orgData.img_path = "/static/images/office_building_icon.png";
+
+        var html = $("#modal-template").tmpl(orgData);
+
         var infowindow = new google.maps.InfoWindow({
 		      content : html.html()
 		});
@@ -124,8 +138,48 @@ function plotOrganization(results, status) {
 		});
 
     } else {
-        alert("Geocode was not successful for the following reason: " + status);
+        var $modal = $('.modal').modal();
+        bootstrapModal($modal)
     }
+}
+
+function bootstrapModal(m){
+    // Do a bootstrap modal
+    $('#modal-header').text(orgData.name);
+
+    var html = '<table class="table-condensed"><tr class="modal-row"><td>Tel:</td><td>';
+
+    if (orgData['phone_numbers'].length == 0){
+        html += 'None';
+    } else {
+        for (var i=0; i < orgData['phone_numbers'].length; i++){
+            html += orgData['phone_numbers'][i] + '</br>'
+        }
+    }
+
+    html += '</td></tr><tr class="modal-row"><td>Email:</td><td>';
+
+    if (orgData['emails'].length == 0){
+        html += 'None'
+    } else {
+        for (var i=0; i < orgData['emails'].length; i++){
+            html += orgData['emails'][i] + '</br>';
+        }
+    }
+
+    html += '</td></tr><tr class="modal-row"><td>Address:</td><td>';
+
+    if (orgData.address == ''){
+        html += 'None';
+    } else {
+        html += orgData.address;
+    }
+
+    html += '</td></tr></table><a id="moreInfo" href="/organization/' + orgData.id + '">More Info</a>';
+
+
+    $('#modal-body').html(html);
+    m.modal('show');
 }
 
 google.maps.event.addDomListener(window, 'load', _.once(initialize));
