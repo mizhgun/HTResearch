@@ -121,9 +121,9 @@ class StopTraffickingDotInScraper:
         last = names[1]
 
         # combine phone numbers, first will be primary and 2nd secondary
-        telephone = popup['telephone'] if popup['telephone'] != None else []
-        mobile1 = popup['mobile1'] if popup['mobile1'] != None else []
-        mobile2 = popup['mobile2'] if popup['mobile2'] != None else []
+        telephone = popup['telephone'] if popup['telephone'] is not None else []
+        mobile1 = popup['mobile1'] if popup['mobile1'] is not None else []
+        mobile2 = popup['mobile2'] if popup['mobile2'] is not None else []
         numbers = telephone + mobile1 + mobile2
         primary_no = None
         sec_no = None
@@ -159,7 +159,7 @@ class StopTraffickingDotInScraper:
         orgname = popup['org']
 
         # get address is available, otherwise use state, otherwise district
-        addr = popup['address'] if popup['address'] != None else ''
+        addr = popup['address'] if popup['address'] is not None else ''
         if not addr and popup['state']:
             addr = popup['state']
         if not addr and popup['district']:
@@ -203,13 +203,13 @@ class StopTraffickingDotInScraper:
             return None
 
         # combine mobile numbers
-        mobile1 = popup['mobile1'] if popup['mobile1'] != None else []
-        mobile2 = popup['mobile2'] if popup['mobile2'] != None else []
+        mobile1 = popup['mobile1'] if popup['mobile1'] is not None else []
+        mobile2 = popup['mobile2'] if popup['mobile2'] is not None else []
         numbers = mobile1 + mobile2
 
         # combine emails
-        email1 = popup['email1'] if popup['email1'] != None else []
-        email2 = popup['email2'] if popup['email2'] != None else []
+        email1 = popup['email1'] if popup['email1'] is not None else []
+        email2 = popup['email2'] if popup['email2'] is not None else []
         emails = email1 + email2
 
         # for each contact, create contact and add
@@ -245,13 +245,13 @@ class StopTraffickingDotInScraper:
         return contacts
 
     def _edit_org(self, org, data = None):
-        if org == None:
+        if org is None:
             return None
 
         # Edit org name for generic names like "Board"
         if org == "Board" or org == "Committee":
-            state = data['state'] if data['state'] != None else 'Unknown'
-            district = data['district'] if data['district'] != None else 'Unknown'
+            state = data['state'] if data['state'] is not None else 'Unknown'
+            district = data['district'] if data['district'] is not None else 'Unknown'
             org = data['category'] + " (" + state + ', ' + district + ')'
         return org
 
@@ -259,7 +259,7 @@ class StopTraffickingDotInScraper:
         return category
 
     def _edit_contact_name(self, contact_name, data = None):
-        if contact_name == None:
+        if contact_name is None:
             return None
 
         contacts = []
@@ -293,7 +293,7 @@ class StopTraffickingDotInScraper:
         return url
 
     def _edit_phone(self, phone, data = None):
-        if phone == None:
+        if phone is None:
             return None
 
         # split phones by comma
@@ -318,7 +318,7 @@ class StopTraffickingDotInScraper:
         return parsed_phones
 
     def _edit_email(self, email, data = None):
-        if email == None:
+        if email is None:
             return None
         # split emails on commas or semicolons
         if "," in email:

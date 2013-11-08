@@ -22,16 +22,24 @@ class ScrapedContact(Item):
     position = Field()
 
 
+class ScrapedContactName(Item):
+    name = Field()
+
+
 class ScrapedEmail(Item):
     email = Field()
+
+
+class ScrapedOrgName(Item):
+    name = Field()
 
 
 class ScrapedOrganization(Item):
     name = Field()
     address = Field()
     types = Field()
-    phone_number = Field()
-    email = Field()
+    phone_numbers = Field()
+    emails = Field()
     contacts = Field()
     organization_url = Field()
     partners = Field()
@@ -52,3 +60,8 @@ class ScrapedPublication(Item):
 
 class ScrapedUrl(Item):
     url = Field()
+    domain = Field()
+    last_visited = Field()
+    score = Field()
+    update_freq = Field()
+    checksum = Field()

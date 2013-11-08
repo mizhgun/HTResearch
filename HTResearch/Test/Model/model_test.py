@@ -1,7 +1,9 @@
-﻿import unittest
+﻿# stdlib imports
+import unittest
 
+# project imports
 from HTResearch.DataAccess.dto import ContactDTO
-from HTResearch.DataModel.converter import DTOConverter
+from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.DataModel.model import Contact
 
 
