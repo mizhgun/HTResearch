@@ -236,6 +236,19 @@ class URLMetadataDAO(DAO):
         super(URLMetadataDAO, self).__init__()
         self.dto = URLMetadataDTO
 
+    def merge_documents(self, dto, merge_dto):
+        with self.conn():
+            attributes = merge_dto._data
+            for key in attributes:
+                if key == "last_visited":
+                    cur_attr = getattr(dto, key)
+                    if attributes[key] > cur_attr:
+                        setattr(dto, key, attributes[key])
+                elif attributes[key] is not None:
+                    setattr(dto, key, attributes[key])
+            dto.save()
+            return dto
+
     def create_update(self, url_dto):
         with self.conn():
             if url_dto.id is None:

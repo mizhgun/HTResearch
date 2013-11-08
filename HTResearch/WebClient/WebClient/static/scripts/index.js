@@ -76,7 +76,7 @@ function showSearchResults() {
 
                 $('#organization-results').css({
                     height: $('#organization-search-list').height()
-                }):
+                });
 
                 var $modal = $('.modal').modal({
                     show: false
@@ -93,7 +93,7 @@ function showSearchResults() {
                         geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
                     }
                     else{
-                        bootstrapModal($modal)
+                        bootstrapModal($modal);
                     }
                 });
             },
