@@ -312,19 +312,19 @@ class ScraperTests(unittest.TestCase):
 
         # Make sure organizations with these URLs were found
         assert_list = [
-            'http://www.acumenfund.org/',
-            'http://www.afghaninstituteoflearning.org/',
-            'http://www.prajwalaindia.com/',
-            'http://www.mencanstoprape.org/',
-            'http://novofoundation.org/',
+            'www.acumenfund.org/',
+            'www.afghaninstituteoflearning.org/',
+            'www.prajwalaindia.com/',
+            'www.mencanstoprape.org/',
+            'novofoundation.org/',
         ]
         for test in assert_list:
             self.assertIn(test, partner_urls, 'Partner with URL %s not found' % test)
 
         # Make sure these urls were NOT found - they are not partner organizations
         assert_list = [
-            'http://www.pbs.org/',
-            'http://www.cpb.org/',
+            'www.pbs.org/',
+            'www.cpb.org/',
         ]
         for test in assert_list:
             self.assertNotIn(test, partner_urls, 'Invalid URL (not a partner org): %s' % test)
