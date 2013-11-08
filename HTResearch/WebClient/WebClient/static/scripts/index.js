@@ -73,6 +73,9 @@ function showSearchResults() {
             },
             success: function (data) {
                 $('#organization-search-list').html(data);
+                $('#organization-results').css({
+                    height: $('#organization-search-list').height()
+                });
                 $('a.org_link').click(function(e){
                     orgData = $(this).data();
 
