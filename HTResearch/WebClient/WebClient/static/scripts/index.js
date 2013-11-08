@@ -193,7 +193,7 @@ function bootstrapModal(m){
         html += orgData.address;
     }
 
-    html += '</td></tr></table><a id="moreInfo" href="/organization/' + orgData.id + '">More Info</a>';
+    html += '</td></tr></table><a id="more-info" href="/organization/' + orgData.id + '">More Info</a>';
 
 
     $('#modal-body').html(html);
