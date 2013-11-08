@@ -88,45 +88,7 @@ function showSearchResults() {
                         geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
                     }
                     else{
-                        // Do a bootstrap modal
-                        $('#modal-header').text(orgData.name);
-
-                        var html = '<table class="table-condensed">'+
-                                '<tr class="modal-row">'+
-                                    '<td>Tel:</td>'+
-                                    '<td>'
-                        if (orgData['phone_numbers'].length == 0){
-                            html += 'None found for this organization'
-                        }
-                        else {
-                            for (var i=0; i < orgData['phone_numbers'].length; i++){
-                                html += orgData['phone_numbers'][i] + '</br>'
-                            }
-                        }
-                        html += '</td>'+
-                                '</tr>'+
-                                '<tr class="modal-row">'+
-                                    '<td>Email:</td>'+
-                                    '<td>'
-                        if (orgData['emails'].length == 0){
-                            html += 'None found for this organization'
-                        }
-                        else {
-                            for (var i=0; i < orgData['emails'].length; i++){
-                                html += orgData['emails'][i] + '</br>'
-                            }
-                        }
-                        html +=     '</td>'+
-                                '</tr>'+
-                                '<tr class="modal-row">'+
-                                    '<td>Address:</td>'+
-                                    '<td>None found for this organization</td>'+
-                                '</tr>'+
-                            '</table>'+
-                            '<a id="moreInfo" href="/organization/' + orgData.id + '">More Info</a>'
-
-                        $('#modal-body').html(html);
-                        $modal.modal('show');
+                        bootstrapModal($modal)
                     }
                 });
             },
@@ -176,8 +138,50 @@ function plotOrganization(results, status) {
 		});
 
     } else {
-        alert("Geocode was not successful for the following reason: " + status);
+        var $modal = $('.modal').modal({
+            show: false
+        });
+        bootstrapModal($modal)
     }
+}
+
+function bootstrapModal(m){
+    // Do a bootstrap modal
+    $('#modal-header').text(orgData.name);
+
+    var html = '<table class="table-condensed"><tr class="modal-row"><td>Tel:</td><td>';
+
+    if (orgData['phone_numbers'].length == 0){
+        html += 'None';
+    } else {
+        for (var i=0; i < orgData['phone_numbers'].length; i++){
+            html += orgData['phone_numbers'][i] + '</br>'
+        }
+    }
+
+    html += '</td></tr><tr class="modal-row"><td>Email:</td><td>';
+
+    if (orgData['emails'].length == 0){
+        html += 'None'
+    } else {
+        for (var i=0; i < orgData['emails'].length; i++){
+            html += orgData['emails'][i] + '</br>';
+        }
+    }
+
+    html += '</td></tr><tr class="modal-row"><td>Address:</td><td>';
+
+    if (orgData.address == ''){
+        html += 'None';
+    } else {
+        html += orgData.address;
+    }
+
+    html += '</td></tr></table><a id="moreInfo" href="/organization/' + orgData.id + '">More Info</a>';
+
+
+    $('#modal-body').html(html);
+    m.modal('show');
 }
 
 google.maps.event.addDomListener(window, 'load', _.once(initialize));
