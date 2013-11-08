@@ -207,6 +207,10 @@ body {
     margin-right: 5px;
 }
 
+#img-div {
+    float: left;
+}
+
 #firstHeading {
     padding: 5px;
 }
@@ -215,8 +219,10 @@ body {
     vertical-align: top;
 }
 
-#moreInfo {
-    float: right;
+#more-info {
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 /*Navbar override*/

@@ -2,24 +2,24 @@
     <div id="content">
     <div id="siteNotice">
     </div>
-    <h3 id="firstHeading" class="firstHeading"">${name}</h3>
+    <h3 id="firstHeading" class="firstHeading">${name}</h3>
     <div id="bodyContent">
-        <img id ="type-image" src="${img_path}" class="col-md-3">
+        <div id="img-div"><img id ="type-image" src="${img_path}" height="146" width="124"></div>
         <table class="table-condensed">
             <tr class="modal-row">
                 <td>Tel:</td>
                 <td>
-                {% templatetag openvariable %}each phone_numbers{% templatetag closevariable %}
-                ${$value}</br>
-                {% templatetag openvariable %}/each{% templatetag closevariable %}
+                    {% templatetag openvariable %}each phone_numbers{% templatetag closevariable %}
+                    ${$value}</br>
+                    {% templatetag openvariable %}/each{% templatetag closevariable %}
                 </td>
             </tr>
             <tr class="modal-row">
                 <td>Email:</td>
                 <td>
-                {% templatetag openvariable %}each emails{% templatetag closevariable %}
-                ${$value}</br>
-                {% templatetag openvariable %}/each{% templatetag closevariable %}
+                    {% templatetag openvariable %}each emails{% templatetag closevariable %}
+                    ${$value}</br>
+                    {% templatetag openvariable %}/each{% templatetag closevariable %}
                 </td>
             </tr>
             <tr class="modal-row">
@@ -27,7 +27,7 @@
                 <td>${address}</td>
             </tr>
         </table>
-        <a id="moreInfo" href="/organization/${id}" >More Info</a>
+        <a id="more-info" href="/organization/${id}" >More Info</a>
     </div>
 </div>
 </script>
