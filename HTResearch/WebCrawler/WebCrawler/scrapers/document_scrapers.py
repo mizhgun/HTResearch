@@ -15,6 +15,7 @@ class OrganizationScraper():
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',
                                 'human trafficking', 'brothel', 'child trafficking', 'anti trafficking']
         self._punctuation = re.compile('[%s]' % re.escape(string.punctuation))
+        self.org_dao = OrganizationDAO
 
     _scrapers = {
         'name': [OrgNameScraper()],
@@ -30,10 +31,11 @@ class OrganizationScraper():
     _multiple = ['types', 'phone_numbers', 'emails', 'contacts', 'partners', ]
 
     def parse(self, response):
-        organization = ScrapedOrganization()
+        organization = None
 
         flag = self.check_valid_org(response)
         if flag:
+            organization = ScrapedOrganization()
             # Collect each field of organization model
             for field in self._scrapers.iterkeys():
                 if field in self._multiple:
@@ -60,6 +62,12 @@ class OrganizationScraper():
                 sentence = self._punctuation.sub(' ', sentence)
                 if word in sentence.lower():
                     return True
+        # no keyword found, check if we already added organization
+        url = OrgUrlScraper().parse(response)
+        org_dto = self.org_dao().find(organization_url=url)
+        if org_dto:
+            return True
+
         return False
 
 
