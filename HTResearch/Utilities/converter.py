@@ -32,7 +32,7 @@ class DTOConverter(object):
                 setattr(new_dto, key, [DTOConverter.to_dto(ContactDTO, c) for c in value])
             elif key == 'publisher' and value is not None:
                 setattr(new_dto, key, DTOConverter.to_dto(ContactDTO, value))
-            elif key == 'organizations':
+            elif key == 'organizations' or key == 'partners':
                 setattr(new_dto, key, [DTOConverter.to_dto(OrganizationDTO, o) for o in value])
             elif key == 'publications':
                 setattr(new_dto, key, [DTOConverter.to_dto(PublicationDTO, p) for p in value])

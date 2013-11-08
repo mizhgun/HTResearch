@@ -20,14 +20,14 @@ class OrganizationScraper():
         'name': [OrgNameScraper()],
         'address': [OrgAddressScraper()],
         'types': [OrgTypeScraper()],
-        'phone_number': [USPhoneNumberScraper(), IndianPhoneNumberScraper()],
-        'email': [EmailScraper()],
+        'phone_numbers': [USPhoneNumberScraper(), IndianPhoneNumberScraper()],
+        'emails': [EmailScraper()],
         'contacts': [OrgContactsScraper()],
         'organization_url': [OrgUrlScraper()],
         'partners': [OrgPartnersScraper()],
     }
 
-    _multiple = ['types', 'phone_number', 'email', 'contacts', 'partners', ]
+    _multiple = ['types', 'phone_numbers', 'emails', 'contacts', 'partners', ]
 
     def parse(self, response):
         organization = ScrapedOrganization()

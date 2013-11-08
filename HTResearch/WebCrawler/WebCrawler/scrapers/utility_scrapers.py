@@ -506,7 +506,7 @@ class OrgPartnersScraper:
                 link_url = urlparse(urljoin(page_url.geturl(), href))
                 if link_url.netloc not in self._netloc_ignore + [page_url.netloc]:
                     partner = ScrapedOrganization()
-                    partner['organization_url'] = '%s://%s/' % (link_url.scheme, link_url.netloc)
+                    partner['organization_url'] = '%s/' % link_url.netloc
                     partners.append(partner)
 
         return partners
@@ -646,7 +646,7 @@ class OrgUrlScraper:
     def parse(self, response):
         parse = urlparse(response.url)
         urls = [
-            '%s://%s/' % (parse.scheme, parse.netloc),
+            '%s/' % (parse.netloc),
         ]
         return urls
 
