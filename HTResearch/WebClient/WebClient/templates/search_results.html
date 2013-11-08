@@ -1,6 +1,7 @@
 {% if organizations.count > 0 %}
     {% for organization in organizations %}
-        <li
+        <li>
+            <a  class="org_link"
                 id="org-{{ organization.id }}"
                 data-id="{{ organization.id }}"
                 data-name="{{ organization.name }}"
@@ -13,8 +14,8 @@
                 data-organization_url="{{ organization.organization_url }}"
                 data-partners="{{ organization.partners }}"
                 data-facebook="{{ organization.facebook }}"
-                data-twitter="{{ organization.twitter }}">
-            <a href="javascript:void(0)">{{ organization.name }}</a>
+                data-twitter="{{ organization.twitter }}"
+            href="javascript:void(0)">{{ organization.name }}</a>
         </li>
     {% endfor %}
 {% else %}
