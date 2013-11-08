@@ -1,32 +1,95 @@
-from urlparse import urljoin
+from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
+from HTResearch.Utilities.context import URLFrontierContext
 
+from springpython.context import ApplicationContext
+from scrapers.document_scrapers import *
+from scrapers.utility_scrapers import OrgUrlScraper
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
-from scrapy.selector import HtmlXPathSelector
-from scrapy.http import Request, TextResponse
+from scrapy.http import Request
+from scrapy import log
 import os
-import pdb
 
 
-class BasicCrawlSpider(BaseSpider):
-    name = 'ht_research'
-    allowed_domains = ['shaktivahini.org']
-    start_urls = ['http://www.shaktivahini.org/']
+class OrgSpider(BaseSpider):
+    name = 'org_spider'
+    # empty start_urls, we're setting our own
+    start_urls = []
+    default_seed = "https://bombayteenchallenge.org/"
+    # don't block on error codes
+    handle_httpstatus_list = list(xrange(1, 999))
+
+    def __init__(self, *args, **kwargs):
+        super(OrgSpider, self).__init__(*args, **kwargs)
+
+        # Define our Scrapers
+        self.scrapers = []
+        self.org_scraper = OrganizationScraper()
+        self.meta_data_scraper = UrlMetadataScraper()
+        self.scrapers.append(LinkScraper())
+        self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
+        self.ctx = ApplicationContext(URLFrontierContext())
+        self.url_frontier = self.ctx.get_object("URLFrontier")
+        self.next_url_timeout = 10
+
+
+    @staticmethod
+    def _get_blocked_domains():
+        blocked_domains = []
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Resources/blocked_org_domains.txt')) as f:
+            for line in f:
+                blocked_domains.append(line.rstrip())
+        return blocked_domains
+
+    def start_requests(self):
+        """
+        This method is called once by Scrapy to kick things off.
+        We will get the first url to crawl from this.
+        """
+
+        # first URL to begin crawling
+        # Returns a URLMetadata model, so we have to pull the url field
+        start_url_obj = self.url_frontier.next_url(self.url_frontier_rules)
+
+        start_url = None
+        if start_url_obj is None:
+            start_url = OrgSpider.default_seed
+        else:
+            start_url = start_url_obj.url
+
+        if __debug__:
+            log.msg('START_REQUESTS : start_url = %s' % start_url)
+
+        request = Request(start_url, dont_filter=True)
+
+        # Scrapy is expecting a list of Item/Requests, so use yield
+        yield request
 
     def parse(self, response):
-        if isinstance(response, TextResponse):
-            hxs = HtmlXPathSelector(response)
-            links = hxs.select('//a')
-            urls = []
-            # Get unique urls from links
-            for link in links:
-                hrefs = link.select('@href').extract()
-                for href in hrefs:
-                    url = urljoin(response.url, href)
-                    if url not in urls:
-                        urls.append(url)
+        ret = self.meta_data_scraper.parse(response)
+        if ret is not None:
+            yield ret
+        ret = self.org_scraper.parse(response)
+        if ret is not None:
+            yield ret
+            for scraper in self.scrapers:
+                ret = scraper.parse(response)
+                if isinstance(ret, type([])):
+                    for item in ret:
+                        yield item
+                else:
+                    yield ret
 
-            return [ Request(url) for url in urls ]
+        next_url = self.url_frontier.next_url(self.url_frontier_rules)
+        timeout = 0
+        while next_url is None and timeout < self.next_url_timeout:
+            timeout += 1
+            next_url = self.url_frontier.next_url(self.url_frontier_rules)
+        if next_url is not None:
+            yield Request(next_url.url, dont_filter=True)
+        else:
+            self.url_frontier.empty_cache(self.url_frontier_rules)
+            yield Request(self.default_seed, dont_filter=True)
 
 
 class StopTraffickingSpider(BaseSpider):
