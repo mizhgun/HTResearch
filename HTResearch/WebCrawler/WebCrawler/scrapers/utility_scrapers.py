@@ -646,7 +646,7 @@ class OrgUrlScraper:
     def parse(self, response):
         parse = urlparse(response.url)
         urls = [
-            '%s://%s/' % (parse.scheme, parse.netloc),
+            '%s/' % (parse.netloc),
         ]
         return urls
 

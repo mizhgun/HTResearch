@@ -12,7 +12,7 @@ function initialize() {
 	  mapTypeId: google.maps.MapTypeId.ROADMAP,
 	  panControl: false,
 	  zoomControl: false,
-	  scaleControl: false,
+	  scaleControl: false
 	};
         
 	//Didn't accept a jquery selector
@@ -44,42 +44,52 @@ function initialize() {
 
 	});
 
-	$('#search-box').keypress(_.debounce(showSearchResults, 300));
-	$('#search-box').keyup(_.debounce(hideSearchResults, 100));
-	$('a.org_link').click(function(e){
-        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization)
+    // update search when changing text input
+    $('#search-box').bind("keyup change", _.debounce(showSearchResults, 300));
+
+    // prevent form submit on enter
+    $('#search-box').bind('keyup keypress', function (e) {
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+            e.preventDefault();
+            return false;
+        }
     });
+	$('a').click(function(e){geocoder.geocode({'latLng': initialLatLng, 'address': dummyAddress}, plotOrganization)});
 }
 
 function showSearchResults() {
-	if($('#search-box').val().length > 0 && !searchResultsVisible) {
-		$('#search-results-div').toggle("slide", {
-	        direction: "up",
-	        distance: window.height - $('#search-box').css('top')
-	    }, 500);
-        
-        // Need to get the address based on the search results
-        address = '9-10-11 Nehru Place, New Delhi - 110019 India';
-        
-        // Get the lat, long values of the address
-        geocoder.geocode({'address': address}, function(results, status){
-            lat = results[0].geometry.location.lat();
-            lng = results[0].geometry.location.lng();
-            searchedLatLng = new google.maps.LatLng(lat, lng);
+    var searchText = $('#search-box').val();
+    if(searchText) {
+        $.ajax({
+            type: 'POST',
+            url: '/search/',
+            data: {
+                'search_text': $('#search-box').val(),
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function (data) {
+                $('#organization-search-list').html(data);
+            },
+            dataType: 'html'
         });
-		searchResultsVisible = true;
-	}
-}
+        if(!searchResultsVisible) {
+            $('#search-results-div').toggle("slide", {
+                direction: "up",
+                distance: window.height - $('#search-box').css('top')
+            }, 500);
 
-function hideSearchResults(e) {
-	//Falsy bullcrap
-	if($('#search-box').val().length === 0 && searchResultsVisible) {
-		$('#search-results-div').toggle("slide", {
-	        direction: "up",
-	        distance: window.height - $('#search-box').css('top')
-	    }, 500);
+            searchResultsVisible = true;
+        }
+	} else {
+	    if (searchResultsVisible) {
+	        $('#search-results-div').toggle('slide', {
+	            direction: 'up',
+	            distance: window.height - $('#search-box').css('top')
+	        }, 500);
 
-		searchResultsVisible = false;
+	        searchResultsVisible = false;
+	    }
 	}
 }
 
@@ -105,13 +115,13 @@ function plotOrganization(results, status) {
         
         var infowindow = new google.maps.InfoWindow({
 		      content : html.html()
-		  });
+		});
 
         infowindow.open(map,marker);
         
         google.maps.event.addListener(marker, 'click', function() {
 		    infowindow.open(map,marker);
-		  });
+		});
 
     } else {
         alert("Geocode was not successful for the following reason: " + status);
