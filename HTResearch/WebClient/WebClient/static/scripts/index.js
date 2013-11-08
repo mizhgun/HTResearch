@@ -93,7 +93,7 @@ function showSearchResults() {
                         geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
                     }
                     else{
-                        bootstrapModal($modal)
+                        bootstrapModal($modal);
                     }
                 });
             },
