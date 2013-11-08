@@ -27,6 +27,7 @@ class OrgSpider(BaseSpider):
         self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
         self.ctx = ApplicationContext(URLFrontierContext())
         self.url_frontier = self.ctx.get_object("URLFrontier")
+        self.next_url_timeout = 10
 
 
     @staticmethod
@@ -70,10 +71,16 @@ class OrgSpider(BaseSpider):
             else:
                 yield ret
 
-        print response.url
         next_url = self.url_frontier.next_url(self.url_frontier_rules)
+        timeout = 0
+        while next_url is None and timeout < self.next_url_timeout:
+            timeout += 1
+            next_url = self.url_frontier.next_url(self.url_frontier_rules)
         if next_url is not None:
             yield Request(next_url.url, dont_filter=True)
+        else:
+            self.url_frontier.empty_cache(self.url_frontier_rules)
+            yield Request(self.default_seed, dont_filter=True)
 
 
 class StopTraffickingSpider(BaseSpider):

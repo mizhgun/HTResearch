@@ -80,10 +80,3 @@ class ItemSwitch(object):
 
         frontier = ItemSwitch.frontier_ctx.get_object("URLFrontier")
         frontier.put_url(url)
-
-        # Model to dto...
-        url_dto = DTOConverter.to_dto(URLMetadataDTO, url)
-        # get dao
-        dao = ItemSwitch.dao_ctx.get_object("URLMetadataDAO")
-        #store
-        dao.create_update(url_dto)
