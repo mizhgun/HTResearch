@@ -10,10 +10,11 @@ h2 {
 #experience-submit-btn {
   position: relative;
   top: 5px;
-  left: 80%;
+  left: 40%;
 }
 
 #sidebar {
-  margin-left: auto;
-  margin-right: auto;
+  width: 350px;
+  margin-left: auto ;
+  margin-right: auto ;
 }
