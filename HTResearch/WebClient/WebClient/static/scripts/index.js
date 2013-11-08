@@ -5,6 +5,8 @@ var searchedLatLng;
 var geocoder = new google.maps.Geocoder();
 var address;
 var orgData;
+var infowindow = null;
+var marker = null;
 
 function initialize() {
 	var mapOptions = {
@@ -83,11 +85,13 @@ function showSearchResults() {
                 });
                 $('a.org_link').click(function(e){
                     orgData = $(this).data();
-                    if (orgData.address != '') {
+                    if (orgData.address) {
                         // Get the lat, long values of the address
                         geocoder.geocode({'address': orgData.address}, function(results, status){
-                            lat = results[0].geometry.location.lat();
-                            lng = results[0].geometry.location.lng();
+                            if(results[0]){
+                                lat = results[0].geometry.location.lat();
+                                lng = results[0].geometry.location.lng();
+                            }
                             searchedLatLng = new google.maps.LatLng(lat, lng);
                         });
                         geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
@@ -123,7 +127,12 @@ function showSearchResults() {
 function plotOrganization(results, status) {
 	if (status == google.maps.GeocoderStatus.OK) {
         map.setCenter(results[0].geometry.location);
-        var marker = new google.maps.Marker({
+
+        if(marker){
+            marker.setMap(null);
+        }
+        
+        marker = new google.maps.Marker({
             map: map,
             position: results[0].geometry.location
         });
@@ -132,7 +141,11 @@ function plotOrganization(results, status) {
 
         var html = $("#modal-template").tmpl(orgData);
 
-        var infowindow = new google.maps.InfoWindow({
+        if(infowindow){
+            infowindow.close();
+        }
+
+        infowindow = new google.maps.InfoWindow({
 		      content : html.html()
 		});
 
