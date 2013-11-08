@@ -4,6 +4,7 @@ from springpython.config import *
 # project imports
 from HTResearch.DataAccess.dao import *
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches import ItemSwitch
 
 
 class DAOContext(PythonConfig):
@@ -71,3 +72,16 @@ class URLFrontierContext(PythonConfig):
     @Object()
     def RegisteredURLMetadataDAO(self):
         return URLMetadataDAO
+
+
+class ItemPipelineContext(DAOContext, URLFrontierContext):
+
+    @Object()
+    def ItemSwitch(self):
+        switch = ItemSwitch()
+        switch.frontier = self.URLFrontier()
+        switch.contact_dao = self.ContactDAO()
+        switch.org_dao = self.OrganizationDAO()
+        switch.pub_dao = self.PublicationDAO()
+        switch.url_dao = self.URLMetadataDAO()
+        return switch

@@ -148,6 +148,10 @@ class OrganizationDAO(DAO):
                 c = org_dto.contacts[i]
                 org_dto.contacts[i] = self.contact_dao().create_update(c)
 
+            for i in range(len(org_dto.partners)):
+                o = org_dto.partners[i]
+                org_dto.partners[i] = self.create_update(o)
+
             if org_dto.id is None:
                 existing_dto = self._smart_search_orgs(org_dto)
                 if existing_dto is not None:
