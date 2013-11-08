@@ -76,7 +76,7 @@ function showSearchResults() {
 
                 $('#organization-results').css({
                     height: $('#organization-search-list').height()
-                }):
+                });
 
                 var $modal = $('.modal').modal({
                     show: false
