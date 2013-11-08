@@ -1,25 +1,28 @@
-<script id="modal-template" type="text/x-jquery-html">
+<script id="modal-template" type="text/x-jquery-tmpl">
     <div id="content">
     <div id="siteNotice">
     </div>
-    <h3 id="firstHeading" class="firstHeading"">${org_name}</h3>
+    <h3 id="firstHeading" class="firstHeading"">${ name }</h3>
     <div id="bodyContent">
         <img id ="type-image" src="${img_path}" class="col-md-3">
         <table class="table-condensed">
             <tr>
                 <td>Tel:</td>
-                <td>${phone_num}</td>
+                <td>${phone_numbers}</td>
             </tr>
             <tr>
                 <td>Email:</td>
-                <td>${org_email}</td>
+                <td>{{each emails}}
+                    ${$value}
+                    {{/each}}
+                    </td>
             </tr>
             <tr>
                 <td id="addr-cell">Address:</td>
-                <td>${addr}</td>
+                <td>${address}</td>
             </tr>
         </table>
-        <a id="moreInfo" href="/organization/${org_id}" >More Info</a>
+        <a id="moreInfo" href="/organization/${id}" >More Info</a>
     </div>
 </div>
 </script>

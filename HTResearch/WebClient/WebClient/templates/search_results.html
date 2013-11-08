@@ -1,20 +1,46 @@
 {% if organizations.count > 0 %}
     {% for organization in organizations %}
-        <li
-                id="org-{{ organization.id }}"
-                data-id="{{ organization.id }}"
-                data-name="{{ organization.name }}"
-                data-address="{{ organization.address }}"
-                data-types="{{ organization.types }}"
-                data-phone_numbers="{{ organization.phone_numbers }}"
-                data-email_key="{{ organization.email_key }}"
-                data-emails="{{ organization.emails }}"
-                data-contacts="{{ organization.contacts }}"
-                data-organization_url="{{ organization.organization_url }}"
-                data-partners="{{ organization.partners }}"
-                data-facebook="{{ organization.facebook }}"
-                data-twitter="{{ organization.twitter }}">
-            <a href="javascript:void(0)">{{ organization.name }}</a>
+        <li>
+            <div class="hidden">
+                <div class="siteNotice">
+                </div>
+                <h3 class="firstHeading" class="firstHeading">${ name }</h3>
+                <div class="bodyContent">
+                    <img class="type-image col-md-3" src="${img_path}">
+                    <table class="table-condensed">
+                        <tr>
+                            <td>Tel:</td>
+                            <td>${phone_numbers}</td>
+                        </tr>
+                        <tr>
+                            <td>Email:</td>
+                            <td>{{each emails}}
+                                ${$value}
+                                {{/each}}
+                                </td>
+                        </tr>
+                        <tr>
+                            <td class="addr-cell">Address:</td>
+                            <td>${address}</td>
+                        </tr>
+                    </table>
+                    <a class="moreInfo" href="/organization/${id}" >More Info</a>
+                </div>
+            </div>
+            <a class="org_link"
+               data-id="{{ organization.id }}"
+               data-name="{{ organization.name }}"
+               data-address="{{ organization.address }}"
+               data-types="{{ organization.types }}"
+               data-phone_numbers="{{ organization.phone_numbers }}"
+               data-email_key="{{ organization.email_key }}"
+               data-emails="{{ organization.emails }}"
+               data-contacts="{{ organization.contacts }}"
+               data-organization_url="{{ organization.organization_url }}"
+               data-partners="{{ organization.partners }}"
+               data-facebook="{{ organization.facebook }}"
+               data-twitter="{{ organization.twitter }}"
+               href="javascript:void(0)">{{ organization.name }}</a>
         </li>
     {% endfor %}
 {% else %}
