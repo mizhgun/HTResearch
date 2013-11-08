@@ -4,6 +4,7 @@ var initialLatLng = new google.maps.LatLng(21, 78);
 var searchedLatLng;
 var geocoder = new google.maps.Geocoder();
 var address;
+var orgData;
 
 function initialize() {
 	var mapOptions = {
@@ -72,6 +73,17 @@ function showSearchResults() {
             },
             success: function (data) {
                 $('#organization-search-list').html(data);
+                $('a.org_link').click(function(e){
+                    orgData = $(this).data();
+
+                    // Get the lat, long values of the address
+                    geocoder.geocode({'address': orgData.address}, function(results, status){
+                        lat = results[0].geometry.location.lat();
+                        lng = results[0].geometry.location.lng();
+                        searchedLatLng = new google.maps.LatLng(lat, lng);
+                    });
+                    geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization)
+                });
             },
             dataType: 'html'
         });
@@ -93,16 +105,6 @@ function showSearchResults() {
 	        searchResultsVisible = false;
 	    }
 	}
-    // Need to get the address based on the search results
-    address = '9-10-11 Nehru Place, New Delhi - 110019 India';
-
-    // Get the lat, long values of the address
-    geocoder.geocode({'address': address}, function(results, status){
-        lat = results[0].geometry.location.lat();
-        lng = results[0].geometry.location.lng();
-        searchedLatLng = new google.maps.LatLng(lat, lng);
-    });
-    searchResultsVisible = true;
 }
 
 
@@ -114,18 +116,10 @@ function plotOrganization(results, status) {
             position: results[0].geometry.location
         });
         
-        // the values will be replaced by results from the search
-        var org = {
-            'org_name': 'Save The Children India',
-            'img_path': 'static/images/office_building_icon.png',
-            'phone_num': '(+91) 11 4229 4900',
-            'org_email': 'info@savethechildren.in',
-            'addr': address,
-            'org_id': 4
-        };
-        
-        html = $("#modal-template").tmpl(org);
-        
+        orgData.img_path = "/static/images/office_building_icon.png";
+
+        var html = $("#modal-template").tmpl(orgData);
+
         var infowindow = new google.maps.InfoWindow({
 		      content : html.html()
 		});
