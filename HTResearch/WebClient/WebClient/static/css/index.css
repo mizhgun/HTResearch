@@ -203,19 +203,19 @@ body {
     left: 165px;
 }
 
-.type-image {
+#type-image {
     margin-right: 5px;
 }
 
-.firstHeading {
+#firstHeading {
     padding: 5px;
 }
 
-.addr-cell{
+#addr-cell{
     vertical-align: top;
 }
 
-.moreInfo {
+#moreInfo {
     float: right;
 }
 

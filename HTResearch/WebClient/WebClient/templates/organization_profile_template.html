@@ -22,11 +22,7 @@
                 <div class="col-xs-4">
                     <h2>Information</h2>
                     <p>Address: {{organization.address}}</p>
-                    <p>Phone Numbers:
-                        {% for num in organization.phone_numbers %}
-                            {{ num }}</br>
-                        {% endfor %}
-                    </p>
+                    <p>Phone Numbers: {{organization.phone_numbers}}</p>
                     <p>Facebook: <a href="http://www.facebook.com/{{organization.twitter}}">
                         {{organization.facebook}}</a></p>
                     <p>Twitter: <a href="http://www.twitter.com/{{organization.twitter}}">
