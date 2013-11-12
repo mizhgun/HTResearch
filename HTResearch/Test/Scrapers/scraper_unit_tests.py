@@ -1,6 +1,8 @@
 import unittest
 import pickle
 import os.path
+from springpython.context import ApplicationContext
+from springpython.config import Object
 
 from bson.binary import Binary
 
@@ -8,9 +10,17 @@ from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
+from HTResearch.Test.Mocks.connection import MockDBConnection
 
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
+
+
+class TestableDAOContext(DAOContext):
+
+    @Object()
+    def RegisteredDBConnection(self):
+        return MockDBConnection
 
 
 def file_to_response(test_file):
@@ -40,7 +50,7 @@ class ScraperTests(unittest.TestCase):
             url='http://www.halftheskymovement.org/partners'
         )
 
-        ctx = ApplicationContext(DAOContext())
+        ctx = ApplicationContext(TestableDAOContext())
 
         self.url_dto = DTOConverter.to_dto(URLMetadataDTO, urlmetadata)
         self.url_dto2 = DTOConverter.to_dto(URLMetadataDTO, urlmetadata2)
