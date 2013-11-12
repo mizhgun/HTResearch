@@ -4,8 +4,8 @@ from django.template import Context
 from HTResearch.Utilities.context import DAOContext
 from springpython.context import ApplicationContext
 from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
-from HTResearch.DataAccess.dao import OrganizationDAO
-from HTResearch.DataAccess.dto import OrganizationDTO
+from HTResearch.DataAccess.dao import *
+from HTResearch.DataAccess.dto import *
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from mongoengine.fields import StringField, URLField
@@ -58,6 +58,23 @@ def organization_profile(request):
 
     t = get_template('organization_profile_template.html')
     html = t.render(Context({"organization": org}))
+    return HttpResponse(html)
+
+
+def contact_profile(request):
+    uri = request.build_absolute_uri()
+    contact_dao = ContactDAO()
+
+    try:
+        contact_lookup_key = string.split(uri, '/')[4]
+        contact = contact_dao.find(id=contact_lookup_key)
+    except Exception as e:
+        #If we ever hook up logging, this is where we would log the message
+        print e.message
+        return get_http_404_page(request)
+
+    t = get_template('contact_profile_template.html')
+    html = t.render(Context({"contact": contact}))
     return HttpResponse(html)
 
 
