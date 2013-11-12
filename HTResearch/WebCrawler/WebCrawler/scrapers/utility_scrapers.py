@@ -8,6 +8,7 @@ import hashlib
 
 from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
+from scrapy.selector import XPathSelectorList
 from bson.binary import Binary
 from springpython.context import ApplicationContext
 
@@ -197,24 +198,34 @@ class ContactPublicationsScraper:
 
 
 class EmailScraper:
-    def parse(self, response):
-        email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
+    def __init__(self):
+        self.email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
                                 r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
                                 r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
                                 r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
+        self.c_data = re.compile(r'(.*?)<!\[CDATA(.*?)]]>(.*?)', re.DOTALL)
+
+    def parse(self, response):
+
         hxs = HtmlXPathSelector(response)
 
         # body will get emails that are just text in the body
-        body = hxs.select('//body').re(email_regex)
+        body = hxs.select('//body//text()')
+
+        # Remove C_Data tags, since they are showing up in the body text for some reason
+        body = XPathSelectorList([text for text in body if not (re.match(self.c_data, text.extract()) or
+                                  text.extract().strip() == '')])
+
+        body = body.re(self.email_regex)
 
         # hrefs will get emails from hrefs
-        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(email_regex)
+        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(self.email_regex)
 
         emails = body+hrefs
 
         # Take out the unicode or whatever, and substitute [at] for @ and [dot] for .
         for i in range(len(emails)):
-            emails[i] = emails[i].encode('ascii','ignore')
+            emails[i] = emails[i].encode('ascii', 'ignore')
             emails[i] = re.sub(r'(\[at]|\(at\)| at )([A-Za-z0-9.-]+)(\[dot]|\(dot\)| dot )', r'@\2.', emails[i])
 
         # Makes it a set then back to a list to take out duplicates that may have been both in the body and links

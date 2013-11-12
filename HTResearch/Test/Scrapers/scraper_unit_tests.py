@@ -147,6 +147,7 @@ class ScraperTests(unittest.TestCase):
             "httpbombayteenchallengeorg",
             "httpwwwtisseduTopMenuBarcontactuslocation1",
             "httpapneaaporgcontact",
+            "httpsetbeautifulfreeorg"
         ]
 
         email_scraper = EmailScraper()
@@ -170,6 +171,12 @@ class ScraperTests(unittest.TestCase):
 
         for test in assert_list:
             self.assertIn(test, emails, 'Email {0} not found'.format(str(test)))
+
+        # Make sure these aren't in the list
+        assert_not_list = ["ajax-loader@2x.gif"]
+
+        for test in assert_not_list:
+            self.assertNotIn(test, emails, '{0} should not be found'.format(str(test)))
 
     def test_indian_phone_number_scraper(self):
         test_files = [
