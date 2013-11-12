@@ -21,5 +21,6 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views',
     url(r'^$', 'index', name='index'),
     url(r'^search/$', 'search', name='search'),
     url(r'^organization/', 'organization_profile', name='org_prof'),
+    url(r'^contact/', 'contact_profile', name='con_prof'),
     url(r'^coming_soon/$', 'unimplemented', name='unimplemented'),
 )
