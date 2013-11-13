@@ -29,7 +29,9 @@
                     <p>Address: {{organization.address}}</p>
                     <p>Phone Numbers: 
                         {% for number in organization.phone_numbers%}
-                            {{number|cut:"[u'"|cut:"']"}} 
+                            {{number|cut:"[u'"|cut:"']"}}
+                            {% if not forloop.last %},
+                            {% endif %}
                         {% endfor %}
                     </p>
 
