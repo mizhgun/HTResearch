@@ -6,6 +6,7 @@ from HTResearch.DataAccess.dao import *
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import UrlMetadataScraper
+from HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches import ItemSwitch
 
 
 class DAOContext(PythonConfig):
@@ -74,8 +75,8 @@ class DocumentScraperContext(PythonConfig):
             'name': [self.RegisteredOrgNameScraper()],
             'address': [self.RegisteredOrgAddressScraper()],
             'types': [self.RegisteredOrgTypeScraper()],
-            'phone_number': [self.RegisteredUSPhoneNumberScraper(), self.RegisteredIndianPhoneNumberScraper()],
-            'email': [self.RegisteredEmailScraper()],
+            'phone_numbers': [self.RegisteredUSPhoneNumberScraper(), self.RegisteredIndianPhoneNumberScraper()],
+            'emails': [self.RegisteredEmailScraper()],
             'contacts': [self.RegisteredOrgContactsScraper()],
             'organization_url': [self.RegisteredOrgUrlScraper()],
             'partners': [self.RegisteredOrgPartnersScraper()],
@@ -152,3 +153,16 @@ class URLFrontierContext(PythonConfig):
     @Object()
     def RegisteredURLMetadataDAO(self):
         return URLMetadataDAO
+
+
+class ItemPipelineContext(DAOContext, URLFrontierContext):
+
+    @Object()
+    def ItemSwitch(self):
+        switch = ItemSwitch()
+        switch.frontier = self.URLFrontier()
+        switch.contact_dao = self.ContactDAO()
+        switch.org_dao = self.OrganizationDAO()
+        switch.pub_dao = self.PublicationDAO()
+        switch.url_dao = self.URLMetadataDAO()
+        return switch

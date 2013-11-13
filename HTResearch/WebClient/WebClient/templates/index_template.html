@@ -17,30 +17,51 @@
 
             <form id="custom-search-form" class="form-search form-horizontal pull-right">
                 <div class="input-append span12">
+                    {% csrf_token %}
                     <input type="text" id="search-box" class="search-query" placeholder="Search...">
                 </div>
             </form>
         </div>
 
         <div id="search-results-div" class="jumbotron" style="display: none">
-        	<h2 id="organization-list-header">Organizations</h2>
+
+            <h2 id="organization-list-header">Organizations</h2>
+            <div id="organization-results">
+
         		<ul id="organization-search-list" style="list-style-type: none;">
-					<li>
+					<!--<li>
 						<a class="org_link" href="#">Save the Children</a>
 					</li>
-					<li>Bombay Teen Challenge</li>
+					<li>Bombay Teen Challenge</li>-->
 				</ul>
-        	<h2 id="contact-list-header">People</h2>
-        		<ul id="contact-search-list" style="list-style-type: none;">
-					<li>John Marth</li>
-					<li>Mike Jones</li>
-				</ul>
-        	<h2 id="publication-list-header">Publications</h2>
-        		<ul id="publication-search-list" style="list-style-type: none;">
-					<li>Stop Human Trafficking</li>
-				</ul>
-        </div>
+            </div>
 
+            <h2 id="contact-list-header">People</h2>
+            <div id="contact-results">
+        		<ul id="contact-search-list" style="list-style-type: none;">
+					<!--<li>John Marth</li>
+					<li>Mike Jones</li>-->
+				</ul>
+            </div>
+
+            <h2 id="publication-list-header">Publications</h2>
+        	<div id="publication-results">
+        		<ul id="publication-search-list" style="list-style-type: none;">
+					<!--<li>Stop Human Trafficking</li>-->
+				</ul>
+        	</div>
+        </div>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="modal-header"></h4>
+              </div>
+              <div class="modal-body" id="modal-body"></div>
+            </div>
+          </div>
+        </div>
         <div id="signup-div" class="jumbotron" style="display: none">
         	<h1 id="create-an-account">Create an Account</h1>
         	<input id="username-field" type="text" class="form-control" placeholder="Username" autofocus="">

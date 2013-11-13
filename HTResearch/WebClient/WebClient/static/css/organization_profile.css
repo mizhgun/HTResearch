@@ -1,4 +1,4 @@
-#info-wrap {
+h2 {
   text-align: center;
 }
 
@@ -10,31 +10,11 @@
 #experience-submit-btn {
   position: relative;
   top: 5px;
-  left: 80%;
+  left: 40%;
 }
 
-/* Sticky footer styles
--------------------------------------------------- */
-
-html,
-body {
-  height: 100%;
-  overflow-x: hidden; 
-  /* The html and body elements cannot have any padding or margin. */
-}
-
-/* Wrapper for page content to push down footer */
-#wrapper {
-  min-height: 100%;
-  height: auto;
-  /* Negative indent footer by its height */
-  margin: 0 auto -60px;
-  /* Pad bottom by footer height */
-  padding: 0 0 60px;
-}
-
-/* Set the fixed height of the footer here */
-#footer {
-  height: 60px;
-  background-color: #eeeeee;
+#sidebar {
+  width: 350px;
+  margin-left: auto ;
+  margin-right: auto ;
 }

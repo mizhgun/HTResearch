@@ -8,6 +8,7 @@ import hashlib
 
 from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
+from scrapy.selector import XPathSelectorList
 from bson.binary import Binary
 
 from ..items import *
@@ -195,39 +196,40 @@ class ContactPublicationsScraper(object):
 
 
 class EmailScraper(object):
+    def __init__(self):
+        self.email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
+                                      r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
+                                      r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
+                                      r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
+        self.c_data = re.compile(r'(.*?)<!\[CDATA(.*?)]]>(.*?)', re.DOTALL)
+
     def parse(self, response):
-        email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
-                                r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
-                                r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
-                                r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
+
         hxs = HtmlXPathSelector(response)
 
         # body will get emails that are just text in the body
-        body = hxs.select('//body').re(email_regex)
+        body = hxs.select('//body//text()')
+
+        # Remove C_Data tags, since they are showing up in the body text for some reason
+        body = XPathSelectorList([text for text in body if not (re.match(self.c_data, text.extract()) or
+                                  text.extract().strip() == '')])
+
+        body = body.re(self.email_regex)
 
         # hrefs will get emails from hrefs
-        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(email_regex)
+        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(self.email_regex)
 
         emails = body+hrefs
 
         # Take out the unicode or whatever, and substitute [at] for @ and [dot] for .
         for i in range(len(emails)):
-            emails[i] = emails[i].encode('ascii','ignore')
+            emails[i] = emails[i].encode('ascii', 'ignore')
             emails[i] = re.sub(r'(\[at]|\(at\)| at )([A-Za-z0-9.-]+)(\[dot]|\(dot\)| dot )', r'@\2.', emails[i])
 
         # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
         emails = list(set(emails))
 
-        # Make the list an item
-        email_list = []
-        for email in emails:
-            # removing ScrapedEmail() item in favor of returning exactly what DB expects
-            # Paul Poulsen
-            #item = ScrapedEmail()
-            #item['email'] = email
-            email_list.append(email)
-
-        return email_list
+        return emails
 
 
 class KeywordScraper(object):
@@ -286,20 +288,22 @@ class KeywordScraper(object):
 
 
 class IndianPhoneNumberScraper(object):
+    def __init__(self):
+        self._india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?'
+                                              r'[-./\s]?[0-9]{5}[0-9]?\b|\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?'
+                                              r'[0-9]?[0-9]?[-./\s]?[0-9]{4}[-./\s]?[0-9]{4}\b')
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-        india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?'
-                                        r'[0-9]{5}[0-9]?\b|\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?'
-                                        r'[-./\s]?[0-9]{4}[-./\s]?[0-9]{4}\b')
+
         # body will get phone numbers that are just text in the body
-        body = hxs.select('//body').re(india_format_regex)
+        body = hxs.select('//body').re(self._india_format_regex)
 
         phone_nums = body
 
         # Remove unicode indicators
         for i in range(len(phone_nums)):
-            phone_nums[i] = phone_nums[i].encode('ascii','ignore')
+            phone_nums[i] = phone_nums[i].encode('ascii', 'ignore')
 
         # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
         phone_nums = list(set(phone_nums))
@@ -504,7 +508,7 @@ class OrgPartnersScraper(object):
                 link_url = urlparse(urljoin(page_url.geturl(), href))
                 if link_url.netloc not in self._netloc_ignore + [page_url.netloc]:
                     partner = ScrapedOrganization()
-                    partner['organization_url'] = '%s://%s/' % (link_url.scheme, link_url.netloc)
+                    partner['organization_url'] = '%s/' % link_url.netloc
                     partners.append(partner)
 
         return partners
@@ -644,7 +648,7 @@ class OrgUrlScraper(object):
     def parse(self, response):
         parse = urlparse(response.url)
         urls = [
-            '%s://%s/' % (parse.scheme, parse.netloc),
+            '%s/' % (parse.netloc),
         ]
         return urls
 

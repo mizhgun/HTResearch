@@ -1,6 +1,5 @@
 html { 
     height: 100%;
-    overflow-y: hidden; 
 }
 
 body {
@@ -24,12 +23,13 @@ body {
 #login-signup-div {
     position:absolute;
     z-index: 1;
-    top: 50px;
+    top: 100px;
     left: 5px;
     width: 205px;
-    height: 120px;
+    height: 72px;
     opacity: 0.75;
     border: 0;
+    padding: 0;
 }
 
 #login-signup-div:hover {
@@ -53,7 +53,7 @@ body {
     position: absolute;
     height: 60%;
     width: 60%;
-    top: 55px;
+    top: 10px;
     left: 0px;
 }
 
@@ -143,9 +143,10 @@ body {
     top: 170px;
     left: 5px;
     width: 205px;
-    height: 100%;
+    max-height: 500px;
     opacity: 0.75;
-    overflow: auto;
+    overflow-y: scroll;
+    padding: 0px
 }
 
 #search-results-div:hover {
@@ -154,45 +155,28 @@ body {
 }
 
 #organization-list-header {
-    position: absolute;
-    top: 0px;
-    left: 0px;
     font-size: x-large;
 }
 
 #organization-search-list {
-    position: absolute;
-    left: 5px;
-    top: 50px;
-    padding-bottom: 5px;
     font-size: small;
 }
 
 #contact-list-header {
-    position: absolute;
-    top: 175px;
-    left: 0px;
     font-size: x-large;
 }
 
 #contact-search-list {
-    position: absolute;
-    left: 5px;
-    top: 225px;
     font-size: small;
 }
 
 #publication-list-header {
-    position: absolute;
-    top: 350px;
-    left: 0px;
+
     font-size: x-large;
 }
 
 #publication-search-list {
-    position: absolute;
-    left: 5px;
-    top: 400px;
+
     font-size: small;
 }
 
@@ -205,6 +189,12 @@ body {
 
 #type-image {
     margin-right: 5px;
+    height: 146px;
+    width: 124px;
+}
+
+#img-div {
+    float: left;
 }
 
 #firstHeading {
@@ -215,11 +205,35 @@ body {
     vertical-align: top;
 }
 
-#moreInfo {
-    float: right;
+#more-info {
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 /*Navbar override*/
 .navbar {
     margin-bottom: 0px;
+}
+
+.modal-row {
+    vertical-align: top;
+}
+
+ul {
+    list-style-position: inside;
+}
+
+#organization-results {
+    max-height: 150px;
+    overflow: auto;
+    margin-bottom: 20px;
+}
+
+#contact-results {
+    margin-top: 20px;
+}
+
+#publication-results {
+    margin-top: 20px;
 }
