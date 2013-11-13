@@ -1,19 +1,59 @@
 import unittest
 import pickle
 import os.path
+from springpython.config import Object
+from springpython.context import ApplicationContext
 
-from bson.binary import Binary
-
-from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
+from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import *
 from HTResearch.Test.Mocks.utility_scrapers import *
-from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import LinkScraper
-from HTResearch.DataAccess.dto import URLMetadataDTO
-from HTResearch.DataModel.model import URLMetadata
-from HTResearch.Utilities.converter import DTOConverter
+from HTResearch.Utilities.context import DocumentScraperContext, UrlMetadataScraperContext
 
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
-#TEST_FILE_DIR = "C:\Users\Brian\Documents\HTResearch\HTResearch\Test\Scrapers\resources"
+
+
+class TestableDocumentScraperContext(DocumentScraperContext):
+    @Object()
+    def RegisteredOrgNameScraper(self):
+        return MockOrgNameScraper
+
+    @Object()
+    def RegisteredOrgAddressScraper(self):
+        return MockOrgAddressScraper
+
+    @Object()
+    def RegisteredOrgTypeScraper(self):
+        return MockOrgTypeScraper
+
+    @Object()
+    def RegisteredIndianPhoneNumberScraper(self):
+        return MockIndianPhoneNumberScraper
+
+    @Object()
+    def RegisteredUSPhoneNumberScraper(self):
+        return MockUSPhoneNumberScraper
+
+    @Object()
+    def RegisteredEmailScraper(self):
+        return MockEmailScraper
+
+    @Object()
+    def RegisteredOrgContactsScraper(self):
+        return MockOrgContactsScraper
+
+    @Object()
+    def RegisteredOrgUrlScraper(self):
+        return MockOrgUrlScraper
+
+    @Object()
+    def RegisteredOrgPartnersScraper(self):
+        return MockOrgPartnersScraper
+
+
+class TestableUrlMetadataScraperContext(UrlMetadataScraperContext):
+    @Object()
+    def RegisteredURLMetadataDAO(self):
+        return MockURLMetadataDAO
 
 
 def file_to_response(test_file):
@@ -66,13 +106,13 @@ class ScraperTests(unittest.TestCase):
             "httpwwwprajwalaindiacomhomehtml"
         ]
 
-        addr_scraper = MockOrgAddressScraper
+        addr_scraper = OrgAddressScraper()
         addresses = []
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
-                ret = addr_scraper().parse(response)
+                ret = addr_scraper.parse(response)
                 if isinstance(ret, type([])):
                     addresses = addresses + ret
                 else:
@@ -95,13 +135,13 @@ class ScraperTests(unittest.TestCase):
             "httpapneaaporgaboutusourboard",
         ]
 
-        contact_name_scraper = MockContactNameScraper
+        contact_name_scraper = ContactNameScraper()
         names = []
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
-                ret = contact_name_scraper().parse(response)
+                ret = contact_name_scraper.parse(response)
                 if isinstance(ret, type([])):
                     names = names + ret
                 else:
@@ -142,13 +182,13 @@ class ScraperTests(unittest.TestCase):
             "httpapneaaporgcontact",
         ]
 
-        email_scraper = MockEmailScraper
+        email_scraper = EmailScraper()
         emails = []
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
-                ret = email_scraper().parse(response)
+                ret = email_scraper.parse(response)
                 if isinstance(ret, type([])):
                     emails = emails + ret
                 else:
@@ -169,13 +209,13 @@ class ScraperTests(unittest.TestCase):
             "httpwwwstoptraffickinginDirectoryaspx",
         ]
 
-        indian_phone_scraper = MockIndianPhoneNumberScraper
+        indian_phone_scraper = IndianPhoneNumberScraper()
         numbers = []
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
-                ret = indian_phone_scraper().parse(response)
+                ret = indian_phone_scraper.parse(response)
                 if isinstance(ret, type([])):
                     numbers = numbers + ret
                 else:
@@ -190,7 +230,7 @@ class ScraperTests(unittest.TestCase):
             "httpenwikipediaorgwikiNicolasCage",
         ]
 
-        keyword_scraper = MockKeywordScraper
+        keyword_scraper = KeywordScraper
         keywords = []
 
         for input_file in test_files:
@@ -245,13 +285,13 @@ class ScraperTests(unittest.TestCase):
             "httpwwwtissedu",
         ]
 
-        org_name_scraper = MockOrgNameScraper
+        org_name_scraper = OrgNameScraper()
         names = []
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
-                ret = org_name_scraper().parse(response)
+                ret = org_name_scraper.parse(response)
                 if isinstance(ret, type([])):
                     names = names + ret
                 else:
@@ -276,13 +316,13 @@ class ScraperTests(unittest.TestCase):
             "httpwwwhalftheskymovementorg",
         ]
 
-        org_type_scraper = MockOrgTypeScraper
+        org_type_scraper = OrgTypeScraper()
         types = []
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
-                ret = org_type_scraper().parse(response)
+                ret = org_type_scraper.parse(response)
                 if isinstance(ret, type([])):
                     types = types + ret
                 else:
@@ -299,13 +339,13 @@ class ScraperTests(unittest.TestCase):
             "httpapneaaporgaboutusourpartnersnetworks",
         ]
 
-        org_partners_scraper = MockOrgPartnersScraper
+        org_partners_scraper = OrgPartnersScraper()
         partners = []
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
-                ret = org_partners_scraper().parse(response)
+                ret = org_partners_scraper.parse(response)
                 if isinstance(ret, type([])):
                     partners += ret
                 else:
@@ -333,17 +373,19 @@ class ScraperTests(unittest.TestCase):
             self.assertNotIn(test, partner_urls, 'Invalid URL (not a partner org): %s' % test)
 
     def test_organization_scraper(self):
+        ctx = ApplicationContext(TestableDocumentScraperContext())
+
         test_files = [
             "httpbombayteenchallengeorg",
         ]
 
-        organization_scraper = OrganizationScraper
+        organization_scraper = ctx.get_object("OrganizationScraper")
         orgs = []
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
-                ret = organization_scraper().parse(response)
+                ret = organization_scraper.parse(response)
                 if isinstance(ret, type([])):
                     orgs = orgs + ret
                 else:
@@ -379,6 +421,8 @@ class ScraperTests(unittest.TestCase):
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
 
     def test_urlmetadata_scraper(self):
+        ctx = ApplicationContext(TestableUrlMetadataScraperContext())
+
         self.set_up_url_metadata_scraper_test()
 
         test_files = [
@@ -387,13 +431,13 @@ class ScraperTests(unittest.TestCase):
             "httpwwwhalftheskymovementorgpartners",
         ]
 
-        url_mds = MockUrlMetadataScraper
+        url_mds = ctx.get_object("UrlMetadataScraper")
         scraped_urls = []
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
-                ret = url_mds().parse(response)
+                ret = url_mds.parse(response)
                 if isinstance(ret, type([])):
                     scraped_urls = scraped_urls + ret
                 else:
@@ -429,7 +473,6 @@ class ScraperTests(unittest.TestCase):
 
         for test in assert_list:
             self.assertIn(test, scraped_urls, 'Invalid URL Metadata Didn\'t Find: %s' % str(test))
-
 
 
 if __name__ == '__main__':

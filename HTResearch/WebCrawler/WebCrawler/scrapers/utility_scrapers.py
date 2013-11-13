@@ -9,12 +9,10 @@ import hashlib
 from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
 from bson.binary import Binary
-from springpython.context import ApplicationContext
 
 from ..items import *
 from HTResearch.DataAccess.dao import *
 from HTResearch.Utilities.converter import *
-from HTResearch.Utilities.context import DAOContext
 from link_scraper import LinkScraper
 from HTResearch.DataModel.enums import OrgTypesEnum
 
@@ -23,7 +21,7 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 # Will likely remove/change them.
 
 
-class ContactNameScraper:
+class ContactNameScraper(object):
     # TODO: Find list of Indian names and add them to names.txt
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt')) as f:
@@ -184,19 +182,19 @@ class ContactNameScraper:
         return tag_list
 
 
-class ContactPositionScraper:
+class ContactPositionScraper(object):
 
     def __init__(self):
         self.position = ""
 
 
-class ContactPublicationsScraper:
+class ContactPublicationsScraper(object):
 
     def __init__(self):
         self.publications = []
 
 
-class EmailScraper:
+class EmailScraper(object):
     def parse(self, response):
         email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
                                 r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
@@ -232,7 +230,7 @@ class EmailScraper:
         return email_list
 
 
-class KeywordScraper:
+class KeywordScraper(object):
     NUM_KEYWORDS = 50
     stopwords = []
 
@@ -287,7 +285,7 @@ class KeywordScraper:
         return most_freq_keywords
 
 
-class IndianPhoneNumberScraper:
+class IndianPhoneNumberScraper(object):
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -319,7 +317,7 @@ class IndianPhoneNumberScraper:
         return phone_nums_list
 
 
-class OrgAddressScraper:
+class OrgAddressScraper(object):
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/cities.txt')) as f:
             self._cities = f.read().splitlines()
@@ -364,7 +362,7 @@ class OrgAddressScraper:
         return address_list[0]['city'] + " " + address_list[0]['zip_code'] if len(address_list) > 0 else ''
 
 
-class OrgContactsScraper:
+class OrgContactsScraper(object):
 
     def __init__(self):
         pass
@@ -373,7 +371,7 @@ class OrgContactsScraper:
         return [] # not yet implemented
 
 
-class OrgNameScraper:
+class OrgNameScraper(object):
 
     def __init__(self):
         self._split_punctuation = re.compile(r"[ \w']+")
@@ -424,7 +422,7 @@ class OrgNameScraper:
         return org_name['name']
 
 
-class OrgPartnersScraper:
+class OrgPartnersScraper(object):
 
     def __init__(self):
         self._link_scraper = LinkScraper()
@@ -512,7 +510,7 @@ class OrgPartnersScraper:
         return partners
 
 
-class OrgTypeScraper:
+class OrgTypeScraper(object):
 
     def __init__(self):
         # Stemmer for stemming terms
@@ -638,7 +636,7 @@ class OrgTypeScraper:
         return types or [OrgTypesEnum.UNKNOWN]
 
 
-class OrgUrlScraper:
+class OrgUrlScraper(object):
 
     def __init__(self):
         pass
@@ -651,45 +649,42 @@ class OrgUrlScraper:
         return urls
 
 
-class PublicationAuthorsScraper:
+class PublicationAuthorsScraper(object):
 
     def __init__(self):
         authors = []
 
 
-class PublicationDateScraper:
+class PublicationDateScraper(object):
 
     def __init__(self):
         partners = []
 
 
-class PublicationPublisherScraper:
+class PublicationPublisherScraper(object):
 
     def __init__(self):
         publisher = []
 
 
-class PublicationTitleScraper:
+class PublicationTitleScraper(object):
 
     def __init__(self):
         titles = []
 
 
-class PublicationTypeScraper:
+class PublicationTypeScraper(object):
 
     def __init__(self):
         type = []
 
 
-class UrlMetadataScraper:
+class UrlMetadataScraper(object):
 
     def __init__(self):
-        pass
+        self.dao = URLMetadataDAO
 
     def parse(self, response):
-        # Initialize the DAO context
-        dao_ctx = ApplicationContext(DAOContext())
-
         # Initialize item and set url
         metadata = ScrapedUrl()
         metadata['url'] = response.url
@@ -708,8 +703,7 @@ class UrlMetadataScraper:
         metadata['update_freq'] = 0
 
         # Compare checksums and update update_freq using the existing URL
-        dao = dao_ctx.get_object("URLMetadataDAO")
-        exist_url_dto = dao.find(url=response.url)
+        exist_url_dto = self.dao().find(url=response.url)
         if exist_url_dto is not None:
             exist_url = DTOConverter.from_dto(URLMetadataDTO, exist_url_dto)
             if exist_url.checksum is not None:
@@ -738,7 +732,7 @@ class UrlMetadataScraper:
         return metadata
 
 
-class USPhoneNumberScraper:
+class USPhoneNumberScraper(object):
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)

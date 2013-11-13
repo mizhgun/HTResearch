@@ -4,6 +4,8 @@ from springpython.config import *
 # project imports
 from HTResearch.DataAccess.dao import *
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
+from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import UrlMetadataScraper
 
 
 class DAOContext(PythonConfig):
@@ -62,91 +64,81 @@ class DAOContext(PythonConfig):
 
 class DocumentScraperContext(PythonConfig):
     @Object()
-    def RegisteredContactScraper(self):
-        return self.ContactScraper
+    def ContactScraper(self):
+        return ContactScraper()
 
     @Object()
-    def RegisteredOrganizationScraper(self):
-        return self.OrganizationScraper
+    def OrganizationScraper(self):
+        org = OrganizationScraper()
+        org._scrapers = {
+            'name': [self.RegisteredOrgNameScraper()],
+            'address': [self.RegisteredOrgAddressScraper()],
+            'types': [self.RegisteredOrgTypeScraper()],
+            'phone_number': [self.RegisteredUSPhoneNumberScraper(), self.RegisteredIndianPhoneNumberScraper()],
+            'email': [self.RegisteredEmailScraper()],
+            'contacts': [self.RegisteredOrgContactsScraper()],
+            'organization_url': [self.RegisteredOrgUrlScraper()],
+            'partners': [self.RegisteredOrgPartnersScraper()],
+        }
+        return org
 
     @Object()
-    def RegisteredPublicationScraper(self):
-        return self.PublicationScraper
+    def PublicationScraper(self):
+        return PublicationScraper()
 
-
-class UtilityScraperContext(PythonConfig):
-
-    @Object()
-    def RegisteredContactNameScraper(self):
-        return self.ContactNameScraper
-
-    @Object()
-    def RegisteredContactPositionScraper(self):
-        return self.ContactPositionScraper
-
-    @Object()
-    def RegisteredContactPublicationScraper(self):
-        return self.ContactPublicationScraper
-
+    # Registered classes
     @Object()
     def RegisteredEmailScraper(self):
-        return self.EmailScraper
+        return EmailScraper
 
     @Object()
     def RegisteredKeywordScraper(self):
-        return self.KeywordScraper
+        return KeywordScraper
 
     @Object()
     def RegisteredIndianPhoneNumberScraper(self):
-        return self.IndianPhoneNumberScraper
+        return IndianPhoneNumberScraper
 
     @Object()
     def RegisteredOrgAddressScraper(self):
-        return self.OrgAddressScraper
+        return OrgAddressScraper
 
     @Object()
     def RegisteredOrgContactsScraper(self):
-        return self.OrgContactsScraper
+        return OrgContactsScraper
 
     @Object()
     def RegisteredOrgNameScraper(self):
-        return self.OrgNameScraper
+        return OrgNameScraper
 
     @Object()
     def RegisteredOrgPartnersScraper(self):
-        return self.OrgPartnersScraper
+        return OrgPartnersScraper
 
     @Object()
     def RegisteredOrgTypeScraper(self):
-        return self.OrgTypeScraper
+        return OrgTypeScraper
 
     @Object()
     def RegisteredOrgUrlScraper(self):
-        return self.OrgUrlScraper
+        return OrgUrlScraper
 
     @Object()
-    def RegisteredPublicationAuthorsScraper(self):
-        return self.PublicationAuthorsScraper
+    def RegisteredUSPhoneNumberScraper(self):
+        return USPhoneNumberScraper
+
+
+class UrlMetadataScraperContext(PythonConfig):
 
     @Object()
-    def RegisteredPublicationDateScraper(self):
-        return self.PublicationDateScraper
+    def UrlMetadataScraper(self):
+        scraper = UrlMetadataScraper()
+        scraper.dao = self.RegisteredURLMetadataDAO()
+        return scraper
 
     @Object()
-    def RegisteredPublicationPublisherScraper(self):
-        return self.PublicationPublisherScraper
-
-    @Object()
-    def RegisteredPublicationTitleScraper(self):
-        return self.PublicationTitleScraper
-
-    @Object()
-    def RegisteredPublicationTypeScraper(self):
-        return self.PublicationTypeScraper
-
-    @Object()
-    def RegisteredURLMetadataScraper(self):
-        return self.URLMetadataScraper
+    def RegisteredURLMetadataDAO(self):
+        return URLMetadataDAO
 
 
 class URLFrontierContext(PythonConfig):
