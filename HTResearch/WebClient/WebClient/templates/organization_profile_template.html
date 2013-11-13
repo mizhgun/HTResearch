@@ -27,7 +27,12 @@
                     </p>
 
                     <p>Address: {{organization.address}}</p>
-                    <p>Phone Numbers: {{organization.phone_numbers|cut:"[u'"|cut:"']"}}</p>
+                    <p>Phone Numbers: 
+                        {% for number in organization.phone_numbers%}
+                            {{number|cut:"[u'"|cut:"']"}} 
+                        {% endfor %}
+                    </p>
+
                     <p>Facebook: <a href="{{organization.facebook}}">
                         {{organization.facebook}}</a></p>
                     <p>Twitter: <a href="{{organization.twitter}}">
