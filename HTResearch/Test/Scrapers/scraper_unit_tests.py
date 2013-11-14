@@ -214,7 +214,8 @@ class ScraperTests(unittest.TestCase):
                        "covdnhrc@nic.in",
                        "anilpradhanshilong@gmail.com",
                        "snarayan1946@gmail.com",
-                       "tvarghese@bombayteenchallenge.org"]
+                       "tvarghese@bombayteenchallenge.org",
+                       "kkdevaraj@bombayteenchallenge.org"]
 
         for test in assert_list:
             self.assertIn(test, emails, 'Email {0} not found'.format(str(test)))

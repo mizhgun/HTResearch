@@ -22,7 +22,7 @@ class OrganizationScraper():
             'organization_url': [OrgUrlScraper],
             'partners': [OrgPartnersScraper],
         }
-        self._multiple = ['types', 'phone_number', 'email', 'contacts', 'partners', ]
+        self._multiple = ['types', 'phone_numbers', 'emails', 'contacts', 'partners', ]
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',
                                 'human trafficking', 'brothel', 'child trafficking', 'anti trafficking']
         self._punctuation = re.compile('[%s]' % re.escape(string.punctuation))
