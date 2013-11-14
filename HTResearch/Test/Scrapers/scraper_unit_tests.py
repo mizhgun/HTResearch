@@ -252,13 +252,13 @@ class ScraperTests(unittest.TestCase):
             "httpenwikipediaorgwikiNicolasCage",
         ]
 
-        keyword_scraper = KeywordScraper
+        keyword_scraper = KeywordScraper()
         keywords = []
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
-                ret = keyword_scraper().parse(response)
+                ret = keyword_scraper.parse(response)
                 if isinstance(ret, type([])):
                     keywords = keywords + ret
                 else:
