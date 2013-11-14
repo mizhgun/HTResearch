@@ -159,7 +159,6 @@ function setLinkClickEvents(){
         }
     });
 
-
     // the contact link
     $('a.contact_link').click(function(e){
         contactData = $(this).data();
