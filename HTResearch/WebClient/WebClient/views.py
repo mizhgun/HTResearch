@@ -5,12 +5,11 @@ from HTResearch.Utilities.context import DAOContext
 from springpython.context import ApplicationContext
 from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
 from HTResearch.DataAccess.dao import *
-from HTResearch.DataModel.model import *
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from mongoengine.fields import StringField, URLField
 from HTResearch.Utilities.encoder import MongoJSONEncoder
-import string
+from HTResearch.Utilities.context import *
 
 
 def index(request):
@@ -45,7 +44,8 @@ def search(request):
 
 
 def organization_profile(request, org_id):
-    org_dao = OrganizationDAO()
+    ctx = ApplicationContext(DAOContext())
+    org_dao = ctx.get_object('OrganizationDAO')
 
     try:
         org = org_dao.find(id=org_id)
@@ -60,7 +60,8 @@ def organization_profile(request, org_id):
 
 
 def contact_profile(request, contact_id):
-    contact_dao = ContactDAO()
+    ctx = ApplicationContext(DAOContext())
+    contact_dao = ctx.get_object('ContactDAO')
 
     try:
         contact = contact_dao.find(id=contact_id)
