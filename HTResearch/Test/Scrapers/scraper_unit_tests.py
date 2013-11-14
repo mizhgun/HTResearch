@@ -22,39 +22,43 @@ TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resour
 class TestableDocumentScraperContext(DocumentScraperContext):
     @Object()
     def RegisteredOrgNameScraper(self):
-        return MockOrgNameScraper
+        return MockOrgNameScraper()
 
     @Object()
     def RegisteredOrgAddressScraper(self):
-        return MockOrgAddressScraper
+        return MockOrgAddressScraper()
 
     @Object()
     def RegisteredOrgTypeScraper(self):
-        return MockOrgTypeScraper
+        return MockOrgTypeScraper()
 
     @Object()
     def RegisteredIndianPhoneNumberScraper(self):
-        return MockIndianPhoneNumberScraper
+        return MockIndianPhoneNumberScraper()
 
     @Object()
     def RegisteredUSPhoneNumberScraper(self):
-        return MockUSPhoneNumberScraper
+        return MockUSPhoneNumberScraper()
 
     @Object()
     def RegisteredEmailScraper(self):
-        return MockEmailScraper
+        return MockEmailScraper()
 
     @Object()
     def RegisteredOrgContactsScraper(self):
-        return MockOrgContactsScraper
+        return MockOrgContactsScraper()
 
     @Object()
     def RegisteredOrgUrlScraper(self):
-        return MockOrgUrlScraper
+        return MockOrgUrlScraper()
 
     @Object()
     def RegisteredOrgPartnersScraper(self):
-        return MockOrgPartnersScraper
+        return MockOrgPartnersScraper()
+
+    @Object()
+    def RegisteredFacebookScraper(self):
+        return MockOrgFacebookScraper()
 
 
 class TestableUrlMetadataScraperContext(UrlMetadataScraperContext):
@@ -484,6 +488,7 @@ class ScraperTests(unittest.TestCase):
             'partners': [
                 # not yet implemented
             ],
+            'facebook': 'http://www.facebook.com/BombayTeenChallenge'
         }]
 
         for test in assert_list:
