@@ -56,10 +56,11 @@ class Publication(object):
 class URLMetadata(object):
     """A Model class for an anti-trafficiking organization URL metadata."""
 
-    def __init__(self, url=None, last_visited=datetime.now(),
+    def __init__(self, url=None, domain=None, last_visited=datetime.now(),
                  score=None, update_freq=None,
                  checksum=None):
         self.url = url
+        self.domain = domain
         self.last_visited = last_visited
         self.score = score
         self.update_freq = update_freq

@@ -2,6 +2,9 @@ from ..items import *
 from utility_scrapers import *
 import string
 import re
+from HTResearch.Utilities.context import URLFrontierContext
+from HTResearch.Utilities.url_tools import UrlUtility
+from HTResearch.DataModel.model import URLMetadata
 
 
 class Contact:
@@ -13,9 +16,12 @@ class Contact:
 class OrganizationScraper():
     def __init__(self):
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',
-                                'human trafficking', 'brothel', 'child trafficking', 'anti trafficking']
+                                'human trafficking', 'brothel', 'child trafficking', 'anti trafficking',
+                                'social justice']
         self._punctuation = re.compile('[%s]' % re.escape(string.punctuation))
+        self.ctx = ApplicationContext(URLFrontierContext())
         self.org_dao = OrganizationDAO
+        self.url_frontier = self.ctx.get_object("URLFrontier")
 
     _scrapers = {
         'name': [OrgNameScraper()],
@@ -53,20 +59,31 @@ class OrganizationScraper():
         return organization
 
     def check_valid_org(self, response):
-        hxs = HtmlXPathSelector(response)
-        site_text = hxs.select('//html//text()').extract()
-        site_text = [element.strip() for element in site_text if element.strip() != '']
-
-        for word in self._required_words:
-            for sentence in site_text:
-                sentence = self._punctuation.sub(' ', sentence)
-                if word in sentence.lower():
-                    return True
-        # no keyword found, check if we already added organization
+        # If already in database, then valid
         url = OrgUrlScraper().parse(response)
         org_dto = self.org_dao().find(organization_url=url)
         if org_dto:
             return True
+
+        # If not homepage, then return false and make sure homepage is added to scrape:
+        home_url_obj = urlparse(response.request.url)
+        if home_url_obj.path and home_url_obj.path is not '/':
+            home_url = home_url_obj.scheme + '://' + home_url_obj.netloc + '/'
+            home_domain = UrlUtility.get_domain(home_url)
+            meta = URLMetadata(url=home_url, domain=home_domain, last_visited=datetime(1, 1, 1))
+            self.url_frontier.put_url(meta)
+            return False
+        else:
+            hxs = HtmlXPathSelector(response)
+            site_text = hxs.select('//html//text()').extract()
+            site_text = [element.strip() for element in site_text if element.strip() != '']
+
+            for word in self._required_words:
+                for sentence in site_text:
+                    sentence = self._punctuation.sub(' ', sentence)
+                    if word in sentence.lower():
+                        return True
+            # no keyword found, check if we already added organization
 
         return False
 
