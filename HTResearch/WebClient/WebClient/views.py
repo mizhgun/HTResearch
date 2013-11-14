@@ -65,31 +65,17 @@ def contact_profile(request):
     uri = request.build_absolute_uri()
     contact_dao = ContactDAO()
 
-    #try:
-    #    contact_lookup_key = string.split(uri, '/')[4]
-    #    contact = contact_dao.find(id=contact_lookup_key)
-    #except Exception as e:
-    #    #If we ever hook up logging, this is where we would log the message
-    #    print e.message
-    #    return get_http_404_page(request)
+    try:
+        contact_lookup_key = string.split(uri, '/')[4]
+        contact = contact_dao.find(id=contact_lookup_key)
+    except Exception as e:
+        #If we ever hook up logging, this is where we would log the message
+        print e.message
+        return get_http_404_page(request)
 
-    temp_orgs = []
-    org = Organization(name="Dat Org")
-    temp_orgs.append(org)
-    contact = Contact(first_name="Djordan",
-                               last_name="Djeggnerzor",
-                               email="jdegner0129@gmail.com",
-                               primary_phone="402-555-5555",
-                               secondary_phone="402-333-3333",
-                               organizations=temp_orgs,
-                               position="Captain of PewPewPew and Anal Incineration")
-
-    #TODO
-    #Iterate over organizations and pass a list of URLs to our site
     org_urls = []
     for org in contact.organizations:
-        #org_urls.append("/organization/"+org.id)
-        org_urls.append("/organization/"+"98a7b539bac")
+        org_urls.append("/organization/"+org.id)
 
 
     #Generates a 2d list
