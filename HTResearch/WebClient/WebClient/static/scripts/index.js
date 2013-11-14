@@ -163,38 +163,9 @@ function plotOrganization(results, status) {
 
 function bootstrapModal(m){
     // Do a bootstrap modal
-    $('#modal-header').text(orgData.name);
+    var html = $("#bs-modal-template").tmpl(orgData);
 
-    // phone numbers
-    if (orgData['phone_numbers'].length == 0){
-        document.getElementById('tel-td').innerHTML = 'None';
-    } else {
-        var t = ''
-        for (var i=0; i < orgData['phone_numbers'].length; i++){
-            t += orgData['phone_numbers'][i] + '</br>';
-        }
-        document.getElementById('tel-td').innerHTML = t;
-    }
-
-    // emails
-    if (orgData['emails'].length == 0){
-        document.getElementById('email-td').innerHTML = 'None';
-    } else {
-        var t = ''
-        for (var i=0; i < orgData['emails'].length; i++){
-            t += orgData['emails'][i] + '</br>';
-        }
-        document.getElementById('email-td').innerHTML = t;
-    }
-
-    // address
-    if (orgData.address == ''){
-        document.getElementById('addr-td').innerHTML = 'None';
-    } else {
-        document.getElementById('addr-td').innerHTML = orgData['address'] + '</br>';
-    }
-
-    document.getElementById('more-info').href = '/organization/' + orgData['id'];
+    $('#bs-modal').html(html);
 
     m.modal('show');
 }
