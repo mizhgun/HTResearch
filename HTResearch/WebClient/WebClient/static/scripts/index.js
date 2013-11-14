@@ -165,38 +165,37 @@ function bootstrapModal(m){
     // Do a bootstrap modal
     $('#modal-header').text(orgData.name);
 
-    var html = '<table class="table-condensed"><tr class="modal-row"><td>Tel:</td><td>';
-
+    // phone numbers
     if (orgData['phone_numbers'].length == 0){
-        html += 'None';
+        document.getElementById('tel-td').innerHTML = 'None';
     } else {
+        var t = ''
         for (var i=0; i < orgData['phone_numbers'].length; i++){
-            html += orgData['phone_numbers'][i] + '</br>'
+            t += orgData['phone_numbers'][i] + '</br>';
         }
+        document.getElementById('tel-td').innerHTML = t;
     }
 
-    html += '</td></tr><tr class="modal-row"><td>Email:</td><td>';
-
+    // emails
     if (orgData['emails'].length == 0){
-        html += 'None'
+        document.getElementById('email-td').innerHTML = 'None';
     } else {
+        var t = ''
         for (var i=0; i < orgData['emails'].length; i++){
-            html += orgData['emails'][i] + '</br>';
+            t += orgData['emails'][i] + '</br>';
         }
+        document.getElementById('email-td').innerHTML = t;
     }
 
-    html += '</td></tr><tr class="modal-row"><td>Address:</td><td>';
-
+    // address
     if (orgData.address == ''){
-        html += 'None';
+        document.getElementById('addr-td').innerHTML = 'None';
     } else {
-        html += orgData.address;
+        document.getElementById('addr-td').innerHTML = orgData['address'] + '</br>';
     }
 
-    html += '</td></tr></table><a id="more-info" href="/organization/' + orgData.id + '">More Info</a>';
+    document.getElementById('more-info').href = '/organization/' + orgData['id'];
 
-
-    $('#modal-body').html(html);
     m.modal('show');
 }
 
