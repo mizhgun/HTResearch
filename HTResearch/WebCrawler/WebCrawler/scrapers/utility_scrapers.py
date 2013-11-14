@@ -389,6 +389,19 @@ class OrgFacebookScraper(object):
         return None
 
 
+class OrgTwitterScraper(object):
+
+    def __init__(self):
+        self.tw_link_ext = SgmlLinkExtractor(allow_domains=['www.twitter.com', 'twitter.com'], unique=True)
+
+    def parse(self, response):
+        tw_links = self.tw_link_ext.extract_links(response)
+        if len(tw_links) > 0:
+            # just grab first, we only expect one and I can't think of a way to determine between multiple
+            return tw_links[0].url
+        return None
+
+
 class OrgNameScraper(object):
 
     def __init__(self):
