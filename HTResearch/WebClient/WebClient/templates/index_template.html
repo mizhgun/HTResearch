@@ -8,13 +8,14 @@
     <link href="static/css/index.css" rel="stylesheet">
     <script src="static/scripts/index.js" type="text/javascript"></script>
     <script src="static/scripts/welcome.js" type="text/javascript"></script>
-    {% include "org_modal.html" %}
-        {% include "org_bs_modal.html" %}
+
 {% endblock %}
     
 
 {% block content %}
     <div id="wrapper">
+        {% include "org_modal.html" %}
+        {% include "org_bs_modal.html" %}
         <div id="login-signup-div" class="jumbotron">
 
             <form id="custom-search-form" class="form-search form-horizontal pull-right">
