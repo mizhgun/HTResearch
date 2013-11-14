@@ -163,40 +163,10 @@ function plotOrganization(results, status) {
 
 function bootstrapModal(m){
     // Do a bootstrap modal
-    $('#modal-header').text(orgData.name);
+    var html = $("#bs-modal-template").tmpl(orgData);
 
-    var html = '<table class="table-condensed"><tr class="modal-row"><td>Tel:</td><td>';
+    $('#bs-modal').html(html);
 
-    if (orgData['phone_numbers'].length == 0){
-        html += 'None';
-    } else {
-        for (var i=0; i < orgData['phone_numbers'].length; i++){
-            html += orgData['phone_numbers'][i] + '</br>'
-        }
-    }
-
-    html += '</td></tr><tr class="modal-row"><td>Email:</td><td>';
-
-    if (orgData['emails'].length == 0){
-        html += 'None'
-    } else {
-        for (var i=0; i < orgData['emails'].length; i++){
-            html += orgData['emails'][i] + '</br>';
-        }
-    }
-
-    html += '</td></tr><tr class="modal-row"><td>Address:</td><td>';
-
-    if (orgData.address == ''){
-        html += 'None';
-    } else {
-        html += orgData.address;
-    }
-
-    html += '</td></tr></table><a id="more-info" href="/organization/' + orgData.id + '">More Info</a>';
-
-
-    $('#modal-body').html(html);
     m.modal('show');
 }
 
