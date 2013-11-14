@@ -10,22 +10,27 @@ from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
 from scrapy.selector import XPathSelectorList
 from bson.binary import Binary
+from springpython.context import ApplicationContext
 
-from ..items import *
+from HTResearch.WebCrawler.WebCrawler.items import *
 from HTResearch.DataAccess.dao import *
 from HTResearch.Utilities.converter import *
-from link_scraper import LinkScraper
+from HTResearch.Utilities.context import DAOContext
+from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import LinkScraper
 from HTResearch.DataModel.enums import OrgTypesEnum
+from dao import MockURLMetadataDAO
 
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
 
 
-class ContactNameScraper(object):
+class MockContactNameScraper:
     # TODO: Find list of Indian names and add them to names.txt
     def __init__(self):
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt')) as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               '../../WebCrawler/WebCrawler/Resources/names.txt')) as f:
+        #with open('../../../WebCrawler/WebCrawler/Resources/names.txt') as f:
             self._names = f.read().splitlines()
         self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr']
         self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
@@ -183,24 +188,24 @@ class ContactNameScraper(object):
         return tag_list
 
 
-class ContactPositionScraper(object):
+class MockContactPositionScraper:
 
     def __init__(self):
         self.position = ""
 
 
-class ContactPublicationsScraper(object):
+class MockContactPublicationsScraper:
 
     def __init__(self):
         self.publications = []
 
 
-class EmailScraper(object):
+class MockEmailScraper(object):
     def __init__(self):
         self.email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
-                                      r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
-                                      r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
-                                      r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
+                                r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
+                                r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
+                                r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
         self.c_data = re.compile(r'(.*?)<!\[CDATA(.*?)]]>(.*?)', re.DOTALL)
 
     def parse(self, response):
@@ -232,13 +237,48 @@ class EmailScraper(object):
         return emails
 
 
-class KeywordScraper(object):
+class MockIndianPhoneNumberScraper(object):
+    def __init__(self):
+        self._india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?'
+                                              r'[-./\s]?[0-9]{5}[0-9]?\b|\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?'
+                                              r'[0-9]?[0-9]?[-./\s]?[0-9]{4}[-./\s]?[0-9]{4}\b')
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+
+        # body will get phone numbers that are just text in the body
+        body = hxs.select('//body').re(self._india_format_regex)
+
+        phone_nums = body
+
+        # Remove unicode indicators
+        for i in range(len(phone_nums)):
+            phone_nums[i] = phone_nums[i].encode('ascii', 'ignore')
+
+        # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
+        phone_nums = list(set(phone_nums))
+
+        # Make the list an item
+        phone_nums_list = []
+        for num in phone_nums:
+            num = re.sub("\D", "", num)
+            # removing ScrapedPhoneNumber() item in favor of returning exactly what DB expects
+            # Paul Poulsen
+            #number = ScrapedPhoneNumber()
+            #number["phone_number"] = num
+            phone_nums_list.append(num)
+
+        return phone_nums_list
+
+
+class MockKeywordScraper(object):
     NUM_KEYWORDS = 50
     stopwords = []
 
     def __init__(self):
         #Load words to be ignored
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/stopwords.txt')) as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               '../../WebCrawler/WebCrawler/Resources/stopwords.txt')) as f:
             self.stopwords = f.read().splitlines()
 
     def format_extracted_text(self, list):
@@ -287,43 +327,10 @@ class KeywordScraper(object):
         return most_freq_keywords
 
 
-class IndianPhoneNumberScraper(object):
+class MockOrgAddressScraper(object):
     def __init__(self):
-        self._india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?'
-                                              r'[-./\s]?[0-9]{5}[0-9]?\b|\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?'
-                                              r'[0-9]?[0-9]?[-./\s]?[0-9]{4}[-./\s]?[0-9]{4}\b')
-
-    def parse(self, response):
-        hxs = HtmlXPathSelector(response)
-
-        # body will get phone numbers that are just text in the body
-        body = hxs.select('//body').re(self._india_format_regex)
-
-        phone_nums = body
-
-        # Remove unicode indicators
-        for i in range(len(phone_nums)):
-            phone_nums[i] = phone_nums[i].encode('ascii', 'ignore')
-
-        # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
-        phone_nums = list(set(phone_nums))
-
-        # Make the list an item
-        phone_nums_list = []
-        for num in phone_nums:
-            num = re.sub("\D", "", num)
-            # removing ScrapedPhoneNumber() item in favor of returning exactly what DB expects
-            # Paul Poulsen
-            #number = ScrapedPhoneNumber()
-            #number["phone_number"] = num
-            phone_nums_list.append(num)
-
-        return phone_nums_list
-
-
-class OrgAddressScraper(object):
-    def __init__(self):
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/cities.txt')) as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               '../../WebCrawler/WebCrawler/Resources/cities.txt')) as f:
             self._cities = f.read().splitlines()
 
     def parse(self, response):
@@ -366,7 +373,7 @@ class OrgAddressScraper(object):
         return address_list[0]['city'] + " " + address_list[0]['zip_code'] if len(address_list) > 0 else ''
 
 
-class OrgContactsScraper(object):
+class MockOrgContactsScraper(object):
 
     def __init__(self):
         pass
@@ -375,12 +382,13 @@ class OrgContactsScraper(object):
         return [] # not yet implemented
 
 
-class OrgNameScraper(object):
+class MockOrgNameScraper(object):
 
     def __init__(self):
         self._split_punctuation = re.compile(r"[ \w']+")
         #Load words to be ignored
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/stopwords.txt')) as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               '../../WebCrawler/WebCrawler/Resources/stopwords.txt')) as f:
             self._stopwords = f.read().splitlines()
 
     def parse(self, response):
@@ -426,7 +434,7 @@ class OrgNameScraper(object):
         return org_name['name']
 
 
-class OrgPartnersScraper(object):
+class MockOrgPartnersScraper(object):
 
     def __init__(self):
         self._link_scraper = LinkScraper()
@@ -508,19 +516,19 @@ class OrgPartnersScraper(object):
                 link_url = urlparse(urljoin(page_url.geturl(), href))
                 if link_url.netloc not in self._netloc_ignore + [page_url.netloc]:
                     partner = ScrapedOrganization()
-                    partner['organization_url'] = '%s/' % link_url.netloc
+                    partner['organization_url'] = '%s://%s/' % (link_url.scheme, link_url.netloc)
                     partners.append(partner)
 
         return partners
 
 
-class OrgTypeScraper(object):
+class MockOrgTypeScraper(object):
 
     def __init__(self):
         # Stemmer for stemming terms
         self._stemmer = PorterStemmer()
         # Scraper to get common keywords from response
-        self._keyword_scraper = KeywordScraper()
+        self._keyword_scraper = MockKeywordScraper()
         # Maximum number of types
         self._max_types = 3
         # Obvious religious keywords. These must be lowercase
@@ -640,7 +648,7 @@ class OrgTypeScraper(object):
         return types or [OrgTypesEnum.UNKNOWN]
 
 
-class OrgUrlScraper(object):
+class MockOrgUrlScraper(object):
 
     def __init__(self):
         pass
@@ -653,42 +661,45 @@ class OrgUrlScraper(object):
         return urls
 
 
-class PublicationAuthorsScraper(object):
+class MockPublicationAuthorsScraper:
 
     def __init__(self):
         authors = []
 
 
-class PublicationDateScraper(object):
+class MockPublicationDateScraper:
 
     def __init__(self):
         partners = []
 
 
-class PublicationPublisherScraper(object):
+class MockPublicationPublisherScraper:
 
     def __init__(self):
         publisher = []
 
 
-class PublicationTitleScraper(object):
+class MockPublicationTitleScraper:
 
     def __init__(self):
         titles = []
 
 
-class PublicationTypeScraper(object):
+class MockPublicationTypeScraper:
 
     def __init__(self):
         type = []
 
 
-class UrlMetadataScraper(object):
+class MockUrlMetadataScraper(object):
 
     def __init__(self):
-        self.dao = URLMetadataDAO
+        pass
 
     def parse(self, response):
+        # Initialize the DAO context
+        dao = MockURLMetadataDAO()
+
         # Initialize item and set url
         metadata = ScrapedUrl()
         metadata['url'] = response.url
@@ -707,7 +718,7 @@ class UrlMetadataScraper(object):
         metadata['update_freq'] = 0
 
         # Compare checksums and update update_freq using the existing URL
-        exist_url_dto = self.dao().find(url=response.url)
+        exist_url_dto = dao.find(url=response.url)
         if exist_url_dto is not None:
             exist_url = DTOConverter.from_dto(URLMetadataDTO, exist_url_dto)
             if exist_url.checksum is not None:
@@ -736,7 +747,7 @@ class UrlMetadataScraper(object):
         return metadata
 
 
-class USPhoneNumberScraper(object):
+class MockUSPhoneNumberScraper(object):
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
