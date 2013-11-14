@@ -7,7 +7,7 @@ from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.DataModel.model import URLMetadata
 
 
-class Contact:
+class ContactScraper():
 
     def __init__(self):
         contact = None
@@ -15,6 +15,17 @@ class Contact:
 
 class OrganizationScraper():
     def __init__(self):
+        self._scrapers = {
+            'name': [OrgNameScraper],
+            'address': [OrgAddressScraper],
+            'types': [OrgTypeScraper],
+            'phone_numbers': [USPhoneNumberScraper, IndianPhoneNumberScraper],
+            'emails': [EmailScraper],
+            'contacts': [OrgContactsScraper],
+            'organization_url': [OrgUrlScraper],
+            'partners': [OrgPartnersScraper],
+        }
+        self._multiple = ['types', 'phone_numbers', 'emails', 'contacts', 'partners', ]
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',
                                 'human trafficking', 'brothel', 'child trafficking', 'anti trafficking',
                                 'social justice']
@@ -22,19 +33,6 @@ class OrganizationScraper():
         self.ctx = ApplicationContext(URLFrontierContext())
         self.org_dao = OrganizationDAO
         self.url_frontier = self.ctx.get_object("URLFrontier")
-
-    _scrapers = {
-        'name': [OrgNameScraper()],
-        'address': [OrgAddressScraper()],
-        'types': [OrgTypeScraper()],
-        'phone_numbers': [USPhoneNumberScraper(), IndianPhoneNumberScraper()],
-        'emails': [EmailScraper()],
-        'contacts': [OrgContactsScraper()],
-        'organization_url': [OrgUrlScraper()],
-        'partners': [OrgPartnersScraper()],
-    }
-
-    _multiple = ['types', 'phone_numbers', 'emails', 'contacts', 'partners', ]
 
     def parse(self, response):
         organization = None
@@ -48,10 +46,10 @@ class OrganizationScraper():
                     # Get multiple field (e.g. phone_number)
                     organization[field] = []
                     for scraper in self._scrapers[field]:
-                        organization[field] += scraper.parse(response)
+                        organization[field] += scraper().parse(response)
                 else:
                     # Get single field (e.g. name)
-                    results = self._scrapers[field][0].parse(response)
+                    results = (self._scrapers[field][0])().parse(response)
                     if results:
                         organization[field] = results[0] if isinstance(results, type([])) else results
                     else:
@@ -88,7 +86,7 @@ class OrganizationScraper():
         return False
 
 
-class Publication:
+class PublicationScraper():
 
     def __init__(self):
         publication = None
