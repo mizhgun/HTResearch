@@ -4,12 +4,11 @@ from django.template import Context
 from HTResearch.Utilities.context import DAOContext
 from springpython.context import ApplicationContext
 from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
-from HTResearch.DataAccess.dao import *
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from mongoengine.fields import StringField, URLField
 from HTResearch.Utilities.encoder import MongoJSONEncoder
-from HTResearch.Utilities.context import *
+from HTResearch.Utilities.context import DAOContext
 
 
 def index(request):
