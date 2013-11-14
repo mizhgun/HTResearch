@@ -315,6 +315,10 @@ class ScraperTests(unittest.TestCase):
     def test_org_fb_scraper(self):
         test_files = [
             "httpbombayteenchallengeorg",
+            "httpwwwprajwalaindiacomhomehtml",
+            "httpwwwhalftheskymovementorg",
+            "httpapneaaporg",
+
         ]
 
         org_fb_scraper = OrgFacebookScraper()
@@ -331,6 +335,9 @@ class ScraperTests(unittest.TestCase):
 
         assert_list = [
             "http://www.facebook.com/BombayTeenChallenge",
+            "https://www.facebook.com/sunitha.krishnan.33?ref=ts",
+            "https://www.facebook.com/HalftheGame",
+            "http://www.facebook.com/apneaap",
         ]
 
         for test in assert_list:
