@@ -8,6 +8,7 @@ from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from mongoengine.fields import StringField, URLField
 from HTResearch.Utilities.encoder import MongoJSONEncoder
+from HTResearch.DataAccess.dto import *
 
 
 def index(request):
