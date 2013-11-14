@@ -312,6 +312,30 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test, links, "URL " + str(test) + " was not found")
 
+    def test_org_fb_scraper(self):
+        test_files = [
+            "httpbombayteenchallengeorg",
+        ]
+
+        org_fb_scraper = OrgFacebookScraper()
+        facebook_links = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = org_fb_scraper.parse(response)
+                if isinstance(ret, list):
+                    facebook_links = facebook_links + ret
+                else:
+                    facebook_links.append(ret)
+
+        assert_list = [
+            "http://www.facebook.com/BombayTeenChallenge",
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, facebook_links, "Facebook link (" + test + ") not found")
+
     def test_org_name_scraper(self):
         test_files = [
             "httpbombayteenchallengeorg",
