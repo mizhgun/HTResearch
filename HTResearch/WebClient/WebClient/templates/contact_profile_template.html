@@ -1,0 +1,51 @@
+{% extends "global.html" %}
+
+{% block imports%}
+{%  endblock %}
+
+{% block content %}
+    <div id="wrapper">
+        <div class="row" style="padding-top: 5px;">
+            <center><h1>{{contact.first_name}} {{contact.last_name}}</h1></center>
+            <center><h3>{{contact.position}}</h3></center>
+        </div>
+
+        <div class="row">
+            <div class="col-md-1"></div>
+             <hr class="col-md-10"></hr>
+            <div class="col-md-1"></div>
+        </div>
+
+        <div class="row">
+            <div id="info-wrap" class="container well">
+                <center class="lead">
+                    <h2>Contact Information</h2>
+
+                    <p>Primary Phone Number: 
+                        {{ contact.primary_phone}}
+                    </p>
+
+                    <p>Secondary Phone Number: 
+                        {{ contact.secondary_phone}}
+                    </p>
+
+                    <p>Email Address: 
+                        {{ contact.email}}
+                    </p>
+
+                    <p>Organizations:
+                        {% for org in contact.organizations %} 
+                            {{ org.name }}
+                        {% endfor %}
+                    </p>
+
+                    <p>Publications:
+                        {% for pub in contact.publications %} 
+                            {{ pub.title }}
+                        {% endfor %}
+                    </p>
+                </center>
+            </div>
+        </div>
+    </div>
+{% endblock %}
