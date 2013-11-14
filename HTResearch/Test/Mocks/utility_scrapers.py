@@ -698,7 +698,7 @@ class MockUrlMetadataScraper(object):
 
     def parse(self, response):
         # Initialize the DAO context
-        dao_ctx = MockURLMetadataDAO
+        dao = MockURLMetadataDAO()
 
         # Initialize item and set url
         metadata = ScrapedUrl()
@@ -718,7 +718,6 @@ class MockUrlMetadataScraper(object):
         metadata['update_freq'] = 0
 
         # Compare checksums and update update_freq using the existing URL
-        dao = dao_ctx
         exist_url_dto = dao.find(url=response.url)
         if exist_url_dto is not None:
             exist_url = DTOConverter.from_dto(URLMetadataDTO, exist_url_dto)
