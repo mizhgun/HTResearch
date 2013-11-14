@@ -2,9 +2,9 @@ from ..items import *
 from utility_scrapers import *
 import string
 import re
-from HTResearch.Utilities.context import URLFrontierContext
 from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.DataModel.model import URLMetadata
+from HTResearch.URLFrontier.urlfrontier import URLFrontier
 
 
 class ContactScraper():
@@ -30,9 +30,8 @@ class OrganizationScraper():
                                 'human trafficking', 'brothel', 'child trafficking', 'anti trafficking',
                                 'social justice']
         self._punctuation = re.compile('[%s]' % re.escape(string.punctuation))
-        self.ctx = ApplicationContext(URLFrontierContext())
         self.org_dao = OrganizationDAO
-        self.url_frontier = self.ctx.get_object("URLFrontier")
+        self.url_frontier = URLFrontier()
 
     def parse(self, response):
         organization = None
@@ -72,6 +71,7 @@ class OrganizationScraper():
             self.url_frontier.put_url(meta)
             return False
         else:
+            # this is homepage, scrape for keywords
             hxs = HtmlXPathSelector(response)
             site_text = hxs.select('//html//text()').extract()
             site_text = [element.strip() for element in site_text if element.strip() != '']
