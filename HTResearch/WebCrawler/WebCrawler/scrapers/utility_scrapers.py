@@ -9,6 +9,7 @@ import hashlib
 from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
 from scrapy.selector import XPathSelectorList
+from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from bson.binary import Binary
 
 from ..items import *
@@ -373,6 +374,19 @@ class OrgContactsScraper(object):
 
     def parse(self, response):
         return [] # not yet implemented
+
+
+class OrgFacebookScraper(object):
+
+    def __init__(self):
+        self.fb_link_ext = SgmlLinkExtractor(allow_domains=['www.facebook.com', 'facebook.com'], unique=True)
+
+    def parse(self, response):
+        fb_links = self.fb_link_ext.extract_links(response)
+        if len(fb_links) > 0:
+            # just grab first, we only expect one and I can't think of a way to determine between multiple
+            return fb_links[0].url
+        return None
 
 
 class OrgNameScraper(object):
