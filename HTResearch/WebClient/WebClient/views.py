@@ -9,7 +9,6 @@ from django.shortcuts import render_to_response
 from mongoengine.fields import StringField, URLField
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 
-
 def index(request):
     args = {}
     args.update(csrf(request))
