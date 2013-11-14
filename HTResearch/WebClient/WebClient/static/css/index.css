@@ -220,6 +220,11 @@ body {
     vertical-align: top;
 }
 
+#map-modal {
+    height: 200px;
+    width: 425px;
+}
+
 ul {
     list-style-position: inside;
 }
