@@ -1,6 +1,10 @@
 import unittest
 import pickle
 import os.path
+
+from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import *
+from HTResearch.Test.Mocks.utility_scrapers import *
+from HTResearch.Utilities.context import DocumentScraperContext, UrlMetadataScraperContext
 from springpython.context import ApplicationContext
 from springpython.config import Object
 
@@ -12,8 +16,51 @@ from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Test.Mocks.connection import MockDBConnection
 
-
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
+
+
+class TestableDocumentScraperContext(DocumentScraperContext):
+    @Object()
+    def RegisteredOrgNameScraper(self):
+        return MockOrgNameScraper
+
+    @Object()
+    def RegisteredOrgAddressScraper(self):
+        return MockOrgAddressScraper
+
+    @Object()
+    def RegisteredOrgTypeScraper(self):
+        return MockOrgTypeScraper
+
+    @Object()
+    def RegisteredIndianPhoneNumberScraper(self):
+        return MockIndianPhoneNumberScraper
+
+    @Object()
+    def RegisteredUSPhoneNumberScraper(self):
+        return MockUSPhoneNumberScraper
+
+    @Object()
+    def RegisteredEmailScraper(self):
+        return MockEmailScraper
+
+    @Object()
+    def RegisteredOrgContactsScraper(self):
+        return MockOrgContactsScraper
+
+    @Object()
+    def RegisteredOrgUrlScraper(self):
+        return MockOrgUrlScraper
+
+    @Object()
+    def RegisteredOrgPartnersScraper(self):
+        return MockOrgPartnersScraper
+
+
+class TestableUrlMetadataScraperContext(UrlMetadataScraperContext):
+    @Object()
+    def RegisteredURLMetadataDAO(self):
+        return MockURLMetadataDAO
 
 
 class TestableDAOContext(DAOContext):
@@ -167,7 +214,8 @@ class ScraperTests(unittest.TestCase):
                        "covdnhrc@nic.in",
                        "anilpradhanshilong@gmail.com",
                        "snarayan1946@gmail.com",
-                       "tvarghese@bombayteenchallenge.org"]
+                       "tvarghese@bombayteenchallenge.org",
+                       "kkdevaraj@bombayteenchallenge.org"]
 
         for test in assert_list:
             self.assertIn(test, emails, 'Email {0} not found'.format(str(test)))
@@ -363,11 +411,13 @@ class ScraperTests(unittest.TestCase):
             self.assertNotIn(test, partner_urls, 'Invalid URL (not a partner org): %s' % test)
 
     def test_organization_scraper(self):
+        ctx = ApplicationContext(TestableDocumentScraperContext())
+
         test_files = [
             "httpbombayteenchallengeorg",
         ]
 
-        organization_scraper = OrganizationScraper()
+        organization_scraper = ctx.get_object("OrganizationScraper")
         orgs = []
 
         for input_file in test_files:
@@ -409,6 +459,8 @@ class ScraperTests(unittest.TestCase):
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
 
     def test_urlmetadata_scraper(self):
+        ctx = ApplicationContext(TestableUrlMetadataScraperContext())
+
         self.set_up_url_metadata_scraper_test()
 
         test_files = [
@@ -417,7 +469,7 @@ class ScraperTests(unittest.TestCase):
             "httpwwwhalftheskymovementorgpartners",
         ]
 
-        url_mds = UrlMetadataScraper()
+        url_mds = ctx.get_object("UrlMetadataScraper")
         scraped_urls = []
 
         for input_file in test_files:
@@ -459,7 +511,6 @@ class ScraperTests(unittest.TestCase):
 
         for test in assert_list:
             self.assertIn(test, scraped_urls, 'Invalid URL Metadata Didn\'t Find: %s' % str(test))
-
 
 
 if __name__ == '__main__':
