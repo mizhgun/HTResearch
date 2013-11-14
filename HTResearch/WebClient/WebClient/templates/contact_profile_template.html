@@ -7,7 +7,9 @@
     <div id="wrapper">
         <div class="row" style="padding-top: 5px;">
             <center><h1>{{contact.first_name}} {{contact.last_name}}</h1></center>
-            <center><h3>{{contact.position}}</h3></center>
+            {% if contact.position %}
+                <center><h3>{{contact.position}}</h3></center>
+            {% endif %}
         </div>
 
         <div class="row">
@@ -34,8 +36,8 @@
                     </p>
 
                     <p>Organizations:
-                        {% for org in contact.organizations %} 
-                            {{ org.name }}
+                        {% for org, url in contact.organizations %} 
+                            <a href="{{ url }}">{{ org.name }}</a>
                         {% endfor %}
                     </p>
 
