@@ -80,6 +80,7 @@ class DocumentScraperContext(PythonConfig):
             'contacts': [self.RegisteredOrgContactsScraper()],
             'organization_url': [self.RegisteredOrgUrlScraper()],
             'partners': [self.RegisteredOrgPartnersScraper()],
+            'facebook': [self.RegisteredFacebookScraper()],
         }
         return org
 
@@ -127,6 +128,10 @@ class DocumentScraperContext(PythonConfig):
     @Object()
     def RegisteredUSPhoneNumberScraper(self):
         return USPhoneNumberScraper
+
+    @Object()
+    def RegisteredFacebookScraper(self):
+        return OrgFacebookScraper
 
 
 class UrlMetadataScraperContext(PythonConfig):
