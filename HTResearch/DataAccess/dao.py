@@ -2,7 +2,7 @@ from mongoengine import Q
 from dto import *
 from connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
-from mongoengine.fields import StringField, URLField
+from mongoengine.fields import StringField, URLField, EmailField
 
 
 class DAO(object):
@@ -55,7 +55,7 @@ class DAO(object):
         with self.conn():
             # Find all string fields
             fields_dict = self.dto._fields
-            string_types = (StringField, URLField)
+            string_types = (StringField, URLField, EmailField)
             search_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) in string_types]
 
             # Search for each term in all string fields

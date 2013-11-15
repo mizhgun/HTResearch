@@ -154,29 +154,15 @@ body {
     filter:alpha(opacity=100); /* For IE8 and earlier */
 }
 
-#organization-list-header {
-    font-size: x-large;
-}
-
-#organization-search-list {
-    font-size: small;
-}
-
-#contact-list-header {
-    font-size: x-large;
-}
-
-#contact-search-list {
-    font-size: small;
-}
-
+#organization-list-header,
+#contact-list-header,
 #publication-list-header {
-
     font-size: x-large;
 }
 
+#organization-search-list,
+#contact-search-list,
 #publication-search-list {
-
     font-size: small;
 }
 
@@ -229,14 +215,11 @@ ul {
     list-style-position: inside;
 }
 
-#organization-results {
+#organization-results,
+#contact-results {
     max-height: 150px;
     overflow: auto;
     margin-bottom: 20px;
-}
-
-#contact-results {
-    margin-top: 20px;
 }
 
 #publication-results {

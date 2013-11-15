@@ -4,7 +4,8 @@ var initialLatLng = new google.maps.LatLng(21, 78);
 var searchedLatLng;
 var geocoder = new google.maps.Geocoder();
 var address;
-var orgData;
+var orgData = null;
+var contactData = null;
 var infowindow = null;
 var marker = null;
 
@@ -66,9 +67,10 @@ function initialize() {
 function showSearchResults() {
     var searchText = $('#search-box').val();
     if(searchText) {
+        // Search organizations
         $.ajax({
             type: 'POST',
-            url: '/search/',
+            url: '/search_organizations/',
             data: {
                 'search_text': $('#search-box').val(),
                 'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
@@ -83,7 +85,7 @@ function showSearchResults() {
                 var $modal = $('.modal').modal({
                     show: false
                 });
-                $('a.org_link').click(function(e){
+                $('.org_link').click(function(e){
                     orgData = $(this).data();
                     if (orgData.address) {
                         // Get the lat, long values of the address
@@ -103,6 +105,34 @@ function showSearchResults() {
             },
             dataType: 'html'
         });
+
+        // Search contacts
+        $.ajax({
+            type: 'POST',
+            url: '/search_contacts/',
+            data: {
+                'search_text': $('#search-box').val(),
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function (data) {
+                console.log(data);
+                $('#contact-search-list').html(data);
+
+                $('#contact-results').css({
+                    height: $('#contact-search-list').height()
+                });
+
+                var $modal = $('.modal').modal({
+                    show: false
+                });
+                $('.contact_link').click(function(e){
+                    contactData = $(this).data();
+                    // TODO: display contact modal
+                });
+            },
+            dataType: 'html'
+        });
+
         if(!searchResultsVisible) {
             $('#search-results-div').toggle("slide", {
                 direction: "up",
