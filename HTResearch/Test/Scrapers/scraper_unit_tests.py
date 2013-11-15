@@ -341,6 +341,8 @@ class ScraperTests(unittest.TestCase):
                 else:
                     facebook_links.append(ret)
 
+        print facebook_links
+
         assert_list = [
             "http://www.facebook.com/BombayTeenChallenge",
             "https://www.facebook.com/sunitha.krishnan.33?ref=ts",
@@ -374,7 +376,7 @@ class ScraperTests(unittest.TestCase):
         assert_list = [
             'https://twitter.com/bombaytc',
             None,
-            'https://twitter.com/',
+            'https://twitter.com/#!/half',
             'http://www.twitter.com/apneaap'
         ]
 
