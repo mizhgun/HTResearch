@@ -27,8 +27,8 @@ def index(request):
 
 def search(request):
     if request.method == 'POST':
-        logger.info('Search request made on index')
         search_text = request.POST['search_text']
+        logger.info('Search request made with search_text=%s' % search_text)
     else:
         search_text = ''
 

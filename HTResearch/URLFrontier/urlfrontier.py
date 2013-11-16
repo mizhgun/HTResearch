@@ -10,6 +10,10 @@ from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.types import Singleton
+from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+
+
+logger = LoggingUtility().get_logger(LoggingSection.FRONTIER, __name__)
 
 
 class CacheJobs():
@@ -65,6 +69,7 @@ def _monitor_cache(dao, max_size, cache, job_queue, job_cond, fill_cond, empty_c
                     continue
 
         if next_job == CacheJobs.Fill:
+            logger.info('Filling the cache')
             with fill_cond:
                 urls = dao().findmany_by_domains(max_size - cache.qsize(),
                                                    req_doms, blk_doms, srt_list)
@@ -77,6 +82,7 @@ def _monitor_cache(dao, max_size, cache, job_queue, job_cond, fill_cond, empty_c
                 fill_cond.notify_all()
 
         elif next_job == CacheJobs.Empty:
+            logger.info('Emptying the cache')
             with empty_cond:
                 while True:
                     try:
@@ -130,6 +136,7 @@ class URLFrontier:
                                                       rules.sort_list))
                 self._proc_counts[cs] = 0
             if not self._cache_procs[cs].is_alive():
+                logger.info('Starting the cache process for rule=%s' % cs)
                 self._cache_procs[cs].start()
             self._proc_counts[cs] += 1
 
@@ -142,6 +149,7 @@ class URLFrontier:
             self._proc_counts[cs] -= 1
             if self._proc_counts[cs] <= 0:
                 if self._cache_procs[cs].is_alive():
+                    logger.info('Stopping the cache process for rule %s' % cs)
                     self._cache_procs[cs].terminate()
                 del self._cache_procs[cs]
                 del self._url_queues[cs]
