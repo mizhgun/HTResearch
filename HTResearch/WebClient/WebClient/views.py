@@ -114,11 +114,9 @@ def unimplemented(request):
 
 # Encodes a DTO's non-string fields to JSON
 def encode_dto(dto):
-    # Make each organization non-string attribute into valid JSON
     dto_type = type(dto)
     fields_dict = dto_type._fields
     string_types = (StringField, URLField, EmailField)
     json_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) not in string_types]
-    # Find all non-string fields
     for field in json_fields:
         dto[field] = MongoJSONEncoder().encode(dto[field])
