@@ -276,6 +276,7 @@ class ScraperTests(unittest.TestCase):
         test_files = [
             "httpwwwstoptraffickingnet",
             "httpnewsunledunewsroomsunltoday",
+            "httpespngocomespnradiodallasplay",
         ]
 
         link_scraper = LinkScraper()

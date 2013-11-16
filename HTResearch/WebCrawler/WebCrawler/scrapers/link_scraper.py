@@ -1,3 +1,4 @@
+from sgmllib import SGMLParseError
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from ..items import ScrapedUrl
 from HTResearch.Utilities.url_tools import UrlUtility
@@ -18,7 +19,11 @@ class LinkScraper:
             self._link_extractor = SgmlLinkExtractor()
         
         # use scrapy SgmlLinkExtractor to extract links
-        links = self._link_extractor.extract_links(response)
+        try:
+            links = self._link_extractor.extract_links(response)
+        except SGMLParseError:
+            # Page was poorly formatted, oh well
+            return []
 
         # add these links to our Url item
         urls = list()
