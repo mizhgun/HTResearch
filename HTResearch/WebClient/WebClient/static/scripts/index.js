@@ -65,9 +65,10 @@ function initialize() {
 }
 
 function showSearchResults() {
-    var searchText = $('#search-box').val();
+    var searchText = $('#search-box').val().trim();
     if(searchText) {
         // Search organizations
+        startAjaxSearch();
         $.ajax({
             type: 'POST',
             url: '/search_organizations/',
@@ -75,38 +76,42 @@ function showSearchResults() {
                 'search_text': $('#search-box').val(),
                 'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
             },
-            success: function (data) {
-                $('#organization-search-list').html(data);
-
-                $('#organization-results').css({
-                    height: $('#organization-search-list').height()
-                });
-
-                var $modal = $('.modal').modal({
-                    show: false
-                });
-                $('.org_link').click(function(e){
-                    orgData = $(this).data();
-                    if (orgData.address) {
-                        // Get the lat, long values of the address
-                        geocoder.geocode({'address': orgData.address}, function(results, status){
-                            if(results[0]){
-                                lat = results[0].geometry.location.lat();
-                                lng = results[0].geometry.location.lng();
-                            }
-                            searchedLatLng = new google.maps.LatLng(lat, lng);
-                        });
-                        geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
-                    }
-                    else{
-                        bootstrapModal($modal);
-                    }
-                });
-            },
             dataType: 'html'
+        }).done(function (data) {
+            $('#organization-search-list').html(data);
+
+            $('#organization-results').css({
+                height: $('#organization-search-list').height()
+            });
+
+            var $modal = $('.modal').modal({
+                show: false
+            });
+            $('.org_link').click(function(e){
+                orgData = $(this).data();
+                if (orgData.address) {
+                    // Get the lat, long values of the address
+                    geocoder.geocode({'address': orgData.address}, function(results, status){
+                        if(results[0]){
+                            lat = results[0].geometry.location.lat();
+                            lng = results[0].geometry.location.lng();
+                        }
+                        searchedLatLng = new google.maps.LatLng(lat, lng);
+                    });
+                    geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
+                }
+                else{
+                    bootstrapModal($modal);
+                }
+            });
+        }).fail(function () {
+            alert('THE (organization) SEARCH FAILED! BWAAHAHAHAHAHAAHAHAAHHAAAA TRAWLZ');
+        }).always(function () {
+            endAjaxSearch();
         });
 
         // Search contacts
+        startAjaxSearch();
         $.ajax({
             type: 'POST',
             url: '/search_contacts/',
@@ -114,23 +119,25 @@ function showSearchResults() {
                 'search_text': $('#search-box').val(),
                 'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
             },
-            success: function (data) {
-                console.log(data);
-                $('#contact-search-list').html(data);
-
-                $('#contact-results').css({
-                    height: $('#contact-search-list').height()
-                });
-
-                var $modal = $('.modal').modal({
-                    show: false
-                });
-                $('.contact_link').click(function(e){
-                    contactData = $(this).data();
-                    // TODO: display contact modal
-                });
-            },
             dataType: 'html'
+        }).done(function (data) {
+            $('#contact-search-list').html(data);
+
+            $('#contact-results').css({
+                height: $('#contact-search-list').height()
+            });
+
+            var $modal = $('.modal').modal({
+                show: false
+            });
+            $('.contact_link').click(function(e){
+                contactData = $(this).data();
+                // TODO: display contact modal
+            });
+        }).fail(function () {
+            alert('THE (contact) SEARCH FAILED! BWAAHAHAHAHAHAAHAHAAHHAAAA TRAWLZ');
+        }).always(function () {
+            endAjaxSearch();
         });
 
         if(!searchResultsVisible) {
@@ -153,6 +160,19 @@ function showSearchResults() {
 	}
 }
 
+var searchesPending = 0;
+function startAjaxSearch() {
+    searchesPending++;
+    if (searchesPending == 1) {
+        $('#search-ajax-loader').removeClass('hidden');
+    }
+}
+function endAjaxSearch() {
+    searchesPending--;
+    if (searchesPending == 0) {
+        $('#search-ajax-loader').addClass('hidden');
+    }
+}
 
 function plotOrganization(results, status) {
 	if (status == google.maps.GeocoderStatus.OK) {
