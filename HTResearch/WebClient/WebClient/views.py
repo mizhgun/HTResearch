@@ -4,13 +4,11 @@ from django.template import Context
 from HTResearch.Utilities.context import DAOContext
 from springpython.context import ApplicationContext
 from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
-from HTResearch.DataAccess.dao import OrganizationDAO
-from HTResearch.DataAccess.dto import OrganizationDTO
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from mongoengine.fields import StringField, URLField
 from HTResearch.Utilities.encoder import MongoJSONEncoder
-import string
+from HTResearch.DataAccess.dto import *
 
 
 def index(request):
@@ -44,13 +42,12 @@ def search(request):
     return render_to_response('search_results.html', params)
 
 
-def organization_profile(request):
-    uri = request.build_absolute_uri()
-    org_dao = OrganizationDAO()
+def organization_profile(request, org_id):
+    ctx = ApplicationContext(DAOContext())
+    org_dao = ctx.get_object('OrganizationDAO')
 
     try:
-        org_lookup_key = string.split(uri, '/')[4]
-        org = org_dao.find(id=org_lookup_key)
+        org = org_dao.find(id=org_id)
     except Exception as e:
         #If we ever hook up logging, this is where we would log the message
         print e.message
@@ -58,6 +55,29 @@ def organization_profile(request):
 
     t = get_template('organization_profile_template.html')
     html = t.render(Context({"organization": org}))
+    return HttpResponse(html)
+
+
+def contact_profile(request, contact_id):
+    ctx = ApplicationContext(DAOContext())
+    contact_dao = ctx.get_object('ContactDAO')
+
+    try:
+        contact = contact_dao.find(id=contact_id)
+    except Exception as e:
+        #If we ever hook up logging, this is where we would log the message
+        print e.message
+        return get_http_404_page(request)
+
+    org_urls = []
+    for org in contact.organizations:
+        org_urls.append("/organization/"+org.id)
+
+    #Generates a 2d list
+    contact.organizations = zip(contact.organizations, org_urls)
+
+    t = get_template('contact_profile_template.html')
+    html = t.render(Context({"contact": contact}))
     return HttpResponse(html)
 
 
