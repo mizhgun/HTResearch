@@ -134,7 +134,7 @@ function plotOrganization(results, status) {
 
     } else {
         var $modal = $('.modal').modal();
-        bootstrapModal($modal, '#bs-org-modal', orgData);
+        createBootstrapModal($modal, '#bs-org-modal-template', orgData);
     }
 }
 
@@ -155,7 +155,7 @@ function setLinkClickEvents(){
         }
         else{
             var $modal = $('.modal').modal();
-            bootstrapModal($modal, '#bs-org-modal',orgData);
+            createBootstrapModal($modal, '#bs-org-modal-template',orgData);
         }
     });
 
@@ -165,16 +165,16 @@ function setLinkClickEvents(){
         var $modal = $('.modal').modal({
             show: false
         });
-        bootstrapModal($modal, '#bs-contact-modal', contactData);
+        createBootstrapModal($modal, '#bs-contact-modal-template', contactData);
     });
 
 }
 
-function bootstrapModal(m, modal_type, data){
+function createBootstrapModal(m, modal_template, data){
     // Do a bootstrap modal
-    var html = $(modal_type+'-template').tmpl(data);
+    var html = $(modal_template).tmpl(data);
 
-    $(modal_type).html(html);
+    $('#bs-modal').html(html);
 
     m.modal('show');
 }
