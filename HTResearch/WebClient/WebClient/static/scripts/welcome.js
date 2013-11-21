@@ -1,13 +1,12 @@
 //This function is called from index.js
 function initiateTutorial() {
-	/*var visited=getCookie("htresearch");
+	var visited=getCookie("htresearch");
 	if(visited)
 		return;
 
    var expire=new Date();
    expire=new Date(expire.getTime()+7776000000);
    document.cookie="htresearch=here; expires="+expire;
-	}*/
 
 	$('#welcome-1').easyModal({
 		closeButtonClass: '.welcome-close-1',
@@ -17,6 +16,7 @@ function initiateTutorial() {
 	$('.welcome-close-1').click(initWelcome2);
 	$('.welcome-close-2').click(initWelcome3);
 	$('.welcome-close-3').click(initWelcome4);
+	$('.welcome-close-4').click(initWelcome5);
 }
 
 function getCookie(name) {
@@ -48,7 +48,7 @@ function initWelcome3() {
 	$('#welcome-3').easyModal({
 		closeButtonClass: '.welcome-close-3',
 		overlayOpacity: 0.2,
-		top: window.innerHeight - 150,
+		top: window.innerHeight - 200,
 	});
 
 	openEasyModal('#welcome-3');
@@ -64,11 +64,18 @@ function initWelcome4() {
 	openEasyModal('#welcome-4');
 }
 
+function initWelcome5() {
+	$('#welcome-5').easyModal({
+		closeButtonClass: '.welcome-close-5',
+	});
+
+	openEasyModal('#welcome-5');
+}
+
 function openEasyModal(selector) {
 	//The modal coordinates aren't properly constructed the first time for some reason
 	//So the modal must be opened, closed, then opened again
 	$(selector).trigger('openModal');
 	$(selector).trigger('closeModal');
 	$(selector).trigger('openModal');
-	
 }
