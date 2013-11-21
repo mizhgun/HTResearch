@@ -1,4 +1,5 @@
 # Library imports
+import os
 import hashlib
 from multiprocessing import Queue, Process, Condition, RLock, Array
 # stdlib imports
@@ -52,13 +53,13 @@ class URLFrontierRules:
 
 def _monitor_cache(dao, max_size, cache, job_queue, job_cond, fill_cond, empty_cond,
                    req_doms, blk_doms, srt_list):
-
     while True:
         try:
-            next_job = job_queue.get(block=False)
+            with job_cond:
+                next_job = job_queue.get(block=False)
         except Empty:
             with job_cond:
-                job_cond.wait()
+                job_cond.wait(1)
                 try:
                     next_job = job_queue.get(block=False)
                 except Empty:
@@ -82,8 +83,8 @@ def _monitor_cache(dao, max_size, cache, job_queue, job_cond, fill_cond, empty_c
                     try:
                         cache.get(block=False)
                     except Empty:
-                        empty_cond.notify()
                         break
+                empty_cond.notify()
 
 
 class URLFrontier:
@@ -170,10 +171,10 @@ class URLFrontier:
                         with self._job_conds[cs]:
                             self._job_queues[cs].put(CacheJobs.Fill)
                             self._job_conds[cs].notify()
-                        self._fill_conds[cs].wait(10)
-                    if not self._url_queues[cs].empty():
+                        self._fill_conds[cs].wait()
+                    try:
                         return self._url_queues[cs].get(block=False)
-                    else:
+                    except Empty:
                         return None
 
     def put_url(self, u):
@@ -187,5 +188,7 @@ class URLFrontier:
                 self._job_queues[cs].put(CacheJobs.Empty)
                 self._job_conds[cs].notify()
             with self._empty_conds[cs]:
-                if not self._url_queues[cs].empty():
+                timeout = 10
+                while not self._url_queues[cs].empty() and timeout:
                     self._empty_conds[cs].wait()
+                    timeout -= 1
