@@ -144,6 +144,8 @@ FCGI_DEBUG = True
 
 FCGI_LOG = True
 
+FCGI_LOG_PATH = '/logs'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

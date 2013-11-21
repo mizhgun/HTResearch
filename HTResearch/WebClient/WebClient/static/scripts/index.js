@@ -4,7 +4,7 @@ var initialLatLng = new google.maps.LatLng(21, 78);
 var searchedLatLng;
 var geocoder = new google.maps.Geocoder();
 var address;
-var orgData;
+var orgData, contactData, pubData;
 var infowindow = null;
 var marker = null;
 
@@ -58,9 +58,6 @@ function initialize() {
             return false;
         }
     });
-	$('a.org_link').click(function(e){
-        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization)
-    });
 }
 
 function showSearchResults() {
@@ -80,26 +77,7 @@ function showSearchResults() {
                     height: $('#organization-search-list').height()
                 });
 
-                var $modal = $('.modal').modal({
-                    show: false
-                });
-                $('a.org_link').click(function(e){
-                    orgData = $(this).data();
-                    if (orgData.address) {
-                        // Get the lat, long values of the address
-                        geocoder.geocode({'address': orgData.address}, function(results, status){
-                            if(results[0]){
-                                lat = results[0].geometry.location.lat();
-                                lng = results[0].geometry.location.lng();
-                            }
-                            searchedLatLng = new google.maps.LatLng(lat, lng);
-                        });
-                        geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
-                    }
-                    else{
-                        bootstrapModal($modal);
-                    }
-                });
+                setLinkClickEvents();
             },
             dataType: 'html'
         });
@@ -122,7 +100,6 @@ function showSearchResults() {
 	    }
 	}
 }
-
 
 function plotOrganization(results, status) {
 	if (status == google.maps.GeocoderStatus.OK) {
@@ -157,46 +134,48 @@ function plotOrganization(results, status) {
 
     } else {
         var $modal = $('.modal').modal();
-        bootstrapModal($modal)
+        createBootstrapModal($modal, '#bs-org-modal-template', orgData);
     }
 }
 
-function bootstrapModal(m){
+function setLinkClickEvents(){
+    // the org link
+    $('a.org_link').click(function(e){
+        orgData = $(this).data();
+        if (orgData.address) {
+            // Get the lat, long values of the address
+            geocoder.geocode({'address': orgData.address}, function(results, status){
+                if(results[0]){
+                    var lat = results[0].geometry.location.lat();
+                    var lng = results[0].geometry.location.lng();
+                }
+                searchedLatLng = new google.maps.LatLng(lat, lng);
+            });
+            geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
+        }
+        else{
+            var $modal = $('.modal').modal();
+            createBootstrapModal($modal, '#bs-org-modal-template',orgData);
+        }
+    });
+
+    // the contact link
+    $('a.contact_link').click(function(e){
+        contactData = $(this).data();
+        var $modal = $('.modal').modal({
+            show: false
+        });
+        createBootstrapModal($modal, '#bs-contact-modal-template', contactData);
+    });
+
+}
+
+function createBootstrapModal(m, modal_template, data){
     // Do a bootstrap modal
-    $('#modal-header').text(orgData.name);
+    var html = $(modal_template).tmpl(data);
 
-    var html = '<table class="table-condensed"><tr class="modal-row"><td>Tel:</td><td>';
+    $('#bs-modal').html(html);
 
-    if (orgData['phone_numbers'].length == 0){
-        html += 'None';
-    } else {
-        for (var i=0; i < orgData['phone_numbers'].length; i++){
-            html += orgData['phone_numbers'][i] + '</br>'
-        }
-    }
-
-    html += '</td></tr><tr class="modal-row"><td>Email:</td><td>';
-
-    if (orgData['emails'].length == 0){
-        html += 'None'
-    } else {
-        for (var i=0; i < orgData['emails'].length; i++){
-            html += orgData['emails'][i] + '</br>';
-        }
-    }
-
-    html += '</td></tr><tr class="modal-row"><td>Address:</td><td>';
-
-    if (orgData.address == ''){
-        html += 'None';
-    } else {
-        html += orgData.address;
-    }
-
-    html += '</td></tr></table><a id="more-info" href="/organization/' + orgData.id + '">More Info</a>';
-
-
-    $('#modal-body').html(html);
     m.modal('show');
 }
 
