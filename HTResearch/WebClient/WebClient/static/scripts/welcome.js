@@ -10,10 +10,13 @@ function initiateTutorial() {
 	}*/
 
 	$('#welcome-1').easyModal({
-		closeButtonClass: '.welcome-close',
+		closeButtonClass: '.welcome-close-1',
 		autoOpen: true,
-		onClose: initWelcome2
 	});
+
+	$('.welcome-close-1').click(initWelcome2);
+	$('.welcome-close-2').click(initWelcome3);
+	$('.welcome-close-3').click(initWelcome4);
 }
 
 function getCookie(name) {
@@ -33,29 +36,39 @@ function getCookie(name) {
 
 function initWelcome2() {
 	$('#welcome-2').easyModal({
-		closeButtonClass: '.welcome-close',
-		onClose: initWelcome3,
+		closeButtonClass: '.welcome-close-2',
 		overlayOpacity: 0.2,
 		top: 50
 	});
 
-	$('#welcome-2').trigger('openModal');
+	openEasyModal('#welcome-2');
 }
 
 function initWelcome3() {
 	$('#welcome-3').easyModal({
-		closeButtonClass: '.welcome-close',
+		closeButtonClass: '.welcome-close-3',
 		overlayOpacity: 0.2,
-		top: window.innerHeight - 150
+		top: window.innerHeight - 150,
 	});
 
-	//The modal coordinates aren't properly constructed the first time for some reason
-	//So the modal must be opened, closed, then opened again
-	$('#welcome-3').trigger('openModal');
-	$('#welcome-3').trigger('closeModal');
-	$('#welcome-3').trigger('openModal');
+	openEasyModal('#welcome-3');
 }
 
 function initWelcome4() {
+	$('#welcome-4').easyModal({
+		closeButtonClass: '.welcome-close-4',
+		overlayOpacity: 0.2,
+		top: 100
+	});
 
+	openEasyModal('#welcome-4');
+}
+
+function openEasyModal(selector) {
+	//The modal coordinates aren't properly constructed the first time for some reason
+	//So the modal must be opened, closed, then opened again
+	$(selector).trigger('openModal');
+	$(selector).trigger('closeModal');
+	$(selector).trigger('openModal');
+	
 }
