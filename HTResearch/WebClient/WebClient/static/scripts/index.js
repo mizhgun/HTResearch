@@ -170,4 +170,6 @@ function bootstrapModal(m){
     m.modal('show');
 }
 
-google.maps.event.addDomListener(window, 'load', _.once(initialize));
+$(function(){
+    initialize();
+})

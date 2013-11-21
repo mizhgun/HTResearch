@@ -1,4 +1,6 @@
-from django.http import HttpResponse, HttpResponseNotFound
+from datetime import datetime, timedelta
+from django.core.cache import cache
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 from django.template.loader import get_template
 from django.template import Context
 from HTResearch.Utilities.context import DAOContext
@@ -7,9 +9,11 @@ from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from mongoengine.fields import StringField, URLField
+from mongoengine import Q
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.DataAccess.dto import *
 
+REFRESH_ADDRESS_LIST = timedelta(minutes=5)
 
 def index(request):
     args = {}
@@ -18,6 +22,29 @@ def index(request):
     args["api_key"] = GOOGLE_MAPS_API_KEY
 
     return render_to_response('index_template.html', args)
+
+
+def heatmap_coordinates(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest
+
+    addresses = cache.get('organization_address_list')
+    last_update = cache.get('organization_address_list_last_update')
+    if not addresses or not last_update or (datetime.now() - last_update > REFRESH_ADDRESS_LIST):
+        str_addresses = []
+        cache.set('organization_address_list_last_update', datetime.now())
+        ctx = ApplicationContext(DAOContext())
+        org_dao = ctx.get_object('OrganizationDAO')
+        organizations = org_dao.findmany(0, address__exists=True, address__ne='')
+        for org in organizations:
+            str_addresses.append(org.address)
+
+        addresses = MongoJSONEncoder().encode(str_addresses)
+
+        if len(addresses) > 0:
+            cache.set('organization_address_list', addresses)
+
+    return HttpResponse(addresses, content_type="application/json")
 
 
 def search(request):
