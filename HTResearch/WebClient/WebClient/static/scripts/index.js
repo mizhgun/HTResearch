@@ -181,4 +181,4 @@ function createBootstrapModal(m, modal_template, data){
 
 $(function(){
     initialize();
-})
+});
