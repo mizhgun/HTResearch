@@ -56,6 +56,14 @@ class TestableDocumentScraperContext(DocumentScraperContext):
     def RegisteredOrgPartnersScraper(self):
         return MockOrgPartnersScraper
 
+    @Object()
+    def RegisteredFacebookScraper(self):
+        return MockOrgFacebookScraper
+
+    @Object()
+    def RegisteredTwitterScraper(self):
+        return MockOrgTwitterScraper
+
 
 class TestableUrlMetadataScraperContext(UrlMetadataScraperContext):
     @Object()
@@ -147,6 +155,7 @@ class ScraperTests(unittest.TestCase):
     def test_contact_name_scraper(self):
         test_files = [
             "httpapneaaporgaboutusourboard",
+            "httpnhrcnicinContactUshtm",
         ]
 
         contact_name_scraper = ContactNameScraper()
@@ -162,7 +171,8 @@ class ScraperTests(unittest.TestCase):
                     names.append(ret)
 
         # Hardcoded results based on the sites that were crawled
-        assert_list = [{'name': "Gloria Steinem"},
+        assert_list = [ # from first site, US names
+                       {'name': "Gloria Steinem"},
                        {'name': "Jennifer Buffett"},
                        {'name': "Peter Buffett"},
                        {'name': "Vishakha Desai"},
@@ -183,7 +193,32 @@ class ScraperTests(unittest.TestCase):
                        {'name': "Lela Goren"},
                        {'name': "Ellyson Perkins"},
                        {'name': "Mona Sinha"},
-        ]
+                        # from second site, Indian names
+                       {'name': "Smt. Parvinder Sohi Behuria, IRS"},
+                       {'name': 'Smt. Kanwaljit Deol, IPS'},
+                       {'name': 'Sh. A.K. Garg'},
+                       {'name': 'Sh. Alok Kumar Shrivastava, IAS'},
+                       {'name': 'Sh. Jaideep Singh Kochher, IES'},
+                       {'name': 'Sh. Chandra Kant Tyagi'},
+                       {'name': 'Sh. Krishna Pal Singh'},
+                       {'name': 'Sh. P.C. Joshi'},
+                       {'name': 'Sh. B.P. Vishwakarma'},
+                       {'name': 'Sh. Viplav Kumar'},
+                       {'name': 'Sh. A.K. Parashar'},
+                       {'name': 'Sh. Pupul Dutta Prasad'},
+                       {'name': 'Sh. Sanjay kumar Jain'},
+                       {'name': 'Dr. Savita Bhakhry'},
+                       {'name': 'Smt. Shoba George'},
+                       {'name': 'Sh. Sunil Arora'},
+                       {'name': 'Sh. Rishi Pal'},
+                       {'name': 'Sh. B.S. Nagar'},
+                       {'name': 'Sh. D.M. Tripathy'},
+                       {'name': 'Sh. Khwaja Abdul Hafeez'},
+                       {'name': 'Sh. Khaleel Ahmad'},
+                       {'name': 'Sh. Mujesh Kumar'},
+                       {'name': 'Sh. Indrajeet Kumar'},
+                       {'name': 'Sh. C.S. Mawri'},
+                       {'name': 'Sh. Krishna Kumar Shrivastava'}]
 
         for test in assert_list:
             self.assertIn(test, names, 'Name {0} not found'.format(str(test)))
@@ -311,6 +346,67 @@ class ScraperTests(unittest.TestCase):
 
         for test in assert_list:
             self.assertIn(test, links, "URL " + str(test) + " was not found")
+
+    def test_org_fb_scraper(self):
+        test_files = [
+            "httpbombayteenchallengeorg",
+            "httpwwwprajwalaindiacomhomehtml",
+            "httpwwwhalftheskymovementorg",
+            "httpapneaaporg",
+
+        ]
+
+        org_fb_scraper = OrgFacebookScraper()
+        facebook_links = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = org_fb_scraper.parse(response)
+                if isinstance(ret, list):
+                    facebook_links = facebook_links + ret
+                else:
+                    facebook_links.append(ret)
+
+        assert_list = [
+            "http://www.facebook.com/BombayTeenChallenge",
+            "https://www.facebook.com/sunitha.krishnan.33?ref=ts",
+            "https://www.facebook.com/HalftheGame",
+            "http://www.facebook.com/apneaap",
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, facebook_links, "Facebook link (" + test + ") not found")
+
+    def test_org_twitter_scraper(self):
+        test_files = [
+            "httpbombayteenchallengeorg",
+            "httpwwwprajwalaindiacomhomehtml",
+            "httpwwwhalftheskymovementorg",
+            "httpapneaaporg",
+            ]
+
+        org_tw_scraper = OrgTwitterScraper()
+        twitter_links = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = org_tw_scraper.parse(response)
+                if isinstance(ret, list):
+                    twitter_links = twitter_links + ret
+                else:
+                    twitter_links.append(ret)
+
+        assert_list = [
+            'https://twitter.com/bombaytc',
+            None,
+            'https://twitter.com/#!/half',
+            'http://www.twitter.com/apneaap'
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, twitter_links, "Twitter link (" + str(test) + ") not found")
 
     def test_org_name_scraper(self):
         test_files = [
@@ -453,6 +549,8 @@ class ScraperTests(unittest.TestCase):
             'partners': [
                 # not yet implemented
             ],
+            'facebook': 'http://www.facebook.com/BombayTeenChallenge',
+            'twitter': 'https://twitter.com/bombaytc',
         }]
 
         for test in assert_list:

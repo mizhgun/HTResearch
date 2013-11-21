@@ -24,6 +24,8 @@ class OrganizationScraper():
             'contacts': [OrgContactsScraper],
             'organization_url': [OrgUrlScraper],
             'partners': [OrgPartnersScraper],
+            'facebook': [OrgFacebookScraper],
+            'twitter': [OrgTwitterScraper],
         }
         self._multiple = ['types', 'phone_numbers', 'emails', 'contacts', 'partners', ]
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',

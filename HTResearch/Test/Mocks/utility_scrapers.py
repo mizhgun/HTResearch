@@ -9,6 +9,7 @@ import hashlib
 from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
 from scrapy.selector import XPathSelectorList
+from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from bson.binary import Binary
 from springpython.context import ApplicationContext
 
@@ -380,6 +381,34 @@ class MockOrgContactsScraper(object):
 
     def parse(self, response):
         return [] # not yet implemented
+
+
+class MockOrgFacebookScraper(object):
+
+    def __init__(self):
+        regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?facebook\.com/.+(?:/)?$", re.IGNORECASE)
+        self.fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
+
+    def parse(self, response):
+        fb_links = self.fb_link_ext.extract_links(response)
+        urls = [x.url for x in fb_links]
+        if len(fb_links) > 0:
+            return urls[0]
+        return None
+
+
+class MockOrgTwitterScraper(object):
+
+    def __init__(self):
+        regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?twitter\.com/(?:#!/)?\w+(?:/)?$", re.IGNORECASE)
+        self.tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False)
+
+    def parse(self, response):
+        tw_links = self.tw_link_ext.extract_links(response)
+        urls = [x.url for x in tw_links]
+        if len(urls) > 0:
+            return urls[0]
+        return None
 
 
 class MockOrgNameScraper(object):

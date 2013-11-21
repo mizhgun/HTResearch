@@ -3,6 +3,10 @@ from scrapy.exceptions import DropItem
 from HTResearch.DataAccess.dao import *
 from HTResearch.Utilities.converter import *
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+
+
+logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class ItemSwitch(object):
@@ -34,7 +38,9 @@ class ItemSwitch(object):
         elif item_class == "ScrapedPublication":
             self._store_publication(item)
         else:
-            raise DropItem("No behavior defined for item of type %s" % item_class)
+            msg = "No behavior defined for item of type %s" % item_class
+            logger.error(msg)
+            raise DropItem(msg)
         
         # return item to next piece of pipeline
         return item

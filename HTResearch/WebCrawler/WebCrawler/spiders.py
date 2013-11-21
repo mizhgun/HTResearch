@@ -1,5 +1,6 @@
 from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
 from HTResearch.Utilities.context import URLFrontierContext
+from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
 
 from springpython.context import ApplicationContext
 from scrapers.document_scrapers import *
@@ -9,6 +10,9 @@ from scrapy.spider import BaseSpider
 from scrapy.http import Request
 from scrapy import log
 import os
+
+# Since this logger can be shared by the whole module, we can instantiate it here
+logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class OrgSpider(BaseSpider):
@@ -47,6 +51,8 @@ class OrgSpider(BaseSpider):
         We will get the first url to crawl from this.
         """
 
+        logger.info('Starting requests to the Organization crawler')
+
         # first URL to begin crawling
         # Returns a URLMetadata model, so we have to pull the url field
         start_url_obj = self.url_frontier.next_url(self.url_frontier_rules)
@@ -59,6 +65,7 @@ class OrgSpider(BaseSpider):
 
         if __debug__:
             log.msg('START_REQUESTS : start_url = %s' % start_url)
+            logger.debug('START_REQUESTS : start_url = %s' % start_url)
 
         request = Request(start_url, dont_filter=True)
 
