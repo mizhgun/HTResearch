@@ -39,7 +39,7 @@ function loadCoordinates(success_cb) {
     var geocoder = new google.maps.Geocoder();
 
     $.ajax({
-        type: 'POST',
+        type: 'GET',
         url: '/heatmap_coordinates/',
         data: {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
