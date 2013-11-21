@@ -9,7 +9,7 @@ def geocode(address, bounds=None, region=None,
             language=None, sensor=False, exactly_one=True, timeout=None):
 
     params = {
-        'address': address,
+        'address': address.encode('ascii', 'ignore'),
         'sensor': str(sensor).lower()
     }
     if bounds:
