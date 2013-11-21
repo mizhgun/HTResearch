@@ -143,6 +143,7 @@ class ContactNameScraper(object):
             count = 0
             for name in checker:
                 if name.strip():
+                    # Changes from unicode, removes punctuation, and strips whitespace
                     changed = name.encode('ascii', 'ignore').translate(string.maketrans('', ''), string.punctuation)\
                         .strip()
                     if changed == '':
