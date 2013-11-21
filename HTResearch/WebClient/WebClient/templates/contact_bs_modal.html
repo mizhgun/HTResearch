@@ -1,0 +1,52 @@
+<script id="bs-contact-modal-template" type="text/x-jquery-html">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-header">${name}</h4>
+      </div>
+      <div class="modal-body" id="modal-body">
+          <table class="table-condensed">
+              {% templatetag openvariable %}if phone_number{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <td>Tel:</td>
+                  <td>${phone_number}</td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+              {% templatetag openvariable %}if email{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <td>Email:</td>
+                  <td>${email}</td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+              {% templatetag openvariable %}if position{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <td>Position:</td>
+                  <td>${position}</td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+              {% templatetag openvariable %}if organizations.length{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <td>Organizations affiliated with:</td>
+                  <td>
+                  {% templatetag openvariable %}each organizations{% templatetag closevariable %}
+                  ${$value}
+                  {% templatetag openvariable %}/each{% templatetag closevariable %}
+                  </td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+              {% templatetag openvariable %}if publications.length{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <td>Publications:</td>
+                  <td>
+                  {% templatetag openvariable %}each publications{% templatetag closevariable %}
+                  ${$value}
+                  {% templatetag openvariable %}/each{% templatetag closevariable %}
+                  </td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+          </table>
+          <a id="more-info" href="/contact/${id}">More Info</a>
+      </div>
+    </div>
+  </div>
+</script>
