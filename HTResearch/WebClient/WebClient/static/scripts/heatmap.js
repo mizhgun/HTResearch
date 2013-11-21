@@ -45,13 +45,14 @@ function loadCoordinates(success_cb) {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
         },
         success: function ( json_string ) {
+            alert(json_string);
             var addresses = $.parseJSON(json_string);
             var i;
             for (i = 0; i < addresses.length; i++) {
                 addr = addresses[i];
                 geocoder.geocode({'address': addr}, function(results, status){
                     var lat; var lng;
-                    if(results != null && results[0]){
+                    if(status == google.maps.GeocoderStatus.OK){
                         lat = results[0].geometry.location.lat();
                         lng = results[0].geometry.location.lng();
                         var gCoord = new google.maps.LatLng(lat, lng);
