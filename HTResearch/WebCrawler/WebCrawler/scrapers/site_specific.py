@@ -1,5 +1,6 @@
 import re
 import string
+from urlparse import urlparse
 
 from scrapy.http import TextResponse
 from scrapy.selector import HtmlXPathSelector
@@ -168,15 +169,15 @@ class StopTraffickingDotInScraper:
         # Landlines are for organization, pass mobile for contacts
         phone = None
         if popup['telephone']:
-            phone = popup['telephone'][0]
+            phone = popup['telephone']
 
         # if no contacts, get email for organization
-        email = None
+        email = list()
         if not popup['contact_name'] and (popup['email1'] or popup['email2']):
             if popup['email1']:
-                email = popup['email1'][0]
-            else:
-                email = popup['email2'][0]
+                email.append(popup['email1'][0])
+            if popup['email2']:
+                email.append(popup['email2'][0])
 
         # grab url
         url = popup['url']
@@ -186,14 +187,14 @@ class StopTraffickingDotInScraper:
 
         # build organization item
         organization = ScrapedOrganization(
-            name = orgname,
-            address = addr,
-            types = None,
-            phone_number = phone,
-            email = email,
-            contacts = extr_contacts,
-            organization_url = url,
-            partners = None)
+            name=orgname,
+            address=addr,
+            types=None,
+            phone_numbers=phone,
+            emails=email,
+            contacts=extr_contacts,
+            organization_url=url,
+            partners=None)
 
         return organization
     
@@ -290,7 +291,11 @@ class StopTraffickingDotInScraper:
         return district
 
     def _edit_url(self, url, data = None):
-        return url
+        new_url = None
+        if url:
+            parse = urlparse(url)
+            new_url = '%s/' % parse.netloc
+        return new_url
 
     def _edit_phone(self, phone, data = None):
         if phone is None:

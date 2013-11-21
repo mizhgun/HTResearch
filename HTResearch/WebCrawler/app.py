@@ -14,7 +14,7 @@ if __name__ == '__main__':
     frontier = ctx.get_object("URLFrontier")
     frontier.start_cache_process()
 
-    spider = OrgSpider()
+    spider = StopTraffickingSpider()
     settings = get_project_settings()
     crawler = Crawler(settings)
     crawler.configure()
