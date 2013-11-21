@@ -7,13 +7,15 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{key}}&sensor=false"></script>
     <link href="static/css/index.css" rel="stylesheet">
     <script src="static/scripts/index.js" type="text/javascript"></script>
-    {% include "org_modal.html" %}
-    {% include "org_bs_modal.html" %}
+
 {% endblock %}
     
 
 {% block content %}
     <div id="wrapper">
+        {% include "org_modal.html" %}
+        {% include "org_bs_modal.html" %}
+        {% include "contact_bs_modal.html" %}
         <div id="login-signup-div" class="jumbotron">
 
             <form id="custom-search-form" class="form-search form-horizontal pull-right">
@@ -40,8 +42,16 @@
             <h2 id="contact-list-header">People</h2>
             <div id="contact-results">
         		<ul id="contact-search-list" style="list-style-type: none;">
-					<!--<li>John Marth</li>
-					<li>Mike Jones</li>-->
+					<!--<li>John Marth</li>-->
+					<!--<li>-->
+                        <!--<a class="contact_link" href="#" id="contact-500"-->
+                            <!--data-id="500"-->
+                            <!--data-name="John Marth"-->
+                            <!--data-phone_number="123-467-8901"-->
+                            <!--data-email="john.marth@thetip.com"-->
+                            <!--data-organizations="527c4f556091fb165427334f"-->
+                            <!--data-publications="I like just the Tip">John Marth</a>-->
+                    <!--</li>-->
 				</ul>
             </div>
 
