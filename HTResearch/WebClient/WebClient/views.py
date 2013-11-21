@@ -30,7 +30,7 @@ def index(request):
 
 
 def heatmap_coordinates(request):
-    if request.method != 'POST':
+    if request.method != 'GET':
         return HttpResponseBadRequest
 
     addresses = cache.get('organization_address_list')
