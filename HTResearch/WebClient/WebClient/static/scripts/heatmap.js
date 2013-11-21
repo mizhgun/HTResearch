@@ -97,4 +97,4 @@ $(window).load(function() {
     });
     heatmap_control_div.index = 1;
     map.controls[google.maps.ControlPosition.RIGHT_TOP].push(heatmap_control_div);
-})
+});
