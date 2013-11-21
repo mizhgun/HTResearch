@@ -66,94 +66,74 @@ function initialize() {
 
 function showSearchResults() {
     var searchText = $('#search-box').val().trim();
+    var searchResultsDiv = $('#search-results-div');
+
     if(searchText) {
-        // Search organizations
-        startAjaxSearch();
-        $.ajax({
-            type: 'POST',
-            url: '/search_organizations/',
-            data: {
-                'search_text': $('#search-box').val(),
-                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+        // Put items to search for here.
+        var searchItems = [
+            {
+                name: 'Organization',
+                url: '/search_organizations/',
+                toggleSelector: '#organization-toggle',
+                collapseSelector: '#collapse-organizations',
+                listSelector: '#organization-search-list',
+                linkSelector: '.org_link',
+                linkCallback: showOrganizationModal
             },
-            dataType: 'html'
-        }).done(function (data) {
-            $('#organization-search-list').html(data);
+            {
+                name: 'Contact',
+                url: '/search_contacts/',
+                toggleSelector: '#contact-toggle',
+                collapseSelector: '#collapse-contacts',
+                listSelector: '#contact-search-list',
+                linkSelector: '.contact_link',
+                linkCallback: showContactModal
+            }
+        ];
 
-            $('#organization-results').css({
-                height: $('#organization-search-list').height()
-            });
-
-            var $modal = $('.modal').modal({
-                show: false
-            });
-            $('.org_link').click(function(e){
-                orgData = $(this).data();
-                if (orgData.address) {
-                    // Get the lat, long values of the address
-                    geocoder.geocode({'address': orgData.address}, function(results, status){
-                        if(results[0]){
-                            lat = results[0].geometry.location.lat();
-                            lng = results[0].geometry.location.lng();
-                        }
-                        searchedLatLng = new google.maps.LatLng(lat, lng);
-                    });
-                    geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
+        // Perform each search
+        _.each(searchItems, function (item) {
+            startAjaxSearch();
+            $.ajax({
+                type: 'POST',
+                url: item.url,
+                data: {
+                    'search_text': $('#search-box').val(),
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                dataType: 'html'
+            }).done(function (data) {
+                data = data.trim();
+                if (data) {
+                    $(item.toggleSelector).attr('data-toggle', 'collapse');
+                    $(item.toggleSelector).removeClass('disabled');
+                    $(item.collapseSelector).collapse('show');
+                } else {
+                    $(item.toggleSelector).attr('data-toggle', '');
+                    $(item.toggleSelector).addClass('disabled');
+                    $(item.collapseSelector).collapse('hide');
                 }
-                else{
-                    bootstrapModal($modal);
-                }
+                $(item.toggleSelector).click(function (e) {
+                    e.preventDefault();
+                });
+                $(item.listSelector).html(data);
+                $('.modal').modal({ show: false });
+                $(item.linkSelector).click(item.linkCallback);
+            }).fail(function () {
+                console.log(item.name, 'search failed');
+            }).always(function () {
+                endAjaxSearch();
             });
-        }).fail(function () {
-            alert('THE (organization) SEARCH FAILED! BWAAHAHAHAHAHAAHAHAAHHAAAA TRAWLZ');
-        }).always(function () {
-            endAjaxSearch();
         });
 
-        // Search contacts
-        startAjaxSearch();
-        $.ajax({
-            type: 'POST',
-            url: '/search_contacts/',
-            data: {
-                'search_text': $('#search-box').val(),
-                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
-            },
-            dataType: 'html'
-        }).done(function (data) {
-            $('#contact-search-list').html(data);
-
-            $('#contact-results').css({
-                height: $('#contact-search-list').height()
-            });
-
-            var $modal = $('.modal').modal({
-                show: false
-            });
-            $('.contact_link').click(function(e){
-                contactData = $(this).data();
-                // TODO: display contact modal
-            });
-        }).fail(function () {
-            alert('THE (contact) SEARCH FAILED! BWAAHAHAHAHAHAAHAHAAHHAAAA TRAWLZ');
-        }).always(function () {
-            endAjaxSearch();
-        });
-
-        if(!searchResultsVisible) {
-            $('#search-results-div').toggle("slide", {
-                direction: "up",
-                distance: window.height - $('#search-box').css('top')
-            }, 500);
+        if (!searchResultsVisible) {
+            searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
 
             searchResultsVisible = true;
         }
 	} else {
 	    if (searchResultsVisible) {
-	        $('#search-results-div').toggle('slide', {
-	            direction: 'up',
-	            distance: window.height - $('#search-box').css('top')
-	        }, 500);
+	        searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
 
 	        searchResultsVisible = false;
 	    }
@@ -174,6 +154,32 @@ function endAjaxSearch() {
     }
 }
 
+// Show modals
+
+function showOrganizationModal() {
+    orgData = $(this).data();
+    if (orgData.address) {
+        // Get the lat, long values of the address
+        geocoder.geocode({'address': orgData.address}, function(results, status){
+            if(results[0]) {
+                lat = results[0].geometry.location.lat();
+                lng = results[0].geometry.location.lng();
+            }
+            searchedLatLng = new google.maps.LatLng(lat, lng);
+        });
+        geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
+    }
+    else{
+        bootstrapModal($modal);
+    }
+}
+
+function showContactModal() {
+    contactData = $(this).data();
+    // TODO: display contact modal
+}
+
+// Show organization location on map
 function plotOrganization(results, status) {
 	if (status == google.maps.GeocoderStatus.OK) {
         map.setCenter(results[0].geometry.location);
