@@ -386,14 +386,30 @@ class MockOrgContactsScraper(object):
 class MockOrgFacebookScraper(object):
 
     def __init__(self):
-        self.fb_link_ext = SgmlLinkExtractor(allow_domains=['www.facebook.com', 'facebook.com'], unique=True)
+        regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?facebook\.com/.+(?:/)?$", re.IGNORECASE)
+        self.fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
 
     def parse(self, response):
         fb_links = self.fb_link_ext.extract_links(response)
+        urls = [x.url for x in fb_links]
         if len(fb_links) > 0:
-            # just grab first, we only expect one and I can't think of a way to determine between multiple
-            return fb_links[0].url
+            return urls[0]
         return None
+
+
+class MockOrgTwitterScraper(object):
+
+    def __init__(self):
+        regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?twitter\.com/(?:#!/)?\w+(?:/)?$", re.IGNORECASE)
+        self.tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False)
+
+    def parse(self, response):
+        tw_links = self.tw_link_ext.extract_links(response)
+        urls = [x.url for x in tw_links]
+        if len(urls) > 0:
+            return urls[0]
+        return None
+
 
 class MockOrgNameScraper(object):
 

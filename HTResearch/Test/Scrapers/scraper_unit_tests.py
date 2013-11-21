@@ -60,6 +60,10 @@ class TestableDocumentScraperContext(DocumentScraperContext):
     def RegisteredFacebookScraper(self):
         return MockOrgFacebookScraper
 
+    @Object()
+    def RegisteredTwitterScraper(self):
+        return MockOrgTwitterScraper
+
 
 class TestableUrlMetadataScraperContext(UrlMetadataScraperContext):
     @Object()
@@ -347,6 +351,36 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test, facebook_links, "Facebook link (" + test + ") not found")
 
+    def test_org_twitter_scraper(self):
+        test_files = [
+            "httpbombayteenchallengeorg",
+            "httpwwwprajwalaindiacomhomehtml",
+            "httpwwwhalftheskymovementorg",
+            "httpapneaaporg",
+            ]
+
+        org_tw_scraper = OrgTwitterScraper()
+        twitter_links = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = org_tw_scraper.parse(response)
+                if isinstance(ret, list):
+                    twitter_links = twitter_links + ret
+                else:
+                    twitter_links.append(ret)
+
+        assert_list = [
+            'https://twitter.com/bombaytc',
+            None,
+            'https://twitter.com/#!/half',
+            'http://www.twitter.com/apneaap'
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, twitter_links, "Twitter link (" + str(test) + ") not found")
+
     def test_org_name_scraper(self):
         test_files = [
             "httpbombayteenchallengeorg",
@@ -488,7 +522,8 @@ class ScraperTests(unittest.TestCase):
             'partners': [
                 # not yet implemented
             ],
-            'facebook': 'http://www.facebook.com/BombayTeenChallenge'
+            'facebook': 'http://www.facebook.com/BombayTeenChallenge',
+            'twitter': 'https://twitter.com/bombaytc',
         }]
 
         for test in assert_list:
