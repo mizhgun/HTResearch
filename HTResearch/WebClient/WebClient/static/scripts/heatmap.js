@@ -88,7 +88,7 @@ $(window).load(function() {
     $(heatmap_toggle_control).addClass('btn-default');
     $(heatmap_toggle_control).addClass('btn-sm');
     $(heatmap_toggle_control).text('Toggle Heat Map');
-    heatmap_control_div.appendChild(heatmap_toggle_control)
+    heatmap_control_div.appendChild(heatmap_toggle_control);
 
     google.maps.event.addDomListener(heatmap_toggle_control, 'click', function(){
         $(this).attr("disabled", "true");
