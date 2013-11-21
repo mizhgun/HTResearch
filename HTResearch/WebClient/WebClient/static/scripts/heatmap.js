@@ -45,7 +45,6 @@ function loadCoordinates(success_cb) {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
         },
         success: function ( json_string ) {
-            alert(json_string);
             var addresses = $.parseJSON(json_string);
             var i;
             for (i = 0; i < addresses.length; i++) {
@@ -70,14 +69,14 @@ function loadCoordinates(success_cb) {
 function initHeatmap() {
     // call load coordinates with a callback to createHeatMap
     loadCoordinates(createHeatMap);
-}
+};
 
 function toggleHeatMap() {
     // map is a variable from the file index.js
     if (heatMap != null) {
-        heatMap.setMap(heatMap.getMap() ? null : map)
+        heatMap.setMap(heatMap.getMap() ? null : map);
     }
-}
+};
 
 $(window).load(function() {
     initHeatmap();
@@ -98,4 +97,4 @@ $(window).load(function() {
     });
     heatmap_control_div.index = 1;
     map.controls[google.maps.ControlPosition.RIGHT_TOP].push(heatmap_control_div);
-})
+});
