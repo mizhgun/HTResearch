@@ -315,10 +315,8 @@ class StopTraffickingDotInScraper:
             if len(ascii) > 0:
                 #extract digits
                 digit_only = ascii.translate(all, nodigs)
-                #store as integers
-                int_num = int(float(digit_only))
-                if abs(int_num) < (2**8): # check mongo max value
-                    parsed_phones.append(int_num)
+                if len(digit_only) > 0:
+                    parsed_phones.append(digit_only)
 
         return parsed_phones
 
