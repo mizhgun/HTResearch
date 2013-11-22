@@ -56,7 +56,7 @@ function initialize() {
     });
 
 	$('a.org_link').click(function(e){
-        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization)
+        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization);
     });
 
     //This function is in welcome.js
