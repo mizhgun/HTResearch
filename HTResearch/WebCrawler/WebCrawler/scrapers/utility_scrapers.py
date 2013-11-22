@@ -10,6 +10,7 @@ from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
 from scrapy.selector import XPathSelectorList
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from sgmllib import SGMLParseError
 from bson.binary import Binary
 
 from ..items import *
@@ -392,7 +393,12 @@ class OrgFacebookScraper(object):
         self.fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
 
     def parse(self, response):
-        fb_links = self.fb_link_ext.extract_links(response)
+        try:
+            fb_links = self.fb_link_ext.extract_links(response)
+        except SGMLParseError:
+            # Page was poorly formatted, oh well
+            return None
+
         urls = [x.url for x in fb_links]
         if len(fb_links) > 0:
             return urls[0]
@@ -406,7 +412,12 @@ class OrgTwitterScraper(object):
         self.tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
 
     def parse(self, response):
-        tw_links = self.tw_link_ext.extract_links(response)
+        try:
+            tw_links = self.tw_link_ext.extract_links(response)
+        except SGMLParseError:
+            # Page was poorly formatted, oh well
+            return None
+
         urls = [x.url for x in tw_links]
         if len(urls) > 0:
             return urls[0]
