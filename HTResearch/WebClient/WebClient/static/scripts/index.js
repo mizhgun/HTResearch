@@ -177,7 +177,7 @@ function showContactModal() {
 
 // Show organization location on map
 function plotOrganization(data) {
-    if (data.latlng && data.latlng.length > 0 && data.latlng[0] != '' && data.latlng[1] != '') {
+    if (data.latlng && data.latlng.length > 0 && data.latlng[0] && data.latlng[1]) {
     var coord = new google.maps.LatLng(data.latlng[0], data.latlng[1]);
     map.setCenter(coord);
 
