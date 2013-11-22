@@ -5,7 +5,7 @@ import unittest
 from HTResearch.Utilities.geocoder import geocode
 
 
-class LoggingUtilityTest(unittest.TestCase):
+class GeocodingTest(unittest.TestCase):
 
     def test_geocoding(self):
         addr = "4444 Browning Pl, Lincoln, NE, 68516"
