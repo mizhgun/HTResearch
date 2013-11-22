@@ -5,13 +5,13 @@ from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.Utilities.logutil import LoggingUtility, LoggingSection
 from datetime import datetime
 
+_linkscraper_logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
 
 class LinkScraper:
     """A scraper to find all URLs in a page """
 
     def __init__(self):
         self._link_extractor = SgmlLinkExtractor()
-        self._logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
 
     def parse(self, response):
         """Scrape a spider's HttpRequest.Response for links"""
@@ -25,7 +25,7 @@ class LinkScraper:
             links = self._link_extractor.extract_links(response)
         except SGMLParseError as e:
             # Page was poorly formatted, oh well
-            self._logger.error('Exception encountered when link extracting page')
+            _linkscraper_logger.error('Exception encountered when link extracting page')
             return []
 
         # add these links to our Url item

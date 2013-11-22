@@ -25,6 +25,9 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 # Will likely remove/change them.
 
 
+_utilityscrapers_logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
+
+
 class ContactNameScraper(object):
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt')) as f:
@@ -392,14 +395,13 @@ class OrgFacebookScraper(object):
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?facebook\.com/.+(?:/)?$", re.IGNORECASE)
         self.fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
-        self._logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
 
     def parse(self, response):
         try:
             fb_links = self.fb_link_ext.extract_links(response)
         except SGMLParseError as e:
             # Page was poorly formatted, oh well
-            self._logger.error('Exception encountered when link extracting page: %s' % str(response.url))
+            _utilityscrapers_logger.error('Exception encountered when link extracting page: %s' % str(response.url))
             return None
 
         urls = [x.url for x in fb_links]
@@ -413,14 +415,13 @@ class OrgTwitterScraper(object):
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?twitter\.com/(?:#!/)?\w+(?:/)?$", re.IGNORECASE)
         self.tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
-        self._logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
 
     def parse(self, response):
         try:
             tw_links = self.tw_link_ext.extract_links(response)
         except SGMLParseError as e:
             # Page was poorly formatted, oh well
-            self._logger.error('Exception encountered when link extracting page: %s' % str(response.url))
+            _utilityscrapers_logger.error('Exception encountered when link extracting page: %s' % str(response.url))
             return None
 
         urls = [x.url for x in tw_links]
