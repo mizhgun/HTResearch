@@ -4,8 +4,7 @@ var initialLatLng = new google.maps.LatLng(21, 78);
 var searchedLatLng;
 var geocoder = new google.maps.Geocoder();
 var address;
-var orgData = null;
-var contactData = null;
+var orgData, contactData, pubData;
 var infowindow = null;
 var marker = null;
 
@@ -58,9 +57,6 @@ function initialize() {
             e.preventDefault();
             return false;
         }
-    });
-	$('a.org_link').click(function(e){
-        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization)
     });
 }
 
@@ -213,13 +209,45 @@ function plotOrganization(results, status) {
 
     } else {
         var $modal = $('.modal').modal();
-        bootstrapModal($modal)
+        createBootstrapModal($modal, '#bs-org-modal-template', orgData);
     }
 }
 
-function bootstrapModal(m){
+function setLinkClickEvents(){
+    // the org link
+    $('a.org_link').click(function(e){
+        orgData = $(this).data();
+        if (orgData.address) {
+            // Get the lat, long values of the address
+            geocoder.geocode({'address': orgData.address}, function(results, status){
+                if(results[0]){
+                    var lat = results[0].geometry.location.lat();
+                    var lng = results[0].geometry.location.lng();
+                }
+                searchedLatLng = new google.maps.LatLng(lat, lng);
+            });
+            geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
+        }
+        else{
+            var $modal = $('.modal').modal();
+            createBootstrapModal($modal, '#bs-org-modal-template',orgData);
+        }
+    });
+
+    // the contact link
+    $('a.contact_link').click(function(e){
+        contactData = $(this).data();
+        var $modal = $('.modal').modal({
+            show: false
+        });
+        createBootstrapModal($modal, '#bs-contact-modal-template', contactData);
+    });
+
+}
+
+function createBootstrapModal(m, modal_template, data){
     // Do a bootstrap modal
-    var html = $("#bs-modal-template").tmpl(orgData);
+    var html = $(modal_template).tmpl(data);
 
     $('#bs-modal').html(html);
 

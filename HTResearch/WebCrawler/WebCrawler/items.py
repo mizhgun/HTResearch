@@ -43,6 +43,8 @@ class ScrapedOrganization(Item):
     contacts = Field()
     organization_url = Field()
     partners = Field()
+    facebook = Field()
+    twitter = Field()
 
 
 class ScrapedPhoneNumber(Item):

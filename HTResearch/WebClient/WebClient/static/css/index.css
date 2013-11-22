@@ -167,7 +167,7 @@ body {
 #search-results-div {
     position: absolute;
     opacity: 0.75;
-    overflow-y: scroll;
+    overflow-y: auto;
     width: 90%;
     max-height: -webkit-calc(100% - 80px);
 }
