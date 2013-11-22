@@ -128,6 +128,7 @@ class OrganizationDAO(DAO):
 
         # Injected dependencies
         self.contact_dao = ContactDAO
+        self.geocode = geocode
 
     def merge_documents(self, existing_org_dto, new_org_dto):
         with self.conn():
@@ -137,7 +138,7 @@ class OrganizationDAO(DAO):
                     cur_attr = getattr(existing_org_dto, key)
                     if not cur_attr:
                         if key == 'latlng' and not attributes['latlng'] and attributes['address']:
-                            setattr(existing_org_dto, key, geocode(attributes['address']))
+                            setattr(existing_org_dto, key, self.geocode(attributes['address']))
                         else:
                             setattr(existing_org_dto, key, attributes[key])
                     elif type(cur_attr) is list:
@@ -166,7 +167,7 @@ class OrganizationDAO(DAO):
                     return saved_dto
                 elif org_dto.latlng is None and org_dto.address:
                     # Geocode it
-                    org_dto.latlng = geocode(org_dto.address)
+                    org_dto.latlng = self.geocode(org_dto.address)
 
             org_dto.save()
         return org_dto

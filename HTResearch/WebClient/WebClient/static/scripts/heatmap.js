@@ -36,8 +36,6 @@ function createHeatMap() {
 function loadCoordinates(success_cb) {
     // Clear array
     orgCoordinates.length = 0;
-    var geocoder = new google.maps.Geocoder();
-
     $.ajax({
         type: 'GET',
         url: '/heatmap_coordinates/',
