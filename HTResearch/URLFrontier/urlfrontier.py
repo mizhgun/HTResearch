@@ -1,4 +1,5 @@
 # Library imports
+import os
 import hashlib
 from multiprocessing import Queue, Process, Condition, RLock, Array
 # stdlib imports
@@ -10,6 +11,10 @@ from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.types import Singleton
+from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+
+
+logger = LoggingUtility().get_logger(LoggingSection.FRONTIER, __name__)
 
 
 class CacheJobs():
@@ -52,19 +57,20 @@ class URLFrontierRules:
 
 def _monitor_cache(dao, max_size, cache, job_queue, job_cond, fill_cond, empty_cond,
                    req_doms, blk_doms, srt_list):
-
     while True:
         try:
-            next_job = job_queue.get(block=False)
+            with job_cond:
+                next_job = job_queue.get(block=False)
         except Empty:
             with job_cond:
-                job_cond.wait()
+                job_cond.wait(1)
                 try:
                     next_job = job_queue.get(block=False)
                 except Empty:
                     continue
 
         if next_job == CacheJobs.Fill:
+            logger.info('Filling the cache')
             with fill_cond:
                 urls = dao().findmany_by_domains(max_size - cache.qsize(),
                                                    req_doms, blk_doms, srt_list)
@@ -77,13 +83,14 @@ def _monitor_cache(dao, max_size, cache, job_queue, job_cond, fill_cond, empty_c
                 fill_cond.notify_all()
 
         elif next_job == CacheJobs.Empty:
+            logger.info('Emptying the cache')
             with empty_cond:
                 while True:
                     try:
                         cache.get(block=False)
                     except Empty:
-                        empty_cond.notify()
                         break
+                empty_cond.notify()
 
 
 class URLFrontier:
@@ -130,6 +137,7 @@ class URLFrontier:
                                                       rules.sort_list))
                 self._proc_counts[cs] = 0
             if not self._cache_procs[cs].is_alive():
+                logger.info('Starting the cache process for rule=%s' % cs)
                 self._cache_procs[cs].start()
             self._proc_counts[cs] += 1
 
@@ -142,6 +150,7 @@ class URLFrontier:
             self._proc_counts[cs] -= 1
             if self._proc_counts[cs] <= 0:
                 if self._cache_procs[cs].is_alive():
+                    logger.info('Stopping the cache process for rule %s' % cs)
                     self._cache_procs[cs].terminate()
                 del self._cache_procs[cs]
                 del self._url_queues[cs]
@@ -170,10 +179,10 @@ class URLFrontier:
                         with self._job_conds[cs]:
                             self._job_queues[cs].put(CacheJobs.Fill)
                             self._job_conds[cs].notify()
-                        self._fill_conds[cs].wait(10)
-                    if not self._url_queues[cs].empty():
+                        self._fill_conds[cs].wait()
+                    try:
                         return self._url_queues[cs].get(block=False)
-                    else:
+                    except Empty:
                         return None
 
     def put_url(self, u):
@@ -187,5 +196,7 @@ class URLFrontier:
                 self._job_queues[cs].put(CacheJobs.Empty)
                 self._job_conds[cs].notify()
             with self._empty_conds[cs]:
-                if not self._url_queues[cs].empty():
+                timeout = 10
+                while not self._url_queues[cs].empty() and timeout:
                     self._empty_conds[cs].wait()
+                    timeout -= 1

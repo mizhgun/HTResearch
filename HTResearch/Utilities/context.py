@@ -81,6 +81,7 @@ class DocumentScraperContext(PythonConfig):
             'organization_url': [self.RegisteredOrgUrlScraper()],
             'partners': [self.RegisteredOrgPartnersScraper()],
             'facebook': [self.RegisteredFacebookScraper()],
+            'twitter': [self.RegisteredTwitterScraper()],
         }
         return org
 
@@ -132,6 +133,10 @@ class DocumentScraperContext(PythonConfig):
     @Object()
     def RegisteredFacebookScraper(self):
         return OrgFacebookScraper
+
+    @Object()
+    def RegisteredTwitterScraper(self):
+        return OrgTwitterScraper
 
 
 class UrlMetadataScraperContext(PythonConfig):
