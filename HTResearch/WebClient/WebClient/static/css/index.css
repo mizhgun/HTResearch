@@ -71,21 +71,6 @@ body {
     padding-right: 0;
 }
 
-/*#login-btn {
-    position:absolute;
-    top: 5px;
-    left: 10px;
-}
-
-#signup-btn {
-    position:absolute;
-    top: 5px;
-    left: 100px;
-}*/
-
-#custom-search-form {
-}
-
 #custom-search-form .search-query {
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
