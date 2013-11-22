@@ -10,11 +10,13 @@ from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
 from scrapy.selector import XPathSelectorList
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from sgmllib import SGMLParseError
 from bson.binary import Binary
 
 from ..items import *
 from HTResearch.DataAccess.dao import *
 from HTResearch.Utilities.converter import *
+from HTResearch.Utilities.logutil import *
 from link_scraper import LinkScraper
 from HTResearch.DataModel.enums import OrgTypesEnum
 
@@ -23,12 +25,14 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 # Will likely remove/change them.
 
 
+_utilityscrapers_logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
+
+
 class ContactNameScraper(object):
-    # TODO: Find list of Indian names and add them to names.txt
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt')) as f:
             self._names = f.read().splitlines()
-        self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr']
+        self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Sh', 'Smt', 'Prof']
         self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
         self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
 
@@ -59,10 +63,8 @@ class ContactNameScraper(object):
         # Gets the body (including html tags) and body_text (no tags), whatever gets found should be in both, since a
         # name should be visible
         body = hxs.select('//body').extract()
-
-        potential_names = []
-
         body = (body[0].encode('ascii', 'ignore')).strip()
+
         # keep the tags but remove the tag attributes such as name and class
         body = re.sub(self._remove_attributes, r'<\1>', body)
 
@@ -76,10 +78,9 @@ class ContactNameScraper(object):
         no_tags = ' '.join(no_tags)
 
         xpaths = []
-        for item in no_tags.split():
 
+        for item in no_tags.split():
             if (item in self._titles or item in self._names) and item in body:
-                potential_names.append(item)
                 tags = re.findall(self._tag, body[:body.index(item)])
                 tags = self._add_closing_symbol(tags)
 
@@ -139,21 +140,34 @@ class ContactNameScraper(object):
 
         # check which xpath has the most names
         # if the xpath has at least 4 valid names (maybe change this in the future somehow?),
-        # then keep it, otherwise it may be catching a wrong thing
+        # then keep it, otherwise it may be catching a singular wrong thing
         highest = []
+
         for i, checker in enumerate(names_list):
+            removes = []
             count = 0
             for name in checker:
                 if name.strip():
-                    # Maybe change the below too? If the name is a link's text, then it will catch other links text,
-                    # which can be a sentence, so assume a certain amount of words for a name? In this case 5 or less
-                    if len(name.split()) > 5:
-                        names_list[i].remove(name)
+                    # Changes from unicode, removes punctuation, and strips whitespace
+                    changed = name.encode('ascii', 'ignore').translate(string.maketrans('', ''), string.punctuation)\
+                        .strip()
+                    if changed == '':
+                        removes.append(name)
+                    name_split = changed.split()
+                    if len(name_split) > 5:
+                        removes.append(name)
                         continue
-                    first = (name.encode('ascii', 'ignore')).split()[0]
-                    first = first.translate(string.maketrans('', ''), string.punctuation)
-                    if first != [] and (first in self._names or first in self._titles):
-                        count += 1
+
+                    for n in name_split:
+                        if n in self._names or n in self._titles:
+                            count += 1
+                            break
+                        elif n == name_split[-1]:
+                            removes.append(name)
+                else:
+                    removes.append(name)
+            for rm in removes:
+                names_list[i].remove(rm)
             if count > 3:
                 highest.append(i)
 
@@ -383,7 +397,13 @@ class OrgFacebookScraper(object):
         self.fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
 
     def parse(self, response):
-        fb_links = self.fb_link_ext.extract_links(response)
+        try:
+            fb_links = self.fb_link_ext.extract_links(response)
+        except SGMLParseError as e:
+            # Page was poorly formatted, oh well
+            _utilityscrapers_logger.error('Exception encountered when link extracting page: %s' % str(response.url))
+            return None
+
         urls = [x.url for x in fb_links]
         if len(fb_links) > 0:
             return urls[0]
@@ -397,7 +417,13 @@ class OrgTwitterScraper(object):
         self.tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
 
     def parse(self, response):
-        tw_links = self.tw_link_ext.extract_links(response)
+        try:
+            tw_links = self.tw_link_ext.extract_links(response)
+        except SGMLParseError as e:
+            # Page was poorly formatted, oh well
+            _utilityscrapers_logger.error('Exception encountered when link extracting page: %s' % str(response.url))
+            return None
+
         urls = [x.url for x in tw_links]
         if len(urls) > 0:
             return urls[0]

@@ -155,6 +155,7 @@ class ScraperTests(unittest.TestCase):
     def test_contact_name_scraper(self):
         test_files = [
             "httpapneaaporgaboutusourboard",
+            "httpnhrcnicinContactUshtm",
         ]
 
         contact_name_scraper = ContactNameScraper()
@@ -170,7 +171,8 @@ class ScraperTests(unittest.TestCase):
                     names.append(ret)
 
         # Hardcoded results based on the sites that were crawled
-        assert_list = [{'name': "Gloria Steinem"},
+        assert_list = [ # from first site, US names
+                       {'name': "Gloria Steinem"},
                        {'name': "Jennifer Buffett"},
                        {'name': "Peter Buffett"},
                        {'name': "Vishakha Desai"},
@@ -191,7 +193,32 @@ class ScraperTests(unittest.TestCase):
                        {'name': "Lela Goren"},
                        {'name': "Ellyson Perkins"},
                        {'name': "Mona Sinha"},
-        ]
+                        # from second site, Indian names
+                       {'name': "Smt. Parvinder Sohi Behuria, IRS"},
+                       {'name': 'Smt. Kanwaljit Deol, IPS'},
+                       {'name': 'Sh. A.K. Garg'},
+                       {'name': 'Sh. Alok Kumar Shrivastava, IAS'},
+                       {'name': 'Sh. Jaideep Singh Kochher, IES'},
+                       {'name': 'Sh. Chandra Kant Tyagi'},
+                       {'name': 'Sh. Krishna Pal Singh'},
+                       {'name': 'Sh. P.C. Joshi'},
+                       {'name': 'Sh. B.P. Vishwakarma'},
+                       {'name': 'Sh. Viplav Kumar'},
+                       {'name': 'Sh. A.K. Parashar'},
+                       {'name': 'Sh. Pupul Dutta Prasad'},
+                       {'name': 'Sh. Sanjay kumar Jain'},
+                       {'name': 'Dr. Savita Bhakhry'},
+                       {'name': 'Smt. Shoba George'},
+                       {'name': 'Sh. Sunil Arora'},
+                       {'name': 'Sh. Rishi Pal'},
+                       {'name': 'Sh. B.S. Nagar'},
+                       {'name': 'Sh. D.M. Tripathy'},
+                       {'name': 'Sh. Khwaja Abdul Hafeez'},
+                       {'name': 'Sh. Khaleel Ahmad'},
+                       {'name': 'Sh. Mujesh Kumar'},
+                       {'name': 'Sh. Indrajeet Kumar'},
+                       {'name': 'Sh. C.S. Mawri'},
+                       {'name': 'Sh. Krishna Kumar Shrivastava'}]
 
         for test in assert_list:
             self.assertIn(test, names, 'Name {0} not found'.format(str(test)))
@@ -280,6 +307,7 @@ class ScraperTests(unittest.TestCase):
         test_files = [
             "httpwwwstoptraffickingnet",
             "httpnewsunledunewsroomsunltoday",
+            "httpespngocomespnradiodallasplay",
         ]
 
         link_scraper = LinkScraper()
