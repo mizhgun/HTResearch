@@ -5,9 +5,6 @@ from django.conf.urls import patterns, url
 # from django.contrib import admin
 # admin.autodiscover()
 
-handler404 = 'HTResearch.WebClient.WebClient.views.get_http_404_page'
-handler500 = handler404
-
 urlpatterns = patterns('HTResearch.WebClient.WebClient.views',
     # Examples:
     # url(r'^$', 'HTResearch.WebClient.views.home', name='home'),

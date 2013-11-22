@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
+from django.template.loader import get_template
+from django.template import Context
 from springpython.context import ApplicationContext
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
@@ -131,7 +133,9 @@ def contact_profile(request, contact_id):
 
 
 def get_http_404_page(request):
-    return HttpResponseNotFound('http_404.html')
+    template = get_template('404.html')
+    html = template.render(Context({}))
+    return HttpResponseNotFound(html, status=404)
 
 
 def unimplemented(request):
