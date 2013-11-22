@@ -4,10 +4,8 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadReque
 from springpython.context import ApplicationContext
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
+from mongoengine.fields import StringField, URLField, EmailField
 from springpython.context import ApplicationContext
-from mongoengine.fields import StringField, URLField
-
-from HTResearch.DataAccess.dto import OrganizationDTO
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
@@ -51,9 +49,10 @@ def heatmap_coordinates(request):
     return HttpResponse(addresses, content_type="application/json")
 
 
-def search(request):
-    if request.method == 'POST':
-        search_text = request.POST['search_text']
+def search_organizations(request):
+
+    if request.method == 'GET':
+        search_text = request.GET['search_text']
         logger.info('Search request made with search_text=%s' % search_text)
     else:
         search_text = ''
@@ -65,11 +64,33 @@ def search(request):
 
         organizations = org_dao.text_search(search_text, 10, 'name')
 
-        for org in organizations:
-            encode_org(org)
+        for dto in organizations:
+            encode_dto(dto)
 
     params = {'organizations': organizations}
-    return render_to_response('search_results.html', params)
+    return render_to_response('org_search_results.html', params)
+
+
+def search_contacts(request):
+
+    if request.method == 'GET':
+        search_text = request.GET['search_text']
+    else:
+        search_text = ''
+
+    contacts = []
+
+    if search_text:
+        ctx = ApplicationContext(DAOContext())
+        contact_dao = ctx.get_object('ContactDAO')
+
+        contacts = contact_dao.text_search(search_text, 10, 'last_name')
+
+        for dto in contacts:
+            encode_dto(dto)
+
+    params = {'contacts': contacts}
+    return render_to_response('contact_search_results.html', params)
 
 
 def organization_profile(request, org_id):
@@ -117,12 +138,11 @@ def unimplemented(request):
     return render_to_response('unimplemented.html')
 
 
-# Encodes the fields to JSON
-def encode_org(org):
-    # Make each organization non-string attribute into valid JSON
-    fields_dict = OrganizationDTO._fields
-    string_types = (StringField, URLField)
+# Encodes a DTO's non-string fields to JSON
+def encode_dto(dto):
+    dto_type = type(dto)
+    fields_dict = dto_type._fields
+    string_types = (StringField, URLField, EmailField)
     json_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) not in string_types]
-    # Find all non-string fields
     for field in json_fields:
-        org[field] = MongoJSONEncoder().encode(org[field])
+        dto[field] = MongoJSONEncoder().encode(dto[field])
