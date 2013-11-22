@@ -2,6 +2,7 @@ from sgmllib import SGMLParseError
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from ..items import ScrapedUrl
 from HTResearch.Utilities.url_tools import UrlUtility
+from HTResearch.Utilities.logutil import LoggingUtility, LoggingSection
 from datetime import datetime
 
 
@@ -10,6 +11,7 @@ class LinkScraper:
 
     def __init__(self):
         self._link_extractor = SgmlLinkExtractor()
+        self._logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
 
     def parse(self, response):
         """Scrape a spider's HttpRequest.Response for links"""
@@ -21,8 +23,9 @@ class LinkScraper:
         # use scrapy SgmlLinkExtractor to extract links
         try:
             links = self._link_extractor.extract_links(response)
-        except SGMLParseError:
+        except SGMLParseError as e:
             # Page was poorly formatted, oh well
+            self._logger.error('Exception encountered when link extracting page')
             return []
 
         # add these links to our Url item
