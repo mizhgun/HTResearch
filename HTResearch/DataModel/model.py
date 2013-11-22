@@ -65,3 +65,17 @@ class URLMetadata(object):
         self.score = score
         self.update_freq = update_freq
         self.checksum = checksum
+
+
+class User(object):
+    """A Model class for a user of the anti-trafficking system."""
+
+    def __init__(self, first, last, email, phone, organization, position, interests=None, address=None):
+        self.first = first
+        self.last = last
+        self.email = email
+        self.phone = phone
+        self.organization = organization
+        self.position = position
+        self.interests = interests
+        self.address = address

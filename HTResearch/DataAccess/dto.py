@@ -50,3 +50,17 @@ class URLMetadataDTO(mongo.Document):
     score = mongo.IntField(db_field='s')
     update_freq = mongo.IntField(db_field='f')
     checksum = mongo.BinaryField(db_field='c')
+
+
+class UserDTO(mongo.Document):
+    """A DTO wrapper for User documents"""
+
+    first = mongo.StringField(db_field='f')
+    last = mongo.StringField(db_field='l')
+    email = mongo.EmailField(db_field='e')
+    password = mongo.StringField(db_field='pa')
+    phone = mongo.StringField(db_field='ph')
+    organization = mongo.ReferenceField(OrganizationDTO, db_field='o')
+    interests = mongo.ListField(mongo.StringField, db_field='i')
+    position = mongo.StringField(db_field='po')
+    address = mongo.StringField(db_field='a')
