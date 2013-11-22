@@ -1,7 +1,7 @@
 {% if organizations.count > 0 %}
     {% for organization in organizations %}
         <li>
-            <a  class="org_link"
+            <a  class="org-link"
                 id="org-{{ organization.id }}"
                 data-id="{{ organization.id }}"
                 data-name="{{ organization.name }}"

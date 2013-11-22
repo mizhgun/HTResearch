@@ -1,7 +1,7 @@
 {% if contacts.count > 0 %}
     {% for contact in contacts %}
         <li>
-            <a class="contact_link"
+            <a class="contact-link"
                 id="org-{{ contact.id }}"
                 data-id="{{ contact.id }}"
                 data-first_name="{{ contact.first_name }}"

@@ -54,7 +54,7 @@ function initialize() {
         }
     });
 
-	$('a.org_link').click(function(e){
+	$('a.org-link').click(function(e){
         geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization);
     });
 
@@ -75,7 +75,7 @@ function showSearchResults() {
                 toggleSelector: '#organization-toggle',
                 collapseSelector: '#collapse-organizations',
                 listSelector: '#organization-search-list',
-                linkSelector: '.org_link',
+                linkSelector: '.org-link',
                 linkCallback: showOrganizationModal
             },
             {
@@ -84,7 +84,7 @@ function showSearchResults() {
                 toggleSelector: '#contact-toggle',
                 collapseSelector: '#collapse-contacts',
                 listSelector: '#contact-search-list',
-                linkSelector: '.contact_link',
+                linkSelector: '.contact-link',
                 linkCallback: showContactModal
             }
         ];
