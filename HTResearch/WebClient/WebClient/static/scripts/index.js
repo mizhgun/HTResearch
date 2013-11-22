@@ -20,10 +20,6 @@ function initialize() {
         
 	//Didn't accept a jquery selector
 	map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
-	//var mapControls = new GLargeMapControl3D();
-	//var bottomLeft = new GControlPosition(G_ANCHOR_BOTTOM_LEFT, new GSize(10,10));
-	//map.removeControl(mapTypeControl)
-	//map.addControl(mapControls, bottomLeft);
 
 	$('#signup-btn').click(function(e) {
 		$('#signup-div').easyModal({
@@ -58,6 +54,13 @@ function initialize() {
             return false;
         }
     });
+
+	$('a.org_link').click(function(e){
+        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization);
+    });
+
+    //This function is in welcome.js
+    google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
 }
 
 function showSearchResults() {

@@ -16,7 +16,6 @@ from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
 
 logger = LoggingUtility().get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
-
 REFRESH_ADDRESS_LIST = timedelta(minutes=5)
 
 def index(request):
