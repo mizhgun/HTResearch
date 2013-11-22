@@ -7,7 +7,8 @@ class Contact(object):
     def __init__(self, first_name=None, last_name=None,
                  primary_phone=None, secondary_phone=None,
                  email=None, organizations=[],
-                 publications=[], position=None):
+                 publications=[], position=None,
+                 keywords={}):
         self.first_name = first_name
         self.last_name = last_name
         self.primary_phone = primary_phone
@@ -16,6 +17,7 @@ class Contact(object):
         self.organizations = organizations
         self.publications = publications
         self.position = position
+        self.keywords = keywords
 
 
 class Organization(object):
@@ -25,7 +27,8 @@ class Organization(object):
                  types=[], phone_numbers=[], email_key=None,
                  emails=[], contacts=[],
                  organization_url=None,
-                 partners=[], facebook=None, twitter=None):
+                 partners=[], facebook=None, twitter=None,
+                 keywords={}):
         self.name = name
         self.address = address
         self.types = types
@@ -37,6 +40,7 @@ class Organization(object):
         self.partners = partners
         self.facebook = facebook
         self.twitter = twitter
+        self.keywords = keywords
 
 
 class Publication(object):
