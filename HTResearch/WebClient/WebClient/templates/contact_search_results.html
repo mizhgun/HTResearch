@@ -1,0 +1,20 @@
+{% if contacts.count > 0 %}
+    {% for contact in contacts %}
+        <li>
+            <a class="contact_link"
+                id="org-{{ contact.id }}"
+                data-id="{{ contact.id }}"
+                data-first_name="{{ contact.first_name }}"
+                data-last_name="{{ contact.last_name }}"
+                data-primary_phone="{{ contact.primary_phone }}"
+                data-secondary_phone="{{ contact.secondary_phone }}"
+                data-email="{{ contact.email }}"
+                data-organizations="{{ contact.organizations }}"
+                data-publications="{{ contact.publications }}"
+                data-position="{{ contact.position }}"
+            href="javascript:void(0)">{{ contact.first_name }} {{ contact.last_name }}</a>
+        </li>
+    {% endfor %}
+{% else %}
+    <li>None</li>
+{% endif %}
