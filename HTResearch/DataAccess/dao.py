@@ -45,9 +45,12 @@ class DAO(object):
     def findmany(self, num_elements, *sort_fields, **constraints):
         with self.conn():
             if len(sort_fields) > 0:
-                return self.dto.objects(**constraints).order_by(*sort_fields)[:num_elements]
+                ret = self.dto.objects(**constraints).order_by(*sort_fields)
             else:
-                return self.dto.objects(**constraints)[:num_elements]
+                ret = self.dto.objects(**constraints)
+            if num_elements != 0:
+                return ret[:num_elements]
+            return ret
 
     # Search all string fields for text and return list of results
     # NOTE: may be slower than MongoDB's text search feature, which is unfortunately unusable because it is in beta

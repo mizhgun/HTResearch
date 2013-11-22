@@ -254,4 +254,6 @@ function createBootstrapModal(m, modal_template, data){
     m.modal('show');
 }
 
-google.maps.event.addDomListener(window, 'load', _.once(initialize));
+$(function(){
+    initialize();
+});
