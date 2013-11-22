@@ -44,7 +44,7 @@ function loadCoordinates(success_cb) {
         data: {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
         },
-        success: function ( json_string ) {
+        success: function(json_string) {
             var addresses = $.parseJSON(json_string);
             var i;
             for (i = 0; i < addresses.length; i++) {

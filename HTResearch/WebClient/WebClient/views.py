@@ -52,8 +52,8 @@ def heatmap_coordinates(request):
 
 def search_organizations(request):
 
-    if request.method == 'POST':
-        search_text = request.POST['search_text']
+    if request.method == 'GET':
+        search_text = request.GET['search_text']
         logger.info('Search request made with search_text=%s' % search_text)
     else:
         search_text = ''
@@ -74,8 +74,8 @@ def search_organizations(request):
 
 def search_contacts(request):
 
-    if request.method == 'POST':
-        search_text = request.POST['search_text']
+    if request.method == 'GET':
+        search_text = request.GET['search_text']
     else:
         search_text = ''
 

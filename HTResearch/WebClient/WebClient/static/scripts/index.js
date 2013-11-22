@@ -51,7 +51,7 @@ function initialize() {
     $('#search-box').bind("keyup change", _.debounce(showSearchResults, 300));
 
     // prevent form submit on enter
-    $('#search-box').bind('keyup keypress', function (e) {
+    $('#search-box').bind('keyup keypress', function(e) {
         var code = e.keyCode || e.which;
         if (code == 13) {
             e.preventDefault();
@@ -88,17 +88,17 @@ function showSearchResults() {
         ];
 
         // Perform each search
-        _.each(searchItems, function (item) {
+        _.each(searchItems, function(item) {
             startAjaxSearch();
             $.ajax({
-                type: 'POST',
+                type: 'GET',
                 url: item.url,
                 data: {
                     'search_text': $('#search-box').val(),
                     'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
                 },
                 dataType: 'html'
-            }).done(function (data) {
+            }).done(function(data) {
                 data = data.trim();
                 if (data) {
                     $(item.toggleSelector).attr('data-toggle', 'collapse');
@@ -109,15 +109,15 @@ function showSearchResults() {
                     $(item.toggleSelector).addClass('disabled');
                     $(item.collapseSelector).collapse('hide');
                 }
-                $(item.toggleSelector).click(function (e) {
+                $(item.toggleSelector).click(function(e) {
                     e.preventDefault();
                 });
                 $(item.listSelector).html(data);
                 $('.modal').modal({ show: false });
                 $(item.linkSelector).click(item.linkCallback);
-            }).fail(function () {
+            }).fail(function() {
                 console.log(item.name, 'search failed');
-            }).always(function () {
+            }).always(function() {
                 endAjaxSearch();
             });
         });
