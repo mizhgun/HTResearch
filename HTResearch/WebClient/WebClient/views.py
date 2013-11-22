@@ -80,7 +80,7 @@ def organization_profile(request, org_id):
     try:
         org = org_dao.find(id=org_id)
     except Exception as e:
-        logger.exception('Exception encountered on organization lookup for org_id=%s' % org_id, e)
+        logger.error('Exception encountered on organization lookup for org_id=%s' % org_id)
         print e.message
         return get_http_404_page(request)
 
@@ -95,7 +95,7 @@ def contact_profile(request, contact_id):
     try:
         contact = contact_dao.find(id=contact_id)
     except Exception as e:
-        logger.exception('Exception encountered on contact lookup for contact_id=%s' % contact_id, e)
+        logger.error('Exception encountered on contact lookup for contact_id=%s' % contact_id)
         print e.message
         return get_http_404_page(request)
 
