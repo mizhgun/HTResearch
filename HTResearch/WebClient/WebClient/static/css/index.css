@@ -169,7 +169,10 @@ body {
     opacity: 0.75;
     overflow-y: auto;
     width: 90%;
+    max-height: -moz-calc(100% - 80px);
     max-height: -webkit-calc(100% - 80px);
+    max-height: -o-calc(100% - 80px);
+    max-height: calc(100% - 80px);
 }
 
 #search-results-div:hover {
