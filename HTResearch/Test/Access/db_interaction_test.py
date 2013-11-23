@@ -55,6 +55,12 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.publication = Publication(title="The Book of Yee",
                                        authors=[self.contact])
         self.urlmetadata = URLMetadata(url="http://google.com")
+        self.user = User(first="Bee", last="Yee",
+                         email="beeyee@yee.com",
+                         address="123 Yee Street",
+                         organization=self.organization,
+                         position="Yee-est of Bees",
+                         phone="402-402-4020")
 
         self.ctx = ApplicationContext(TestableDAOContext())
 
@@ -172,7 +178,6 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'PublicationDAO tests passed'
 
-
     def test_urlmetadata_dao(self):
         url_dto = DTOConverter.to_dto(URLMetadataDTO, self.urlmetadata)
         url_dao = self.ctx.get_object("URLMetadataDAO")
@@ -199,6 +204,37 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertTrue(assert_url is None)
 
         print 'URLMetadataDAO tests passed'
+
+    def test_user_dao(self):
+        user_dto = DTOConverter.to_dto(UserDTO, self.user)
+        user_dao = self.ctx.get_object("UserDAO")
+
+        print 'Testing user creation ...'
+        user_dao.create_update(user_dto)
+
+        assert_user = user_dao.find(id=user_dto.id)
+
+        self.assertEqual(assert_user.id, user_dto.id)
+
+        print 'Testing user editing ...'
+        user_dto.first = "Byee"
+        user_dto.last = "Ybee"
+
+        user_dao.create_update(user_dto)
+
+        assert_user = user_dao.find(id=user_dto.id)
+
+        self.assertEqual(assert_user.id, user_dto.id)
+        self.assertEqual(assert_user.first, user_dto.first)
+        self.assertEqual(assert_user.last, user_dto.last)
+
+        print 'Testing user deletion ...'
+        user_dao.delete(user_dto)
+
+        assert_user = user_dao.find(id=user_dto.id)
+        self.assertTrue(assert_user is None)
+
+        print 'UserDAO tests passed'
 
     def test_merge_records(self):
         contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)
