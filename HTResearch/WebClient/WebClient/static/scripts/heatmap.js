@@ -22,7 +22,7 @@ var heatMapGradient = [
     'rgba(191, 0, 31, 1)',
     'rgba(255, 0, 0, 1)'
 ];
-var heatMapRadius = 15;
+var heatMapRadius = 30;
 
 function createHeatMap() {
     var pointArray = new google.maps.MVCArray(orgCoordinates);
@@ -36,8 +36,6 @@ function createHeatMap() {
 function loadCoordinates(success_cb) {
     // Clear array
     orgCoordinates.length = 0;
-    var geocoder = new google.maps.Geocoder();
-
     $.ajax({
         type: 'GET',
         url: '/heatmap_coordinates/',
@@ -45,22 +43,17 @@ function loadCoordinates(success_cb) {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
         },
         success: function(json_string) {
-            var addresses = $.parseJSON(json_string);
+            var coordinates = $.parseJSON(json_string);
             var i;
-            for (i = 0; i < addresses.length; i++) {
-                addr = addresses[i];
-                geocoder.geocode({'address': addr}, function(results, status){
-                    var lat; var lng;
-                    if(status == google.maps.GeocoderStatus.OK){
-                        lat = results[0].geometry.location.lat();
-                        lng = results[0].geometry.location.lng();
-                        var gCoord = new google.maps.LatLng(lat, lng);
-                        orgCoordinates.push(gCoord);
-                        // Rebuild heatmap
-                        success_cb();
-                    }
-                });
+            for (i = 0; i < coordinates.length; i++) {
+                var coord = coordinates[i];
+                var lat = coord[0];
+                var lng = coord[1];
+                var gCoord = new google.maps.LatLng(lat, lng);
+                orgCoordinates.push(gCoord);
             }
+            // Rebuild heatmap
+            success_cb();
         },
         dataType: 'html'
     });

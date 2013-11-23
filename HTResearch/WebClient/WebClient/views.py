@@ -14,7 +14,8 @@ from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
 
 logger = LoggingUtility().get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
-REFRESH_ADDRESS_LIST = timedelta(minutes=5)
+REFRESH_COORDS_LIST = timedelta(minutes=5)
+
 
 def index(request):
     logger.info('Request made for index')
@@ -30,23 +31,23 @@ def heatmap_coordinates(request):
     if request.method != 'GET':
         return HttpResponseBadRequest
 
-    addresses = cache.get('organization_address_list')
-    last_update = cache.get('organization_address_list_last_update')
-    if not addresses or not last_update or (datetime.now() - last_update > REFRESH_ADDRESS_LIST):
-        str_addresses = []
+    coords = cache.get('organization_coords_list')
+    last_update = cache.get('organization_coords_list_last_update')
+    if not coords or not last_update or (datetime.now() - last_update > REFRESH_COORDS_LIST):
+        new_coords = []
         cache.set('organization_address_list_last_update', datetime.now())
         ctx = ApplicationContext(DAOContext())
         org_dao = ctx.get_object('OrganizationDAO')
-        organizations = org_dao.findmany(0, address__exists=True, address__ne='')
+        organizations = org_dao.findmany(0, latlng__exists=True, latlng__ne=[])
         for org in organizations:
-            str_addresses.append(org.address)
+            new_coords.append(org.latlng)
 
-        addresses = MongoJSONEncoder().encode(str_addresses)
+        coords = MongoJSONEncoder().encode(new_coords)
 
-        if len(addresses) > 0:
-            cache.set('organization_address_list', addresses)
+        if len(coords) > 0:
+            cache.set('organization_coords_list', coords)
 
-    return HttpResponse(addresses, content_type="application/json")
+    return HttpResponse(coords, content_type="application/json")
 
 
 def search_organizations(request):

@@ -2,7 +2,8 @@ from mongoengine import Q
 from dto import *
 from connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
-from mongoengine.fields import StringField, URLField, EmailField, ListField, ObjectIdField
+from HTResearch.Utilities.geocoder import geocode
+from mongoengine.fields import StringField, URLField, EmailField
 
 
 class DAO(object):
@@ -127,15 +128,19 @@ class OrganizationDAO(DAO):
 
         # Injected dependencies
         self.contact_dao = ContactDAO
+        self.geocode = geocode
 
     def merge_documents(self, existing_org_dto, new_org_dto):
         with self.conn():
             attributes = new_org_dto._data
             for key in attributes:
-                if attributes[key]:
+                if attributes[key] or key == 'latlng':
                     cur_attr = getattr(existing_org_dto, key)
                     if not cur_attr:
-                        setattr(existing_org_dto, key, attributes[key])
+                        if key == 'latlng' and not attributes['latlng'] and attributes['address']:
+                            setattr(existing_org_dto, key, self.geocode(attributes['address']))
+                        else:
+                            setattr(existing_org_dto, key, attributes[key])
                     elif type(cur_attr) is list:
                         merged_list = list(set(cur_attr + attributes[key]))
                         # if this is org types and we have more than one org type, make sure unknown isn't a type :P
@@ -160,6 +165,9 @@ class OrganizationDAO(DAO):
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, org_dto)
                     return saved_dto
+                elif org_dto.latlng is None and org_dto.address:
+                    # Geocode it
+                    org_dto.latlng = self.geocode(org_dto.address)
 
             org_dto.save()
         return org_dto
