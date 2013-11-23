@@ -34,6 +34,9 @@ class TestableDAOContext(DAOContext):
     def RegisteredURLMetadataDAO(self):
         return MockURLMetadataDAO
 
+    @Object()
+    def RegisteredGeocode(self):
+        return lambda x: [0.0, 0.0]
 
 class DatabaseInteractionTest(unittest.TestCase):
 

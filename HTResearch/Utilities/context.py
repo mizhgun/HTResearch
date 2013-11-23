@@ -4,6 +4,7 @@ from springpython.config import *
 # project imports
 from HTResearch.DataAccess.dao import *
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from HTResearch.Utilities.geocoder import geocode
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import UrlMetadataScraper
 from HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches import ItemSwitch
@@ -25,6 +26,7 @@ class DAOContext(PythonConfig):
         dao = OrganizationDAO()
         dao.conn = self.RegisteredDBConnection()
         dao.contact_dao = self.RegisteredContactDAO()
+        dao.geocode = self.RegisteredGeocode()
         return dao
 
     @Object()
@@ -61,6 +63,10 @@ class DAOContext(PythonConfig):
     @Object()
     def RegisteredURLMetadataDAO(self):
         return URLMetadataDAO
+
+    @Object()
+    def RegisteredGeocode(self):
+        return geocode
 
 
 class DocumentScraperContext(PythonConfig):
