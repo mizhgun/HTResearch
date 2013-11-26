@@ -42,6 +42,12 @@ class DAOContext(PythonConfig):
         dao.conn = self.RegisteredDBConnection()
         return dao
 
+    @Object()
+    def UserDAO(self):
+        dao = UserDAO()
+        dao.conn = self.RegisteredDBConnection()
+        dao.org_dao = self.RegisteredOrganizationDAO()
+        return dao
 
     # Registered classes to instantiate dependencies
     @Object()
