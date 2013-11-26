@@ -251,7 +251,7 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Asserting that the old contact was updated'
         assert_contact = contact_dao.find(id=contact_dto.id)
-        self.assertEqual(assert_contact.primary_phone, new_contact_dto.primary_phone)
+        self.assertEqual(assert_contact.phone, new_contact_dto.phone)
 
         print 'Merge records tests passed'
 
