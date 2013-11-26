@@ -17,7 +17,6 @@ class Contact(object):
         self.organizations = organizations
         self.publications = publications
         self.position = position
-        self.keywords = keywords
 
 
 class Organization(object):

@@ -20,7 +20,6 @@ class ScrapedContact(Item):
     organizations = Field()
     publications = Field()
     position = Field()
-    keywords = Field()
 
 
 class ScrapedContactName(Item):

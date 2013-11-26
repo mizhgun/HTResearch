@@ -12,7 +12,6 @@ class ContactDTO(mongo.Document):
     organizations = mongo.ListField(mongo.ReferenceField('OrganizationDTO'), db_field='os')
     publications = mongo.ListField(mongo.ReferenceField('PublicationDTO'), db_field='ps')
     position = mongo.StringField(db_field='pn')
-    keywords = mongo.MapField(mongo.FloatField(), db_field='ks')
 
 
 class OrganizationDTO(mongo.Document):
