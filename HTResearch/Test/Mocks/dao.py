@@ -103,6 +103,7 @@ class MockOrganizationDAO(MockDAO):
         super(MockOrganizationDAO, self).__init__()
         self.dto = OrganizationDTO
         self.contact_dao = MockContactDAO
+        self.geocode = lambda x: [0, 0]
 
     def create_update(self, org_dto):
         with self.conn():

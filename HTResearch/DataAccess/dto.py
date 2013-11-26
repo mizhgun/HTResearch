@@ -20,6 +20,7 @@ class OrganizationDTO(mongo.Document):
 
     name = mongo.StringField(db_field='n')
     address = mongo.StringField(db_field='a')
+    latlng = mongo.ListField(db_field='l')
     types = mongo.ListField(mongo.IntField(), db_field='ts')
     phone_numbers = mongo.ListField(db_field='ns')
     email_key = mongo.EmailField(db_field='ek')
