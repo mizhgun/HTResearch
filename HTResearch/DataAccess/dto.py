@@ -6,8 +6,7 @@ class ContactDTO(mongo.Document):
 
     first_name = mongo.StringField(db_field='f')
     last_name = mongo.StringField(db_field='l')
-    primary_phone = mongo.IntField(db_field='p1')
-    secondary_phone = mongo.IntField(db_field='p2')
+    phone = mongo.IntField(db_field='p1')
     email = mongo.EmailField(db_field='e')
     organizations = mongo.ListField(mongo.ReferenceField('OrganizationDTO'), db_field='os')
     publications = mongo.ListField(mongo.ReferenceField('PublicationDTO'), db_field='ps')
