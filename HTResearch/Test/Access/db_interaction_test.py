@@ -55,7 +55,7 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.publication = Publication(title="The Book of Yee",
                                        authors=[self.contact])
         self.urlmetadata = URLMetadata(url="http://google.com")
-        self.user = User(first="Bee", last="Yee",
+        self.user = User(first_name="Bee", last_name="Yee",
                          email="beeyee@yee.com",
                          address="123 Yee Street",
                          organization=self.organization,
@@ -225,8 +225,8 @@ class DatabaseInteractionTest(unittest.TestCase):
         assert_user = user_dao.find(id=user_dto.id)
 
         self.assertEqual(assert_user.id, user_dto.id)
-        self.assertEqual(assert_user.first, user_dto.first)
-        self.assertEqual(assert_user.last, user_dto.last)
+        self.assertEqual(assert_user.first_name, user_dto.first_name)
+        self.assertEqual(assert_user.last_name, user_dto.last_name)
 
         print 'Testing user deletion ...'
         user_dao.delete(user_dto)

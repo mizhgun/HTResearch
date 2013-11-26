@@ -70,9 +70,9 @@ class URLMetadata(object):
 class User(object):
     """A Model class for a user of the anti-trafficking system."""
 
-    def __init__(self, first, last, email, phone, organization, position, interests=None, address=None):
-        self.first = first
-        self.last = last
+    def __init__(self, first_name, last_name, email, phone, organization, position, interests=None, address=None):
+        self.first_name = first_name
+        self.last_name = last_name
         self.email = email
         self.phone = phone
         self.organization = organization

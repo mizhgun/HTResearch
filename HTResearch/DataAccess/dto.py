@@ -55,8 +55,8 @@ class URLMetadataDTO(mongo.Document):
 class UserDTO(mongo.Document):
     """A DTO wrapper for User documents"""
 
-    first = mongo.StringField(db_field='f')
-    last = mongo.StringField(db_field='l')
+    first_name = mongo.StringField(db_field='f')
+    last_name = mongo.StringField(db_field='l')
     email = mongo.EmailField(db_field='e')
     password = mongo.StringField(db_field='pa')
     phone = mongo.StringField(db_field='ph')
