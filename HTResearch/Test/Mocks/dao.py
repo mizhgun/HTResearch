@@ -167,3 +167,22 @@ class MockURLMetadataDAO(MockDAO):
 
             url_dto.save()
         return url_dto
+
+
+class MockUserDAO(MockDAO):
+
+    def __init__(self):
+        super(MockUserDAO, self).__init__()
+        self.dto = UserDTO
+
+        # Injected dependencies
+        self.org_dao = MockOrganizationDAO
+
+    def create_update(self, user_dto):
+        with self.conn():
+            if user_dto.organization is not None:
+                o = user_dto.organization
+                user_dto.organization = self.org_dao().create_update(o)
+
+            user_dto.save()
+        return user_dto

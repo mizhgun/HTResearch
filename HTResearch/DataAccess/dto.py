@@ -6,8 +6,7 @@ class ContactDTO(mongo.Document):
 
     first_name = mongo.StringField(db_field='f')
     last_name = mongo.StringField(db_field='l')
-    primary_phone = mongo.IntField(db_field='p1')
-    secondary_phone = mongo.IntField(db_field='p2')
+    phone = mongo.IntField(db_field='p1')
     email = mongo.EmailField(db_field='e')
     organizations = mongo.ListField(mongo.ReferenceField('OrganizationDTO'), db_field='os')
     publications = mongo.ListField(mongo.ReferenceField('PublicationDTO'), db_field='ps')
@@ -51,3 +50,17 @@ class URLMetadataDTO(mongo.Document):
     score = mongo.IntField(db_field='s')
     update_freq = mongo.IntField(db_field='f')
     checksum = mongo.BinaryField(db_field='c')
+
+
+class UserDTO(mongo.Document):
+    """A DTO wrapper for User documents"""
+
+    first_name = mongo.StringField(db_field='f')
+    last_name = mongo.StringField(db_field='l')
+    email = mongo.EmailField(db_field='e')
+    password = mongo.StringField(db_field='pa')
+    phone = mongo.StringField(db_field='ph')
+    organization = mongo.ReferenceField(OrganizationDTO, db_field='o')
+    interests = mongo.ListField(mongo.StringField, db_field='i')
+    position = mongo.StringField(db_field='po')
+    address = mongo.StringField(db_field='a')
