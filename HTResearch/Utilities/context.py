@@ -88,6 +88,7 @@ class DocumentScraperContext(PythonConfig):
             'partners': [self.RegisteredOrgPartnersScraper()],
             'facebook': [self.RegisteredFacebookScraper()],
             'twitter': [self.RegisteredTwitterScraper()],
+            'keywords': [self.RegisteredKeywordScraper()],
         }
         return org
 

@@ -5,6 +5,7 @@ from urlparse import urlparse, urljoin
 import string
 import datetime
 import hashlib
+import operator
 
 from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
@@ -292,13 +293,13 @@ class KeywordScraper(object):
         #Run a frequency distribution on the web page body
         freq_dist = FreqDist(all_words)
 
-        #Parse the distribution into individual words without frequencies
-        keywords = freq_dist.keys()
-
         #Remove ignored words
-        parsed_keywords = [word for word in keywords if word not in self.stopwords]
+        for word in self.stopwords:
+            if word in freq_dist:
+                del freq_dist[word]
 
-        most_freq_keywords = parsed_keywords[:self.NUM_KEYWORDS]
+        # Take the NUM_KEYWORDS most frequent keywords
+        most_freq_keywords = dict(sorted(freq_dist.iteritems(), key=operator.itemgetter(1), reverse=True)[:self.NUM_KEYWORDS])
         return most_freq_keywords
 
 
@@ -662,8 +663,8 @@ class OrgTypeScraper(object):
     # Get the organization type
     def parse(self, response):
 
-        # Get keywords
-        keywords = list(self._stemmer.stem(word) for word in self._keyword_scraper.parse(response))
+        # Get keywords (stemmed)
+        keywords = list(self._stemmer.stem(word) for word in self._keyword_scraper.parse(response).iterkeys())
 
         # Get all words
         all_words = []
