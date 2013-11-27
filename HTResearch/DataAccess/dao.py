@@ -207,8 +207,6 @@ class OrganizationDAO(DAO):
         return existing_dto
 
 
-
-
 class PublicationDAO(DAO):
     """
     A DAO for the Publication document
@@ -233,7 +231,8 @@ class PublicationDAO(DAO):
                     return saved_dto
 
             if pub_dto.publisher is not None:
-                self.contact_dao().create_update(pub_dto.publisher)
+                p = pub_dto.publisher
+                pub_dto.publisher = self.contact_dao().create_update(p)
 
             pub_dto.save()
         return pub_dto
@@ -286,3 +285,22 @@ class URLMetadataDAO(DAO):
                 return URLMetadataDTO.objects(req_query & blk_query).order_by(*sort_fields)[:num_elements]
             else:
                 return URLMetadataDTO.objects(req_query & blk_query)[:num_elements]
+
+
+class UserDAO(DAO):
+
+    def __init__(self):
+        super(UserDAO, self).__init__()
+        self.dto = UserDTO
+
+        # Injected dependencies
+        self.org_dao = OrganizationDAO
+
+    def create_update(self, user_dto):
+        with self.conn():
+            if user_dto.organization is not None:
+                o = user_dto.organization
+                user_dto.organization = self.org_dao().create_update(o)
+
+            user_dto.save()
+        return user_dto

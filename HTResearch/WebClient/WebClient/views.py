@@ -134,6 +134,10 @@ def contact_profile(request, contact_id):
     return render_to_response('contact_profile_template.html', params)
 
 
+def login(request):
+    return render_to_response('login.html')
+
+
 def get_http_404_page(request):
     template = get_template('404.html')
     html = template.render(Context({}))
