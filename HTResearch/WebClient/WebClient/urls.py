@@ -25,4 +25,5 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views',
     url(r'^organization/(\w+)', 'organization_profile', name='org_prof'),
     url(r'^contact/(\w+)', 'contact_profile', name='con_prof'),
     url(r'^coming_soon/$', 'unimplemented', name='unimplemented'),
+    url(r'^login/$', 'login', name='login'),
 )
