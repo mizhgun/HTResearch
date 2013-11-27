@@ -12,6 +12,7 @@ from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
 from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
+import json
 
 
 logger = LoggingUtility().get_logger(LoggingSection.CLIENT, __name__)
@@ -151,3 +152,8 @@ def encode_dto(dto):
     json_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) not in string_types]
     for field in json_fields:
         dto[field] = MongoJSONEncoder().encode(dto[field])
+
+def get_org_keywords(request, org_id):
+    org_dao = ctx.get_object('OrganizationDAO')
+    org = org_dao.find(id=org_id)
+    return org.keywords

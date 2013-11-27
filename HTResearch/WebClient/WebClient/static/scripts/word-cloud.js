@@ -1,24 +1,11 @@
 var fill = d3.scale.category20();
 
-d3.layout.cloud().size([300, 300])
-	.words([
-	"Hello", "world", "normally", "you", "want", "more", "words",
-	"than", "this"].map(function(d) {
-	return {text: d, size: 10 + Math.random() * 90};
-}))
-    .padding(5)
-    //.rotate(0)
-    .font("Impact")
-    .fontSize(function(d) { return d.size; })
-    .on("end", draw)
-    .start();
-
 function draw(words) {
 	d3.select("#word-cloud").append("svg")
-    .attr("width", 400)
+    .attr("width", 600)
     .attr("height", 400)
   	.append("g")
-    .attr("transform", "translate(150,150)")
+    .attr("transform", "translate(300,200)")
   	.selectAll("text")
     .data(words)
   	.enter().append("text")
@@ -31,3 +18,16 @@ function draw(words) {
     })
     .text(function(d) { return d.text; });
 }
+
+$.get('/get_org_keywords/', document.URL.split("/")[4])
+	.done(function(result){
+		d3.layout.cloud().size([600, 400])
+		.words(result.keywords.map(function(d) {
+		return {text: d, size: 10 + Math.random() * 90};
+	}))
+    .padding(10)
+    .rotate(0)
+    .fontSize(function(d) { return d.size; })
+    .on("end", draw)
+    .start();
+});
