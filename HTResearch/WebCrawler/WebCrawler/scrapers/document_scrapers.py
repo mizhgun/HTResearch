@@ -2,10 +2,26 @@ from ..items import *
 from utility_scrapers import *
 
 
-class Contact:
+class ContactScraper():
 
-    def __init__(self):
-        contact = None
+    def parse(self, response):
+        #get all the values out of the dictionary that the Contact scraper returns
+        org_contact_scraper = OrgContactsScraper()
+        contact_dicts = org_contact_scraper.parse(response)
+        contacts = []
+        for name in contact_dicts.iterkeys():
+            contact = ScrapedContact()
+            name_split = name.split()
+            n = len(name_split)
+            contact['first_name'] = ' '.join(name_split[0:n-1])
+            contact['last_name'] = name_split[n-1]
+            contact['primary_phone'] = contact_dicts[name]['number']
+            contact['email'] = contact_dicts[name]['email']
+            contact['position'] = contact_dicts[name]['position']
+            contact['organization'] = contact_dicts[name]['organization']
+            contacts.append(contact)
+        return contacts
+
 
 
 class OrganizationScraper():
@@ -15,12 +31,12 @@ class OrganizationScraper():
         'types': [OrgTypeScraper()],
         'phone_number': [USPhoneNumberScraper(), IndianPhoneNumberScraper()],
         'email': [EmailScraper()],
-        'contacts': [OrgContactsScraper()],
+        'contacts': [ContactNameScraper()],
         'organization_url': [OrgUrlScraper()],
         'partners': [OrgPartnersScraper()],
     }
 
-    _multiple = ['types', 'phone_number', 'email', 'contacts', 'partners', ]
+    _multiple = ['types', 'phone_number', 'email', 'partners', 'contacts']
 
     def parse(self, response):
         organization = ScrapedOrganization()
@@ -31,6 +47,8 @@ class OrganizationScraper():
                 organization[field] = []
                 for scraper in self._scrapers[field]:
                     organization[field] += scraper.parse(response)
+            #elif field == 'contacts':
+            #    organization[field] = scraper.pa
             else:
                 # Get single field (e.g. name)
                 results = self._scrapers[field][0].parse(response)

@@ -131,6 +131,7 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test, names, 'Name {0} not found'.format(str(test)))
 
+
     def test_email_scraper(self):
         test_files = [
             "httpnhrcnicinContactUshtm",
@@ -328,6 +329,55 @@ class ScraperTests(unittest.TestCase):
         ]
         for test in assert_list:
             self.assertNotIn(test, partner_urls, 'Invalid URL (not a partner org): %s' % test)
+
+
+    def test_contact_scraper(self):
+        test_files = [
+            "httpwwwprajwalaindiacomcontactushtml",
+        ]
+
+        contact_scraper = ContactScraper()
+        contacts = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = contact_scraper.parse(response)
+                if isinstance(ret, type([])):
+                    contacts = contacts + ret
+                else:
+                    contacts.append(ret)
+
+        assert_list = [{'email': ['lalitha.gollamudi@gmail.com'],
+                         'first_name': 'Lalitha',
+                         'last_name': 'Gollamudi',
+                         'organization': 'PRAJWALA',
+                         'position': [None],
+                         'primary_phone': [None]}, {'email': ['praj_2010@yahoo.com'],
+                         'first_name': 'Ms',
+                         'last_name': 'Merline',
+                         'organization': 'PRAJWALA',
+                         'position': [None],
+                         'primary_phone': ['914024410813']}, {'email': ['lavanya.ravulapalli@gmail.com'],
+                         'first_name': 'Ms. Lavanya',
+                         'last_name': 'Ravulapalli',
+                         'organization': 'PRAJWALA',
+                         'position': [None],
+                         'primary_phone': [None]}, {'email': ['kmulhauser@consultingwomen.com'],
+                         'first_name': 'Ms Karen',
+                         'last_name': 'Mulhuaser',
+                         'organization': 'PRAJWALA',
+                         'position': [None],
+                         'primary_phone': [None]}, {'email': ['b.damico@proconf.ch'],
+                         'first_name': 'Ms',
+                         'last_name': 'Beatrice',
+                         'organization': 'PRAJWALA',
+                         'position': [None],
+                         'primary_phone': [None]
+        }]
+
+        for test in assert_list:
+            self.assertIn(test, contacts, 'Contact \'' + str(test) + '\' not found')
 
     def test_organization_scraper(self):
         test_files = [

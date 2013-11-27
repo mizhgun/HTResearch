@@ -24,7 +24,6 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 
 
 class ContactNameScraper:
-    # TODO: Find list of Indian names and add them to names.txt
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt')) as f:
             self._names = f.read().splitlines()
@@ -77,7 +76,6 @@ class ContactNameScraper:
 
         xpaths = []
         for item in no_tags.split():
-
             if (item in self._titles or item in self._names) and item in body:
                 potential_names.append(item)
                 tags = re.findall(self._tag, body[:body.index(item)])
@@ -186,8 +184,19 @@ class ContactNameScraper:
 
 class ContactPositionScraper:
 
-    def __init__(self):
-        self.position = ""
+        def __init__(self):
+            with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/positions.txt')) as f:
+                self._positions = f.read().splitlines()
+            self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
+            self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
+
+        def parse(self, response):
+            for position in self._positions:
+                if string.find(response.body, position) is not -1:
+                    return position
+
+
+
 
 
 class ContactPublicationsScraper:
@@ -370,7 +379,37 @@ class OrgContactsScraper:
         pass
 
     def parse(self, response):
-        return [] # not yet implemented
+        contact_indices = []
+        name_scraper = ContactNameScraper()
+        number_scraper = IndianPhoneNumberScraper()
+        email_scraper = EmailScraper()
+        position_scraper = ContactPositionScraper()
+        org_name_scraper = OrgNameScraper()
+
+        names = name_scraper.parse(response)
+        org_name = org_name_scraper.parse(response)
+        if names is not None:
+            contacts = {name.get('name'): {} for name in names}
+            for name in names:
+                n = string.find(response.body, name.get('name'))    #find the index of each contact so we can search
+                contact_indices.append(n)                           #only between the contacts for their info
+        for i in range(len(names)):
+            if i < len(names)-1:
+                cr = response.replace(body=response.body[contact_indices[i]:contact_indices[i+1]])
+            else:
+                cr = response.replace(body=response.body[contact_indices[i]:])
+            contacts[names[i].get('name')]['position'] = [position_scraper.parse(cr)
+                                                          if position_scraper.parse(cr)
+                                                          else None]
+            contacts[names[i].get('name')]['number'] = [number_scraper.parse(cr)[0]
+                                                        if number_scraper.parse(cr)
+                                                        else None]
+            contacts[names[i].get('name')]['email'] = [email_scraper.parse(cr)[0]
+                                                       if email_scraper.parse(cr)
+                                                       else None]
+            contacts[names[i].get('name')]['organization'] = org_name
+        return contacts
+
 
 
 class OrgNameScraper:
