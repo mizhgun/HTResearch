@@ -135,6 +135,10 @@ def login(request):
     return render_to_response('login.html')
 
 
+def signup(request):
+    return render_to_response('signup.html')
+
+
 def get_http_404_page(request):
     return HttpResponseNotFound('http_404.html')
 
