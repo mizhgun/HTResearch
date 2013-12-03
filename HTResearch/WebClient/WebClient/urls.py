@@ -26,4 +26,5 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views',
     url(r'^contact/(\w+)', 'contact_profile', name='con_prof'),
     url(r'^coming_soon/$', 'unimplemented', name='unimplemented'),
     url(r'^login/$', 'login', name='login'),
+    url(r'^signup/$', 'signup', name='signup'),
 )
