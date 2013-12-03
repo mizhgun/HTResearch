@@ -561,9 +561,8 @@ class ScraperTests(unittest.TestCase):
             ],
             'facebook': 'http://www.facebook.com/BombayTeenChallenge',
             'twitter': 'https://twitter.com/bombaytc',
-            'keywords': {'[]': 44, 'access': 32, 'addicts': 51, 'afraid': 32, 'allows': 32, 'ambedkar': 32, 'announced': 32, 'ashes': 32, 'bandra': 32, 'beauty': 32, 'began': 32, 'betrayed': 32, 'blog': 32, 'blogs': 32, 'bombay': 384, 'bound': 32, 'btc': 64, 'care': 51, 'challenge': 358, 'children': 64, 'contact': 64, 'donate': 64, 'drug': 64, 'education': 89, 'education.': 39, 'gift': 64, 'health': 96, 'homes': 83, 'india': 64, 'light': 64, 'live': 64, 'lives': 96, 'men': 53, 'mumbai': 102, 'music': 83, 'office': 38, 'out.': 39, 'programs': 53, 'read': 96, 'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'streets': 64, 'teen': 384, 'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'women': 112},
+            'keywords': {'[]': 44, 'access': 32, 'addict': 51, 'afraid': 32, 'allows': 32, 'ambedkar': 32, 'announced': 32, 'ash': 32, 'bandra': 32, 'beauty': 32, 'began': 32, 'betrayed': 32, 'blog': 64, 'bombay': 384, 'btc': 64, 'care': 51, 'challenge': 358, 'child': 64, 'contact': 64, 'district': 53, 'donate': 64, 'drug': 64, 'education': 89, 'education.': 39, 'gift': 64, 'health': 96, 'india': 96, 'life': 96, 'light': 64, 'live': 64, 'men': 53, 'mumbai': 128, 'music': 83, 'office': 38, 'out.': 39, 'program': 85, 'reach': 64, 'read': 96, 'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'street': 96, 'teen': 384, 'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'wa': 64, 'woman': 112},
         }]
-        print(orgs)
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
 
