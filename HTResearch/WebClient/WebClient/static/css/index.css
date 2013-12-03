@@ -208,6 +208,12 @@ body {
     right: 0;
 }
 
+#more-info-bs {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+}
+
 /*Navbar override*/
 .navbar {
     margin-bottom: 0px;
@@ -215,6 +221,12 @@ body {
 
 .modal-row {
     vertical-align: top;
+}
+
+#close-modal {
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 #map-modal {
