@@ -2,6 +2,13 @@ var lastIndex = 0;
 var INCREMENT = 50;
 var selectedSort = 'name';
 
+function trClick() {
+    var id = $(this).attr('data-id');
+    if (id) {
+        window.location.href = '/organization/' + id;
+    }
+}
+
 function getRows(start, end, sortField) {
     $.ajax({
         type: 'GET',
@@ -16,6 +23,7 @@ function getRows(start, end, sortField) {
             $(data).filter('.org-rank-row').each(function(index) {
                 lastIndex++;
                 $(this).children('.org-rank-index').text(lastIndex.toString());
+                $(this).dblclick(trClick);
                 $('#org-rank-table-body').append($(this));
             });
         },
