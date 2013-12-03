@@ -53,6 +53,17 @@ class DAO(object):
                 return ret[:num_elements]
             return ret
 
+    # NOTE: This method will not return an object when
+    # passed constraints that are reference types!
+    def find_set(self, start, end, *sort_fields, **constraints):
+        with self.conn():
+            if len(sort_fields) > 0:
+                ret = self.dto.objects(**constraints).order_by(*sort_fields)[start:end + 1]
+            else:
+                # Not sure why someone would do this...
+                ret = self.dto.objects(**constraints)[start:end + 1]
+            return ret
+
     # Search all string fields for text and return list of results
     # NOTE: may be slower than MongoDB's text search feature, which is unfortunately unusable because it is in beta
     def text_search(self, text, num_elements, *sort_fields):

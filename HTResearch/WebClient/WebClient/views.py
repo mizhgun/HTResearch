@@ -1,3 +1,4 @@
+from urlparse import urlparse
 from datetime import datetime, timedelta
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
@@ -129,6 +130,31 @@ def contact_profile(request, contact_id):
 
     params = {"contact": contact}
     return render_to_response('contact_profile_template.html', params)
+
+
+def org_rank(request, sort_method=''):
+    return render_to_response('org_rank.html')
+
+
+def get_org_rank_rows(request):
+    start = int(request.GET['start'])
+    end = int(request.GET['end'])
+    sort = request.GET['sort']
+
+    org_dao = ctx.get_object('OrganizationDAO')
+    organizations = list(org_dao.find_set(start, end, sort))
+
+    # add netloc to urls if needed
+    for org in organizations:
+        if org.organization_url is not None:
+            netloc = urlparse(org.organization_url).netloc
+            if netloc == "":
+                org.organization_url = "//" + org.organization_url
+
+
+    params = {'organizations': organizations}
+    x = render_to_response('org_rank_row.html', params)
+    return x
 
 
 def get_http_404_page(request):
