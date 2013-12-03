@@ -4,7 +4,7 @@ import os.path
 
 from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import *
 from HTResearch.Test.Mocks.utility_scrapers import *
-from HTResearch.Utilities.context import DocumentScraperContext, UrlMetadataScraperContext
+from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
 from springpython.context import ApplicationContext
 from springpython.config import Object
 
@@ -64,11 +64,21 @@ class TestableDocumentScraperContext(DocumentScraperContext):
     def RegisteredTwitterScraper(self):
         return MockOrgTwitterScraper
 
+    @Object()
+    def RegisteredKeywordScraper(self):
+        return MockKeywordScraper
+
 
 class TestableUrlMetadataScraperContext(UrlMetadataScraperContext):
     @Object()
     def RegisteredURLMetadataDAO(self):
         return MockURLMetadataDAO
+
+
+class TestableUtilityScraperContext(UtilityScraperContext):
+    @Object()
+    def RegisteredKeywordScraper(self):
+        return MockKeywordScraper
 
 
 class TestableDAOContext(DAOContext):
@@ -443,6 +453,7 @@ class ScraperTests(unittest.TestCase):
             self.assertIn(test, names, 'Name \'' + test + '\' not found')
 
     def test_org_type_scraper(self):
+        ctx = ApplicationContext(TestableUtilityScraperContext())
         test_files = [
             "httpbombayteenchallengeorg",
             "httpwwwnsagov",
@@ -552,6 +563,7 @@ class ScraperTests(unittest.TestCase):
             'twitter': 'https://twitter.com/bombaytc',
             'keywords': {'[]': 44, 'access': 32, 'addicts': 51, 'afraid': 32, 'allows': 32, 'ambedkar': 32, 'announced': 32, 'ashes': 32, 'bandra': 32, 'beauty': 32, 'began': 32, 'betrayed': 32, 'blog': 32, 'blogs': 32, 'bombay': 384, 'bound': 32, 'btc': 64, 'care': 51, 'challenge': 358, 'children': 64, 'contact': 64, 'donate': 64, 'drug': 64, 'education': 89, 'education.': 39, 'gift': 64, 'health': 96, 'homes': 83, 'india': 64, 'light': 64, 'live': 64, 'lives': 96, 'men': 53, 'mumbai': 102, 'music': 83, 'office': 38, 'out.': 39, 'programs': 53, 'read': 96, 'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'streets': 64, 'teen': 384, 'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'women': 112},
         }]
+        print(orgs)
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
 

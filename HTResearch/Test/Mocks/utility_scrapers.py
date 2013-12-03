@@ -5,6 +5,7 @@ from urlparse import urlparse, urljoin
 import string
 import datetime
 import hashlib
+import operator
 
 from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
@@ -278,8 +279,7 @@ class MockKeywordScraper(object):
 
     def __init__(self):
         #Load words to be ignored
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                               '../../WebCrawler/WebCrawler/Resources/stopwords.txt')) as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../WebCrawler/WebCrawler/Resources/stopwords.txt')) as f:
             self.stopwords = f.read().splitlines()
 
     def format_extracted_text(self, list):
@@ -318,13 +318,13 @@ class MockKeywordScraper(object):
         #Run a frequency distribution on the web page body
         freq_dist = FreqDist(all_words)
 
-        #Parse the distribution into individual words without frequencies
-        keywords = freq_dist.keys()
-
         #Remove ignored words
-        parsed_keywords = [word for word in keywords if word not in self.stopwords]
+        for word in self.stopwords:
+            if word in freq_dist:
+                del freq_dist[word]
 
-        most_freq_keywords = parsed_keywords[:self.NUM_KEYWORDS]
+        # Take the NUM_KEYWORDS most frequent keywords
+        most_freq_keywords = dict(sorted(freq_dist.iteritems(), key=operator.itemgetter(1), reverse=True)[:self.NUM_KEYWORDS])
         return most_freq_keywords
 
 

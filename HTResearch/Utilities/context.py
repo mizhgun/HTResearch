@@ -152,6 +152,18 @@ class DocumentScraperContext(PythonConfig):
         return OrgTwitterScraper
 
 
+class UtilityScraperContext(PythonConfig):
+    @Object()
+    def RegisteredOrgTypeScraper(self):
+        scraper = OrgTypeScraper()
+        scraper._keyword_scraper = self.RegisteredKeywordScraper()
+        return scraper
+
+    @Object()
+    def RegisteredKeywordScraper(self):
+        return KeywordScraper
+
+
 class UrlMetadataScraperContext(PythonConfig):
 
     @Object()
