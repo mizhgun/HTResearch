@@ -9,6 +9,17 @@ function trClick() {
     }
 }
 
+function sortOnColumn() {
+    var sort = $(this).attr('data-sort-field');
+    var canSort = (typeof sort !== 'undefined' && sort !== false);
+    if (canSort) {
+        lastIndex = 0;
+        selectedSort = sort;
+        $('#org-rank-table-body').empty();
+        lazyLoadRows();
+    }
+}
+
 function getRows(start, end, sortField) {
     $.ajax({
         type: 'GET',
@@ -46,4 +57,6 @@ $(window).scroll(function () {
 
 $(function() {
     lazyLoadRows();
+
+    $('#org-rank-table thead th').click(sortOnColumn);
 });
