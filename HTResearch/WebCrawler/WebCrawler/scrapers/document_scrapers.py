@@ -71,6 +71,7 @@ class OrganizationScraper():
             'partners': [OrgPartnersScraper],
             'facebook': [OrgFacebookScraper],
             'twitter': [OrgTwitterScraper],
+            'keywords': [KeywordScraper],
         }
         self._multiple = ['types', 'phone_numbers', 'emails', 'contacts', 'partners', ]
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',
@@ -82,7 +83,6 @@ class OrganizationScraper():
 
     def parse(self, response):
         organization = None
-
         flag = self.check_valid_org(response)
         if flag:
             organization = ScrapedOrganization()

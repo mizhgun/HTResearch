@@ -98,6 +98,7 @@ class DocumentScraperContext(PythonConfig):
             'partners': [self.RegisteredOrgPartnersScraper()],
             'facebook': [self.RegisteredFacebookScraper()],
             'twitter': [self.RegisteredTwitterScraper()],
+            'keywords': [self.RegisteredKeywordScraper()],
         }
         return org
 
@@ -153,6 +154,18 @@ class DocumentScraperContext(PythonConfig):
     @Object()
     def RegisteredTwitterScraper(self):
         return OrgTwitterScraper
+
+
+class UtilityScraperContext(PythonConfig):
+    @Object()
+    def OrgTypeScraper(self):
+        scraper = OrgTypeScraper()
+        scraper._keyword_scraper = self.RegisteredKeywordScraper()
+        return scraper
+
+    @Object()
+    def RegisteredKeywordScraper(self):
+        return KeywordScraper
 
 
 class UrlMetadataScraperContext(PythonConfig):

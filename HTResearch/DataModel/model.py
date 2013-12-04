@@ -23,7 +23,8 @@ class Organization(object):
                  types=[], phone_numbers=[], email_key=None,
                  emails=[], contacts=[],
                  organization_url=None,
-                 partners=[], facebook=None, twitter=None):
+                 partners=[], facebook=None, twitter=None,
+                 keywords={}):
         self.name = name
         self.address = address
         self.types = types
@@ -35,6 +36,7 @@ class Organization(object):
         self.partners = partners
         self.facebook = facebook
         self.twitter = twitter
+        self.keywords = keywords
 
 
 class Publication(object):
@@ -68,12 +70,20 @@ class URLMetadata(object):
 class User(object):
     """A Model class for a user of the anti-trafficking system."""
 
-    def __init__(self, first_name, last_name, email, phone, organization, position, interests=None, address=None):
+    def __init__(self, first_name, last_name,
+                 email, password, background,
+                 account_type, affiliation=None,
+                 organization=None, position=None,
+                 interests=None, address=None):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
-        self.phone = phone
+        self.password = password
+        self.background = background
+        self.account_type = account_type
+        self.affiliation = affiliation
         self.organization = organization
         self.position = position
         self.interests = interests
         self.address = address
+

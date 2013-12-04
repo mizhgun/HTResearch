@@ -28,6 +28,7 @@ class OrganizationDTO(mongo.Document):
     partners = mongo.ListField(mongo.ReferenceField('self'), db_field='ps')
     facebook = mongo.URLField(db_field='f')
     twitter = mongo.URLField(db_field='t')
+    keywords = mongo.MapField(mongo.FloatField(), db_field='ks')
 
 
 class PublicationDTO(mongo.Document):
@@ -59,8 +60,7 @@ class UserDTO(mongo.Document):
     last_name = mongo.StringField(db_field='l')
     email = mongo.EmailField(db_field='e')
     password = mongo.StringField(db_field='pa')
-    phone = mongo.StringField(db_field='ph')
+    background = mongo.StringField(db_field='b')
+    account_type = mongo.IntField(db_field='at')
+    affiliation = mongo.IntField(db_field='af')
     organization = mongo.ReferenceField(OrganizationDTO, db_field='o')
-    interests = mongo.ListField(mongo.StringField, db_field='i')
-    position = mongo.StringField(db_field='po')
-    address = mongo.StringField(db_field='a')
