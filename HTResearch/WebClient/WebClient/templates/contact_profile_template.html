@@ -24,20 +24,17 @@
                 <center class="lead">
                     <h2>Contact Information</h2>
 
-                    <p>Primary Phone Number: 
-                        {{ contact.primary_phone}}
-                    </p>
-
-                    <p>Secondary Phone Number: 
-                        {{ contact.secondary_phone}}
+                    <p>Phone Number:
+                        {{ contact.phone_number}}
                     </p>
 
                     <p>Email Address: 
                         {{ contact.email}}
                     </p>
 
-                    <p>Organizations:
-                        {% for org, url in contact.organizations %} 
+                    <!--This needs to only be one org now, how to get the url? contact.organization.url?-->
+                    <p>Organization:
+                        {% for org, url in contact.organization %}
                             <a href="{{ url }}">{{ org.name }}</a>,
                         {% endfor %}
                     </p>
