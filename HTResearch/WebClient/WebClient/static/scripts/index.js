@@ -175,7 +175,6 @@ function showOrganizationModal() {
 
 function showContactModal() {
     contactData = $(this).data();
-    debugger;
     var $modal = $('.modal').modal({
         show: false
     });

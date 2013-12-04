@@ -17,7 +17,7 @@
               {% templatetag openvariable %}if phone_number{% templatetag closevariable %}
               <tr class="modal-row">
                   <td>Tel:</td>
-                  <td>${primary_phone}</td>
+                  <td>${phone_number}</td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
               {% templatetag openvariable %}if email{% templatetag closevariable %}
@@ -32,14 +32,10 @@
                   <td>${position}</td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
-              {% templatetag openvariable %}if organizations.length{% templatetag closevariable %}
+              {% templatetag openvariable %}if organization{% templatetag closevariable %}
               <tr class="modal-row">
                   <td>Organizations affiliated with:</td>
-                  <td>
-                  {% templatetag openvariable %}each organizations{% templatetag closevariable %}
-                  ${$value}
-                  {% templatetag openvariable %}/each{% templatetag closevariable %}
-                  </td>
+                  <td>${organization}</td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
               {% templatetag openvariable %}if publications.length{% templatetag closevariable %}
