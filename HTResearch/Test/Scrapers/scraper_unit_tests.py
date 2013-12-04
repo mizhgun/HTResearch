@@ -508,7 +508,6 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertNotIn(test, partner_urls, 'Invalid URL (not a partner org): %s' % test)
 
-
     def test_contact_scraper(self):
         test_files = [
             "httpwwwprajwalaindiacomcontactushtml",

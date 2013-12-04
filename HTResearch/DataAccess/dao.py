@@ -103,6 +103,8 @@ class ContactDAO(DAO):
         with self.conn():
             for i in range(len(contact_dto.organizations)):
                 o = contact_dto.organizations[i]
+                if contact_dto not in o.contacts:
+                    o.contacts.append(contact_dto)
                 contact_dto.organizations[i] = self.org_dao().create_update(o)
             for i in range(len(contact_dto.publications)):
                 p = contact_dto.publications[i]

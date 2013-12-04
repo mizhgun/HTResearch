@@ -24,7 +24,6 @@ class ItemSwitch(object):
 
         # extract the class of the item
         item_class = item.__class__.__name__
-
         # switch to handle item based on class type
         if item_class == "ScrapedUrl":
             # Create DAO for URL with empty fields

@@ -30,6 +30,8 @@ class OrgSpider(BaseSpider):
         self.scrapers = []
         self.org_scraper = OrganizationScraper()
         self.meta_data_scraper = UrlMetadataScraper()
+        self.scrapers.append(OrganizationScraper())
+        self.scrapers.append(ContactScraper())
         self.scrapers.append(LinkScraper())
         self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
         self.ctx = ApplicationContext(URLFrontierContext())
