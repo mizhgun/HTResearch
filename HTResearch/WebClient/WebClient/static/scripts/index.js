@@ -155,7 +155,7 @@ function endAjaxSearch() {
 // Show modals
 function showOrganizationModal() {
     orgData = $(this).data();
-    if (orgData.latlng.length != 0) {
+    if (orgData.latlng && orgData.latlng.length > 0) {
         // Get the lat, long values of the address
         searchedLatLng = new google.maps.LatLng(orgData.latlng[0], orgData.latlng[1]);
         plotOrganization(orgData);
