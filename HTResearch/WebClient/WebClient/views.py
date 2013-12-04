@@ -153,8 +153,7 @@ def get_org_rank_rows(request):
 
 
     params = {'organizations': organizations}
-    x = render_to_response('org_rank_row.html', params)
-    return x
+    return render_to_response('org_rank_row.html', params)
 
 
 def login(request):
