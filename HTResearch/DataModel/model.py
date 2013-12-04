@@ -23,7 +23,8 @@ class Organization(object):
                  types=[], phone_numbers=[], email_key=None,
                  emails=[], contacts=[],
                  organization_url=None,
-                 partners=[], facebook=None, twitter=None):
+                 partners=[], facebook=None, twitter=None,
+                 keywords={}):
         self.name = name
         self.address = address
         self.types = types
@@ -35,6 +36,7 @@ class Organization(object):
         self.partners = partners
         self.facebook = facebook
         self.twitter = twitter
+        self.keywords = keywords
 
 
 class Publication(object):

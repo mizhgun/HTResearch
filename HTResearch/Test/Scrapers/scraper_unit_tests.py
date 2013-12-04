@@ -4,7 +4,7 @@ import os.path
 
 from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import *
 from HTResearch.Test.Mocks.utility_scrapers import *
-from HTResearch.Utilities.context import DocumentScraperContext, UrlMetadataScraperContext
+from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
 from springpython.context import ApplicationContext
 from springpython.config import Object
 
@@ -64,11 +64,21 @@ class TestableDocumentScraperContext(DocumentScraperContext):
     def RegisteredTwitterScraper(self):
         return MockOrgTwitterScraper
 
+    @Object()
+    def RegisteredKeywordScraper(self):
+        return MockKeywordScraper
+
 
 class TestableUrlMetadataScraperContext(UrlMetadataScraperContext):
     @Object()
     def RegisteredURLMetadataDAO(self):
         return MockURLMetadataDAO
+
+
+class TestableUtilityScraperContext(UtilityScraperContext):
+    @Object()
+    def RegisteredKeywordScraper(self):
+        return MockKeywordScraper
 
 
 class TestableDAOContext(DAOContext):
@@ -294,10 +304,8 @@ class ScraperTests(unittest.TestCase):
             response = file_to_response(input_file)
             if response is not None:
                 ret = keyword_scraper.parse(response)
-                if isinstance(ret, type([])):
-                    keywords = keywords + ret
-                else:
-                    keywords.append(ret)
+                if isinstance(ret, type({})):
+                    keywords += ret.iterkeys()
 
         assert_list = ["nicolas", "cage"]
         for test in assert_list:
@@ -445,13 +453,14 @@ class ScraperTests(unittest.TestCase):
             self.assertIn(test, names, 'Name \'' + test + '\' not found')
 
     def test_org_type_scraper(self):
+        ctx = ApplicationContext(TestableUtilityScraperContext())
         test_files = [
             "httpbombayteenchallengeorg",
             "httpwwwnsagov",
             "httpwwwhalftheskymovementorg",
         ]
 
-        org_type_scraper = OrgTypeScraper()
+        org_type_scraper = ctx.get_object('OrgTypeScraper')
         types = []
 
         for input_file in test_files:
@@ -552,8 +561,8 @@ class ScraperTests(unittest.TestCase):
             ],
             'facebook': 'http://www.facebook.com/BombayTeenChallenge',
             'twitter': 'https://twitter.com/bombaytc',
+            'keywords': {'[]': 44, 'access': 32, 'addict': 51, 'afraid': 32, 'allows': 32, 'ambedkar': 32, 'announced': 32, 'ash': 32, 'bandra': 32, 'beauty': 32, 'began': 32, 'betrayed': 32, 'blog': 64, 'bombay': 384, 'btc': 64, 'care': 51, 'challenge': 358, 'child': 64, 'contact': 64, 'district': 53, 'donate': 64, 'drug': 64, 'education': 89, 'education.': 39, 'gift': 64, 'health': 96, 'india': 96, 'life': 96, 'light': 64, 'live': 64, 'men': 53, 'mumbai': 128, 'music': 83, 'office': 38, 'out.': 39, 'program': 85, 'reach': 64, 'read': 96, 'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'street': 96, 'teen': 384, 'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'wa': 64, 'woman': 112},
         }]
-
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
 
