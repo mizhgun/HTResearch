@@ -49,7 +49,7 @@ function lazyLoadRows() {
     getRows(start, end, sortField);
 }
 
-$(window).scroll(function () {
+$(window).scroll(function() {
     if($(window).scrollTop() == $(document).height() - $(window).height()) {
         lazyLoadRows();
     }
