@@ -5,8 +5,9 @@ from urlparse import urlparse, urljoin
 import string
 import datetime
 import hashlib
+import operator
 
-from nltk import FreqDist, PorterStemmer
+from nltk import FreqDist, WordNetLemmatizer
 from scrapy.selector import HtmlXPathSelector
 from scrapy.selector import XPathSelectorList
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
@@ -274,13 +275,13 @@ class MockIndianPhoneNumberScraper(object):
 
 class MockKeywordScraper(object):
     NUM_KEYWORDS = 50
-    stopwords = []
+    _stopwords = []
+    _lemmatizer = WordNetLemmatizer()
 
     def __init__(self):
         #Load words to be ignored
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                               '../../WebCrawler/WebCrawler/Resources/stopwords.txt')) as f:
-            self.stopwords = f.read().splitlines()
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../WebCrawler/WebCrawler/Resources/stopwords.txt')) as f:
+            self._stopwords = f.read().splitlines()
 
     def format_extracted_text(self, list):
         for i in range(len(list)):
@@ -298,7 +299,7 @@ class MockKeywordScraper(object):
                 line = line.replace(c, "")
                 for word in line.split():
                     if not word.isdigit():
-                        append_to.append(word)
+                        append_to.append(self._lemmatizer.lemmatize(word))
 
         return append_to
 
@@ -318,13 +319,13 @@ class MockKeywordScraper(object):
         #Run a frequency distribution on the web page body
         freq_dist = FreqDist(all_words)
 
-        #Parse the distribution into individual words without frequencies
-        keywords = freq_dist.keys()
-
         #Remove ignored words
-        parsed_keywords = [word for word in keywords if word not in self.stopwords]
+        for word in self._stopwords:
+            if word in freq_dist:
+                del freq_dist[word]
 
-        most_freq_keywords = parsed_keywords[:self.NUM_KEYWORDS]
+        # Take the NUM_KEYWORDS most frequent keywords
+        most_freq_keywords = dict(sorted(freq_dist.iteritems(), key=operator.itemgetter(1), reverse=True)[:self.NUM_KEYWORDS])
         return most_freq_keywords
 
 
@@ -554,10 +555,10 @@ class MockOrgPartnersScraper(object):
 class MockOrgTypeScraper(object):
 
     def __init__(self):
-        # Stemmer for stemming terms
-        self._stemmer = PorterStemmer()
+        # Lemmatizer for shortening each word to a more-commonly-used form of the word
+        self._lemmatizer = WordNetLemmatizer()
         # Scraper to get common keywords from response
-        self._keyword_scraper = MockKeywordScraper()
+        self._keyword_scraper = MockKeywordScraper
         # Maximum number of types
         self._max_types = 3
         # Obvious religious keywords. These must be lowercase
@@ -628,9 +629,9 @@ class MockOrgTypeScraper(object):
         }
 
         # Stem search words (religious, general)
-        self._religion_words = [self._stemmer.stem(word) for word in self._religion_words]
+        self._religion_words = [self._lemmatizer.lemmatize(word) for word in self._religion_words]
         for key in self._type_words.iterkeys():
-            self._type_words[key] = [self._stemmer.stem(word) for word in self._type_words[key]]
+            self._type_words[key] = [self._lemmatizer.lemmatize(word) for word in self._type_words[key]]
 
     # Find the minimum index of a term from a search list in a list
     @staticmethod
@@ -643,9 +644,11 @@ class MockOrgTypeScraper(object):
 
     # Get the organization type
     def parse(self, response):
+        keyword_scraper_inst = self._keyword_scraper()
 
         # Get keywords
-        keywords = list(self._stemmer.stem(word) for word in self._keyword_scraper.parse(response))
+        keywords_dict = keyword_scraper_inst.parse(response)
+        keywords = map(lambda(k, v): k, sorted(keywords_dict.items(), key=lambda(k, v): v, reverse=True))
 
         # Get all words
         all_words = []
@@ -654,9 +657,9 @@ class MockOrgTypeScraper(object):
                     'small', 'strong', 'div', 'span', 'li', 'th', 'td', 'a[contains(@href, "image")]']
         for element in elements:
             words = hxs.select('//'+element+'/text()').extract()
-            self._keyword_scraper.append_words(all_words, words)
+            keyword_scraper_inst.append_words(all_words, words)
 
-        all_words = list(set(self._stemmer.stem(word) for word in all_words))
+        all_words = list(set(self._lemmatizer.lemmatize(word) for word in all_words))
 
         types = []
         # Government: check the URL

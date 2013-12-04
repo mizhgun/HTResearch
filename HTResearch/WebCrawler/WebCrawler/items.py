@@ -45,6 +45,7 @@ class ScrapedOrganization(Item):
     partners = Field()
     facebook = Field()
     twitter = Field()
+    keywords = Field()
 
 
 class ScrapedPhoneNumber(Item):
