@@ -43,12 +43,27 @@ class MockDAO(object):
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
-    def findmany(self, num_elements, *sort_fields, **constraints):
+    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[], **constraints):
         with self.conn():
             if len(sort_fields) > 0:
-                return self.dto.objects(**constraints).order_by(*sort_fields)[:num_elements]
+                ret = self.dto.objects(**constraints).order_by(sort_fields)
             else:
-                return self.dto.objects(**constraints)[:num_elements]
+                ret = self.dto.objects(**constraints)
+            if num_elements is not None:
+                return ret[:num_elements]
+            elif page_size is not None and page is not None:
+                # as an example, if we want page 3 with a page size of 50, we want elements with index 150 to 199
+                pg_start = page_size * page
+                pg_end = page_size * (page + 1)
+                # NOTE: Even though end would equal 200 in our example, python's slicing is not inclusive for end
+                return ret[pg_start:pg_end]
+            elif start is not None:
+                if end is None:
+                    return ret[start:]
+                else:
+                    return ret[start:end+1]
+
+            return ret
 
     def findmany_by_domains(self, num_elements, required_domains, blocked_domains, *sort_fields):
         if len(required_domains) > 0:
