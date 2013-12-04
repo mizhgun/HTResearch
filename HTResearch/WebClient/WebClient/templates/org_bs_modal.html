@@ -2,7 +2,10 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="modal-header">${name}</h4>
+        <h4 class="modal-title" id="modal-header">
+            ${name}
+            <button class="btn btn-default close" data-dismiss="modal">&#x2716;</button>
+        </h4>
       </div>
       <div class="modal-body" id="modal-body">
           <table class="table-condensed">
@@ -33,7 +36,7 @@
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
           </table>
-          <a id="more-info" href="/organization/${id}">More Info</a>
+          <a id="more-info-bs" href="/organization/${id}">More Info</a>
       </div>
     </div>
   </div>
