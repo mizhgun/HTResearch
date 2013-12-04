@@ -1,7 +1,11 @@
+from sgmllib import SGMLParseError
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from ..items import ScrapedUrl
 from HTResearch.Utilities.url_tools import UrlUtility
+from HTResearch.Utilities.logutil import LoggingUtility, LoggingSection
+from datetime import datetime
 
+_linkscraper_logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
 
 class LinkScraper:
     """A scraper to find all URLs in a page """
@@ -17,7 +21,12 @@ class LinkScraper:
             self._link_extractor = SgmlLinkExtractor()
         
         # use scrapy SgmlLinkExtractor to extract links
-        links = self._link_extractor.extract_links(response)
+        try:
+            links = self._link_extractor.extract_links(response)
+        except SGMLParseError as e:
+            # Page was poorly formatted, oh well
+            _linkscraper_logger.error('Exception encountered when link extracting page')
+            return []
 
         # add these links to our Url item
         urls = list()
@@ -25,6 +34,7 @@ class LinkScraper:
             url = ScrapedUrl()
             url['url'] = link.url
             url['domain'] = UrlUtility.get_domain(link.url)
+            url['last_visited'] = datetime(1, 1, 1)
             if url not in urls:
                 urls.append(url)
 

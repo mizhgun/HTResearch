@@ -1,13 +1,18 @@
 from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
 from HTResearch.Utilities.context import URLFrontierContext
+from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
 
 from springpython.context import ApplicationContext
 from scrapers.document_scrapers import *
+from scrapers.utility_scrapers import OrgUrlScraper
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
 from scrapy.http import Request
 from scrapy import log
 import os
+
+# Since this logger can be shared by the whole module, we can instantiate it here
+logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class OrgSpider(BaseSpider):
@@ -15,18 +20,21 @@ class OrgSpider(BaseSpider):
     # empty start_urls, we're setting our own
     start_urls = []
     default_seed = "https://bombayteenchallenge.org/"
+    # don't block on error codes
+    handle_httpstatus_list = list(xrange(1, 999))
 
     def __init__(self, *args, **kwargs):
         super(OrgSpider, self).__init__(*args, **kwargs)
 
         # Define our Scrapers
         self.scrapers = []
-        self.scrapers.append(OrganizationScraper())
+        self.org_scraper = OrganizationScraper()
+        self.meta_data_scraper = UrlMetadataScraper()
         self.scrapers.append(LinkScraper())
-        self.scrapers.append(UrlMetadataScraper())
         self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
         self.ctx = ApplicationContext(URLFrontierContext())
         self.url_frontier = self.ctx.get_object("URLFrontier")
+        self.next_url_timeout = 10
 
 
     @staticmethod
@@ -43,6 +51,8 @@ class OrgSpider(BaseSpider):
         We will get the first url to crawl from this.
         """
 
+        logger.info('Starting requests to the Organization crawler')
+
         # first URL to begin crawling
         # Returns a URLMetadata model, so we have to pull the url field
         start_url_obj = self.url_frontier.next_url(self.url_frontier_rules)
@@ -55,6 +65,7 @@ class OrgSpider(BaseSpider):
 
         if __debug__:
             log.msg('START_REQUESTS : start_url = %s' % start_url)
+            logger.debug('START_REQUESTS : start_url = %s' % start_url)
 
         request = Request(start_url, dont_filter=True)
 
@@ -62,18 +73,30 @@ class OrgSpider(BaseSpider):
         yield request
 
     def parse(self, response):
-        for scraper in self.scrapers:
-            ret = scraper.parse(response)
-            if isinstance(ret, type([])):
-                for item in ret:
-                    yield item
-            else:
-                yield ret
+        ret = self.meta_data_scraper.parse(response)
+        if ret is not None:
+            yield ret
+        ret = self.org_scraper.parse(response)
+        if ret is not None:
+            yield ret
+            for scraper in self.scrapers:
+                ret = scraper.parse(response)
+                if isinstance(ret, type([])):
+                    for item in ret:
+                        yield item
+                else:
+                    yield ret
 
-        print response.url
         next_url = self.url_frontier.next_url(self.url_frontier_rules)
+        timeout = 0
+        while next_url is None and timeout < self.next_url_timeout:
+            timeout += 1
+            next_url = self.url_frontier.next_url(self.url_frontier_rules)
         if next_url is not None:
             yield Request(next_url.url, dont_filter=True)
+        else:
+            self.url_frontier.empty_cache(self.url_frontier_rules)
+            yield Request(self.default_seed, dont_filter=True)
 
 
 class StopTraffickingSpider(BaseSpider):

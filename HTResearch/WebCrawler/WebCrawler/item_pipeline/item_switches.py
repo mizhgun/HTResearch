@@ -1,19 +1,23 @@
 from scrapy.exceptions import DropItem
-from springpython.context import ApplicationContext
 
 from HTResearch.DataAccess.dao import *
 from HTResearch.Utilities.converter import *
-from HTResearch.Utilities.context import DAOContext, URLFrontierContext
+from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+
+
+logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class ItemSwitch(object):
     """Redirect Items to Appropriate Pipeline Handler"""
 
-    frontier_ctx = ApplicationContext(URLFrontierContext())
-    dao_ctx = ApplicationContext(DAOContext())
-
     def __init__(self):
-        pass
+        self.frontier = URLFrontier()
+        self.contact_dao = ContactDAO()
+        self.org_dao = OrganizationDAO()
+        self.pub_dao = PublicationDAO()
+        self.url_dao = URLMetadataDAO()
 
     def process_item(self, item, spider):
         """Consumes item from spider and passes to correct handler asynchronously"""
@@ -34,56 +38,47 @@ class ItemSwitch(object):
         elif item_class == "ScrapedPublication":
             self._store_publication(item)
         else:
-            raise DropItem("No behavior defined for item of type %s" % item_class)
+            msg = "No behavior defined for item of type %s" % item_class
+            logger.error(msg)
+            raise DropItem(msg)
         
         # return item to next piece of pipeline
         return item
 
-    @staticmethod
-    def _store_contact(scraped_contact):
+    def _store_contact(self, scraped_contact):
         # item to Model
         contact = ModelConverter.to_model(Contact, scraped_contact)
         # Model to dto...
         contact_dto = DTOConverter.to_dto(ContactDTO, contact)
         # get dao
-        dao = ItemSwitch.dao_ctx.get_object("ContactDAO")
+        dao = self.contact_dao
         #store
         dao.create_update(contact_dto)
 
-    @staticmethod
-    def _store_organization(scraped_org):
+    def _store_organization(self, scraped_org):
         # item to Model
         org = ModelConverter.to_model(Organization, scraped_org)
         # Model to dto...
         org_dto = DTOConverter.to_dto(OrganizationDTO, org)
         # get dao
-        dao = ItemSwitch.dao_ctx.get_object("OrganizationDAO")
+        dao = self.org_dao
         #store
         dao.create_update(org_dto)
 
-    @staticmethod
-    def _store_publication(scraped_pub):
+    def _store_publication(self, scraped_pub):
         # item to Model
         pub = ModelConverter.to_model(Publication, scraped_pub)
         # Model to dto...
         pub_dto = DTOConverter.to_dto(PublicationDTO, pub)
         # get dao
-        dao = ItemSwitch.dao_ctx.get_object("PublicationDAO")
+        dao = self.pub_dao
         #store
         dao.create_update(pub_dto)
 
-    @staticmethod
-    def _store_url(scraped_url):
+    def _store_url(self, scraped_url):
         # For now, store the new metadata ourselves
         # item to Model
         url = ModelConverter.to_model(URLMetadata, scraped_url)
 
-        frontier = ItemSwitch.frontier_ctx.get_object("URLFrontier")
+        frontier = self.frontier
         frontier.put_url(url)
-
-        # Model to dto...
-        url_dto = DTOConverter.to_dto(URLMetadataDTO, url)
-        # get dao
-        dao = ItemSwitch.dao_ctx.get_object("URLMetadataDAO")
-        #store
-        dao.create_update(url_dto)

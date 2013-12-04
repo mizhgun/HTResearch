@@ -1,0 +1,40 @@
+<script id="bs-org-modal-template" type="text/x-jquery-html">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-header">${name}</h4>
+      </div>
+      <div class="modal-body" id="modal-body">
+          <table class="table-condensed">
+              {% templatetag openvariable %}if phone_numbers.length{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <td>Tel:</td>
+                  <td>
+                    {% templatetag openvariable %}each phone_numbers{% templatetag closevariable %}
+                    ${$value}</br>
+                    {% templatetag openvariable %}/each{% templatetag closevariable %}
+                  </td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+              {% templatetag openvariable %}if emails.length{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <td>Email:</td>
+                  <td>
+                    {% templatetag openvariable %}each emails{% templatetag closevariable %}
+                    ${$value}</br>
+                    {% templatetag openvariable %}/each{% templatetag closevariable %}
+                  </td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+              {% templatetag openvariable %}if address{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <td>Address:</td>
+                  <td>${address}</td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+          </table>
+          <a id="more-info" href="/organization/${id}">More Info</a>
+      </div>
+    </div>
+  </div>
+</script>

@@ -1,69 +1,81 @@
 html { 
     height: 100%;
-    overflow-y: hidden; 
 }
 
 body {
     height: 100%;
     margin: 0;
-    padding: 0
+    padding: 0;
+    overflow-y: hidden;
 }
 
 #map-canvas {
     display: block;
-    width: inherit;
+    width: auto;
     height: inherit;
 }
 
 #wrapper {
+    width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
 }
 
-#login-signup-div {
-    position:absolute;
-    z-index: 1;
-    top: 50px;
-    left: 5px;
-    width: 205px;
-    height: 120px;
+#search-box-div {
+    width: 100%;
+    height: 100%;
     opacity: 0.75;
-    border: 0;
+    border-right: 2px solid #e6e6e6;
+    padding: 10px;
 }
 
-#login-signup-div:hover {
+#search-box-div:hover {
     opacity:1.0;
     filter:alpha(opacity=100); /* For IE8 and earlier */
 }
 
-/*#login-btn {
-    position:absolute;
-    top: 5px;
-    left: 10px;
+.header {
+    height: 50px;
 }
 
-#signup-btn {
-    position:absolute;
-    top: 5px;
-    left: 100px;
-}*/
+#wrapper {
+    display: table;
+    width: 100%;
+    margin-top: -50px;
+    padding-top: 50px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
 
-#custom-search-form {
-    position: absolute;
-    height: 60%;
-    width: 60%;
-    top: 55px;
-    left: 0px;
+#wrapper .row {
+    height: 100%;
+    display: table-row;
+}
+
+#wrapper .col-md-1,
+#wrapper .col-md-2,
+#wrapper .col-md-3,
+#wrapper .col-md-4,
+#wrapper .col-md-5,
+#wrapper .col-md-6,
+#wrapper .col-md-7,
+#wrapper .col-md-8,
+#wrapper .col-md-9,
+#wrapper .col-md-10,
+#wrapper .col-md-11,
+#wrapper .col-md-12 {
+    height: 100%;
+    display: table-cell;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 #custom-search-form .search-query {
-    position: absolute;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-    left: 10px;
-    width: 150%;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    width: 100%;
 }
 
 #custom-search-form button {
@@ -139,60 +151,29 @@ body {
 
 #search-results-div {
     position: absolute;
-    z-index: 1;
-    top: 170px;
-    left: 5px;
-    width: 205px;
-    height: 100%;
     opacity: 0.75;
-    overflow: auto;
+    overflow-y: auto;
+    width: 90%;
+    max-height: -moz-calc(100% - 80px);
+    max-height: -webkit-calc(100% - 80px);
+    max-height: -o-calc(100% - 80px);
+    max-height: calc(100% - 80px);
 }
 
 #search-results-div:hover {
-    opacity:1.0;
-    filter:alpha(opacity=100); /* For IE8 and earlier */
+    opacity: 1.0;
+    filter: alpha(opacity=100); /* For IE8 and earlier */
 }
 
-#organization-list-header {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    font-size: x-large;
-}
-
-#organization-search-list {
-    position: absolute;
-    left: 5px;
-    top: 50px;
-    padding-bottom: 5px;
-    font-size: small;
-}
-
-#contact-list-header {
-    position: absolute;
-    top: 175px;
-    left: 0px;
-    font-size: x-large;
-}
-
-#contact-search-list {
-    position: absolute;
-    left: 5px;
-    top: 225px;
-    font-size: small;
-}
-
+#organization-list-header,
+#contact-list-header,
 #publication-list-header {
-    position: absolute;
-    top: 350px;
-    left: 0px;
     font-size: x-large;
 }
 
+#organization-search-list,
+#contact-search-list,
 #publication-search-list {
-    position: absolute;
-    left: 5px;
-    top: 400px;
     font-size: small;
 }
 
@@ -205,6 +186,12 @@ body {
 
 #type-image {
     margin-right: 5px;
+    height: 146px;
+    width: 124px;
+}
+
+#img-div {
+    float: left;
 }
 
 #firstHeading {
@@ -215,11 +202,52 @@ body {
     vertical-align: top;
 }
 
-#moreInfo {
-    float: right;
+#more-info {
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 /*Navbar override*/
 .navbar {
     margin-bottom: 0px;
+}
+
+.modal-row {
+    vertical-align: top;
+}
+
+#map-modal {
+    height: 200px;
+    width: 425px;
+}
+
+ul {
+    list-style-position: inside;
+}
+
+#organization-results,
+#contact-results,
+#publication-results {
+}
+
+.ajax-loader {
+    background-image: url(../../static/images/ajax-loader.gif);
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+}
+
+#search-ajax-loader {
+    position: absolute;
+    height: 51px;
+    right: 20px;
+    top: 10px;
+    z-index: 10;
+}
+
+a.disabled {
+    color: #c0c0c0;
+    text-decoration: none;
 }

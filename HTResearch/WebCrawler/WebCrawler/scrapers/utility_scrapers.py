@@ -8,13 +8,15 @@ import hashlib
 
 from nltk import FreqDist, PorterStemmer
 from scrapy.selector import HtmlXPathSelector
+from scrapy.selector import XPathSelectorList
+from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from sgmllib import SGMLParseError
 from bson.binary import Binary
-from springpython.context import ApplicationContext
 
 from ..items import *
 from HTResearch.DataAccess.dao import *
 from HTResearch.Utilities.converter import *
-from HTResearch.Utilities.context import DAOContext
+from HTResearch.Utilities.logutil import *
 from link_scraper import LinkScraper
 from HTResearch.DataModel.enums import OrgTypesEnum
 
@@ -22,12 +24,13 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
 
+_utilityscrapers_logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
 
-class ContactNameScraper:
+class ContactNameScraper(object):
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt')) as f:
             self._names = f.read().splitlines()
-        self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr']
+        self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Sh', 'Smt', 'Prof']
         self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
         self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
 
@@ -58,10 +61,8 @@ class ContactNameScraper:
         # Gets the body (including html tags) and body_text (no tags), whatever gets found should be in both, since a
         # name should be visible
         body = hxs.select('//body').extract()
-
-        potential_names = []
-
         body = (body[0].encode('ascii', 'ignore')).strip()
+
         # keep the tags but remove the tag attributes such as name and class
         body = re.sub(self._remove_attributes, r'<\1>', body)
 
@@ -75,9 +76,12 @@ class ContactNameScraper:
         no_tags = ' '.join(no_tags)
 
         xpaths = []
+<<<<<<< HEAD
+=======
+
+>>>>>>> R3_WickerMan
         for item in no_tags.split():
             if (item in self._titles or item in self._names) and item in body:
-                potential_names.append(item)
                 tags = re.findall(self._tag, body[:body.index(item)])
                 tags = self._add_closing_symbol(tags)
 
@@ -137,21 +141,34 @@ class ContactNameScraper:
 
         # check which xpath has the most names
         # if the xpath has at least 4 valid names (maybe change this in the future somehow?),
-        # then keep it, otherwise it may be catching a wrong thing
+        # then keep it, otherwise it may be catching a singular wrong thing
         highest = []
+
         for i, checker in enumerate(names_list):
+            removes = []
             count = 0
             for name in checker:
                 if name.strip():
-                    # Maybe change the below too? If the name is a link's text, then it will catch other links text,
-                    # which can be a sentence, so assume a certain amount of words for a name? In this case 5 or less
-                    if len(name.split()) > 5:
-                        names_list[i].remove(name)
+                    # Changes from unicode, removes punctuation, and strips whitespace
+                    changed = name.encode('ascii', 'ignore').translate(string.maketrans('', ''), string.punctuation)\
+                        .strip()
+                    if changed == '':
+                        removes.append(name)
+                    name_split = changed.split()
+                    if len(name_split) > 5:
+                        removes.append(name)
                         continue
-                    first = (name.encode('ascii', 'ignore')).split()[0]
-                    first = first.translate(string.maketrans('', ''), string.punctuation)
-                    if first != [] and (first in self._names or first in self._titles):
-                        count += 1
+
+                    for n in name_split:
+                        if n in self._names or n in self._titles:
+                            count += 1
+                            break
+                        elif n == name_split[-1]:
+                            removes.append(name)
+                else:
+                    removes.append(name)
+            for rm in removes:
+                names_list[i].remove(rm)
             if count > 3:
                 highest.append(i)
 
@@ -182,7 +199,7 @@ class ContactNameScraper:
         return tag_list
 
 
-class ContactPositionScraper:
+class ContactPositionScraper(object):
 
         def __init__(self):
             with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/positions.txt')) as f:
@@ -199,49 +216,50 @@ class ContactPositionScraper:
 
 
 
-class ContactPublicationsScraper:
+class ContactPublicationsScraper(object):
 
     def __init__(self):
         self.publications = []
 
 
-class EmailScraper:
+class EmailScraper(object):
+    def __init__(self):
+        self.email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
+                                      r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
+                                      r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
+                                      r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
+        self.c_data = re.compile(r'(.*?)<!\[CDATA(.*?)]]>(.*?)', re.DOTALL)
+
     def parse(self, response):
-        email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
-                                r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
-                                r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
-                                r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
+
         hxs = HtmlXPathSelector(response)
 
         # body will get emails that are just text in the body
-        body = hxs.select('//body').re(email_regex)
+        body = hxs.select('//body//text()')
+
+        # Remove C_Data tags, since they are showing up in the body text for some reason
+        body = XPathSelectorList([text for text in body if not (re.match(self.c_data, text.extract()) or
+                                  text.extract().strip() == '')])
+
+        body = body.re(self.email_regex)
 
         # hrefs will get emails from hrefs
-        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(email_regex)
+        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(self.email_regex)
 
         emails = body+hrefs
 
         # Take out the unicode or whatever, and substitute [at] for @ and [dot] for .
         for i in range(len(emails)):
-            emails[i] = emails[i].encode('ascii','ignore')
+            emails[i] = emails[i].encode('ascii', 'ignore')
             emails[i] = re.sub(r'(\[at]|\(at\)| at )([A-Za-z0-9.-]+)(\[dot]|\(dot\)| dot )', r'@\2.', emails[i])
 
         # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
         emails = list(set(emails))
 
-        # Make the list an item
-        email_list = []
-        for email in emails:
-            # removing ScrapedEmail() item in favor of returning exactly what DB expects
-            # Paul Poulsen
-            #item = ScrapedEmail()
-            #item['email'] = email
-            email_list.append(email)
-
-        return email_list
+        return emails
 
 
-class KeywordScraper:
+class KeywordScraper(object):
     NUM_KEYWORDS = 50
     stopwords = []
 
@@ -296,21 +314,23 @@ class KeywordScraper:
         return most_freq_keywords
 
 
-class IndianPhoneNumberScraper:
+class IndianPhoneNumberScraper(object):
+    def __init__(self):
+        self._india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?'
+                                              r'[-./\s]?[0-9]{5}[0-9]?\b|\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?'
+                                              r'[0-9]?[0-9]?[-./\s]?[0-9]{4}[-./\s]?[0-9]{4}\b')
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-        india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?[-./\s]?'
-                                        r'[0-9]{5}[0-9]?\b|\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?'
-                                        r'[-./\s]?[0-9]{4}[-./\s]?[0-9]{4}\b')
+
         # body will get phone numbers that are just text in the body
-        body = hxs.select('//body').re(india_format_regex)
+        body = hxs.select('//body').re(self._india_format_regex)
 
         phone_nums = body
 
         # Remove unicode indicators
         for i in range(len(phone_nums)):
-            phone_nums[i] = phone_nums[i].encode('ascii','ignore')
+            phone_nums[i] = phone_nums[i].encode('ascii', 'ignore')
 
         # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
         phone_nums = list(set(phone_nums))
@@ -328,7 +348,7 @@ class IndianPhoneNumberScraper:
         return phone_nums_list
 
 
-class OrgAddressScraper:
+class OrgAddressScraper(object):
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/cities.txt')) as f:
             self._cities = f.read().splitlines()
@@ -373,7 +393,7 @@ class OrgAddressScraper:
         return address_list[0]['city'] + " " + address_list[0]['zip_code'] if len(address_list) > 0 else ''
 
 
-class OrgContactsScraper:
+class OrgContactsScraper(object):
 
     def __init__(self):
         pass
@@ -412,7 +432,47 @@ class OrgContactsScraper:
 
 
 
-class OrgNameScraper:
+class OrgFacebookScraper(object):
+
+    def __init__(self):
+        regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?facebook\.com/.+(?:/)?$", re.IGNORECASE)
+        self.fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
+
+    def parse(self, response):
+        try:
+            fb_links = self.fb_link_ext.extract_links(response)
+        except SGMLParseError as e:
+            # Page was poorly formatted, oh well
+            _utilityscrapers_logger.error('Exception encountered when link extracting page: %s' % str(response.url))
+            return None
+
+        urls = [x.url for x in fb_links]
+        if len(fb_links) > 0:
+            return urls[0]
+        return None
+
+
+class OrgTwitterScraper(object):
+
+    def __init__(self):
+        regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?twitter\.com/(?:#!/)?\w+(?:/)?$", re.IGNORECASE)
+        self.tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
+
+    def parse(self, response):
+        try:
+            tw_links = self.tw_link_ext.extract_links(response)
+        except SGMLParseError as e:
+            # Page was poorly formatted, oh well
+            _utilityscrapers_logger.error('Exception encountered when link extracting page: %s' % str(response.url))
+            return None
+
+        urls = [x.url for x in tw_links]
+        if len(urls) > 0:
+            return urls[0]
+        return None
+
+
+class OrgNameScraper(object):
 
     def __init__(self):
         self._split_punctuation = re.compile(r"[ \w']+")
@@ -463,7 +523,7 @@ class OrgNameScraper:
         return org_name['name']
 
 
-class OrgPartnersScraper:
+class OrgPartnersScraper(object):
 
     def __init__(self):
         self._link_scraper = LinkScraper()
@@ -545,13 +605,13 @@ class OrgPartnersScraper:
                 link_url = urlparse(urljoin(page_url.geturl(), href))
                 if link_url.netloc not in self._netloc_ignore + [page_url.netloc]:
                     partner = ScrapedOrganization()
-                    partner['organization_url'] = '%s://%s/' % (link_url.scheme, link_url.netloc)
+                    partner['organization_url'] = '%s/' % link_url.netloc
                     partners.append(partner)
 
         return partners
 
 
-class OrgTypeScraper:
+class OrgTypeScraper(object):
 
     def __init__(self):
         # Stemmer for stemming terms
@@ -677,58 +737,53 @@ class OrgTypeScraper:
         return types or [OrgTypesEnum.UNKNOWN]
 
 
-class OrgUrlScraper:
+class OrgUrlScraper(object):
 
     def __init__(self):
         pass
 
     def parse(self, response):
         parse = urlparse(response.url)
-        urls = [
-            '%s/' % (parse.netloc),
-        ]
-        return urls
+        url = '%s/' % (parse.netloc)
+        return url
 
 
-class PublicationAuthorsScraper:
+class PublicationAuthorsScraper(object):
 
     def __init__(self):
         authors = []
 
 
-class PublicationDateScraper:
+class PublicationDateScraper(object):
 
     def __init__(self):
         partners = []
 
 
-class PublicationPublisherScraper:
+class PublicationPublisherScraper(object):
 
     def __init__(self):
         publisher = []
 
 
-class PublicationTitleScraper:
+class PublicationTitleScraper(object):
 
     def __init__(self):
         titles = []
 
 
-class PublicationTypeScraper:
+class PublicationTypeScraper(object):
 
     def __init__(self):
         type = []
 
 
-class UrlMetadataScraper:
+class UrlMetadataScraper(object):
 
     def __init__(self):
-        pass
+        self.dao = URLMetadataDAO
 
     def parse(self, response):
-        # Initialize the DAO context
-        dao_ctx = ApplicationContext(DAOContext())
-
         # Initialize item and set url
         metadata = ScrapedUrl()
         metadata['url'] = response.url
@@ -747,8 +802,7 @@ class UrlMetadataScraper:
         metadata['update_freq'] = 0
 
         # Compare checksums and update update_freq using the existing URL
-        dao = dao_ctx.get_object("URLMetadataDAO")
-        exist_url_dto = dao.find(url=response.url)
+        exist_url_dto = self.dao().find(url=response.url)
         if exist_url_dto is not None:
             exist_url = DTOConverter.from_dto(URLMetadataDTO, exist_url_dto)
             if exist_url.checksum is not None:
@@ -777,7 +831,7 @@ class UrlMetadataScraper:
         return metadata
 
 
-class USPhoneNumberScraper:
+class USPhoneNumberScraper(object):
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)

@@ -2,7 +2,8 @@ from mongoengine import Q
 from dto import *
 from connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
-from mongoengine.fields import StringField, URLField
+from HTResearch.Utilities.geocoder import geocode
+from mongoengine.fields import StringField, URLField, EmailField
 
 
 class DAO(object):
@@ -45,9 +46,12 @@ class DAO(object):
     def findmany(self, num_elements, *sort_fields, **constraints):
         with self.conn():
             if len(sort_fields) > 0:
-                return self.dto.objects(**constraints).order_by(*sort_fields)[:num_elements]
+                ret = self.dto.objects(**constraints).order_by(*sort_fields)
             else:
-                return self.dto.objects(**constraints)[:num_elements]
+                ret = self.dto.objects(**constraints)
+            if num_elements != 0:
+                return ret[:num_elements]
+            return ret
 
     # Search all string fields for text and return list of results
     # NOTE: may be slower than MongoDB's text search feature, which is unfortunately unusable because it is in beta
@@ -55,13 +59,13 @@ class DAO(object):
         with self.conn():
             # Find all string fields
             fields_dict = self.dto._fields
-            string_types = (StringField, URLField)
-            search_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) in string_types]
+            string_types = (StringField, URLField, EmailField)
+            string_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) in string_types]
 
-            # Search for each term in all string fields
+            # Search for each term in each string field
             result_lists = []
             for term in text.split():
-                results = [list(self.dto.objects(**{field + '__icontains': term})) for field in search_fields]
+                results = [list(self.dto.objects(**{field + '__icontains': term})) for field in string_fields]
                 results = reduce(lambda x, y: x + y, results)  # flatten to list of results
                 result_lists.append(results)
 
@@ -124,15 +128,19 @@ class OrganizationDAO(DAO):
 
         # Injected dependencies
         self.contact_dao = ContactDAO
+        self.geocode = geocode
 
     def merge_documents(self, existing_org_dto, new_org_dto):
         with self.conn():
             attributes = new_org_dto._data
             for key in attributes:
-                if attributes[key]:
+                if attributes[key] or key == 'latlng':
                     cur_attr = getattr(existing_org_dto, key)
                     if not cur_attr:
-                        setattr(existing_org_dto, key, attributes[key])
+                        if key == 'latlng' and not attributes['latlng'] and attributes['address']:
+                            setattr(existing_org_dto, key, self.geocode(attributes['address']))
+                        else:
+                            setattr(existing_org_dto, key, attributes[key])
                     elif type(cur_attr) is list:
                         merged_list = list(set(cur_attr + attributes[key]))
                         # if this is org types and we have more than one org type, make sure unknown isn't a type :P
@@ -148,11 +156,18 @@ class OrganizationDAO(DAO):
                 c = org_dto.contacts[i]
                 org_dto.contacts[i] = self.contact_dao().create_update(c)
 
+            for i in range(len(org_dto.partners)):
+                o = org_dto.partners[i]
+                org_dto.partners[i] = self.create_update(o)
+
             if org_dto.id is None:
                 existing_dto = self._smart_search_orgs(org_dto)
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, org_dto)
                     return saved_dto
+                elif org_dto.latlng is None and org_dto.address:
+                    # Geocode it
+                    org_dto.latlng = self.geocode(org_dto.address)
 
             org_dto.save()
         return org_dto
@@ -192,8 +207,6 @@ class OrganizationDAO(DAO):
         return existing_dto
 
 
-
-
 class PublicationDAO(DAO):
     """
     A DAO for the Publication document
@@ -218,7 +231,8 @@ class PublicationDAO(DAO):
                     return saved_dto
 
             if pub_dto.publisher is not None:
-                self.contact_dao().create_update(pub_dto.publisher)
+                p = pub_dto.publisher
+                pub_dto.publisher = self.contact_dao().create_update(p)
 
             pub_dto.save()
         return pub_dto
@@ -231,6 +245,19 @@ class URLMetadataDAO(DAO):
     def __init__(self):
         super(URLMetadataDAO, self).__init__()
         self.dto = URLMetadataDTO
+
+    def merge_documents(self, dto, merge_dto):
+        with self.conn():
+            attributes = merge_dto._data
+            for key in attributes:
+                if key == "last_visited":
+                    cur_attr = getattr(dto, key)
+                    if attributes[key] > cur_attr:
+                        setattr(dto, key, attributes[key])
+                elif attributes[key] is not None:
+                    setattr(dto, key, attributes[key])
+            dto.save()
+            return dto
 
     def create_update(self, url_dto):
         with self.conn():
@@ -258,3 +285,22 @@ class URLMetadataDAO(DAO):
                 return URLMetadataDTO.objects(req_query & blk_query).order_by(*sort_fields)[:num_elements]
             else:
                 return URLMetadataDTO.objects(req_query & blk_query)[:num_elements]
+
+
+class UserDAO(DAO):
+
+    def __init__(self):
+        super(UserDAO, self).__init__()
+        self.dto = UserDTO
+
+        # Injected dependencies
+        self.org_dao = OrganizationDAO
+
+    def create_update(self, user_dto):
+        with self.conn():
+            if user_dto.organization is not None:
+                o = user_dto.organization
+                user_dto.organization = self.org_dao().create_update(o)
+
+            user_dto.save()
+        return user_dto

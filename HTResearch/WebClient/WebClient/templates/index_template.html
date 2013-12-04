@@ -4,61 +4,68 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <script type="text/javascript" src="static/lib/jquery.easyModal.js"></script>    
     <script type="text/javascript" src="static/lib/jquery.tmpl.js"></script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{key}}&sensor=false"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{key}}&sensor=false&libraries=visualization"></script>
     <link href="static/css/index.css" rel="stylesheet">
     <script src="static/scripts/index.js" type="text/javascript"></script>
-    {% include "org_modal.html" %}
+    <script src="static/scripts/welcome.js" type="text/javascript"></script>
+    <script src="static/scripts/heatmap.js" type="text/javascript"></script>
 {% endblock %}
-    
+
 
 {% block content %}
+    {% include "org_modal.html" %}
+    {% include "org_bs_modal.html" %}
+    {% include "welcome.html" %}
+    {% include "contact_bs_modal.html" %}
     <div id="wrapper">
-        <div id="login-signup-div" class="jumbotron">
-
-            <form id="custom-search-form" class="form-search form-horizontal pull-right">
-                <div class="input-append span12">
-                    {% csrf_token %}
-                    <input type="text" id="search-box" class="search-query" placeholder="Search...">
+        <div class="row">
+            <div class="col-md-2">
+                <div id="search-box-div" class="jumbotron">
+                    <form id="custom-search-form" class="form-search form-horizontal">
+                        <div class="input-append span12">
+                            {% csrf_token %}
+                            <input type="text" id="search-box" class="search-query" placeholder=" Search...">
+                        </div>
+                        <div id="search-ajax-loader" class="ajax-loader hidden"></div>
+                    </form>
+                    <div id="search-results-div" class="panel-group" style="display: none">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2 id="organization-list-header" class="panel-title">
+                                    <a id="organization-toggle" data-toggle="collapse" href="#collapse-organizations">Organizations</a>
+                                </h2>
+                            </div>
+                            <div id="collapse-organizations" class="panel-collapse collapse in">
+                                <ul id="organization-search-list" style="list-style-type: none;"></ul>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2 id="contact-list-header" class="panel-title">
+                                    <a id="contact-toggle" class="disabled" data-toggle="collapse" href="#collapse-contacts">People</a>
+                                </h2>
+                            </div>
+                            <div id="collapse-contacts" class="panel-collapse collapse">
+                                <ul id="contact-search-list" style="list-style-type: none;"></ul>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2 id="publication-list-header" class="panel-title">
+                                    <a id="publication-toggle" class="disabled" href="javascript:void(0)">Publications</a>
+                                </h2>
+                            </div>
+                            <div id="collapse-publications" class="panel-collapse collapse">
+                                <ul id="publication-search-list" style="list-style-type: none;"></ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
+            <div class="col-md-10">
+                <div id="map-canvas"></div>
+            </div>
         </div>
-
-        <div id="search-results-div" class="jumbotron" style="display: none">
-        	<h2 id="organization-list-header">Organizations</h2>
-        		<ul id="organization-search-list" style="list-style-type: none;">
-					<!--<li>
-						<a class="org_link" href="#">Save the Children</a>
-					</li>
-					<li>Bombay Teen Challenge</li>-->
-				</ul>
-        	<h2 id="contact-list-header">People</h2>
-        		<ul id="contact-search-list" style="list-style-type: none;">
-					<!--<li>John Marth</li>
-					<li>Mike Jones</li>-->
-				</ul>
-        	<h2 id="publication-list-header">Publications</h2>
-        		<ul id="publication-search-list" style="list-style-type: none;">
-					<!--<li>Stop Human Trafficking</li>-->
-				</ul>
-        </div>
-
-        <div id="signup-div" class="jumbotron" style="display: none">
-        	<h1 id="create-an-account">Create an Account</h1>
-        	<input id="username-field" type="text" class="form-control" placeholder="Username" autofocus="">
-        	<input id="email-field" type="text" class="form-control" placeholder="Email address" autofocus="">
-        	<input id="password-field" type="password" class="form-control" placeholder="Password">
-        	<button id="create-account-btn" class="btn btn-lg btn-primary btn-block" type="submit">Create Account</button>
-        	<button id="modal-cancel" type="button" class="btn btn-xs btn-link">Cancel</button>
-        </div>
-
-        <div id="login-div" class="jumbotron" style="display: none">
-        	<h1 id="login-header">Existing Account</h1>
-        	<input id="email-field" type="text" class="form-control" placeholder="Email address" autofocus="">
-        	<input id="password-field" type="password" class="form-control" placeholder="Password">
-        	<button id="create-account-btn" class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
-        	<button id="modal-cancel" type="button" class="btn btn-xs btn-link">Cancel</button>
-        </div>
-
-        <div id="map-canvas"/>
     </div>
+    <div class="modal fade" id="bs-modal" tabindex="-1"></div>
 {% endblock %}

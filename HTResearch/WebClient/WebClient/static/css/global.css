@@ -27,7 +27,6 @@ a:hover {
 html,
 body {
   height: 100%;
-  overflow-x: hidden; 
   /* The html and body elements cannot have any padding or margin. */
 }
 
@@ -43,8 +42,10 @@ body {
 
 /* Set the fixed height of the footer here */
 #footer {
-  height: 60px;
-  background-color: #eeeeee;
+    height: 60px;
+    background-color: #eeeeee;
+    display: none;
+    visibility: hidden;
 }
 
 #footer-text {

@@ -38,11 +38,13 @@ class ScrapedOrganization(Item):
     name = Field()
     address = Field()
     types = Field()
-    phone_number = Field()
-    email = Field()
+    phone_numbers = Field()
+    emails = Field()
     contacts = Field()
     organization_url = Field()
     partners = Field()
+    facebook = Field()
+    twitter = Field()
 
 
 class ScrapedPhoneNumber(Item):

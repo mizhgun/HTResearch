@@ -2,8 +2,10 @@ var searchResultsVisible = false;
 var map;
 var initialLatLng = new google.maps.LatLng(21, 78);
 var searchedLatLng;
-var geocoder = new google.maps.Geocoder();
 var address;
+var orgData, contactData, pubData;
+var infowindow = null;
+var marker = null;
 
 function initialize() {
 	var mapOptions = {
@@ -17,10 +19,6 @@ function initialize() {
         
 	//Didn't accept a jquery selector
 	map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
-	//var mapControls = new GLargeMapControl3D();
-	//var bottomLeft = new GControlPosition(G_ANCHOR_BOTTOM_LEFT, new GSize(10,10));
-	//map.removeControl(mapTypeControl)
-	//map.addControl(mapControls, bottomLeft);
 
 	$('#signup-btn').click(function(e) {
 		$('#signup-div').easyModal({
@@ -48,72 +46,159 @@ function initialize() {
     $('#search-box').bind("keyup change", _.debounce(showSearchResults, 300));
 
     // prevent form submit on enter
-    $('#search-box').bind('keyup keypress', function (e) {
+    $('#search-box').bind('keyup keypress', function(e) {
         var code = e.keyCode || e.which;
         if (code == 13) {
             e.preventDefault();
             return false;
         }
     });
-	$('a').click(function(e){geocoder.geocode({'latLng': initialLatLng, 'address': dummyAddress}, plotOrganization)});
+
+	$('a.org-link').click(function(e){
+        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization);
+    });
+
+    //This function is in welcome.js
+    google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
 }
 
 function showSearchResults() {
-    var searchText = $('#search-box').val();
+    var searchText = $('#search-box').val().trim();
+    var searchResultsDiv = $('#search-results-div');
+
     if(searchText) {
-        $.ajax({
-            type: 'POST',
-            url: '/search/',
-            data: {
-                'search_text': $('#search-box').val(),
-                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+        // Put items to search for here.
+        var searchItems = [
+            {
+                name: 'Organization',
+                url: '/search_organizations/',
+                toggleSelector: '#organization-toggle',
+                collapseSelector: '#collapse-organizations',
+                listSelector: '#organization-search-list',
+                linkSelector: '.org-link',
+                linkCallback: showOrganizationModal
             },
-            success: function (data) {
-                $('#organization-search-list').html(data);
-            },
-            dataType: 'html'
+            {
+                name: 'Contact',
+                url: '/search_contacts/',
+                toggleSelector: '#contact-toggle',
+                collapseSelector: '#collapse-contacts',
+                listSelector: '#contact-search-list',
+                linkSelector: '.contact-link',
+                linkCallback: showContactModal
+            }
+        ];
+
+        // Perform each search
+        _.each(searchItems, function(item) {
+            startAjaxSearch();
+            $.ajax({
+                type: 'GET',
+                url: item.url,
+                data: {
+                    'search_text': $('#search-box').val(),
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                dataType: 'html'
+            }).done(function(data) {
+                data = data.trim();
+                if (data) {
+                    $(item.toggleSelector).attr('data-toggle', 'collapse');
+                    $(item.toggleSelector).removeClass('disabled');
+                    $(item.collapseSelector).collapse('show');
+                } else {
+                    $(item.toggleSelector).attr('data-toggle', '');
+                    $(item.toggleSelector).addClass('disabled');
+                    $(item.collapseSelector).collapse('hide');
+                }
+                $(item.toggleSelector).click(function(e) {
+                    e.preventDefault();
+                });
+                $(item.listSelector).html(data);
+                $('.modal').modal({ show: false });
+                $(item.linkSelector).click(item.linkCallback);
+            }).fail(function() {
+                console.log(item.name, 'search failed');
+            }).always(function() {
+                endAjaxSearch();
+            });
         });
-        if(!searchResultsVisible) {
-            $('#search-results-div').toggle("slide", {
-                direction: "up",
-                distance: window.height - $('#search-box').css('top')
-            }, 500);
+
+        if (!searchResultsVisible) {
+            searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
 
             searchResultsVisible = true;
         }
 	} else {
 	    if (searchResultsVisible) {
-	        $('#search-results-div').toggle('slide', {
-	            direction: 'up',
-	            distance: window.height - $('#search-box').css('top')
-	        }, 500);
+	        searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
 
 	        searchResultsVisible = false;
 	    }
 	}
 }
 
-function plotOrganization(results, status) {
-	if (status == google.maps.GeocoderStatus.OK) {
-        map.setCenter(results[0].geometry.location);
-        var marker = new google.maps.Marker({
+var searchesPending = 0;
+function startAjaxSearch() {
+    searchesPending++;
+    if (searchesPending == 1) {
+        $('#search-ajax-loader').removeClass('hidden');
+    }
+}
+function endAjaxSearch() {
+    searchesPending--;
+    if (searchesPending == 0) {
+        $('#search-ajax-loader').addClass('hidden');
+    }
+}
+
+// Show modals
+
+function showOrganizationModal() {
+    orgData = $(this).data();
+    if (orgData.latlng) {
+        // Get the lat, long values of the address
+        searchedLatLng = new google.maps.LatLng(orgData.latlng[0], orgData.latlng[1]);
+        plotOrganization(orgData);
+    }
+    else{
+        var $modal = $('.modal').modal();
+        createBootstrapModal($modal, '#bs-org-modal-template',orgData);
+    }
+}
+
+function showContactModal() {
+    contactData = $(this).data();
+    var $modal = $('.modal').modal({
+        show: false
+    });
+    createBootstrapModal($modal, '#bs-contact-modal-template', contactData);
+}
+
+// Show organization location on map
+function plotOrganization(data) {
+    if (data.latlng && data.latlng.length > 0 && data.latlng[0] && data.latlng[1]) {
+    var coord = new google.maps.LatLng(data.latlng[0], data.latlng[1]);
+    map.setCenter(coord);
+
+        if(marker){
+            marker.setMap(null);
+        }
+        
+        marker = new google.maps.Marker({
             map: map,
-            position: results[0].geometry.location
+            position: coord
         });
         
-        // the values will be replaced by results from the search
-        var org = {
-            'org_name': 'Save The Children India', 
-            'img_path': 'static/images/office_building_icon.png',
-            'phone_num': '(+91) 11 4229 4900',
-            'org_email': 'info@savethechildren.in',
-            'addr': address,
-            'org_id': 4
-        };
-        
-        html = $("#modal-template").tmpl(org);
-        
-        var infowindow = new google.maps.InfoWindow({
+        orgData.img_path = "/static/images/office_building_icon.png";
+
+        var html = $("#modal-template").tmpl(data);
+
+        if(infowindow){
+            infowindow.close();
+        }
+
+        infowindow = new google.maps.InfoWindow({
 		      content : html.html()
 		});
 
@@ -124,8 +209,20 @@ function plotOrganization(results, status) {
 		});
 
     } else {
-        alert("Geocode was not successful for the following reason: " + status);
+        var $modal = $('.modal').modal();
+        createBootstrapModal($modal, '#bs-org-modal-template', data);
     }
 }
 
-google.maps.event.addDomListener(window, 'load', _.once(initialize));
+function createBootstrapModal(m, modal_template, data){
+    // Do a bootstrap modal
+    var html = $(modal_template).tmpl(data);
+
+    $('#bs-modal').html(html);
+
+    m.modal('show');
+}
+
+$(function(){
+    initialize();
+});

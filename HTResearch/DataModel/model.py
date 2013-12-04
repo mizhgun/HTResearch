@@ -5,13 +5,11 @@ class Contact(object):
     """A Model class for an anti-trafficking contact."""
 
     def __init__(self, first_name=None, last_name=None,
-                 primary_phone=None, secondary_phone=None,
-                 email=None, organizations=[],
+                 phone=None, email=None, organizations=[],
                  publications=[], position=None):
         self.first_name = first_name
         self.last_name = last_name
-        self.primary_phone = primary_phone
-        self.secondary_phone = secondary_phone
+        self.phone = phone
         self.email = email
         self.organizations = organizations
         self.publications = publications
@@ -56,11 +54,26 @@ class Publication(object):
 class URLMetadata(object):
     """A Model class for an anti-trafficiking organization URL metadata."""
 
-    def __init__(self, url=None, last_visited=datetime.now(),
+    def __init__(self, url=None, domain=None, last_visited=datetime.now(),
                  score=None, update_freq=None,
                  checksum=None):
         self.url = url
+        self.domain = domain
         self.last_visited = last_visited
         self.score = score
         self.update_freq = update_freq
         self.checksum = checksum
+
+
+class User(object):
+    """A Model class for a user of the anti-trafficking system."""
+
+    def __init__(self, first_name, last_name, email, phone, organization, position, interests=None, address=None):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.phone = phone
+        self.organization = organization
+        self.position = position
+        self.interests = interests
+        self.address = address

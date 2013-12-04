@@ -1,20 +1,24 @@
-from django.http import HttpResponse, HttpResponseNotFound
-from django.template.loader import get_template
-from django.template import Context
-from HTResearch.Utilities.context import DAOContext
+from datetime import datetime, timedelta
+from django.core.cache import cache
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 from springpython.context import ApplicationContext
-from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
-from HTResearch.DataAccess.dao import OrganizationDAO
-from HTResearch.DataAccess.dto import OrganizationDTO
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
-from mongoengine.fields import StringField, URLField
-from bson.json_util import dumps
-import string
-import pdb
+from mongoengine.fields import StringField, URLField, EmailField
+from springpython.context import ApplicationContext
+from HTResearch.Utilities.encoder import MongoJSONEncoder
+from HTResearch.Utilities.context import DAOContext
+from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
+
+
+logger = LoggingUtility().get_logger(LoggingSection.CLIENT, __name__)
+ctx = ApplicationContext(DAOContext())
+REFRESH_COORDS_LIST = timedelta(minutes=5)
 
 
 def index(request):
+    logger.info('Request made for index')
     args = {}
     args.update(csrf(request))
 
@@ -23,52 +27,131 @@ def index(request):
     return render_to_response('index_template.html', args)
 
 
-def search(request):
+def heatmap_coordinates(request):
+    if request.method != 'GET':
+        return HttpResponseBadRequest
 
-    if request.method == 'POST':
-        search_text = request.POST['search_text']
+    coords = cache.get('organization_coords_list')
+    last_update = cache.get('organization_coords_list_last_update')
+    if not coords or not last_update or (datetime.now() - last_update > REFRESH_COORDS_LIST):
+        new_coords = []
+        cache.set('organization_address_list_last_update', datetime.now())
+        ctx = ApplicationContext(DAOContext())
+        org_dao = ctx.get_object('OrganizationDAO')
+        organizations = org_dao.findmany(0, latlng__exists=True, latlng__ne=[])
+        for org in organizations:
+            new_coords.append(org.latlng)
+
+        coords = MongoJSONEncoder().encode(new_coords)
+
+        if len(coords) > 0:
+            cache.set('organization_coords_list', coords)
+
+    return HttpResponse(coords, content_type="application/json")
+
+
+def search_organizations(request):
+
+    if request.method == 'GET':
+        search_text = request.GET['search_text']
+        logger.info('Search request made with search_text=%s' % search_text)
     else:
         search_text = ''
 
     organizations = []
 
     if search_text:
-        ctx = ApplicationContext(DAOContext())
         org_dao = ctx.get_object('OrganizationDAO')
 
         organizations = org_dao.text_search(search_text, 10, 'name')
 
-        # Make each organization non-string attribute into valid JSON
-        fields_dict = OrganizationDTO._fields
-        string_types = (StringField, URLField)
-        json_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) not in string_types]
-        for org in organizations:
-            # Find all non-string fields
-            for field in json_fields:
-                org[field] = dumps(org[field])
+        for dto in organizations:
+            encode_dto(dto)
 
     params = {'organizations': organizations}
-    return render_to_response('search_results.html', params)
+    return render_to_response('org_search_results.html', params)
 
 
-def organization_profile(request):
-    uri = request.build_absolute_uri()
-    org_dao = OrganizationDAO()
+def search_contacts(request):
+
+    if request.method == 'GET':
+        search_text = request.GET['search_text']
+    else:
+        search_text = ''
+
+    contacts = []
+
+    if search_text:
+        ctx = ApplicationContext(DAOContext())
+        contact_dao = ctx.get_object('ContactDAO')
+
+        contacts = contact_dao.text_search(search_text, 10, 'last_name')
+
+        for dto in contacts:
+            encode_dto(dto)
+
+    params = {'contacts': contacts}
+    return render_to_response('contact_search_results.html', params)
+
+
+def organization_profile(request, org_id):
+    logger.info('Request made for profile of org_id=%s' % org_id)
+    org_dao = ctx.get_object('OrganizationDAO')
 
     try:
-        org_lookup_key = int(string.split(uri,'/')[4])
-        org = org_dao.find(id=org_lookup_key)
+        org = org_dao.find(id=org_id)
     except Exception as e:
-        #If we ever hook up logging, this is where we would log the message
+        logger.error('Exception encountered on organization lookup for org_id=%s' % org_id)
         print e.message
-        return get_http_404_page()
+        return get_http_404_page(request)
 
-    t = get_template('organization_profile_template.html')
-    html = t.render(Context({"organization": org}))
-    return HttpResponse(html)
+    params = {"organization": org}
+    return render_to_response('organization_profile_template.html', params)
 
 
-def get_http_404_page():
-    template = get_template('http_404.html')
-    html = template.render(Context({}))
-    return HttpResponseNotFound(html)
+def contact_profile(request, contact_id):
+    logger.info('Request made for profile of contact_id=%s' % contact_id)
+    contact_dao = ctx.get_object('ContactDAO')
+
+    try:
+        contact = contact_dao.find(id=contact_id)
+    except Exception as e:
+        logger.error('Exception encountered on contact lookup for contact_id=%s' % contact_id)
+        print e.message
+        return get_http_404_page(request)
+
+    org_urls = []
+    for org in contact.organizations:
+        org_urls.append("/organization/"+org.id)
+
+    #Generates a 2d list
+    contact.organizations = zip(contact.organizations, org_urls)
+
+    params = {"contact": contact}
+    return render_to_response('contact_profile_template.html', params)
+
+
+def login(request):
+    return render_to_response('login.html')
+
+
+def signup(request):
+    return render_to_response('signup.html')
+
+
+def get_http_404_page(request):
+    return HttpResponseNotFound('http_404.html')
+
+
+def unimplemented(request):
+    return render_to_response('unimplemented.html')
+
+
+# Encodes a DTO's non-string fields to JSON
+def encode_dto(dto):
+    dto_type = type(dto)
+    fields_dict = dto_type._fields
+    string_types = (StringField, URLField, EmailField)
+    json_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) not in string_types]
+    for field in json_fields:
+        dto[field] = MongoJSONEncoder().encode(dto[field])
