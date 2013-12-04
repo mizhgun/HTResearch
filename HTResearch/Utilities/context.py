@@ -4,14 +4,11 @@ from springpython.config import *
 # project imports
 from HTResearch.DataAccess.dao import *
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
-<<<<<<< Updated upstream
 from HTResearch.Utilities.geocoder import geocode
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import UrlMetadataScraper
 from HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches import ItemSwitch
-=======
 from HTResearch.Utilities.converter import ModelConverter
->>>>>>> Stashed changes
 
 
 class DAOContext(PythonConfig):

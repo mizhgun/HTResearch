@@ -77,10 +77,7 @@ class ContactNameScraper(object):
         no_tags = ' '.join(no_tags)
 
         xpaths = []
-<<<<<<< HEAD
-=======
 
->>>>>>> R3_WickerMan
         for item in no_tags.split():
             if (item in self._titles or item in self._names) and item in body:
                 tags = re.findall(self._tag, body[:body.index(item)])
