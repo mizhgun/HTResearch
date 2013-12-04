@@ -12,7 +12,9 @@
                 data-organizations="{{ contact.organizations }}"
                 data-publications="{{ contact.publications }}"
                 data-position="{{ contact.position }}"
-            href="javascript:void(0)">{{ contact.first_name }} {{ contact.last_name }}</a>
+            href="javascript:void(0)">
+                {% if contact.first_name != None %}{{ contact.first_name }}{% endif %}
+                {% if contact.last_name != None %}{{ contact.last_name }}{% endif %}</a>
         </li>
     {% endfor %}
 {% else %}
