@@ -558,7 +558,7 @@ class MockOrgTypeScraper(object):
         # Lemmatizer for shortening each word to a more-commonly-used form of the word
         self._lemmatizer = WordNetLemmatizer()
         # Scraper to get common keywords from response
-        self._keyword_scraper = MockKeywordScraper()
+        self._keyword_scraper = MockKeywordScraper
         # Maximum number of types
         self._max_types = 3
         # Obvious religious keywords. These must be lowercase
@@ -644,9 +644,11 @@ class MockOrgTypeScraper(object):
 
     # Get the organization type
     def parse(self, response):
+        keyword_scraper_inst = self._keyword_scraper()
 
         # Get keywords
-        keywords = list(self._lemmatizer.lemmatize(word) for word in self._keyword_scraper.parse(response))
+        keywords_dict = keyword_scraper_inst.parse(response)
+        keywords = map(lambda(k, v): k, sorted(keywords_dict.items(), key=lambda(k, v): v, reverse=True))
 
         # Get all words
         all_words = []
@@ -655,7 +657,7 @@ class MockOrgTypeScraper(object):
                     'small', 'strong', 'div', 'span', 'li', 'th', 'td', 'a[contains(@href, "image")]']
         for element in elements:
             words = hxs.select('//'+element+'/text()').extract()
-            self._keyword_scraper.append_words(all_words, words)
+            keyword_scraper_inst.append_words(all_words, words)
 
         all_words = list(set(self._lemmatizer.lemmatize(word) for word in all_words))
 

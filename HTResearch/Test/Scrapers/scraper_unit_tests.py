@@ -460,7 +460,7 @@ class ScraperTests(unittest.TestCase):
             "httpwwwhalftheskymovementorg",
         ]
 
-        org_type_scraper = OrgTypeScraper()
+        org_type_scraper = ctx.get_object('OrgTypeScraper')
         types = []
 
         for input_file in test_files:
