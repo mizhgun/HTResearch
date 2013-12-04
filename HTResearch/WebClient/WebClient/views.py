@@ -39,7 +39,7 @@ def heatmap_coordinates(request):
         cache.set('organization_address_list_last_update', datetime.now())
         ctx = ApplicationContext(DAOContext())
         org_dao = ctx.get_object('OrganizationDAO')
-        organizations = org_dao.findmany(0, latlng__exists=True, latlng__ne=[])
+        organizations = org_dao.findmany(latlng__exists=True, latlng__ne=[])
         for org in organizations:
             new_coords.append(org.latlng)
 
@@ -142,7 +142,7 @@ def get_org_rank_rows(request):
     sort = request.GET['sort']
 
     org_dao = ctx.get_object('OrganizationDAO')
-    organizations = list(org_dao.find_set(start, end, sort))
+    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=sort))
 
     # add netloc to urls if needed
     for org in organizations:
