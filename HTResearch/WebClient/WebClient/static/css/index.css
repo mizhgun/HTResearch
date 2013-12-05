@@ -257,3 +257,13 @@ a.disabled {
     color: #c0c0c0;
     text-decoration: none;
 }
+
+#news-results {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
