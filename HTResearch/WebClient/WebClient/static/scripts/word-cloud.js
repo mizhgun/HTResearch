@@ -34,4 +34,6 @@ $.get('/get_org_keywords/', data)
     .fontSize(function(d) { return d.size; })
     .on("end", draw)
     .start();
+}).fail(function(result){
+	$('#no-keywords').show();
 });
