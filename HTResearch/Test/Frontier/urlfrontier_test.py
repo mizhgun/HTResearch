@@ -45,7 +45,7 @@ class URLFrontierTest(unittest.TestCase):
     def test_urlfrontier(self):
         for i in range(5):
             self.urlfrontier_set_up()
-            start_time = datetime.now()
+            start_time = datetime.utcnow()
             url_dao = self.dao_ctx.get_object("URLMetadataDAO")
 
             print 'Creating 2000 URLs'

@@ -596,19 +596,19 @@ class ScraperTests(unittest.TestCase):
         assert_list = [
             {
                 'checksum': Binary('154916369406075238760605425088915003118'),
-                'last_visited': datetime.now().date(),
+                'last_visited': datetime.utcnow().date(),
                 'update_freq': 0,
                 'url': 'http://bombayteenchallenge.org/'
             },
             {
                 'checksum': Binary('94565939257467841022060717122642335157'),
-                'last_visited': datetime.now().date(),
+                'last_visited': datetime.utcnow().date(),
                 'update_freq': 6, # incremented one from setup b/c diff checksum
                 'url': 'http://www.google.com'
             },
             {
                 'checksum': Binary('199553381546012383114562002951261892300'),
-                'last_visited': datetime.now().date(),
+                'last_visited': datetime.utcnow().date(),
                 'update_freq': 1,  # not incremented b/c checksum is same
                 'url': 'http://www.halftheskymovement.org/partners'
             },
