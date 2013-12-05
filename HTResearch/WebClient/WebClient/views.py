@@ -64,7 +64,7 @@ def search_organizations(request):
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
 
-        organizations = org_dao.text_search(search_text, 10, 'name')
+        organizations = org_dao.text_search(search_text, 10, sort_fields=['name'], required_fields=['name'])
 
         for dto in organizations:
             encode_dto(dto)
