@@ -6,7 +6,8 @@
 {% block content %}
     <div id="wrapper">
         <div class="row" style="padding-top: 5px;">
-            <center><h1>{{contact.first_name}} {{contact.last_name}}</h1></center>
+            <center><h1> {% if contact.first_name %}{{contact.first_name}}{% endif %}
+                {% if contact.last_name %}{{contact.last_name}}{% endif %}</h1></center>
             {% if contact.position %}
                 <center><h3>{{contact.position}}</h3></center>
             {% endif %}
@@ -23,22 +24,16 @@
                 <center class="lead">
                     <h2>Contact Information</h2>
 
-                    <p>Primary Phone Number: 
-                        {{ contact.primary_phone}}
-                    </p>
-
-                    <p>Secondary Phone Number: 
-                        {{ contact.secondary_phone}}
+                    <p>Phone Number:
+                        {{ contact.phone_number}}
                     </p>
 
                     <p>Email Address: 
                         {{ contact.email}}
                     </p>
 
-                    <p>Organizations:
-                        {% for org, url in contact.organizations %} 
-                            <a target="_blank" href="{{ url }}">{{ org.name }}</a>,
-                        {% endfor %}
+                    <p>Organization:
+                        <a href="{{ org_url }}">{{ contact.organization.id }}</a>
                     </p>
 
                     <p>Publications:

@@ -1,0 +1,59 @@
+{% extends "global.html" %}
+
+{% block imports %}
+        <link href="/static/css/signup.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+        <div class="container">
+            <div class="page-header">
+                <h1>Signup <small>Enter your information below to create an account.</small></h1>
+            </div>
+            <form id="signup-form" role="form">
+                <div class="form-group">
+                   <label for="first-name">First name*</label>
+                   <input type="text" class="form-control" id="first-name" name="first-name" placeholder="First name">
+                </div>
+                <div class="form-group">
+                   <label for="last-name">Last name*</label>
+                   <input type="text" class="form-control" id="last-name" name="last-name" placeholder="Last name">
+                </div>
+                <div class="form-group">
+                   <label for="email">Email*</label>
+                   <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <label for="account-type">Account Type*</label>
+                    <div id="account-type">
+                        <input type="radio" name="account-type" value="basic">Basic<br/>
+                        <input type="radio" name="account-type" value="contributor">Contributor
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="affiliation">Affiliation</label>
+                    <div id="affiliation">
+                        <input type="radio" name="affiliation" value="student">Student<br/>
+                        <input type="radio" name="affiliation" value="employee">Employee
+                    </div>
+                </div>
+                <div class="form-group">
+                   <label for="organization">Organization</label>
+                   <input type="text" class="form-control" id="organization" name="organization" placeholder="Organization">
+                </div>
+                <div class="form-group">
+                    <label for="background">Background</label>
+                    <textarea form="signup-form" id="background" name="background" placeholder="Provide a short summary of your research background"></textarea>
+                </div>
+                <div class="form-group">
+                   <label for="password">Password*</label>
+                   <input type="password" class="form-control" id="password" placeholder="Password">
+                </div>
+                <div class="form-group">
+                   <label for="confirm-password">Confirm Password*</label>
+                   <input type="password" class="form-control" id="confirm-password" placeholder="Password">
+                </div>
+                <p>* Required field</p>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+{% endblock %}
