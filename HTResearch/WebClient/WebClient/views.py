@@ -1,3 +1,4 @@
+from urlparse import urlparse
 from datetime import datetime, timedelta
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
@@ -38,7 +39,7 @@ def heatmap_coordinates(request):
         cache.set('organization_address_list_last_update', datetime.now())
         ctx = ApplicationContext(DAOContext())
         org_dao = ctx.get_object('OrganizationDAO')
-        organizations = org_dao.findmany(0, latlng__exists=True, latlng__ne=[])
+        organizations = org_dao.findmany(latlng__exists=True, latlng__ne=[])
         for org in organizations:
             new_coords.append(org.latlng)
 
@@ -120,15 +121,36 @@ def contact_profile(request, contact_id):
         print e.message
         return get_http_404_page(request)
 
-    org_urls = []
-    for org in contact.organizations:
-        org_urls.append("/organization/"+org.id)
+    org_url = '/organization/'+contact.organization.id if contact.organization else ''
 
-    #Generates a 2d list
-    contact.organizations = zip(contact.organizations, org_urls)
+    params = {"contact": contact,
+              "org_url": org_url}
 
-    params = {"contact": contact}
     return render_to_response('contact_profile_template.html', params)
+
+
+def org_rank(request, sort_method=''):
+    return render_to_response('org_rank.html')
+
+
+def get_org_rank_rows(request):
+    start = int(request.GET['start'])
+    end = int(request.GET['end'])
+    sort = request.GET['sort']
+
+    org_dao = ctx.get_object('OrganizationDAO')
+    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=sort))
+
+    # add netloc to urls if needed
+    for org in organizations:
+        if org.organization_url is not None:
+            netloc = urlparse(org.organization_url).netloc
+            if netloc == "":
+                org.organization_url = "//" + org.organization_url
+
+
+    params = {'organizations': organizations}
+    return render_to_response('org_rank_row.html', params)
 
 
 def login(request):

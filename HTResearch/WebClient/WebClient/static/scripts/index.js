@@ -153,15 +153,21 @@ function endAjaxSearch() {
 }
 
 // Show modals
-
 function showOrganizationModal() {
     orgData = $(this).data();
-    if (orgData.latlng) {
+    if (orgData.latlng && orgData.latlng.length > 0) {
         // Get the lat, long values of the address
         searchedLatLng = new google.maps.LatLng(orgData.latlng[0], orgData.latlng[1]);
         plotOrganization(orgData);
     }
     else{
+        if(marker){
+            marker.setMap(null);
+        }
+        if (infowindow){
+            infowindow.close();
+        }
+
         var $modal = $('.modal').modal();
         createBootstrapModal($modal, '#bs-org-modal-template',orgData);
     }
@@ -178,8 +184,8 @@ function showContactModal() {
 // Show organization location on map
 function plotOrganization(data) {
     if (data.latlng && data.latlng.length > 0 && data.latlng[0] && data.latlng[1]) {
-    var coord = new google.maps.LatLng(data.latlng[0], data.latlng[1]);
-    map.setCenter(coord);
+        var coord = new google.maps.LatLng(data.latlng[0], data.latlng[1]);
+        map.setCenter(coord);
 
         if(marker){
             marker.setMap(null);

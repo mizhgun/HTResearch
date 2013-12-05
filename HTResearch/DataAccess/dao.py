@@ -43,14 +43,26 @@ class DAO(object):
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
-    def findmany(self, num_elements, *sort_fields, **constraints):
+    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[], **constraints):
         with self.conn():
             if len(sort_fields) > 0:
-                ret = self.dto.objects(**constraints).order_by(*sort_fields)
+                ret = self.dto.objects(**constraints).order_by(sort_fields)
             else:
                 ret = self.dto.objects(**constraints)
-            if num_elements != 0:
+            if num_elements is not None:
                 return ret[:num_elements]
+            elif page_size is not None and page is not None:
+                # as an example, if we want page 3 with a page size of 50, we want elements with index 150 to 199
+                pg_start = page_size * page
+                pg_end = page_size * (page + 1)
+                # NOTE: Even though end would equal 200 in our example, python's slicing is not inclusive for end
+                return ret[pg_start:pg_end]
+            elif start is not None:
+                if end is None:
+                    return ret[start:]
+                else:
+                    return ret[start:end+1]
+
             return ret
 
     # Search all string fields for text and return list of results
@@ -101,9 +113,9 @@ class ContactDAO(DAO):
 
     def create_update(self, contact_dto):
         with self.conn():
-            for i in range(len(contact_dto.organizations)):
-                o = contact_dto.organizations[i]
-                contact_dto.organizations[i] = self.org_dao().create_update(o)
+            o = contact_dto.organization
+            if o:
+                contact_dto.organization = self.org_dao().create_update(o)
             for i in range(len(contact_dto.publications)):
                 p = contact_dto.publications[i]
                 contact_dto.publications[i] = self.pub_dao().create_update(p)
