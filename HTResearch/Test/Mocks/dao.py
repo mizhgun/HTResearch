@@ -93,9 +93,8 @@ class MockContactDAO(MockDAO):
 
     def create_update(self, contact_dto):
         with self.conn():
-            for i in range(len(contact_dto.organizations)):
-                o = contact_dto.organizations[i]
-                contact_dto.organizations[i] = self.org_dao().create_update(o)
+            o = contact_dto.organization
+            contact_dto.organization = self.org_dao().create_update(o)
             for i in range(len(contact_dto.publications)):
                 p = contact_dto.publications[i]
                 contact_dto.publications[i] = self.pub_dao().create_update(p)

@@ -150,7 +150,7 @@ class StopTraffickingDotInScraper:
             primary_phone= primary_no,
             secondary_phone = sec_no, 
             email = email,
-            organizations = None,
+            organization = None,
             publications = None,
             position = '') 
         return contact
@@ -235,7 +235,7 @@ class StopTraffickingDotInScraper:
                 primary_phone = primary,
                 secondary_phone = None, 
                 email = email,
-                organizations = None, # this will be done automatically
+                organization = None, # this will be done automatically
                 publications = None,
                 position = '') 
 
