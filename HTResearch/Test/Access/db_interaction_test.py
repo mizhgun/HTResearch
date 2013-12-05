@@ -10,6 +10,7 @@ from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Test.Mocks.connection import MockDBConnection
 from HTResearch.Test.Mocks.dao import *
+from HTResearch.DataModel.enums import AccountType
 
 
 class TestableDAOContext(DAOContext):
@@ -59,11 +60,9 @@ class DatabaseInteractionTest(unittest.TestCase):
                                        authors=[self.contact])
         self.urlmetadata = URLMetadata(url="http://google.com")
         self.user = User(first_name="Bee", last_name="Yee",
-                         email="beeyee@yee.com",
-                         address="123 Yee Street",
-                         organization=self.organization,
-                         position="Yee-est of Bees",
-                         phone="402-402-4020")
+                         email="beeyee@yee.com", password="iambeeyee",
+                         background="I love bees and yees",
+                         account_type=AccountType.BASIC)
 
         self.ctx = ApplicationContext(TestableDAOContext())
 

@@ -6,8 +6,8 @@ from HTResearch.Utilities.geocoder import geocode
 if __name__ == '__main__':
     ctx = ApplicationContext(DAOContext())
     dao = ctx.get_object('OrganizationDAO')
-    empty_latlngs = dao.findmany(0, latlng=[])
-    null_latlngs = dao.findmany(0, latlng__exists=False)
+    empty_latlngs = dao.findmany(latlng=[])
+    null_latlngs = dao.findmany(latlng__exists=False)
     for dto in empty_latlngs:
         if not dto.address:
             continue

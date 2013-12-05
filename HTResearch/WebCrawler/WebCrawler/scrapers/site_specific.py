@@ -145,8 +145,8 @@ class StopTraffickingDotInScraper:
 
         #create contact
         contact = ScrapedContact(
-            first_name = first, 
-            last_name = last, 
+            first_name = first,
+            last_name = last,
             primary_phone= primary_no,
             secondary_phone = sec_no, 
             email = email,

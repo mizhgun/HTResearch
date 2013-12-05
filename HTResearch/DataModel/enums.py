@@ -1,5 +1,15 @@
 from HTResearch.Utilities.data_structures import enum
 
+AccountType = enum(
+    'BASIC',
+    'CONTRIBUTOR',
+)
+
+AffiliationType = enum(
+    'STUDENT',
+    'EMPLOYEE',
+)
+
 OrgTypesEnum = enum(
     ### THIS IS AN ORDERED LIST. IF ADDING A TYPE ADD TO THE BOTTOM ###
     ### DON'T ADD TO THE TOP, ADD TO THE BOTTOM ###
