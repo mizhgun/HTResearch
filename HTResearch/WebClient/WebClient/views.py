@@ -121,7 +121,7 @@ def contact_profile(request, contact_id):
         print e.message
         return get_http_404_page(request)
 
-    org_url = '/organization/'+contact.organization.id
+    org_url = '/organization/'+contact.organization.id if contact.organization else ''
 
     params = {"contact": contact,
               "org_url": org_url}
