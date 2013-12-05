@@ -1,16 +1,19 @@
-from urlparse import urlparse
 from datetime import datetime, timedelta
 from django.core.cache import cache
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
-from springpython.context import ApplicationContext
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
+from django.template import RequestContext
 from mongoengine.fields import StringField, URLField, EmailField
 from springpython.context import ApplicationContext
+from urlparse import urlparse
+
+# project imports
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
 from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
+from HTResearch.WebClient.WebClient.models import LoginForm
 
 
 logger = LoggingUtility().get_logger(LoggingSection.CLIENT, __name__)
@@ -154,7 +157,14 @@ def get_org_rank_rows(request):
 
 
 def login(request):
-    return render_to_response('login.html')
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect('/')
+    else:
+        form = LoginForm()
+
+    return render_to_response('login.html', {'form': form}, context_instance=RequestContext(request))
 
 
 def signup(request):
