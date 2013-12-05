@@ -191,4 +191,4 @@ def get_org_keywords(request):
 
     org_dao = ctx.get_object('OrganizationDAO')
     org = org_dao.find(id=org_id)
-    return org.keywords
+    return HttpResponse(org.keywords, content_type="application/json")
