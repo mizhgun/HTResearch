@@ -68,6 +68,7 @@ function initialize() {
     var searchTerm = '"human+trafficking"';
     var newsUrl = 'https://news.google.com/news/feeds?output=rss&q=' + searchTerm;
     var feed = new google.feeds.Feed(newsUrl);
+    feed.setNumEntries(10);
     feed.load(function(result) {
         if(!result.error) {
             console.log(result);
