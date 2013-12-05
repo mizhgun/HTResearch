@@ -121,14 +121,11 @@ def contact_profile(request, contact_id):
         print e.message
         return get_http_404_page(request)
 
-    org_urls = []
-    for org in contact.organizations:
-        org_urls.append("/organization/"+org.id)
+    org_url = '/organization/'+contact.organization.id
 
-    #Generates a 2d list
-    contact.organizations = zip(contact.organizations, org_urls)
+    params = {"contact": contact,
+              "org_url": org_url}
 
-    params = {"contact": contact}
     return render_to_response('contact_profile_template.html', params)
 
 

@@ -34,9 +34,7 @@
 
                     <!--This needs to only be one org now, how to get the url? contact.organization.url?-->
                     <p>Organization:
-                        {% for org, url in contact.organization %}
-                            <a href="{{ url }}">{{ org.name }}</a>,
-                        {% endfor %}
+                        <a href="{{ org_url }}">{{ contact.organization.name }}</a>
                     </p>
 
                     <p>Publications:
