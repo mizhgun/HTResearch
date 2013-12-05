@@ -6,8 +6,8 @@
 {% block content %}
     <div id="wrapper">
         <div class="row" style="padding-top: 5px;">
-            <center><h1> {% if contact.first_name != None %}{{contact.first_name}}{% endif %}
-                {% if contact.last_name != None %}{{contact.last_name}}{% endif %}</h1></center>
+            <center><h1> {% if contact.first_name %}{{contact.first_name}}{% endif %}
+                {% if contact.last_name %}{{contact.last_name}}{% endif %}</h1></center>
             {% if contact.position %}
                 <center><h3>{{contact.position}}</h3></center>
             {% endif %}
