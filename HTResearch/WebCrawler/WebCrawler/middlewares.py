@@ -26,7 +26,7 @@ class UrlQueueMiddleware(object):
             url_dao = URLMetadataDAO()
             url_dto = url_dao.find(url=request.url)
             if url_dto is not None:
-                url_dto.last_visited = datetime.now()
+                url_dto.last_visited = datetime.utcnow()
                 url_dao.create_update(url_dto)
         except Exception as e:
             _middleware_logger.error(e.message)
