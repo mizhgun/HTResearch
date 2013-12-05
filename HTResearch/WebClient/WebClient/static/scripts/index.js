@@ -7,6 +7,9 @@ var orgData, contactData, pubData;
 var infowindow = null;
 var marker = null;
 
+// load Google Feeds API
+google.load('feeds', '1');
+
 function initialize() {
 	var mapOptions = {
 	  center: initialLatLng,
@@ -60,6 +63,16 @@ function initialize() {
 
     //This function is in welcome.js
     google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
+
+    // Retrieve news
+    var searchTerm = '"human+trafficking"';
+    var newsUrl = 'https://news.google.com/news/feeds?output=rss&q=' + searchTerm;
+    var feed = new google.feeds.Feed(newsUrl);
+    feed.load(function(result) {
+        if(!result.error) {
+            console.log(result);
+        }
+    });
 }
 
 function showSearchResults() {
