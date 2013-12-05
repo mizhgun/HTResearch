@@ -157,7 +157,12 @@ def encode_dto(dto):
     for field in json_fields:
         dto[field] = MongoJSONEncoder().encode(dto[field])
 
-def get_org_keywords(request, org_id):
+def get_org_keywords(request):
+    if request.method == 'GET':
+        org_id = request.GET['org_id']
+    else:
+        org_id = ''
+
     org_dao = ctx.get_object('OrganizationDAO')
     org = org_dao.find(id=org_id)
     return org.keywords

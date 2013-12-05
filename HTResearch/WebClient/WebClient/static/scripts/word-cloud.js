@@ -19,7 +19,11 @@ function draw(words) {
     .text(function(d) { return d.text; });
 }
 
-$.get('/get_org_keywords/', document.URL.split("/")[4])
+var data = {
+	'org_id': document.URL.split("/")[4]
+}
+
+$.get('/get_org_keywords/', data)
 	.done(function(result){
 		d3.layout.cloud().size([600, 400])
 		.words(result.keywords.map(function(d) {
