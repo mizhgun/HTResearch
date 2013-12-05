@@ -71,7 +71,11 @@ function initialize() {
     feed.setNumEntries(10);
     feed.load(function(result) {
         if(!result.error) {
-            console.log(result);
+            $.each(result.feed.entries, function() {
+                console.log(this);
+                $.template('newsTemplate', $('#news-template').html());
+                $.tmpl('newsTemplate', this).appendTo('#news-results');
+            });
         }
     });
 }
