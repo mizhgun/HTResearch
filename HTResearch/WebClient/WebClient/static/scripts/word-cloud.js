@@ -2,10 +2,10 @@ var fill = d3.scale.category20();
 
 function draw(words) {
 	d3.select("#word-cloud").append("svg")
-    .attr("width", 600)
+    .attr("width", 800)
     .attr("height", 400)
   	.append("g")
-    .attr("transform", "translate(300,200)")
+    .attr("transform", "translate(400,200)")
   	.selectAll("text")
     .data(words)
   	.enter().append("text")
@@ -25,11 +25,16 @@ var data = {
 
 $.get('/get_org_keywords/', data)
 	.done(function(result){
-		d3.layout.cloud().size([600, 400])
-		.words(result.keywords.map(function(d) {
-		return {text: d, size: 10 + Math.random() * 90};
+		if(!Object.keys(result).length) {
+			$('#no-keywords').show();
+			return;
+		}
+
+		d3.layout.cloud().size([800, 400])
+		.words(Object.keys(result).map(function(d) {
+		return {text: d, size: 10 + result[d]/5};
 	}))
-    .padding(10)
+    .padding(5)
     .rotate(0)
     .fontSize(function(d) { return d.size; })
     .on("end", draw)
