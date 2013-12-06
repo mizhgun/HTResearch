@@ -7,8 +7,7 @@ var orgData, contactData, pubData;
 var infowindow = null;
 var marker = null;
 // for news loading
-var newsSearchTerm = 'human+trafficking';
-var newsUrl = 'https://news.google.com/news/feeds?output=rss&q=' + newsSearchTerm;
+var newsUrl = 'https://news.google.com/news/feeds?output=rss&q=';
 var newsFeed = null;
 var newsCount = 0;
 var newsStepSize = 6;
@@ -71,6 +70,7 @@ function initialize() {
     google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
 
     // Retrieve news
+    setNewsQuery('human trafficking');
     loadNews();
     // Infinite scrolling for news
     $('#news-results').scroll(function() {
@@ -80,8 +80,12 @@ function initialize() {
     });
 }
 
+function setNewsQuery(query) {
+    newsFeed = newsFeed || new google.feeds.Feed(newsUrl + query.split().join('+'));
+    newsCount = 0;
+}
+
 function loadNews() {
-    newsFeed = newsFeed || new google.feeds.Feed(newsUrl);
     newsCount += newsStepSize;
     newsFeed.includeHistoricalEntries();
     newsFeed.setNumEntries(newsCount);
