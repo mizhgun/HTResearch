@@ -37,9 +37,9 @@ def heatmap_coordinates(request):
 
     coords = cache.get('organization_coords_list')
     last_update = cache.get('organization_coords_list_last_update')
-    if not coords or not last_update or (datetime.now() - last_update > REFRESH_COORDS_LIST):
+    if not coords or not last_update or (datetime.utcnow() - last_update > REFRESH_COORDS_LIST):
         new_coords = []
-        cache.set('organization_address_list_last_update', datetime.now())
+        cache.set('organization_address_list_last_update', datetime.utcnow())
         ctx = ApplicationContext(DAOContext())
         org_dao = ctx.get_object('OrganizationDAO')
         organizations = org_dao.findmany(latlng__exists=True, latlng__ne=[])

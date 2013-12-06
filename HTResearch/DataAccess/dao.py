@@ -114,7 +114,8 @@ class ContactDAO(DAO):
     def create_update(self, contact_dto):
         with self.conn():
             o = contact_dto.organization
-            contact_dto.organization = self.org_dao().create_update(o)
+            if o:
+                contact_dto.organization = self.org_dao().create_update(o)
             for i in range(len(contact_dto.publications)):
                 p = contact_dto.publications[i]
                 contact_dto.publications[i] = self.pub_dao().create_update(p)

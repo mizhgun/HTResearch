@@ -196,6 +196,7 @@ body {
 
 #firstHeading {
     padding: 5px;
+    margin-top: 0;
 }
 
 #addr-cell{
@@ -224,7 +225,7 @@ body {
 }
 
 #map-modal {
-    height: 200px;
+    height: 225px;
     width: 425px;
 }
 
