@@ -7,7 +7,8 @@ var orgData, contactData, pubData;
 var infowindow = null;
 var marker = null;
 // for news loading
-var newsUrl = 'https://news.google.com/news/feeds?output=rss&q=';
+var maxNewsCount = 100;
+var newsUrl = 'https://news.google.com/news/feeds?output=rss&num=' + maxNewsCount + '&q=';
 var newsFeed = null;
 var newsCount = 0;
 var newsStepSize = 6;
