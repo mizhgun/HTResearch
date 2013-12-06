@@ -6,6 +6,12 @@ var address;
 var orgData, contactData, pubData;
 var infowindow = null;
 var marker = null;
+// for news loading
+var newsSearchTerm = 'human+trafficking';
+var newsUrl = 'https://news.google.com/news/feeds?output=rss&q=' + newsSearchTerm;
+var newsFeed = null;
+var newsCount = 0;
+var newsStepSize = 6;
 
 // load Google Feeds API
 google.load('feeds', '1');
@@ -65,17 +71,30 @@ function initialize() {
     google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
 
     // Retrieve news
-    var searchTerm = '"human+trafficking"';
-    var newsUrl = 'https://news.google.com/news/feeds?output=rss&q=' + searchTerm;
-    var feed = new google.feeds.Feed(newsUrl);
-    feed.setNumEntries(10);
-    feed.load(function(result) {
+    loadNews();
+    // Infinite scrolling for news
+    $('#news-results').scroll(function() {
+        if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+            loadNews();
+        }
+    });
+}
+
+function loadNews() {
+    newsFeed = newsFeed || new google.feeds.Feed(newsUrl);
+    newsCount += newsStepSize;
+    newsFeed.includeHistoricalEntries();
+    newsFeed.setNumEntries(newsCount);
+    newsFeed.load(function(result) {
         if(!result.error) {
-            $.each(result.feed.entries, function() {
-                console.log(this);
-                $.template('newsTemplate', $('#news-template').html());
-                $.tmpl('newsTemplate', this).appendTo('#news-results');
+            var articles = result.feed.entries;
+            newsCount = articles.length;
+            $.template('newsTemplate', $('#news-template').html());
+            var newsDiv = $('<div></div>');
+            $.each(articles, function() {
+                $(newsDiv).append($.tmpl('newsTemplate', this));
             });
+            $('#news-results').html($(newsDiv).html());
         }
     });
 }
