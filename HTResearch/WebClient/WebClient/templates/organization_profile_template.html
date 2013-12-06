@@ -22,7 +22,7 @@
             <div id="info-wrap" class="container well col-lg-8">
                 <div class="col-xs-4">
                     <h2>Information</h2>
-                    <p>Website: <a href="{{organization.organization_url}}">
+                    <p>Website: <a target="_blank" href="{{organization.organization_url}}">
                         {{organization.organization_url}}
                     </a>
                     </p>
@@ -32,9 +32,9 @@
                         {{ organization.phone_numbers|join:", " }}
                     </p>
 
-                    <p>Facebook: <a href="{{organization.facebook}}">
+                    <p>Facebook: <a target="_blank" href="{{organization.facebook}}">
                         {{organization.facebook}}</a></p>
-                    <p>Twitter: <a href="{{organization.twitter}}">
+                    <p>Twitter: <a target="_blank" href="{{organization.twitter}}">
                         {{organization.twitter}}
                     </a>
                     </p>
