@@ -106,6 +106,7 @@ def organization_profile(request, org_id):
         print e.message
         return get_http_404_page(request)
 
+    scheme = ""
     if org.organization_url is not None:
         scheme = urlparse(org.organization_url).scheme
 
