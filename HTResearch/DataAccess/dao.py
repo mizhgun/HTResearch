@@ -111,23 +111,23 @@ class ContactDAO(DAO):
         self.org_dao = OrganizationDAO
         self.pub_dao = PublicationDAO
 
-    def create_update(self, contact_dto):
+    def create_update(self, contact_dto, cascade_add=True):
         with self.conn():
             o = contact_dto.organization
             if contact_dto not in o.contacts:
                 o.contacts.append(contact_dto)
-            contact_dto.organization = self.org_dao().create_update(o)
+            contact_dto.organization = self.org_dao().create_update(o, False)
             for i in range(len(contact_dto.publications)):
                 p = contact_dto.publications[i]
-                contact_dto.publications[i] = self.pub_dao().create_update(p)
+                contact_dto.publications[i] = self.pub_dao().create_update(p, False)
 
             if contact_dto.id is None:
                 existing_dto = self.dto.objects(email=contact_dto.email).first()
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, contact_dto)
                     return saved_dto
-
-            contact_dto.save()
+            if cascade_add:
+                contact_dto.save()
         return contact_dto
 
 
@@ -142,7 +142,7 @@ class OrganizationDAO(DAO):
         # Injected dependencies
         self.contact_dao = ContactDAO
 
-    def merge_documents(self, existing_org_dto, new_org_dto):
+    def merge_documents(self, existing_org_dto, new_org_dto, cascade_add=True):
         with self.conn():
             attributes = new_org_dto._data
             for key in attributes:
@@ -156,22 +156,24 @@ class OrganizationDAO(DAO):
                         if key == "types" and len(merged_list) > 1 and OrgTypesEnum.UNKNOWN in merged_list:
                             merged_list.remove(OrgTypesEnum.UNKNOWN)
                         setattr(existing_org_dto, key, attributes[key])
-            existing_org_dto.save()
+            if cascade_add:
+                existing_org_dto.save()
             return existing_org_dto
 
-    def create_update(self, org_dto):
+    def create_update(self, org_dto, cascade_add=True):
         with self.conn():
-            for i in range(len(org_dto.contacts)):
-                c = org_dto.contacts[i]
-                org_dto.contacts[i] = self.contact_dao().create_update(c)
+            if cascade_add:
+                for i in range(len(org_dto.contacts)):
+                    c = org_dto.contacts[i]
+                    org_dto.contacts[i] = self.contact_dao().create_update(c, False)
 
             if org_dto.id is None:
                 existing_dto = self._smart_search_orgs(org_dto)
                 if existing_dto is not None:
-                    saved_dto = self.merge_documents(existing_dto, org_dto)
+                    saved_dto = self.merge_documents(existing_dto, org_dto, False)
                     return saved_dto
-
-            org_dto.save()
+            if cascade_add:
+                org_dto.save()
         return org_dto
 
     def _smart_search_orgs(self, org_dto):
@@ -222,11 +224,11 @@ class PublicationDAO(DAO):
         # Injected dependencies
         self.contact_dao = ContactDAO
 
-    def create_update(self, pub_dto):
+    def create_update(self, pub_dto, cascade_add=True):
         with self.conn():
             for i in range(len(pub_dto.authors)):
                 c = pub_dto.authors[i]
-                pub_dto.authors[i] = self.contact_dao().create_update(c)
+                pub_dto.authors[i] = self.contact_dao().create_update(c, False)
 
             if pub_dto.id is None:
                 existing_dto = self.dto.objects(title=pub_dto.title).first()
@@ -236,8 +238,8 @@ class PublicationDAO(DAO):
 
             if pub_dto.publisher is not None:
                 self.contact_dao().create_update(pub_dto.publisher)
-
-            pub_dto.save()
+            if cascade_add:
+                pub_dto.save()
         return pub_dto
 
 
@@ -275,3 +277,22 @@ class URLMetadataDAO(DAO):
                 return URLMetadataDTO.objects(req_query & blk_query).order_by(*sort_fields)[:num_elements]
             else:
                 return URLMetadataDTO.objects(req_query & blk_query)[:num_elements]
+
+
+class UserDAO(DAO):
+
+    def __init__(self):
+        super(UserDAO, self).__init__()
+        self.dto = UserDTO
+
+        # Injected dependencies
+        self.org_dao = OrganizationDAO
+
+    def create_update(self, user_dto):
+        with self.conn():
+            if user_dto.organization is not None:
+                o = user_dto.organization
+                user_dto.organization = self.org_dao().create_update(o)
+
+            user_dto.save()
+        return user_dto
