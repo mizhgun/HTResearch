@@ -152,8 +152,7 @@ class StopTraffickingSpider(BaseSpider):
         yield url_item
 
     def _get_url_metadata(self, item):
-        item_class = item.__class__.__name__
-        if item_class != "ScrapedOrganization"\
+        if not isinstance(item, ScrapedOrganization)\
                 or item['organization_url'] is None or item['organization_url'] == "":
             return None
 
