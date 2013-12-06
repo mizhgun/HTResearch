@@ -1,6 +1,7 @@
 {% extends "global.html" %}
 
 {% block imports%}
+    <title>Organization - {{contact.first_name}}</title>
 {%  endblock %}
 
 {% block content %}
@@ -33,7 +34,7 @@
                     </p>
 
                     <p>Organization:
-                        <a href="{{ org_url }}">{{ contact.organization.id }}</a>
+                        <a target="_blank" href="{{ org_url }}">{{ contact.organization.id }}</a>
                     </p>
 
                     <p>Publications:
