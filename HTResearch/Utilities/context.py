@@ -197,10 +197,10 @@ class ItemPipelineContext(DAOContext, URLFrontierContext):
     def ItemSwitch(self):
         switch = ItemSwitch()
         switch.frontier = self.URLFrontier()
-        switch.contact_dao = self.ContactDAO()
-        switch.org_dao = self.OrganizationDAO()
-        switch.pub_dao = self.PublicationDAO()
-        switch.url_dao = self.URLMetadataDAO()
+        switch.contact_dao = self.RegisteredContactDAO()()
+        switch.org_dao = self.RegisteredOrganizationDAO()()
+        switch.pub_dao = self.RegisteredPublicationDAO()()
+        switch.url_dao = self.RegisteredURLMetadataDAO()()
         return switch
 
 class ConverterContext(PythonConfig):

@@ -17,6 +17,10 @@ class TestablePipelineContext(ItemPipelineContext):
         return MockDBConnection
 
     @Object()
+    def RegisteredContactDAO(self):
+        return MockContactDAO
+
+    @Object()
     def RegisteredOrganizationDAO(self):
         return MockOrganizationDAO
 
