@@ -87,9 +87,9 @@ class DAO(object):
             if result_lists:
                 results = [item for item in result_lists[0] if combo(item in list for list in result_lists)]
 
-            # filter by required fields
-            for field in required_fields:
-                results = [result for result in results if result[field]]
+            # filter by required fields, only take results with the non-None fields
+            for key in required_fields:
+                results = [r for r in results if r[key]]
 
             # Remove duplicates
             results = list(set(results))
