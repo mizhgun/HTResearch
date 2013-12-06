@@ -21,9 +21,12 @@
             <div id="info-wrap" class="container well col-lg-8">
                 <div class="col-xs-4">
                     <h2>Information</h2>
-                    <p>Website: <a href="{{organization.organization_url}}">
+                    <p>Website: {% if organization.organization_url %}<a href="{{organization.organization_url}}">
                         {{organization.organization_url}}
                     </a>
+                    {% else %}
+                    None
+                    {% endif %}
                     </p>
 
                     <p>Address: {{organization.address}}</p>
@@ -31,12 +34,18 @@
                         {{ organization.phone_numbers|join:", " }}
                     </p>
 
-                    <p>Facebook: <a href="{{organization.facebook}}">
-                        {{organization.facebook}}</a></p>
-                    <p>Twitter: <a href="{{organization.twitter}}">
-                        {{organization.twitter}}
-                    </a>
-                    </p>
+                    <p>Facebook: {% if organization.facebook %}
+                    <a href="{{organization.facebook}}">
+                        {{organization.facebook}}</a>
+                    {% else %}
+                        None
+                    {% endif %}</p>
+                    <p>Twitter: {% if organization.twitter %}
+                    <a href="{{organization.twitter}}">
+                        {{organization.twitter}}</a>
+                    {% else %}
+                        None
+                    {% endif %}</p>
                 </div>
                 <div class="col-xs-4">
                     <h2>People</h2>
