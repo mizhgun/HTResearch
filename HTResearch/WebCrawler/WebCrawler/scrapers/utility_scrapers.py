@@ -788,7 +788,7 @@ class UrlMetadataScraper(object):
         # Initialize item and set url
         metadata = ScrapedUrl()
         metadata['url'] = response.url
-        metadata['last_visited'] = datetime.now()
+        metadata['last_visited'] = datetime.utcnow()
 
         # calculate new hash
         md5 = hashlib.md5()

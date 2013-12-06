@@ -114,9 +114,10 @@ class ContactDAO(DAO):
     def create_update(self, contact_dto, cascade_add=True):
         with self.conn():
             o = contact_dto.organization
-            if contact_dto not in o.contacts:
-                o.contacts.append(contact_dto)
-            contact_dto.organization = self.org_dao().create_update(o, False)
+            if o:
+                if contact_dto not in o.contacts:
+                    o.contacts.append(contact_dto)
+                contact_dto.organization = self.org_dao().create_update(o, False)
             for i in range(len(contact_dto.publications)):
                 p = contact_dto.publications[i]
                 contact_dto.publications[i] = self.pub_dao().create_update(p, False)
