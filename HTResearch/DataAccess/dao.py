@@ -63,6 +63,11 @@ class DAO(object):
                     return ret[start:end+1]
 
             return ret
+            #
+            #    return self.dto.objects(**constraints).order_by(*sort_fields)[:num_elements]
+            #else:
+            #    return self.dto.objects(**constraints)[:num_elements]
+
 
 
     # Search all string fields for text and return list of results
@@ -117,6 +122,7 @@ class ContactDAO(DAO):
 
             if contact_dto not in o.contacts:
                 o.contacts.append(contact_dto)
+            contact_dto.organization = self.org_dao().create_update(o, False)
 
             #if o:
             #    contact_dto.organization = self.org_dao().create_update(o)
@@ -171,13 +177,16 @@ class OrganizationDAO(DAO):
                     c = org_dto.contacts[i]
                     org_dto.contacts[i] = self.contact_dao().create_update(c, False)
 
+
             if org_dto.id is None:
                 existing_dto = self._smart_search_orgs(org_dto)
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, org_dto, False)
                     return saved_dto
+
             if cascade_add:
                 org_dto.save()
+
         return org_dto
 
     def _smart_search_orgs(self, org_dto):
@@ -244,6 +253,7 @@ class PublicationDAO(DAO):
                 self.contact_dao().create_update(pub_dto.publisher)
             if cascade_add:
                 pub_dto.save()
+
         return pub_dto
 
 
@@ -281,22 +291,3 @@ class URLMetadataDAO(DAO):
                 return URLMetadataDTO.objects(req_query & blk_query).order_by(*sort_fields)[:num_elements]
             else:
                 return URLMetadataDTO.objects(req_query & blk_query)[:num_elements]
-
-
-class UserDAO(DAO):
-
-    def __init__(self):
-        super(UserDAO, self).__init__()
-        self.dto = UserDTO
-
-        # Injected dependencies
-        self.org_dao = OrganizationDAO
-
-    def create_update(self, user_dto):
-        with self.conn():
-            if user_dto.organization is not None:
-                o = user_dto.organization
-                user_dto.organization = self.org_dao().create_update(o)
-
-            user_dto.save()
-        return user_dto
