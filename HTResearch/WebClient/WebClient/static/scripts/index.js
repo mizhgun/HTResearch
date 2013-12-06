@@ -71,7 +71,7 @@ function initialize() {
     google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
 
     // Retrieve news
-    setNewsQuery('human trafficking');
+    setNewsQuery('human trafficking india');
     loadNews();
     // Infinite scrolling for news
     $('#news-results').scroll(function() {
