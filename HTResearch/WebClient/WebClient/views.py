@@ -2,18 +2,21 @@ from datetime import datetime, timedelta
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.core.context_processors import csrf
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
+from django.contrib.auth.hashers import make_password, check_password
 from mongoengine.fields import StringField, URLField, EmailField
 from springpython.context import ApplicationContext
 from urlparse import urlparse
 
 # project imports
+from HTResearch.DataModel.model import User
+from HTResearch.DataAccess.dto import UserDTO
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
-from HTResearch.WebClient.WebClient.models import LoginForm
+from HTResearch.WebClient.WebClient.models import LoginForm, SignupForm
 
 
 logger = LoggingUtility().get_logger(LoggingSection.CLIENT, __name__)
@@ -28,7 +31,7 @@ def index(request):
 
     args["api_key"] = GOOGLE_MAPS_API_KEY
 
-    return render_to_response('index_template.html', args)
+    return render(request, 'index_template.html', args)
 
 
 def heatmap_coordinates(request):
@@ -73,7 +76,7 @@ def search_organizations(request):
             encode_dto(dto)
 
     params = {'organizations': organizations}
-    return render_to_response('org_search_results.html', params)
+    return render(request, 'org_search_results.html', params)
 
 
 def search_contacts(request):
@@ -95,7 +98,7 @@ def search_contacts(request):
             encode_dto(dto)
 
     params = {'contacts': contacts}
-    return render_to_response('contact_search_results.html', params)
+    return render(request, 'contact_search_results.html', params)
 
 
 def organization_profile(request, org_id):
@@ -110,7 +113,7 @@ def organization_profile(request, org_id):
         return get_http_404_page(request)
 
     params = {"organization": org}
-    return render_to_response('organization_profile_template.html', params)
+    return render(request, 'organization_profile_template.html', params)
 
 
 def contact_profile(request, contact_id):
@@ -129,11 +132,11 @@ def contact_profile(request, contact_id):
     params = {"contact": contact,
               "org_url": org_url}
 
-    return render_to_response('contact_profile_template.html', params)
+    return render(request, 'contact_profile_template.html', params)
 
 
 def org_rank(request, sort_method=''):
-    return render_to_response('org_rank.html')
+    return render(request, 'org_rank.html')
 
 
 def get_org_rank_rows(request):
@@ -153,7 +156,7 @@ def get_org_rank_rows(request):
 
 
     params = {'organizations': organizations}
-    return render_to_response('org_rank_row.html', params)
+    return render(request, 'org_rank_row.html', params)
 
 
 def login(request):
@@ -164,11 +167,38 @@ def login(request):
     else:
         form = LoginForm()
 
-    return render_to_response('login.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'login.html', {'form': form})
 
 
 def signup(request):
-    return render_to_response('signup.html')
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            if data['password'] != data['confirm_password']:
+                return render(request, 'signup.html', {'form': form})
+
+            password = make_password(data['password'])
+            new_user = User(first_name=data['first_name'],
+                            last_name=data['last_name'],
+                            email=data['email'],
+                            password=password,
+                            account_type=data['account_type'],)
+
+            if 'affiliation' in data:
+                new_user.affiliation = data['affiliation']
+            if 'organization' in data:
+                new_user.organization = data['organization']
+
+            user_dto = DTOConverter.to_dto(UserDTO, new_user)
+            dao = ctx.get_object('UserDAO')
+            dao.create_update(user_dto)
+
+            return HttpResponseRedirect('/')
+    else:
+        form = SignupForm()
+
+    return render(request, 'signup.html', {'form': form})
 
 
 def get_http_404_page(request):
@@ -176,7 +206,7 @@ def get_http_404_page(request):
 
 
 def unimplemented(request):
-    return render_to_response('unimplemented.html')
+    return render(request, 'unimplemented.html')
 
 
 # Encodes a DTO's non-string fields to JSON
