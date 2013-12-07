@@ -111,24 +111,48 @@ class ContactDAO(DAO):
         self.org_dao = OrganizationDAO
         self.pub_dao = PublicationDAO
 
-    def create_update(self, contact_dto, cascade_add=True):
-        with self.conn():
-            o = contact_dto.organization
-            if o:
-                if contact_dto not in o.contacts:
-                    o.contacts.append(contact_dto)
-                contact_dto.organization = self.org_dao().create_update(o, False)
+    def _add_contact_ref_to_children(self, contact_dto):
+        if contact_dto.organization is not None and contact_dto not in contact_dto.organization.contacts:
+            contact_dto.organization.contacts.append(contact_dto)
+            contact_dto.organization = self.org_dao.create_update(contact_dto.organization, False)
+        if contact_dto.publications is not None:
             for i in range(len(contact_dto.publications)):
                 p = contact_dto.publications[i]
-                contact_dto.publications[i] = self.pub_dao().create_update(p, False)
+                if contact_dto not in p.authors:
+                    p.authors.append(contact_dto)
+                    contact_dto.publications[i] = self.pub_dao.create_update(p, False)
+        return contact_dto
 
-            if contact_dto.id is None:
+    def create_update(self, contact_dto, cascade_add=True):
+        no_id = False
+        if contact_dto.id is None:
+            no_id = True
+        with self.conn():
+            if cascade_add:
+                o = contact_dto.organization
+                if o:
+                    if contact_dto in o.contacts and no_id:
+                        o.contacts.remove(contact_dto)
+                    contact_dto.organization = self.org_dao().create_update(o, False)
+                for i in range(len(contact_dto.publications)):
+                    p = contact_dto.publications[i]
+                    if contact_dto in p.authors and no_id:
+                        p.authors.remove(contact_dto)
+                    contact_dto.publications[i] = self.pub_dao().create_update(p, False)
+
+            if no_id:
                 existing_dto = self.dto.objects(email=contact_dto.email).first()
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, contact_dto)
+                    if cascade_add:
+                        saved_dto = self._add_contact_ref_to_children(saved_dto)
                     return saved_dto
+            contact_dto.save()
+
+            # Now that contact_dto is guaranteed in data
             if cascade_add:
-                contact_dto.save()
+                contact_dto = self._add_contact_ref_to_children(contact_dto)
+
         return contact_dto
 
 
@@ -143,7 +167,7 @@ class OrganizationDAO(DAO):
         # Injected dependencies
         self.contact_dao = ContactDAO
 
-    def merge_documents(self, existing_org_dto, new_org_dto, cascade_add=True):
+    def merge_documents(self, existing_org_dto, new_org_dto):
         with self.conn():
             attributes = new_org_dto._data
             for key in attributes:
@@ -157,24 +181,51 @@ class OrganizationDAO(DAO):
                         if key == "types" and len(merged_list) > 1 and OrgTypesEnum.UNKNOWN in merged_list:
                             merged_list.remove(OrgTypesEnum.UNKNOWN)
                         setattr(existing_org_dto, key, attributes[key])
-            if cascade_add:
-                existing_org_dto.save()
+            existing_org_dto.save()
             return existing_org_dto
 
+    def _add_org_ref_to_children(self, org_dto):
+        for i in range(len(org_dto.contacts)):
+            c = org_dto.contacts[i]
+            if c.organization is None:
+                c.organization = org_dto
+                org_dto.contacts[i] = self.contact_dao().create_update(c, False)
+        for i in range(len(org_dto.partners)):
+            p = org_dto.partners[i]
+            if org_dto not in p.partners:
+                p.partners.append(org_dto)
+                org_dto.partners[i] = self.create_update(p, False)
+        return org_dto
+
     def create_update(self, org_dto, cascade_add=True):
+        no_id = False
+        if org_dto.id is None:
+            no_id = True
         with self.conn():
             if cascade_add:
                 for i in range(len(org_dto.contacts)):
                     c = org_dto.contacts[i]
+                    if c.organization is not None and c.organization == org_dto:
+                        c.organization = None
                     org_dto.contacts[i] = self.contact_dao().create_update(c, False)
 
-            if org_dto.id is None:
+                for i in range(len(org_dto.partners)):
+                    p = org_dto.partners[i]
+                    if org_dto in p.partners:
+                        p.partners.remove(org_dto)
+                    org_dto.partners[i] = self.create_update(p, False)
+
+            if no_id:
                 existing_dto = self._smart_search_orgs(org_dto)
                 if existing_dto is not None:
-                    saved_dto = self.merge_documents(existing_dto, org_dto, False)
+                    saved_dto = self.merge_documents(existing_dto, org_dto)
+                    if cascade_add:
+                        saved_dto = self._add_org_ref_to_children(saved_dto)
                     return saved_dto
+
+            org_dto.save()
             if cascade_add:
-                org_dto.save()
+                org_dto = self._add_org_ref_to_children(org_dto)
         return org_dto
 
     def _smart_search_orgs(self, org_dto):
@@ -212,8 +263,6 @@ class OrganizationDAO(DAO):
         return existing_dto
 
 
-
-
 class PublicationDAO(DAO):
     """
     A DAO for the Publication document
@@ -225,22 +274,52 @@ class PublicationDAO(DAO):
         # Injected dependencies
         self.contact_dao = ContactDAO
 
-    def create_update(self, pub_dto, cascade_add=True):
-        with self.conn():
-            for i in range(len(pub_dto.authors)):
-                c = pub_dto.authors[i]
+    def _add_pub_ref_to_children(self, pub_dto):
+        for i in range(len(pub_dto.authors)):
+            c = pub_dto.authors[i]
+            if c.publications is None:
+                c.publications = []
+            if pub_dto not in c.publications:
+                c.publications.append(pub_dto)
                 pub_dto.authors[i] = self.contact_dao().create_update(c, False)
 
-            if pub_dto.id is None:
+        if pub_dto.publisher is not None:
+            if pub_dto.publisher.publications is None:
+                pub_dto.publisher.publications = []
+            if pub_dto not in pub_dto.publisher.publications:
+                pub_dto.publisher.publications.append(pub_dto)
+                pub_dto.publisher = self.contact_dao().create_update(pub_dto.publisher, False)
+
+        return pub_dto
+
+    def create_update(self, pub_dto, cascade_add=True):
+        no_id = False
+        if pub_dto.id is None:
+            no_id = True
+        with self.conn():
+            if cascade_add:
+                for i in range(len(pub_dto.authors)):
+                    c = pub_dto.authors[i]
+                    if pub_dto in c.publications and no_id:
+                        c.publications.remove(pub_dto)
+                    pub_dto.authors[i] = self.contact_dao().create_update(c, False)
+
+                if pub_dto.publisher is not None:
+                    if pub_dto in pub_dto.publisher.publications and no_id:
+                        pub_dto.publisher.publications.remove(pub_dto)
+                    pub_dto.publisher = self.contact_dao().create_update(pub_dto.publisher, False)
+
+            if no_id:
                 existing_dto = self.dto.objects(title=pub_dto.title).first()
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, pub_dto)
+                    if cascade_add:
+                        saved_dto = self._add_pub_ref_to_children(saved_dto)
                     return saved_dto
 
-            if pub_dto.publisher is not None:
-                self.contact_dao().create_update(pub_dto.publisher)
+            pub_dto.save()
             if cascade_add:
-                pub_dto.save()
+                pub_dto = self._add_pub_ref_to_children(pub_dto)
         return pub_dto
 
 
