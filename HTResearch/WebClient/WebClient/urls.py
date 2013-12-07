@@ -28,6 +28,7 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
     url(r'^org_rank$', 'org_rank', name='org_rank'),
     url(r'^org_rank/(\w+)$', 'org_rank', name='org_rank'),
     url(r'^get_org_rank_rows/$', 'get_org_rank_rows', name='get_org_rank_rows'),
+    url(r'^get_org_keywords/$', 'get_org_keywords', name='get_org_keywords'),
 )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
