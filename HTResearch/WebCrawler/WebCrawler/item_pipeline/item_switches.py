@@ -4,6 +4,7 @@ from HTResearch.DataAccess.dao import *
 from HTResearch.Utilities.converter import *
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
 from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+from HTResearch.WebCrawler.WebCrawler.items import ScrapedContact, ScrapedOrganization, ScrapedPublication, ScrapedUrl
 
 
 logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
@@ -22,22 +23,20 @@ class ItemSwitch(object):
     def process_item(self, item, spider):
         """Consumes item from spider and passes to correct handler asynchronously"""
 
-        # extract the class of the item
-        item_class = item.__class__.__name__
         # switch to handle item based on class type
-        if item_class == "ScrapedUrl":
+        if isinstance(item, ScrapedUrl):
             # Create DAO for URL with empty fields
             # Pass it to URLFrontier, which will add it iff it is new
             self._store_url(item)
             pass 
-        elif item_class == "ScrapedContact":
+        elif isinstance(item, ScrapedContact):
             self._store_contact(item)
-        elif item_class == "ScrapedOrganization":
+        elif isinstance(item, ScrapedOrganization):
             self._store_organization(item)
-        elif item_class == "ScrapedPublication":
+        elif isinstance(item, ScrapedPublication):
             self._store_publication(item)
         else:
-            msg = "No behavior defined for item of type %s" % item_class
+            msg = "No behavior defined for item of type %s" % item.__class__.__name__
             logger.error(msg)
             raise DropItem(msg)
         
