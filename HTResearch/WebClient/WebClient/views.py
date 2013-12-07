@@ -2,6 +2,8 @@ from urlparse import urlparse
 from datetime import datetime, timedelta
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
+from django.template.loader import get_template
+from django.template import Context
 from springpython.context import ApplicationContext
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
@@ -11,6 +13,7 @@ from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
 from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
+import json
 
 
 logger = LoggingUtility().get_logger(LoggingSection.CLIENT, __name__)
@@ -162,7 +165,9 @@ def signup(request):
 
 
 def get_http_404_page(request):
-    return HttpResponseNotFound('http_404.html')
+    template = get_template('404.html')
+    html = template.render(Context({}))
+    return HttpResponseNotFound(html, status=404)
 
 
 def unimplemented(request):
@@ -177,3 +182,24 @@ def encode_dto(dto):
     json_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) not in string_types]
     for field in json_fields:
         dto[field] = MongoJSONEncoder().encode(dto[field])
+
+def get_org_keywords(request):
+    if request.method == 'GET':
+        org_id = request.GET['org_id']
+    else:
+        org_id = ''
+
+    org_dao = ctx.get_object('OrganizationDAO')
+    org = org_dao.find(id=org_id)
+    #Commenting out instead of deleting for demo purposes
+    #If keywords aren't in the database, you should uncomment this and use Bombay Teen Challenge
+    #org.keywords = {'access': 32, 'addicts': 51, 'afraid': 32, 'allows': 32, 'ambedkar': 32,
+    #                'announced': 32, 'ashes': 32, 'bandra': 32, 'beauty': 32, 'began': 32,
+    #                'betrayed': 32, 'blog': 32, 'blogs': 32, 'bombay': 384, 'bound': 32,
+    #                'btc': 64, 'care': 51, 'challenge': 358, 'children': 64, 'contact': 64,
+    #                'donate': 64, 'drug': 64, 'education': 89, 'education.': 39, 'gift': 64,
+    #                'health': 96, 'homes': 83, 'india': 64, 'light': 64, 'live': 64, 'lives': 96,
+    #                'men': 53, 'mumbai': 102, 'music': 83, 'office': 38, 'out.': 39, 'programs': 53,
+    #                'read': 96, 'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'streets': 64,
+    #                'teen': 384, 'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'women': 112}
+    return HttpResponse(json.dumps(org.keywords), mimetype='application/json')
