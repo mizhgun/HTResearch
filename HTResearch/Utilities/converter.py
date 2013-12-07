@@ -8,6 +8,9 @@ class DTOConverter(object):
 
     @staticmethod
     def from_dto(cls, obj):
+        if obj is None:
+            return None
+
         new_cls = cls()
 
         for key in obj._data:
@@ -58,9 +61,7 @@ class ModelConverter(object):
                 elif key == 'publisher' and value is not None:
                     setattr(new_model, key, ModelConverter.to_model(Contact, value))
                 elif key == 'organization':
-                    org = OrganizationDAO()
-                    o = org.find(name=value)
-                    setattr(new_model, key, DTOConverter.from_dto(Organization, o))
+                    setattr(new_model, key, ModelConverter.to_model(Organization, value))
                 elif key == 'partners':
                     setattr(new_model, key, [ModelConverter.to_model(Organization, o) for o in value])
                 elif key == 'publications':

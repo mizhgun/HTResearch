@@ -55,7 +55,7 @@ class ItemPipelineTest(unittest.TestCase):
             last_name="Jdegner",
             phone=5555555555,
             email='djordan@jdegner.com',
-            organization='Yoyodyne',
+            organization={'name': 'Yoyodyne'},
             position='Software Jdeveloper'
         )
 
@@ -124,7 +124,7 @@ class ItemPipelineTest(unittest.TestCase):
         print 'Testing equality...'
         self.assertEqual(assert_contact.first_name, self.contact['first_name'])
         self.assertEqual(assert_contact.last_name, self.contact['last_name'])
-        self.assertEqual(assert_contact.organization.name, self.contact['organization'])
+        self.assertEqual(assert_contact.organization.name, self.contact['organization']['name'])
         self.assertEqual(assert_contact.email, self.contact['email'])
         self.assertEqual(assert_contact.phone, self.contact['phone'])
         self.assertEqual(assert_contact.position, self.contact['position'])

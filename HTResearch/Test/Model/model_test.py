@@ -53,7 +53,7 @@ class ModelTest(unittest.TestCase):
         org_model = DTOConverter.from_dto(Organization, org_dto)
         contact_item = ScrapedContact(first_name='Bee',
                                       last_name='Yee',
-                                      organization="Univerisityee of Nyeebraska-Lincoln"
+                                      organization={'name': "Univerisityee of Nyeebraska-Lincoln"}
                                       )
 
         print 'Converting contact to model.'
