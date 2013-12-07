@@ -96,8 +96,25 @@ function loadNews() {
             newsCount = articles.length;
             $.template('newsTemplate', $('#news-template').html());
             var newsDiv = $('<div></div>');
-            $.each(articles, function() {
-                $(newsDiv).append($.tmpl('newsTemplate', this));
+            $.each(articles, function(index) {
+                var newsArticle = $.tmpl('newsTemplate', this);
+                // Do some HTML processing to make the articles look better
+                $(newsArticle).find('tr').each(function() {
+                    $(this).find('td:last').prepend($(this).find('td:first').html());
+                });
+                $(newsArticle).find('br, '
+                                  + 'tr td:first, '
+                                  + 'tr td:last div:first, '
+                                  + 'tr td:last br:first').remove();
+                $(newsArticle).find('*').css('padding', '0');
+                $(newsArticle).find('a').attr('target', '_blank');
+                $(newsArticle).find('a, font').css({'display': 'block', 'margin-right': '5px'});
+                $(newsArticle).find('a:has(img)').css('width', '80px');
+                $(newsArticle).find('a:has(img)').css('float', (index % 2 == 0) ? 'left' : 'right');
+                $(newsArticle).find('a:has(img)').css('text-align', 'center');
+                $(newsArticle).find('img').css({'width': '80px', 'height': '80px'});
+                $(newsArticle).find('td div a:first').css('font-size', '14px');
+                $(newsDiv).append(newsArticle);
             });
             $('#news-results').html($(newsDiv).html());
         }
