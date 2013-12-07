@@ -23,7 +23,9 @@ class ContactScraper():
             contact['phone'] = contact_dicts[name]['number']
             contact['email'] = contact_dicts[name]['email']
             contact['position'] = contact_dicts[name]['position']
-            contact['organization'] = contact_dicts[name]['organization']
+            organization = ScrapedOrganization()
+            organization['name'] = contact_dicts[name]['organization']
+            contact['organization'] = organization
             contacts.append(contact)
         return contacts
 
