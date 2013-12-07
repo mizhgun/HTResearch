@@ -183,6 +183,7 @@ def signup(request):
                             last_name=data['last_name'],
                             email=data['email'],
                             password=password,
+                            background=data['background'],
                             account_type=data['account_type'],)
 
             if 'affiliation' in data:
