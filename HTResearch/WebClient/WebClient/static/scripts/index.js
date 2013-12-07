@@ -2,7 +2,6 @@ var searchResultsVisible = false;
 var map;
 var initialLatLng = new google.maps.LatLng(21, 78);
 var searchedLatLng;
-var geocoder = new google.maps.Geocoder();
 var address;
 var orgData, contactData, pubData;
 var infowindow = null;
@@ -55,7 +54,7 @@ function initialize() {
         }
     });
 
-	$('a.org_link').click(function(e){
+	$('a.org-link').click(function(e){
         geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization);
     });
 
@@ -76,7 +75,7 @@ function showSearchResults() {
                 toggleSelector: '#organization-toggle',
                 collapseSelector: '#collapse-organizations',
                 listSelector: '#organization-search-list',
-                linkSelector: '.org_link',
+                linkSelector: '.org-link',
                 linkCallback: showOrganizationModal
             },
             {
@@ -85,7 +84,7 @@ function showSearchResults() {
                 toggleSelector: '#contact-toggle',
                 collapseSelector: '#collapse-contacts',
                 listSelector: '#contact-search-list',
-                linkSelector: '.contact_link',
+                linkSelector: '.contact-link',
                 linkCallback: showContactModal
             }
         ];
@@ -154,34 +153,39 @@ function endAjaxSearch() {
 }
 
 // Show modals
-
 function showOrganizationModal() {
     orgData = $(this).data();
-    if (orgData.address) {
+    if (orgData.latlng && orgData.latlng.length > 0) {
         // Get the lat, long values of the address
-        geocoder.geocode({'address': orgData.address}, function(results, status){
-            if(results[0]) {
-                lat = results[0].geometry.location.lat();
-                lng = results[0].geometry.location.lng();
-            }
-            searchedLatLng = new google.maps.LatLng(lat, lng);
-        });
-        geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
+        searchedLatLng = new google.maps.LatLng(orgData.latlng[0], orgData.latlng[1]);
+        plotOrganization(orgData);
     }
     else{
-        bootstrapModal($modal);
+        if(marker){
+            marker.setMap(null);
+        }
+        if (infowindow){
+            infowindow.close();
+        }
+
+        var $modal = $('.modal').modal();
+        createBootstrapModal($modal, '#bs-org-modal-template',orgData);
     }
 }
 
 function showContactModal() {
     contactData = $(this).data();
-    // TODO: display contact modal
+    var $modal = $('.modal').modal({
+        show: false
+    });
+    createBootstrapModal($modal, '#bs-contact-modal-template', contactData);
 }
 
 // Show organization location on map
-function plotOrganization(results, status) {
-	if (status == google.maps.GeocoderStatus.OK) {
-        map.setCenter(results[0].geometry.location);
+function plotOrganization(data) {
+    if (data.latlng && data.latlng.length > 0 && data.latlng[0] && data.latlng[1]) {
+        var coord = new google.maps.LatLng(data.latlng[0], data.latlng[1]);
+        map.setCenter(coord);
 
         if(marker){
             marker.setMap(null);
@@ -189,12 +193,12 @@ function plotOrganization(results, status) {
         
         marker = new google.maps.Marker({
             map: map,
-            position: results[0].geometry.location
+            position: coord
         });
         
         orgData.img_path = "/static/images/office_building_icon.png";
 
-        var html = $("#modal-template").tmpl(orgData);
+        var html = $("#modal-template").tmpl(data);
 
         if(infowindow){
             infowindow.close();
@@ -212,40 +216,8 @@ function plotOrganization(results, status) {
 
     } else {
         var $modal = $('.modal').modal();
-        createBootstrapModal($modal, '#bs-org-modal-template', orgData);
+        createBootstrapModal($modal, '#bs-org-modal-template', data);
     }
-}
-
-function setLinkClickEvents(){
-    // the org link
-    $('a.org_link').click(function(e){
-        orgData = $(this).data();
-        if (orgData.address) {
-            // Get the lat, long values of the address
-            geocoder.geocode({'address': orgData.address}, function(results, status){
-                if(results[0]){
-                    var lat = results[0].geometry.location.lat();
-                    var lng = results[0].geometry.location.lng();
-                }
-                searchedLatLng = new google.maps.LatLng(lat, lng);
-            });
-            geocoder.geocode({'latLng': searchedLatLng, 'address': orgData.address}, plotOrganization);
-        }
-        else{
-            var $modal = $('.modal').modal();
-            createBootstrapModal($modal, '#bs-org-modal-template',orgData);
-        }
-    });
-
-    // the contact link
-    $('a.contact_link').click(function(e){
-        contactData = $(this).data();
-        var $modal = $('.modal').modal({
-            show: false
-        });
-        createBootstrapModal($modal, '#bs-contact-modal-template', contactData);
-    });
-
 }
 
 function createBootstrapModal(m, modal_template, data){

@@ -1,6 +1,9 @@
+from urlparse import urlparse
 from datetime import datetime, timedelta
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
+from django.template.loader import get_template
+from django.template import Context
 from springpython.context import ApplicationContext
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
@@ -10,11 +13,13 @@ from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
 from HTResearch.WebClient.WebClient.settings import GOOGLE_MAPS_API_KEY
+import json
 
 
 logger = LoggingUtility().get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
-REFRESH_ADDRESS_LIST = timedelta(minutes=5)
+REFRESH_COORDS_LIST = timedelta(minutes=5)
+
 
 def index(request):
     logger.info('Request made for index')
@@ -30,23 +35,23 @@ def heatmap_coordinates(request):
     if request.method != 'GET':
         return HttpResponseBadRequest
 
-    addresses = cache.get('organization_address_list')
-    last_update = cache.get('organization_address_list_last_update')
-    if not addresses or not last_update or (datetime.now() - last_update > REFRESH_ADDRESS_LIST):
-        str_addresses = []
-        cache.set('organization_address_list_last_update', datetime.now())
+    coords = cache.get('organization_coords_list')
+    last_update = cache.get('organization_coords_list_last_update')
+    if not coords or not last_update or (datetime.utcnow() - last_update > REFRESH_COORDS_LIST):
+        new_coords = []
+        cache.set('organization_address_list_last_update', datetime.utcnow())
         ctx = ApplicationContext(DAOContext())
         org_dao = ctx.get_object('OrganizationDAO')
-        organizations = org_dao.findmany(0, address__exists=True, address__ne='')
+        organizations = org_dao.findmany(latlng__exists=True, latlng__ne=[])
         for org in organizations:
-            str_addresses.append(org.address)
+            new_coords.append(org.latlng)
 
-        addresses = MongoJSONEncoder().encode(str_addresses)
+        coords = MongoJSONEncoder().encode(new_coords)
 
-        if len(addresses) > 0:
-            cache.set('organization_address_list', addresses)
+        if len(coords) > 0:
+            cache.set('organization_coords_list', coords)
 
-    return HttpResponse(addresses, content_type="application/json")
+    return HttpResponse(coords, content_type="application/json")
 
 
 def search_organizations(request):
@@ -62,7 +67,7 @@ def search_organizations(request):
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
 
-        organizations = org_dao.text_search(search_text, 10, 'name')
+        organizations = org_dao.text_search(search_text, 10, sort_fields=['name'])
 
         for dto in organizations:
             encode_dto(dto)
@@ -104,7 +109,13 @@ def organization_profile(request, org_id):
         print e.message
         return get_http_404_page(request)
 
-    params = {"organization": org}
+    scheme = ""
+    if org.organization_url is not None:
+        scheme = urlparse(org.organization_url).scheme
+
+    params = {"organization": org,
+              "scheme": scheme
+              }
     return render_to_response('organization_profile_template.html', params)
 
 
@@ -119,19 +130,50 @@ def contact_profile(request, contact_id):
         print e.message
         return get_http_404_page(request)
 
-    org_urls = []
-    for org in contact.organizations:
-        org_urls.append("/organization/"+org.id)
+    org_url = '/organization/'+contact.organization.id if contact.organization else ''
 
-    #Generates a 2d list
-    contact.organizations = zip(contact.organizations, org_urls)
+    params = {"contact": contact,
+              "org_url": org_url}
 
-    params = {"contact": contact}
     return render_to_response('contact_profile_template.html', params)
 
 
+def org_rank(request, sort_method=''):
+    return render_to_response('org_rank.html')
+
+
+def get_org_rank_rows(request):
+    start = int(request.GET['start'])
+    end = int(request.GET['end'])
+    sort = request.GET['sort']
+
+    org_dao = ctx.get_object('OrganizationDAO')
+    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=sort))
+
+    # add netloc to urls if needed
+    for org in organizations:
+        if org.organization_url is not None:
+            netloc = urlparse(org.organization_url).netloc
+            if netloc == "":
+                org.organization_url = "//" + org.organization_url
+
+
+    params = {'organizations': organizations}
+    return render_to_response('org_rank_row.html', params)
+
+
+def login(request):
+    return render_to_response('login.html')
+
+
+def signup(request):
+    return render_to_response('signup.html')
+
+
 def get_http_404_page(request):
-    return HttpResponseNotFound('http_404.html')
+    template = get_template('404.html')
+    html = template.render(Context({}))
+    return HttpResponseNotFound(html, status=404)
 
 
 def unimplemented(request):
@@ -146,3 +188,24 @@ def encode_dto(dto):
     json_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) not in string_types]
     for field in json_fields:
         dto[field] = MongoJSONEncoder().encode(dto[field])
+
+def get_org_keywords(request):
+    if request.method == 'GET':
+        org_id = request.GET['org_id']
+    else:
+        org_id = ''
+
+    org_dao = ctx.get_object('OrganizationDAO')
+    org = org_dao.find(id=org_id)
+    #Commenting out instead of deleting for demo purposes
+    #If keywords aren't in the database, you should uncomment this and use Bombay Teen Challenge
+    #org.keywords = {'access': 32, 'addicts': 51, 'afraid': 32, 'allows': 32, 'ambedkar': 32,
+    #                'announced': 32, 'ashes': 32, 'bandra': 32, 'beauty': 32, 'began': 32,
+    #                'betrayed': 32, 'blog': 32, 'blogs': 32, 'bombay': 384, 'bound': 32,
+    #                'btc': 64, 'care': 51, 'challenge': 358, 'children': 64, 'contact': 64,
+    #                'donate': 64, 'drug': 64, 'education': 89, 'education.': 39, 'gift': 64,
+    #                'health': 96, 'homes': 83, 'india': 64, 'light': 64, 'live': 64, 'lives': 96,
+    #                'men': 53, 'mumbai': 102, 'music': 83, 'office': 38, 'out.': 39, 'programs': 53,
+    #                'read': 96, 'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'streets': 64,
+    #                'teen': 384, 'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'women': 112}
+    return HttpResponse(json.dumps(org.keywords), mimetype='application/json')

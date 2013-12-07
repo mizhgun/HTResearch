@@ -4,6 +4,7 @@ from springpython.config import *
 # project imports
 from HTResearch.DataAccess.dao import *
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from HTResearch.Utilities.geocoder import geocode
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import UrlMetadataScraper
 from HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches import ItemSwitch
@@ -25,6 +26,7 @@ class DAOContext(PythonConfig):
         dao = OrganizationDAO()
         dao.conn = self.RegisteredDBConnection()
         dao.contact_dao = self.RegisteredContactDAO()
+        dao.geocode = self.RegisteredGeocode()
         return dao
 
     @Object()
@@ -40,6 +42,12 @@ class DAOContext(PythonConfig):
         dao.conn = self.RegisteredDBConnection()
         return dao
 
+    @Object()
+    def UserDAO(self):
+        dao = UserDAO()
+        dao.conn = self.RegisteredDBConnection()
+        dao.org_dao = self.RegisteredOrganizationDAO()
+        return dao
 
     # Registered classes to instantiate dependencies
     @Object()
@@ -62,6 +70,10 @@ class DAOContext(PythonConfig):
     def RegisteredURLMetadataDAO(self):
         return URLMetadataDAO
 
+    @Object()
+    def RegisteredGeocode(self):
+        return geocode
+
 
 class DocumentScraperContext(PythonConfig):
     @Object()
@@ -82,6 +94,7 @@ class DocumentScraperContext(PythonConfig):
             'partners': [self.RegisteredOrgPartnersScraper()],
             'facebook': [self.RegisteredFacebookScraper()],
             'twitter': [self.RegisteredTwitterScraper()],
+            'keywords': [self.RegisteredKeywordScraper()],
         }
         return org
 
@@ -137,6 +150,18 @@ class DocumentScraperContext(PythonConfig):
     @Object()
     def RegisteredTwitterScraper(self):
         return OrgTwitterScraper
+
+
+class UtilityScraperContext(PythonConfig):
+    @Object()
+    def OrgTypeScraper(self):
+        scraper = OrgTypeScraper()
+        scraper._keyword_scraper = self.RegisteredKeywordScraper()
+        return scraper
+
+    @Object()
+    def RegisteredKeywordScraper(self):
+        return KeywordScraper
 
 
 class UrlMetadataScraperContext(PythonConfig):

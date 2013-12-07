@@ -43,12 +43,27 @@ class MockDAO(object):
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
-    def findmany(self, num_elements, *sort_fields, **constraints):
+    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[], **constraints):
         with self.conn():
             if len(sort_fields) > 0:
-                return self.dto.objects(**constraints).order_by(*sort_fields)[:num_elements]
+                ret = self.dto.objects(**constraints).order_by(sort_fields)
             else:
-                return self.dto.objects(**constraints)[:num_elements]
+                ret = self.dto.objects(**constraints)
+            if num_elements is not None:
+                return ret[:num_elements]
+            elif page_size is not None and page is not None:
+                # as an example, if we want page 3 with a page size of 50, we want elements with index 150 to 199
+                pg_start = page_size * page
+                pg_end = page_size * (page + 1)
+                # NOTE: Even though end would equal 200 in our example, python's slicing is not inclusive for end
+                return ret[pg_start:pg_end]
+            elif start is not None:
+                if end is None:
+                    return ret[start:]
+                else:
+                    return ret[start:end+1]
+
+            return ret
 
     def findmany_by_domains(self, num_elements, required_domains, blocked_domains, *sort_fields):
         if len(required_domains) > 0:
@@ -78,9 +93,9 @@ class MockContactDAO(MockDAO):
 
     def create_update(self, contact_dto):
         with self.conn():
-            for i in range(len(contact_dto.organizations)):
-                o = contact_dto.organizations[i]
-                contact_dto.organizations[i] = self.org_dao().create_update(o)
+            o = contact_dto.organization
+            if o:
+                contact_dto.organization = self.org_dao().create_update(o)
             for i in range(len(contact_dto.publications)):
                 p = contact_dto.publications[i]
                 contact_dto.publications[i] = self.pub_dao().create_update(p)
@@ -103,6 +118,7 @@ class MockOrganizationDAO(MockDAO):
         super(MockOrganizationDAO, self).__init__()
         self.dto = OrganizationDTO
         self.contact_dao = MockContactDAO
+        self.geocode = lambda x: [0, 0]
 
     def create_update(self, org_dto):
         with self.conn():
@@ -166,3 +182,22 @@ class MockURLMetadataDAO(MockDAO):
 
             url_dto.save()
         return url_dto
+
+
+class MockUserDAO(MockDAO):
+
+    def __init__(self):
+        super(MockUserDAO, self).__init__()
+        self.dto = UserDTO
+
+        # Injected dependencies
+        self.org_dao = MockOrganizationDAO
+
+    def create_update(self, user_dto):
+        with self.conn():
+            if user_dto.organization is not None:
+                o = user_dto.organization
+                user_dto.organization = self.org_dao().create_update(o)
+
+            user_dto.save()
+        return user_dto

@@ -5,6 +5,8 @@ from urlparse import urlparse
 from scrapy.http import TextResponse
 from scrapy.selector import HtmlXPathSelector
 
+from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import USPhoneNumberScraper, IndianPhoneNumberScraper
+
 from ..items import ScrapedOrganization, ScrapedContact
 
 
@@ -71,7 +73,7 @@ class StopTraffickingDotInScraper:
         popup['address'] = cells.select('span[@id ="lblAddress"]/text()').extract()
         popup['state'] = cells.select('span[@id ="lblState"]/text()').extract()
         popup['district'] = cells.select('span[@id ="lblDistrict"]/text()').extract()
-        popup['url'] = cells.select('span[@id ="lblUrl"]/text()').extract()
+        popup['url'] = cells.select('span[@id ="lblURL"]/text()').extract()
         popup['telephone'] = cells.select('span[@id ="lblTelephone"]/text()').extract()
         popup['email1'] = cells.select('span[@id ="lblEmail"]/text()').extract()
         popup['email2'] = cells.select('span[@id ="lblEmail2"]/text()').extract()
@@ -145,12 +147,12 @@ class StopTraffickingDotInScraper:
 
         #create contact
         contact = ScrapedContact(
-            first_name = first, 
-            last_name = last, 
+            first_name = first,
+            last_name = last,
             primary_phone= primary_no,
             secondary_phone = sec_no, 
             email = email,
-            organizations = None,
+            organization = None,
             publications = None,
             position = '') 
         return contact
@@ -235,7 +237,7 @@ class StopTraffickingDotInScraper:
                 primary_phone = primary,
                 secondary_phone = None, 
                 email = email,
-                organizations = None, # this will be done automatically
+                organization = None, # this will be done automatically
                 publications = None,
                 position = '') 
 
@@ -301,8 +303,9 @@ class StopTraffickingDotInScraper:
         if phone is None:
             return None
 
-        # split phones by comma
-        phones = phone.split(',') 
+        # split phones by comma and /
+        phone_wo_slashes = phone.replace('/', ',')
+        phones = phone_wo_slashes.split(',')
         parsed_phones = []
 
         # create our translate helper to get digits
@@ -312,11 +315,14 @@ class StopTraffickingDotInScraper:
         for num in phones:
             # convert to ascii
             ascii = num.encode("ascii", 'ignore')
-            if len(ascii) > 0:
+            if len(ascii) > 4:
                 #extract digits
                 digit_only = ascii.translate(all, nodigs)
                 if len(digit_only) > 0:
                     parsed_phones.append(digit_only)
+            elif len(ascii) > 0:
+                parsed_phones[len(parsed_phones) - 1] += ('/' + ascii)
+
 
         return parsed_phones
 

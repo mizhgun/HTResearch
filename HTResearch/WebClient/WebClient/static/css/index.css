@@ -196,6 +196,7 @@ body {
 
 #firstHeading {
     padding: 5px;
+    margin-top: 0;
 }
 
 #addr-cell{
@@ -208,6 +209,12 @@ body {
     right: 0;
 }
 
+#more-info-bs {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+}
+
 /*Navbar override*/
 .navbar {
     margin-bottom: 0px;
@@ -218,7 +225,7 @@ body {
 }
 
 #map-modal {
-    height: 200px;
+    height: 225px;
     width: 425px;
 }
 

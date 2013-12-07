@@ -1,0 +1,27 @@
+{% extends "global.html" %}
+
+{% block imports %}
+<title>Human Trafficking Research</title>
+{% endblock %}
+
+{% block content %}
+        <div class="container">
+            <div class="page-header">
+                <h1>Login <small>Enter your email and password below.</small></h1>
+            </div>
+            <form class="form">
+                <div class="form-group">
+                    <label for="email" class="control-label">Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <label for="password" class="control-label">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <a href="/signup/">Don't have an account?</a>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign in</button>
+            </form>
+        </div>
+{% endblock %}

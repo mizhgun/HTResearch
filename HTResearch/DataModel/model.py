@@ -5,15 +5,13 @@ class Contact(object):
     """A Model class for an anti-trafficking contact."""
 
     def __init__(self, first_name=None, last_name=None,
-                 primary_phone=None, secondary_phone=None,
-                 email=None, organizations=[],
+                 phone=None, email=None, organization=None,
                  publications=[], position=None):
         self.first_name = first_name
         self.last_name = last_name
-        self.primary_phone = primary_phone
-        self.secondary_phone = secondary_phone
+        self.phone = phone
         self.email = email
-        self.organizations = organizations
+        self.organization = organization
         self.publications = publications
         self.position = position
 
@@ -25,7 +23,8 @@ class Organization(object):
                  types=[], phone_numbers=[], email_key=None,
                  emails=[], contacts=[],
                  organization_url=None,
-                 partners=[], facebook=None, twitter=None):
+                 partners=[], facebook=None, twitter=None,
+                 keywords={}):
         self.name = name
         self.address = address
         self.types = types
@@ -37,13 +36,14 @@ class Organization(object):
         self.partners = partners
         self.facebook = facebook
         self.twitter = twitter
+        self.keywords = keywords
 
 
 class Publication(object):
     """A Model class for an anti-trafficking research publication."""
 
     def __init__(self, title=None, authors=[],
-                 publisher=None, publication_date=datetime.now(),
+                 publisher=None, publication_date=datetime.utcnow(),
                  types=[], content_url=None):
         self.title = title
         self.authors = authors
@@ -56,7 +56,7 @@ class Publication(object):
 class URLMetadata(object):
     """A Model class for an anti-trafficiking organization URL metadata."""
 
-    def __init__(self, url=None, domain=None, last_visited=datetime.now(),
+    def __init__(self, url=None, domain=None, last_visited=datetime.utcnow(),
                  score=None, update_freq=None,
                  checksum=None):
         self.url = url
@@ -65,3 +65,20 @@ class URLMetadata(object):
         self.score = score
         self.update_freq = update_freq
         self.checksum = checksum
+
+
+class User(object):
+    """A Model class for a user of the anti-trafficking system."""
+
+    def __init__(self, first_name, last_name,
+                 email, password, background,
+                 account_type, affiliation=None,
+                 organization=None):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.password = password
+        self.background = background
+        self.account_type = account_type
+        self.affiliation = affiliation
+        self.organization = organization
