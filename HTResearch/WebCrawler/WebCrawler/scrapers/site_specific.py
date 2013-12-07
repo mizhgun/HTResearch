@@ -73,7 +73,7 @@ class StopTraffickingDotInScraper:
         popup['address'] = cells.select('span[@id ="lblAddress"]/text()').extract()
         popup['state'] = cells.select('span[@id ="lblState"]/text()').extract()
         popup['district'] = cells.select('span[@id ="lblDistrict"]/text()').extract()
-        popup['url'] = cells.select('span[@id ="lblUrl"]/text()').extract()
+        popup['url'] = cells.select('span[@id ="lblURL"]/text()').extract()
         popup['telephone'] = cells.select('span[@id ="lblTelephone"]/text()').extract()
         popup['email1'] = cells.select('span[@id ="lblEmail"]/text()').extract()
         popup['email2'] = cells.select('span[@id ="lblEmail2"]/text()').extract()

@@ -67,7 +67,7 @@ class DAO(object):
 
     # Search all string fields for text and return list of results
     # NOTE: may be slower than MongoDB's text search feature, which is unfortunately unusable because it is in beta
-    def text_search(self, text, num_elements, *sort_fields):
+    def text_search(self, text, num_elements, **sort_params):
         with self.conn():
             # Find all string fields
             fields_dict = self.dto._fields
@@ -87,12 +87,16 @@ class DAO(object):
             if result_lists:
                 results = [item for item in result_lists[0] if combo(item in list for list in result_lists)]
 
+            # filter by required fields, only take results with the non-None fields
+            for key in sort_params['required_fields']:
+                results = [r for r in results if r[key]]
+
             # Remove duplicates
             results = list(set(results))
 
             # sort by fields
-            if sort_fields:
-                for field in reversed(sort_fields):
+            if sort_params['sort_fields']:
+                for field in reversed(sort_params['sort_fields']):
                     results.sort(key=lambda result: result[field])
 
             # return the last num_elements
