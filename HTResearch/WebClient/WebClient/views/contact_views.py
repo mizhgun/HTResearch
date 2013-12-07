@@ -40,7 +40,7 @@ def search_contacts(request):
         ctx = ApplicationContext(DAOContext())
         contact_dao = ctx.get_object('ContactDAO')
 
-        contacts = contact_dao.text_search(search_text, 10, 'last_name')
+        contacts = contact_dao.text_search(search_text, 10, sort_fields=['last_name'])
 
         for dto in contacts:
             encode_dto(dto)
