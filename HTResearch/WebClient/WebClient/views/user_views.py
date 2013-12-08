@@ -16,7 +16,7 @@ ctx = ApplicationContext(DAOContext())
 
 
 def login(request):
-    msg = ''
+    error = ''
 
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -29,15 +29,15 @@ def login(request):
             if user and check_password(password, user.password):
                 return HttpResponseRedirect('/')
 
-            msg = 'No account with the provided username and password exists.'
+            error = 'No account with the provided username and password exists.'
     else:
         form = LoginForm()
 
-    return render(request, 'login.html', {'form': form, 'msg': msg})
+    return render(request, 'login.html', {'form': form, 'error': error})
 
 
 def signup(request):
-    msg = ''
+    error = ''
 
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -47,9 +47,9 @@ def signup(request):
             data = form.cleaned_data
 
             if data['password'] != data['confirm_password']:
-                msg = 'Please make sure your passwords match.'
+                error = 'Please make sure your passwords match.'
             elif user_dao.find(email=data['email']):
-                msg = 'An account with that email already exists.'
+                error = 'An account with that email already exists.'
             else:
                 password = make_password(data['password'])
                 new_user = User(first_name=data['first_name'],
@@ -76,8 +76,8 @@ def signup(request):
                 user_dto = DTOConverter.to_dto(UserDTO, new_user)
                 user_dao.create_update(user_dto)
 
-            return HttpResponseRedirect('/')
+                return HttpResponseRedirect('/')
     else:
         form = SignupForm()
 
-    return render(request, 'signup.html', {'form': form, 'msg': msg})
+    return render(request, 'signup.html', {'form': form, 'error': error})
