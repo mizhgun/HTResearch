@@ -4,14 +4,14 @@ from HTResearch.DataModel.enums import AccountType, AffiliationType
 
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(max_length=80)
+    email = forms.EmailField(max_length=60)
     password = forms.CharField(min_length=8, max_length=80)
 
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(max_length=25)
     last_name = forms.CharField(max_length=25)
-    email = forms.EmailField(max_length=60, required=True)
+    email = forms.EmailField(max_length=60)
     account_type = forms.ChoiceField(choices=((AccountType.BASIC, 'Basic'), (AccountType.CONTRIBUTOR, 'Contributor')))
     affiliation = forms.ChoiceField(
         choices=((AffiliationType.STUDENT, 'Student'), (AffiliationType.EMPLOYEE, 'Employee')), required=False)
