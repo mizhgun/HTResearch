@@ -1,9 +1,11 @@
+# stdlib imports
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password
 from springpython.context import ApplicationContext
 
-from HTResearch.DataAccess.dto import UserDTO
+# project imports
+from HTResearch.DataAccess.dto import UserDTO, OrganizationDTO
 from HTResearch.DataModel.model import User
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
@@ -17,7 +19,12 @@ def login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect('/')
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            dao = ctx.get_object('UserDAO')
+            user = dao.find(email=email)
+            if user and check_password(password, user.password):
+                return HttpResponseRedirect('/')
     else:
         form = LoginForm()
 
@@ -38,16 +45,24 @@ def signup(request):
                             email=data['email'],
                             password=password,
                             background=data['background'],
-                            account_type=data['account_type'],)
+                            account_type=int(data['account_type']),)
 
-            if 'affiliation' in data:
-                new_user.affiliation = data['affiliation']
-            if 'organization' in data:
-                new_user.organization = data['organization']
+            user_dao = ctx.get_object('UserDAO')
+            org_dao = ctx.get_object('OrganizationDAO')
+
+            if 'affiliation' in data and data['affiliation']:
+                new_user.affiliation = int(data['affiliation'])
+            if 'organization' in data and data['organization']:
+                existing_org = org_dao.find(name=data['organization'])
+                if existing_org:
+                    new_user.organization = existing_org
+                else:
+                    new_org = OrganizationDTO()
+                    new_org.name = data['organization']
+                    new_user.organization = org_dao.create_update(new_org)
 
             user_dto = DTOConverter.to_dto(UserDTO, new_user)
-            dao = ctx.get_object('UserDAO')
-            dao.create_update(user_dto)
+            user_dao.create_update(user_dto)
 
             return HttpResponseRedirect('/')
     else:
