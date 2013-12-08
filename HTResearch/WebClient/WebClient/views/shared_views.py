@@ -22,7 +22,6 @@ def index(request):
     args.update(csrf(request))
 
     args["api_key"] = GOOGLE_MAPS_API_KEY
-
     return render(request, 'index_template.html', args)
 
 

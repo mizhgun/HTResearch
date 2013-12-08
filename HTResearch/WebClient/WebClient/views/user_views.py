@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password
 from springpython.context import ApplicationContext
+from datetime import datetime
 
 # project imports
 from HTResearch.DataAccess.dto import UserDTO, OrganizationDTO
@@ -18,29 +19,35 @@ ctx = ApplicationContext(DAOContext())
 def login(request):
     error = ''
 
+    form = LoginForm(request.POST or None)
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             dao = ctx.get_object('UserDAO')
             user = dao.find(email=email)
             if user and check_password(password, user.password):
+                request.session['user_id'] = user.id
+                request.session['last_modified'] = datetime.utcnow()
+                request.session.set_expiry(1200)
                 return HttpResponseRedirect('/')
 
             error = 'No account with the provided username and password exists.'
-    else:
-        form = LoginForm()
 
     return render(request, 'login.html', {'form': form, 'error': error})
 
 
+def logout(request):
+    request.session.flush()
+
+    return HttpResponseRedirect('/')
+
+
 def signup(request):
     error = ''
+    form = SignupForm(request.POST or None)
 
     if request.method == 'POST':
-        form = SignupForm(request.POST)
         user_dao = ctx.get_object('UserDAO')
 
         if form.is_valid():
@@ -77,7 +84,5 @@ def signup(request):
                 user_dao.create_update(user_dto)
 
                 return HttpResponseRedirect('/')
-    else:
-        form = SignupForm()
 
     return render(request, 'signup.html', {'form': form, 'error': error})
