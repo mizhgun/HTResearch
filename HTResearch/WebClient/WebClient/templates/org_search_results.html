@@ -16,7 +16,13 @@
                 data-partners="{{ organization.partners }}"
                 data-facebook="{{ organization.facebook }}"
                 data-twitter="{{ organization.twitter }}"
-            href="javascript:void(0)">{{ organization.name }}</a>
+            href="javascript:void(0)">
+                {% if organization.name or not organization.organization_url %}
+                    {{ organization.name }}
+                {% else %}
+                    {{ organization.organization_url }}
+                {% endif %}
+            </a>
         </li>
     {% endfor %}
 {% else %}
