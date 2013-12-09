@@ -53,36 +53,31 @@ def signup(request):
         if form.is_valid():
             data = form.cleaned_data
 
-            if data['password'] != data['confirm_password']:
-                error = 'Please make sure your passwords match.'
-            elif user_dao.find(email=data['email']):
-                error = 'An account with that email already exists.'
-            else:
-                password = make_password(data['password'])
-                new_user = User(first_name=data['first_name'],
-                                last_name=data['last_name'],
-                                email=data['email'],
-                                password=password,
-                                background=data['background'],
-                                account_type=int(data['account_type']),)
+            password = make_password(data['password'])
+            new_user = User(first_name=data['first_name'],
+                            last_name=data['last_name'],
+                            email=data['email'],
+                            password=password,
+                            background=data['background'],
+                            account_type=int(data['account_type']))
 
-                org_dao = ctx.get_object('OrganizationDAO')
+            org_dao = ctx.get_object('OrganizationDAO')
 
-                if 'affiliation' in data and data['affiliation']:
-                    new_user.affiliation = int(data['affiliation'])
+            if 'affiliation' in data and data['affiliation']:
+                new_user.affiliation = int(data['affiliation'])
 
-                if 'organization' in data and data['organization']:
-                    existing_org = org_dao.find(name=data['organization'])
-                    if existing_org:
-                        new_user.organization = existing_org
-                    else:
-                        new_org = OrganizationDTO()
-                        new_org.name = data['organization']
-                        new_user.organization = org_dao.create_update(new_org)
+            if 'organization' in data and data['organization']:
+                existing_org = org_dao.find(name=data['organization'])
+                if existing_org:
+                    new_user.organization = existing_org
+                else:
+                    new_org = OrganizationDTO()
+                    new_org.name = data['organization']
+                    new_user.organization = org_dao.create_update(new_org)
 
-                user_dto = DTOConverter.to_dto(UserDTO, new_user)
-                user_dao.create_update(user_dto)
+            user_dto = DTOConverter.to_dto(UserDTO, new_user)
+            user_dao.create_update(user_dto)
 
-                return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/')
 
     return render(request, 'signup.html', {'form': form, 'error': error})
