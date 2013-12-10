@@ -2,11 +2,11 @@ $(document).ready(function(){
 	$('#login-form').validate({
 		rules: {
 			email: {
-				maxlength: 60,
+				maxlength: 40,
 				required: true
 			},
 			password: {
-				rangelength: [8, 80],
+				rangelength: [8, 40],
 				required: true
 			}
 		},

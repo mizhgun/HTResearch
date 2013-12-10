@@ -10,7 +10,7 @@ $(document).ready(function(){
 				required: true
 			},
 			email: {
-				maxlength: 60,
+				maxlength: 40,
 				required: true
 			},
 			account_type: {
@@ -28,11 +28,16 @@ $(document).ready(function(){
 				required: true
 			},
 			password: {
-				rangelength: [8, 80],
+				rangelength: [8, 40],
 				required: true
 			},
 			confirm_password: {
-				equalTo: "#id_password"
+				equalTo: '#id_password'
+			}
+		},
+		messages: {
+			confirm_password: {
+				equalTo: 'Please ensure your passwords match.'
 			}
 		},
 		highlight: function(element) {

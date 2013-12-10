@@ -8,12 +8,15 @@ from datetime import datetime
 # project imports
 from HTResearch.DataAccess.dto import UserDTO, OrganizationDTO
 from HTResearch.DataModel.model import User
+from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.WebClient.WebClient.models import LoginForm, SignupForm
 
-
+#region Globals
 ctx = ApplicationContext(DAOContext())
+SESSION_TIMEOUT = 1200
+#endregion
 
 
 def login(request):
@@ -29,7 +32,7 @@ def login(request):
             if user and check_password(password, user.password):
                 request.session['user_id'] = user.id
                 request.session['last_modified'] = datetime.utcnow()
-                request.session.set_expiry(1200)
+                request.session.set_expiry(SESSION_TIMEOUT)
                 return HttpResponseRedirect('/')
 
             error = 'No account with the provided username and password exists.'
@@ -73,6 +76,10 @@ def signup(request):
                 else:
                     new_org = OrganizationDTO()
                     new_org.name = data['organization']
+                    if new_user.affiliation:
+                        new_org.types.append(OrgTypesEnum.EDUCATION)
+                    else:
+                        new_org.types.append(OrgTypesEnum.UNKNOWN)
                     new_user.organization = org_dao.create_update(new_org)
 
             user_dto = DTOConverter.to_dto(UserDTO, new_user)
