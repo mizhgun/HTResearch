@@ -43,7 +43,7 @@ class Publication(object):
     """A Model class for an anti-trafficking research publication."""
 
     def __init__(self, title=None, authors=[],
-                 publisher=None, publication_date=datetime.now(),
+                 publisher=None, publication_date=datetime.utcnow(),
                  types=[], content_url=None):
         self.title = title
         self.authors = authors
@@ -56,7 +56,7 @@ class Publication(object):
 class URLMetadata(object):
     """A Model class for an anti-trafficiking organization URL metadata."""
 
-    def __init__(self, url=None, domain=None, last_visited=datetime.now(),
+    def __init__(self, url=None, domain=None, last_visited=datetime.utcnow(),
                  score=None, update_freq=None,
                  checksum=None):
         self.url = url
@@ -70,9 +70,9 @@ class URLMetadata(object):
 class User(object):
     """A Model class for a user of the anti-trafficking system."""
 
-    def __init__(self, first_name, last_name,
-                 email, password, background,
-                 account_type, affiliation=None,
+    def __init__(self, first_name=None, last_name=None,
+                 email=None, password=None, background=None,
+                 account_type=None, affiliation=None,
                  organization=None):
         self.first_name = first_name
         self.last_name = last_name

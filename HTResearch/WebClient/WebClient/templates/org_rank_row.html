@@ -8,17 +8,17 @@
             <td class="org-rank-emails">{{ organization.emails|join:", " }}</td>
             <td class="org-rank-url">
                 {% if organization.organization_url and organization.organization_url.strip %}
-                    <a href="{{ organization.organization_url }}">Site</a>
+                    <a target="_blank" href="{{ organization.organization_url }}">Site</a>
                 {% endif %}
             </td>
             <td class="org-rank-facebook">
                 {% if organization.facebook and organization.facebook.strip %}
-                    <a href="{{ organization.facebook }}">FB</a>
+                    <a target="_blank" href="{{ organization.facebook }}">FB</a>
                 {% endif %}
             </td>
             <td class="org-rank-twitter">
                 {% if organization.twitter and organization.twitter.strip %}
-                    <a href="{{ organization.twitter }}">TW</a>
+                    <a target="_blank" href="{{ organization.twitter }}">TW</a>
                 {% endif %}
             </td>
         </tr>

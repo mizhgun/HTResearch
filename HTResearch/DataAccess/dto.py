@@ -57,11 +57,13 @@ class URLMetadataDTO(mongo.Document):
 class UserDTO(mongo.Document):
     """A DTO wrapper for User documents"""
 
-    first_name = mongo.StringField(db_field='f', max_length=80, required=True)
-    last_name = mongo.StringField(db_field='l', max_length=80, required=True)
-    email = mongo.EmailField(db_field='e', max_length=80, required=True)
-    password = mongo.StringField(db_field='pa', min_length=8, max_length=80, required=True)
-    background = mongo.StringField(db_field='b', required=True)
-    account_type = mongo.IntField(db_field='at', required=True, choices=[AccountType.BASIC, AccountType.CONTRIBUTOR])
-    affiliation = mongo.IntField(db_field='af', choices=[AffiliationType.STUDENT, AffiliationType.EMPLOYEE])
+    first_name = mongo.StringField(db_field='f', max_length=25, required=True)
+    last_name = mongo.StringField(db_field='l', max_length=25, required=True)
+    email = mongo.EmailField(db_field='e', max_length=40, required=True)
+    password = mongo.StringField(db_field='pa', min_length=8, max_length=40, required=True)
+    background = mongo.StringField(db_field='b', max_length=120, required=True)
+    account_type = mongo.IntField(db_field='at', required=True, choices=(AccountType.BASIC, AccountType.CONTRIBUTOR))
+
+    #TODO: Maybe we should make 'affiliation' enumerate all of our OrgTypesEnum?
+    affiliation = mongo.IntField(db_field='af', choices=(AffiliationType.STUDENT, AffiliationType.EMPLOYEE))
     organization = mongo.ReferenceField(OrganizationDTO, db_field='o')
