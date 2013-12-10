@@ -104,8 +104,7 @@ function loadNews() {
                 });
                 $(newsArticle).find('br, '
                                   + 'tr td:first, '
-                                  + 'tr td:last div:first, '
-                                  + 'tr td:last br:first').remove();
+                                  + 'tr td:last div:first').remove();
                 $(newsArticle).find('*').css('padding', '0');
                 $(newsArticle).find('a').attr('target', '_blank');
                 $(newsArticle).find('a, font').css({'display': 'block', 'margin-right': '5px'});
