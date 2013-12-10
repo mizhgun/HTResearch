@@ -108,10 +108,16 @@ function loadNews() {
                 $(newsArticle).find('*').css('padding', '0');
                 $(newsArticle).find('a').attr('target', '_blank');
                 $(newsArticle).find('a, font').css({'display': 'block', 'margin-right': '5px'});
-                $(newsArticle).find('a:has(img)').css('width', '80px');
-                $(newsArticle).find('a:has(img)').css('float', (index % 2 == 0) ? 'left' : 'right');
-                $(newsArticle).find('a:has(img)').css('text-align', 'center');
-                $(newsArticle).find('img').css({'width': '80px', 'height': '80px'});
+                $(newsArticle).find('a:has(img)').css({
+                    'width': '80px',
+                    'float': (index % 2 == 0) ? 'left' : 'right',
+                    'text-align': 'center'
+                });
+                $(newsArticle).find('img').css({
+                    'width': '80px',
+                    'height': '80px',
+                    'border-radius': '5px'
+                });
                 $(newsArticle).find('td div a:first').css('font-size', '14px');
                 $(newsDiv).append(newsArticle);
             });
