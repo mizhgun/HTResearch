@@ -88,14 +88,15 @@ class DAO(object):
                 results = [item for item in result_lists[0] if combo(item in list for list in result_lists)]
 
             # filter by required fields, only take results with the non-None fields
-            for key in sort_params['required_fields']:
-                results = [r for r in results if r[key]]
+            if 'required_fields' in sort_params.keys():
+                for key in sort_params['required_fields']:
+                    results = [r for r in results if r[key]]
 
             # Remove duplicates
             results = list(set(results))
 
             # sort by fields
-            if sort_params['sort_fields']:
+            if 'sort_fields' in sort_params.keys():
                 for field in reversed(sort_params['sort_fields']):
                     results.sort(key=lambda result: result[field])
 
