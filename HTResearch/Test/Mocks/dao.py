@@ -267,9 +267,7 @@ class MockPublicationDAO(MockDAO):
         return pub_dto
 
     def create_update(self, pub_dto, cascade_add=True):
-        no_id = False
-        if pub_dto.id is None:
-            no_id = True
+        no_id = pub_dto.id is None
         with self.conn():
             if cascade_add:
                 for i in range(len(pub_dto.authors)):
