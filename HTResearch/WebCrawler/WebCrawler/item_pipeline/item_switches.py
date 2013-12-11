@@ -22,21 +22,21 @@ class ItemSwitch(object):
 
     def process_item(self, item, spider):
         """Consumes item from spider and passes to correct handler asynchronously"""
+        item_class = item.__class__.__name__
 
         # switch to handle item based on class type
-        if isinstance(item, ScrapedUrl):
+        if item_class == "ScrapedUrl":
             # Create DAO for URL with empty fields
             # Pass it to URLFrontier, which will add it iff it is new
             self._store_url(item)
-            pass 
-        elif isinstance(item, ScrapedContact):
+        elif item_class == "ScrapedContact":
             self._store_contact(item)
-        elif isinstance(item, ScrapedOrganization):
+        elif item_class == "ScrapedOrganization":
             self._store_organization(item)
-        elif isinstance(item, ScrapedPublication):
+        elif item_class == "ScrapedPublication":
             self._store_publication(item)
         else:
-            msg = "No behavior defined for item of type %s" % item.__class__.__name__
+            msg = "No behavior defined for item of type %s" % item_class
             logger.error(msg)
             raise DropItem(msg)
         
