@@ -106,9 +106,7 @@ class MockContactDAO(MockDAO):
         return contact_dto
 
     def create_update(self, contact_dto, cascade_add=True):
-        no_id = False
-        if contact_dto.id is None:
-            no_id = True
+        no_id = contact_dto.id is None
         with self.conn():
             if cascade_add:
                 o = contact_dto.organization
@@ -178,9 +176,7 @@ class MockOrganizationDAO(MockDAO):
         return org_dto
 
     def create_update(self, org_dto, cascade_add=True):
-        no_id = False
-        if org_dto.id is None:
-            no_id = True
+        no_id = org_dto.id is None
         with self.conn():
             if cascade_add:
                 for i in range(len(org_dto.contacts)):

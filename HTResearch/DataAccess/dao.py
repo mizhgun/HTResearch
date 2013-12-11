@@ -68,8 +68,6 @@ class DAO(object):
             #else:
             #    return self.dto.objects(**constraints)[:num_elements]
 
-
-
     # Search all string fields for text and return list of results
     # NOTE: may be slower than MongoDB's text search feature, which is unfortunately unusable because it is in beta
     def text_search(self, text, num_elements, **sort_params):
@@ -134,9 +132,7 @@ class ContactDAO(DAO):
         return contact_dto
 
     def create_update(self, contact_dto, cascade_add=True):
-        no_id = False
-        if contact_dto.id is None:
-            no_id = True
+        no_id = contact_dto.id is None
         with self.conn():
             if cascade_add:
                 o = contact_dto.organization
@@ -184,7 +180,8 @@ class OrganizationDAO(DAO):
                 if attributes[key]:
                     cur_attr = getattr(existing_org_dto, key)
                     if not cur_attr:
-                        setattr(existing_org_dto, key, attributes[key])
+                        if key == 'latlng' and not attributes['latlng'] and attributes['address']:
+                            setattr(existing_org_dto, key, attributes[key])
                     elif type(cur_attr) is list:
                         merged_list = list(set(cur_attr + attributes[key]))
                         # if this is org types and we have more than one org type, make sure unknown isn't a type :P
@@ -208,9 +205,7 @@ class OrganizationDAO(DAO):
         return org_dto
 
     def create_update(self, org_dto, cascade_add=True):
-        no_id = False
-        if org_dto.id is None:
-            no_id = True
+        no_id = org_dto.id is None
         with self.conn():
             if cascade_add:
                 for i in range(len(org_dto.contacts)):
@@ -226,7 +221,6 @@ class OrganizationDAO(DAO):
                     org_dto.partners[i] = self.create_update(p, False)
 
             if no_id:
-
                 existing_dto = self._smart_search_orgs(org_dto)
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, org_dto)
@@ -304,9 +298,7 @@ class PublicationDAO(DAO):
         return pub_dto
 
     def create_update(self, pub_dto, cascade_add=True):
-        no_id = False
-        if pub_dto.id is None:
-            no_id = True
+        no_id = pub_dto.id is None
         with self.conn():
             if cascade_add:
                 for i in range(len(pub_dto.authors)):
