@@ -12,6 +12,8 @@ var newsUrl = 'https://news.google.com/news/feeds?output=rss&num=' + maxNewsCoun
 var newsFeed = null;
 var newsCount = 0;
 var newsStepSize = 6;
+var globalLocation = 'india';
+var geocoder = new google.maps.Geocoder();
 
 // load Google Feeds API
 google.load('feeds', '1');
@@ -63,30 +65,40 @@ function initialize() {
         }
     });
 
-	$('a.org-link').click(function(e){
-        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization);
-    });
-
     //This function is in welcome.js
     google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
 
-    // Retrieve news
-    setNewsQuery('human trafficking india');
-    loadNews();
+    // Retrieve news whenever ready
+    google.maps.event.addListener(map, 'idle', updateNewsLocation);
+
     // Infinite scrolling for news
     $('#news-results').scroll(function() {
         if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-            loadNews();
+            loadMoreNews();
         }
     });
 }
 
-function setNewsQuery(query) {
-    newsFeed = newsFeed || new google.feeds.Feed(newsUrl + query.split().join('+'));
-    newsCount = 0;
+function updateNewsLocation() {
+    var geocoder = new google.maps.Geocoder();
+
+    geocoder.geocode({
+        'latLng': map.getCenter(),
+        'bounds': map.getBounds()
+    }, function(results, status) {
+        if(status == google.maps.GeocoderStatus.OK) {
+            if(results[0]) {
+                var query = '"human trafficking" ' + results[0].formatted_address;
+                var feedParam = newsUrl + query.split(/,?\s/).join('+');
+                newsFeed = new google.feeds.Feed(feedParam);
+                newsCount = 0;
+                loadMoreNews();
+            }
+        }
+    });
 }
 
-function loadNews() {
+function loadMoreNews() {
     newsCount += newsStepSize;
     newsFeed.includeHistoricalEntries();
     newsFeed.setNumEntries(newsCount);
@@ -121,7 +133,7 @@ function loadNews() {
                 $(newsArticle).find('td div a:first').css('font-size', '14px');
                 $(newsDiv).append(newsArticle);
             });
-            $('#news-results').html($(newsDiv).html());
+            $('#news-results').html($(newsDiv).html() || '<div class="no-results">No results found.</div>');
         }
     });
 }

@@ -298,3 +298,7 @@ a.disabled {
 
 .article .article-content {
 }
+
+.no-results {
+    text-align: center;
+}
