@@ -63,10 +63,6 @@ class DAO(object):
                     return ret[start:end+1]
 
             return ret
-            #
-            #    return self.dto.objects(**constraints).order_by(*sort_fields)[:num_elements]
-            #else:
-            #    return self.dto.objects(**constraints)[:num_elements]
 
     # Search all string fields for text and return list of results
     # NOTE: may be slower than MongoDB's text search feature, which is unfortunately unusable because it is in beta
