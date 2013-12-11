@@ -20,6 +20,10 @@ SESSION_TIMEOUT = 1200
 
 
 def login(request):
+    # if we're logged in, redirect to the index
+    if 'user_id' in request.session:
+        return HttpResponseRedirect('/')
+
     error = ''
 
     form = LoginForm(request.POST or None)
@@ -29,9 +33,11 @@ def login(request):
             password = form.cleaned_data['password']
             dao = ctx.get_object('UserDAO')
             user = dao.find(email=email)
+
             if user and check_password(password, user.password):
                 request.session['user_id'] = user.id
                 request.session['last_modified'] = datetime.utcnow()
+                request.session['name'] = user.first_name
                 request.session.set_expiry(SESSION_TIMEOUT)
                 return HttpResponseRedirect('/')
 
@@ -83,7 +89,12 @@ def signup(request):
                     new_user.organization = org_dao.create_update(new_org)
 
             user_dto = DTOConverter.to_dto(UserDTO, new_user)
-            user_dao.create_update(user_dto)
+            ret_user = user_dao.create_update(user_dto)
+
+            request.session['name'] = new_user.first_name
+            request.session['user_id'] = ret_user.id
+            request.session['last_modified'] = datetime.utcnow()
+            request.session.set_expiry(SESSION_TIMEOUT)
 
             return HttpResponseRedirect('/')
 
