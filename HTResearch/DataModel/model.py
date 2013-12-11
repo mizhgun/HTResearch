@@ -72,7 +72,7 @@ class User(object):
 
     def __init__(self, first_name=None, last_name=None,
                  email=None, password=None, background=None,
-                 account_type=None, affiliation=None,
+                 account_type=None, org_type=None,
                  organization=None):
         self.first_name = first_name
         self.last_name = last_name
@@ -80,5 +80,5 @@ class User(object):
         self.password = password
         self.background = background
         self.account_type = account_type
-        self.affiliation = affiliation
+        self.org_type = org_type
         self.organization = organization

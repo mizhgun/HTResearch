@@ -17,8 +17,8 @@ $(document).ready(function(){
 				range: [0, 1],
 				required: true
 			},
-			affiliation: {
-				range: [0, 1]
+			org_type: {
+				range: [0, 5]
 			},
 			organization: {
 				maxlength: 60

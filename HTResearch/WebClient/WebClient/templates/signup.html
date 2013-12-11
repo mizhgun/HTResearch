@@ -97,29 +97,47 @@
                     {% endif %}
                 </div>
 
-                {% if form.affiliation.errors %}
+                {% if form.org_type.errors %}
                 <div class="form-group has-error">
                 {% else %}
                 <div class="form-group">
                 {% endif %}
-                    <label for="id_affiliation" class="control-label">Affiliation</label>
-                    <div id="id_affiliation">
+                    <label for="id_org_type" class="control-label">Affiliation</label>
+                    <div id="id_org_type">
                         <div class="radio">
                             <label>
-                                <input type="radio" name="affiliation" value="0">
-                                Student
+                                <input type="radio" name="org_type" value="0">
+                                Government
                             </label>
                         </div>
                         <div class="radio">
                             <label>
-                                <input type="radio" name="affiliation" value="1">
-                                Employee
+                                <input type="radio" name="org_type" value="1">
+                                Ministry
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="org_type" value="2">
+                                Education
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="org_type" value="3">
+                                Advocacy
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="org_type" value="4">
+                                Research
                             </label>
                         </div>
                     </div>
-                    {% if form.affiliation.errors %}
+                    {% if form.org_type.errors %}
                         <span class="help-block">
-                            {% for error in form.affiliation.errors %}
+                            {% for error in form.org_type.errors %}
                                 {{ error|escape }}<br/>
                             {% endfor %}
                         </span>

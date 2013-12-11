@@ -1,5 +1,7 @@
 import mongoengine as mongo
-from HTResearch.DataModel.enums import AccountType, AffiliationType
+
+from HTResearch.DataModel.enums import AccountType
+from HTResearch.DataModel.globals import ORG_TYPE_CHOICES
 
 
 class ContactDTO(mongo.Document):
@@ -62,8 +64,7 @@ class UserDTO(mongo.Document):
     email = mongo.EmailField(db_field='e', max_length=40, required=True)
     password = mongo.StringField(db_field='pa', required=True)
     background = mongo.StringField(db_field='b', max_length=120, required=True)
-    account_type = mongo.IntField(db_field='at', required=True, choices=(AccountType.BASIC, AccountType.CONTRIBUTOR))
-
-    #TODO: Maybe we should make 'affiliation' enumerate all of our OrgTypesEnum?
-    affiliation = mongo.IntField(db_field='af', choices=(AffiliationType.STUDENT, AffiliationType.EMPLOYEE))
+    account_type = mongo.IntField(db_field='at', required=True,
+                                  choices=(AccountType.COLLABORATOR, AccountType.CONTRIBUTOR))
+    org_type = mongo.IntField(db_field='ot', choices=ORG_TYPE_CHOICES)
     organization = mongo.ReferenceField(OrganizationDTO, db_field='o')

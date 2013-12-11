@@ -11,11 +11,13 @@ from HTResearch.DataModel.model import User
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
+from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
 from HTResearch.WebClient.WebClient.models import LoginForm, SignupForm
 
 #region Globals
 ctx = ApplicationContext(DAOContext())
 SESSION_TIMEOUT = 1200
+logger = LoggingUtility().get_logger(LoggingSection.CLIENT, __name__)
 #endregion
 
 
@@ -35,6 +37,7 @@ def login(request):
             user = dao.find(email=email)
 
             if user and check_password(password, user.password):
+                logger.info('User=%s successfully logged in' % user.id)
                 request.session['user_id'] = user.id
                 request.session['last_modified'] = datetime.utcnow()
                 request.session['name'] = user.first_name
@@ -42,11 +45,14 @@ def login(request):
                 return HttpResponseRedirect('/')
 
             error = 'No account with the provided username and password exists.'
+            logger.error('User with email={0}, password={1} not found'.format(email, password))
 
     return render(request, 'login.html', {'form': form, 'error': error})
 
 
 def logout(request):
+    user_id = request.session['user_id']
+    logger.info('Logging out user=%s' % user_id)
     request.session.flush()
 
     return HttpResponseRedirect('/')
@@ -72,8 +78,8 @@ def signup(request):
 
             org_dao = ctx.get_object('OrganizationDAO')
 
-            if 'affiliation' in data and data['affiliation']:
-                new_user.affiliation = int(data['affiliation'])
+            if 'org_type' in data and data['org_type']:
+                new_user.org_type = int(data['org_type'])
 
             if 'organization' in data and data['organization']:
                 existing_org = org_dao.find(name=data['organization'])
@@ -82,8 +88,8 @@ def signup(request):
                 else:
                     new_org = OrganizationDTO()
                     new_org.name = data['organization']
-                    if new_user.affiliation:
-                        new_org.types.append(OrgTypesEnum.EDUCATION)
+                    if new_user.org_type:
+                        new_org.types.append(new_user.org_type)
                     else:
                         new_org.types.append(OrgTypesEnum.UNKNOWN)
                     new_user.organization = org_dao.create_update(new_org)
