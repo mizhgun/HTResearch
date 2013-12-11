@@ -1,0 +1,12 @@
+{% block content %}
+    <script id="news-template" type="text/x-jquery-tmpl">
+        <div class="article">
+            <div class="article-title"><a href="${link}" target="_blank">${title}</a></div>
+            <div class="article-author">${author}</div>
+            <div class="article-date">${publishedDate}</div>
+            <div class="article-content-snippet">${contentSnippet}</div>
+            <div class="article-content">{% templatetag openbrace %}{% templatetag openbrace %}html content{% templatetag closebrace %}{% templatetag closebrace %}</div>
+        </div>
+    </script>
+    <div id="news-results"></div>
+{% endblock %}
