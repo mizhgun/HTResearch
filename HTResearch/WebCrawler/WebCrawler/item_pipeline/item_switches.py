@@ -29,7 +29,6 @@ class ItemSwitch(object):
             # Create DAO for URL with empty fields
             # Pass it to URLFrontier, which will add it iff it is new
             self._store_url(item)
-            pass 
         elif item_class == "ScrapedContact":
             self._store_contact(item)
         elif item_class == "ScrapedOrganization":
