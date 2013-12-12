@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadReque
 from django.template.loader import get_template
 from django.template import Context
 from django.core.context_processors import csrf
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from mongoengine.fields import StringField, URLField, EmailField
 from springpython.context import ApplicationContext
 from HTResearch.Utilities.encoder import MongoJSONEncoder
@@ -22,8 +22,7 @@ def index(request):
     args.update(csrf(request))
 
     args["api_key"] = GOOGLE_MAPS_API_KEY
-
-    return render_to_response('index_template.html', args)
+    return render(request, 'index_template.html', args)
 
 
 # Encodes a DTO's non-string fields to JSON
@@ -66,4 +65,4 @@ def get_http_404_page(request):
 
 
 def unimplemented(request):
-    return render_to_response('unimplemented.html')
+    return render(request, 'unimplemented.html')
