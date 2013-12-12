@@ -59,7 +59,7 @@ def heatmap_coordinates(request):
 
 
 def welcome(request):
-    return render_to_response('welcome.html')
+    return render(request, 'welcome.html')
 
 def get_http_404_page(request):
     template = get_template('404.html')
