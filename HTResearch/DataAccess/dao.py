@@ -2,7 +2,7 @@ from mongoengine import Q
 from dto import *
 from connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
-from mongoengine.fields import StringField, URLField
+from mongoengine.fields import StringField, URLField, EmailField
 
 
 class DAO(object):
@@ -63,12 +63,6 @@ class DAO(object):
                     return ret[start:end+1]
 
             return ret
-            #
-            #    return self.dto.objects(**constraints).order_by(*sort_fields)[:num_elements]
-            #else:
-            #    return self.dto.objects(**constraints)[:num_elements]
-
-
 
     # Search all string fields for text and return list of results
     # NOTE: may be slower than MongoDB's text search feature, which is unfortunately unusable because it is in beta
@@ -76,13 +70,13 @@ class DAO(object):
         with self.conn():
             # Find all string fields
             fields_dict = self.dto._fields
-            string_types = (StringField, URLField)
-            search_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) in string_types]
+            string_types = (StringField, URLField, EmailField)
+            string_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) in string_types]
 
-            # Search for each term in all string fields
+            # Search for each term in each string field
             result_lists = []
             for term in text.split():
-                results = [list(self.dto.objects(**{field + '__icontains': term})) for field in search_fields]
+                results = [list(self.dto.objects(**{field + '__icontains': term})) for field in string_fields]
                 results = reduce(lambda x, y: x + y, results)  # flatten to list of results
                 result_lists.append(results)
 
@@ -134,9 +128,7 @@ class ContactDAO(DAO):
         return contact_dto
 
     def create_update(self, contact_dto, cascade_add=True):
-        no_id = False
-        if contact_dto.id is None:
-            no_id = True
+        no_id = contact_dto.id is None
         with self.conn():
             if cascade_add:
                 o = contact_dto.organization
@@ -184,7 +176,8 @@ class OrganizationDAO(DAO):
                 if attributes[key]:
                     cur_attr = getattr(existing_org_dto, key)
                     if not cur_attr:
-                        setattr(existing_org_dto, key, attributes[key])
+                        if key == 'latlng' and not attributes['latlng'] and attributes['address']:
+                            setattr(existing_org_dto, key, attributes[key])
                     elif type(cur_attr) is list:
                         merged_list = list(set(cur_attr + attributes[key]))
                         # if this is org types and we have more than one org type, make sure unknown isn't a type :P
@@ -208,9 +201,7 @@ class OrganizationDAO(DAO):
         return org_dto
 
     def create_update(self, org_dto, cascade_add=True):
-        no_id = False
-        if org_dto.id is None:
-            no_id = True
+        no_id = org_dto.id is None
         with self.conn():
             if cascade_add:
                 for i in range(len(org_dto.contacts)):
@@ -226,7 +217,6 @@ class OrganizationDAO(DAO):
                     org_dto.partners[i] = self.create_update(p, False)
 
             if no_id:
-
                 existing_dto = self._smart_search_orgs(org_dto)
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, org_dto)
@@ -304,9 +294,7 @@ class PublicationDAO(DAO):
         return pub_dto
 
     def create_update(self, pub_dto, cascade_add=True):
-        no_id = False
-        if pub_dto.id is None:
-            no_id = True
+        no_id = pub_dto.id is None
         with self.conn():
             if cascade_add:
                 for i in range(len(pub_dto.authors)):

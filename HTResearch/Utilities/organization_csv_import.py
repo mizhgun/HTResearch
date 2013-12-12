@@ -4,7 +4,6 @@ from HTResearch.DataAccess.dao import *
 from HTResearch.DataAccess.factory import DAOFactory
 from HTResearch.DataModel.model import *
 from HTResearch.DataModel.converter import DTOConverter
-from HTResearch.DataAccess.connection import DBConnection
 
 dir = os.getcwd()
 path = dir+'\Orgs.csv'
