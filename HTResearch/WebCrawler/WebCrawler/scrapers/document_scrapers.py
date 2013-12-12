@@ -32,35 +32,35 @@ class ContactScraper():
 
 
 class OrganizationScraper():
-    _scrapers = {
-        'name': [OrgNameScraper()],
-        'address': [OrgAddressScraper()],
-        'types': [OrgTypeScraper()],
-        'phone_number': [USPhoneNumberScraper(), IndianPhoneNumberScraper()],
-        'email': [EmailScraper()],
-        'contacts': [ContactNameScraper()],
-        'organization_url': [OrgUrlScraper()],
-        'partners': [OrgPartnersScraper()],
-    }
-
-    _multiple = ['types', 'phone_number', 'email', 'partners', 'contacts']
-
-    def parse(self, response):
-        organization = ScrapedOrganization()
-        # Collect each field of organization model
-        for field in self._scrapers.iterkeys():
-            if field in self._multiple:
-                # Get multiple field (e.g. phone_number)
-                organization[field] = []
-                for scraper in self._scrapers[field]:
-                    organization[field] += scraper.parse(response)
-            #elif field == 'contacts':
-            #    organization[field] = scraper.pa
-            else:
-                # Get single field (e.g. name)
-                results = self._scrapers[field][0].parse(response)
-                if results:
-                    organization[field] = results[0] if isinstance(results, type([])) else results
+    #_scrapers = {
+    #    'name': [OrgNameScraper()],
+    #    'address': [OrgAddressScraper()],
+    #    'types': [OrgTypeScraper()],
+    #    'phone_number': [USPhoneNumberScraper(), IndianPhoneNumberScraper()],
+    #    'email': [EmailScraper()],
+    #    'contacts': [ContactNameScraper()],
+    #    'organization_url': [OrgUrlScraper()],
+    #    'partners': [OrgPartnersScraper()],
+    #}
+    #
+    #_multiple = ['types', 'phone_number', 'email', 'partners', 'contacts']
+    #
+    #def parse(self, response):
+    #    organization = ScrapedOrganization()
+    #    # Collect each field of organization model
+    #    for field in self._scrapers.iterkeys():
+    #        if field in self._multiple:
+    #            # Get multiple field (e.g. phone_number)
+    #            organization[field] = []
+    #            for scraper in self._scrapers[field]:
+    #                organization[field] += scraper.parse(response)
+    #        #elif field == 'contacts':
+    #        #    organization[field] = scraper.pa
+    #        else:
+    #            # Get single field (e.g. name)
+    #            results = self._scrapers[field][0].parse(response)
+    #            if results:
+    #                organization[field] = results[0] if isinstance(results, type([])) else results
     def __init__(self):
         self._scrapers = {
             'name': [OrgNameScraper],
@@ -75,7 +75,7 @@ class OrganizationScraper():
             'twitter': [OrgTwitterScraper],
             'keywords': [KeywordScraper],
         }
-        self._multiple = ['types', 'phone_numbers', 'emails', 'contacts', 'partners', ]
+        self._multiple = ['types', 'phone_numbers', 'emails', 'partners', ]
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',
                                 'human trafficking', 'brothel', 'child trafficking', 'anti trafficking',
                                 'social justice']
@@ -95,6 +95,8 @@ class OrganizationScraper():
                     organization[field] = []
                     for scraper in self._scrapers[field]:
                         organization[field] += scraper().parse(response)
+                elif field == 'contacts':
+                    organization[field] = []
                 else:
                     # Get single field (e.g. name)
                     results = (self._scrapers[field][0])().parse(response)
