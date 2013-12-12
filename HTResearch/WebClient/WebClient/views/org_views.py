@@ -1,5 +1,5 @@
 from urlparse import urlparse
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.http import HttpResponse
 from springpython.context import ApplicationContext
 from HTResearch.Utilities.context import DAOContext
@@ -30,7 +30,7 @@ def search_organizations(request):
             encode_dto(dto)
 
     params = {'organizations': organizations}
-    return render_to_response('org_search_results.html', params)
+    return render(request, 'org_search_results.html', params)
 
 
 def organization_profile(request, org_id):
@@ -51,7 +51,7 @@ def organization_profile(request, org_id):
     params = {"organization": org,
               "scheme": scheme
               }
-    return render_to_response('organization_profile_template.html', params)
+    return render(request, 'organization_profile_template.html', params)
 
 
 def get_org_keywords(request):
@@ -93,8 +93,8 @@ def get_org_rank_rows(request):
 
 
     params = {'organizations': organizations}
-    return render_to_response('org_rank_row.html', params)
+    return render(request, 'org_rank_row.html', params)
 
 
 def org_rank(request, sort_method=''):
-    return render_to_response('org_rank.html')
+    return render(request, 'org_rank.html')
