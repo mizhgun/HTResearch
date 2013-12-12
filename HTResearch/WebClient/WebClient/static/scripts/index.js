@@ -8,6 +8,11 @@ var infowindow = null;
 var marker = null;
 
 function initialize() {
+    var visited=getCookie("htresearch");
+    if(visited) {
+        window.location = '/welcome';
+    }
+
 	var mapOptions = {
 	  center: initialLatLng,
 	  zoom: 5,
@@ -60,6 +65,21 @@ function initialize() {
 
     //This function is in welcome.js
     google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
+}
+
+function getCookie(name) {
+    var arg=name+"=";
+    var argLength=arg.length;
+    var cookieLength=document.cookie.length;
+    var i=0;
+    while (i<cookieLength) {
+      var j=i+argLength;
+      if (document.cookie.substring(i,j) == arg)
+        return "here";
+      i=document.cookie.indexOf(" ",i)+1;
+      if (i==0) break;
+    }
+    return null;
 }
 
 function showSearchResults() {
