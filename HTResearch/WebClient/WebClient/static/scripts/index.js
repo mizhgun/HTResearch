@@ -28,7 +28,7 @@ function initialize() {
 	  zoomControl: false,
 	  scaleControl: false
 	};
-    
+
 	map = new google.maps.Map($('#map-canvas')[0],mapOptions);
 
 	$('#signup-btn').click(function(e) {
@@ -112,6 +112,12 @@ function updateNewsLocation(scope) {
                 loadNewsFromLocation(results[0].formatted_address);
             }
         });
+    } else if(scope='organization') {
+        if(orgData) {
+            loadNewsFromLocation(orgData.name);
+        } else {
+            $('#news-results').append('<div class="no-results">Please select an organization.</div>');
+        }
     }
 }
 
@@ -264,6 +270,12 @@ function endAjaxSearch() {
 
 // Show modals
 function showOrganizationModal() {
+    var scope = $('input[name=news-scope]:checked').val();
+    console.log();
+    if(scope == 'organization') {
+        updateNewsLocation(scope);
+    }
+
     orgData = $(this).data();
     if (orgData.latlng && orgData.latlng.length > 0) {
         // Get the lat, long values of the address
