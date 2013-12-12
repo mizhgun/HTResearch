@@ -70,20 +70,16 @@ class URLMetadata(object):
 class User(object):
     """A Model class for a user of the anti-trafficking system."""
 
-    def __init__(self, first_name, last_name,
-                 email, password, background,
-                 account_type, affiliation=None,
-                 organization=None, position=None,
-                 interests=None, address=None):
+    def __init__(self, first_name=None, last_name=None,
+                 email=None, password=None, background=None,
+                 account_type=None, org_type=None,
+                 organization=None):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.password = password
         self.background = background
         self.account_type = account_type
-        self.affiliation = affiliation
+        self.org_type = org_type
         self.organization = organization
-        self.position = position
-        self.interests = interests
-        self.address = address
 

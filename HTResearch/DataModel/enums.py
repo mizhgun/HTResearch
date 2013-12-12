@@ -1,13 +1,8 @@
 from HTResearch.Utilities.data_structures import enum
 
 AccountType = enum(
-    'BASIC',
+    'COLLABORATOR',
     'CONTRIBUTOR',
-)
-
-AffiliationType = enum(
-    'STUDENT',
-    'EMPLOYEE',
 )
 
 OrgTypesEnum = enum(
