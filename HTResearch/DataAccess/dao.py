@@ -118,7 +118,7 @@ class ContactDAO(DAO):
     def _add_contact_ref_to_children(self, contact_dto):
         if contact_dto.organization is not None and contact_dto not in contact_dto.organization.contacts:
             contact_dto.organization.contacts.append(contact_dto)
-            contact_dto.organization = self.org_dao.create_update(contact_dto.organization, False)
+            contact_dto.organization = self.org_dao().create_update(contact_dto.organization, False)
         if contact_dto.publications is not None:
             for i in range(len(contact_dto.publications)):
                 p = contact_dto.publications[i]

@@ -48,7 +48,7 @@ class OrganizationScraper():
             'twitter': [OrgTwitterScraper],
             'keywords': [KeywordScraper],
         }
-        self._multiple = ['types', 'phone_numbers', 'emails', 'contacts', 'partners', ]
+        self._multiple = ['types', 'phone_numbers', 'emails', 'partners', ]
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',
                                 'human trafficking', 'brothel', 'child trafficking', 'anti trafficking',
                                 'social justice']
@@ -68,6 +68,8 @@ class OrganizationScraper():
                     organization[field] = []
                     for scraper in self._scrapers[field]:
                         organization[field] += scraper().parse(response)
+                elif field == 'contacts':
+                    organization[field] = []
                 else:
                     # Get single field (e.g. name)
                     results = (self._scrapers[field][0])().parse(response)

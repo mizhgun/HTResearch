@@ -419,13 +419,13 @@ class OrgContactsScraper(object):
                 cr = response.replace(body=response.body[contact_indices[i]:])
             contacts[names[i].get('name')]['position'] = [position_scraper.parse(cr)
                                                           if position_scraper.parse(cr)
-                                                          else None]
+                                                          else None][0]
             contacts[names[i].get('name')]['number'] = [number_scraper.parse(cr)[0]
                                                         if number_scraper.parse(cr)
-                                                        else None]
+                                                        else None][0]
             contacts[names[i].get('name')]['email'] = [email_scraper.parse(cr)[0]
                                                        if email_scraper.parse(cr)
-                                                       else None]
+                                                       else None][0]
             contacts[names[i].get('name')]['organization'] = org_name
         return contacts
 
