@@ -79,6 +79,7 @@ function initialize() {
 
     // Make news scope switch work
     $('input[name=news-scope]').change(function(e) {
+        $('#news-results').scrollTop(0);
         updateNewsLocation(e.target.value);
     });
 
@@ -122,7 +123,15 @@ function loadMoreNews() {
     newsFeed.load(function(result) {
         if(!result.error) {
             var articles = result.feed.entries;
-            newsCount = articles.length;
+
+            // See if there might be more news to load after this
+            var more = true;
+            if(articles.length < newsCount) {
+                more = false;
+                newsCount = articles.length;
+            }
+
+            // Construct html from news articles
             $.template('newsTemplate', $('#news-template').html());
             var newsDiv = $('<div></div>');
             $.each(articles, function(index) {
@@ -150,8 +159,16 @@ function loadMoreNews() {
                 $(newsArticle).find('td div a:first').css('font-size', '14px');
                 $(newsDiv).append(newsArticle);
             });
-            $('#news-results').scrollTop(0);
-            $('#news-results').html($(newsDiv).html() || '<div class="no-results">No results found.</div>');
+            if(!$(newsDiv).html()) {
+                $(newsDiv).append('<div class="no-results">No results found.</div>');
+            } else {
+                if(more) {
+                    $(newsDiv).append('<div class="news-footer ajax-loader"></div>');
+                } else {
+                    $(newsDiv).append('<div class="news-footer"><i class="glyphicon glyphicon-stop"></i></div>');
+                }
+            }
+            $('#news-results').html($(newsDiv).html());
         }
     });
 }

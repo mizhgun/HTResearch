@@ -308,3 +308,14 @@ a.disabled {
     height: 36px;
     text-align: center;
 }
+
+.news-footer {
+    width: 100%;
+    height: 36px;
+}
+
+.news-footer .glyphicon {
+    width: 100%;
+    margin-top: 8px;
+    text-align: center;
+}
