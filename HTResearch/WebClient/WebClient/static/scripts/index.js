@@ -8,8 +8,8 @@ var infowindow = null;
 var marker = null;
 
 function initialize() {
-    var visited=getCookie("htresearch");
-    if(visited) {
+    var visited=getCookie("htresearchv2");
+    if(!visited) {
         window.location = '/welcome';
     }
 
@@ -62,9 +62,6 @@ function initialize() {
 	$('a.org-link').click(function(e){
         geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization);
     });
-
-    //This function is in welcome.js
-    google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
 }
 
 function getCookie(name) {
