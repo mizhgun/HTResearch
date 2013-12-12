@@ -108,7 +108,7 @@ function updateNewsLocation(scope) {
             'latLng': map.getCenter(),
             'bounds': map.getBounds()
         }, function(results, status) {
-            if(status == google.maps.GeocoderStatus.OK && results[0]) {
+            if(status === google.maps.GeocoderStatus.OK && results[0]) {
                 loadNewsFromLocation(results[0].formatted_address);
             }
         });
