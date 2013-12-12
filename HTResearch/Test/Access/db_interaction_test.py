@@ -62,7 +62,7 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.user = User(first_name="Bee", last_name="Yee",
                          email="beeyee@yee.com", password="iambeeyee",
                          background="I love bees and yees",
-                         account_type=AccountType.BASIC)
+                         account_type=AccountType.COLLABORATOR)
 
         self.ctx = ApplicationContext(TestableDAOContext())
 
