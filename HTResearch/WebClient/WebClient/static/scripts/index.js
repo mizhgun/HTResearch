@@ -12,7 +12,8 @@ var newsUrl = 'https://news.google.com/news/feeds?output=rss&num=' + maxNewsCoun
 var newsFeed = null;
 var newsCount = 0;
 var newsStepSize = 6;
-var globalLocation = 'india';
+var baseQuery = '"human trafficking"'
+var generalLocation = 'india';
 var geocoder = new google.maps.Geocoder();
 
 // load Google Feeds API
@@ -69,7 +70,17 @@ function initialize() {
     google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
 
     // Retrieve news whenever ready
-    google.maps.event.addListener(map, 'idle', updateNewsLocation);
+    google.maps.event.addListener(map, 'idle', function() {
+        var scope = $('input[name=news-scope]:checked').val();
+        if(scope == 'regional') {
+            updateNewsLocation($('input[name=news-scope]:checked').val());
+        }
+    });
+
+    // Make news scope switch work
+    $('input[name=news-scope]').change(function(e) {
+        updateNewsLocation(e.target.value);
+    });
 
     // Infinite scrolling for news
     $('#news-results').scroll(function() {
@@ -79,23 +90,29 @@ function initialize() {
     });
 }
 
-function updateNewsLocation() {
+function updateNewsLocation(scope) {
     var geocoder = new google.maps.Geocoder();
 
-    geocoder.geocode({
-        'latLng': map.getCenter(),
-        'bounds': map.getBounds()
-    }, function(results, status) {
-        if(status == google.maps.GeocoderStatus.OK) {
-            if(results[0]) {
-                var query = '"human trafficking" ' + results[0].formatted_address;
-                var feedParam = newsUrl + query.split(/,?\s/).join('+');
-                newsFeed = new google.feeds.Feed(feedParam);
-                newsCount = 0;
-                loadMoreNews();
+    var loadNewsFromLocation = function(locationQuery) {
+        var query = baseQuery + ' ' + locationQuery;
+        var feedParam = newsUrl + query.split(/,?\s/).join('+');
+        newsFeed = new google.feeds.Feed(feedParam);
+        newsCount = 0;
+        loadMoreNews();
+    };
+
+    if(scope=='general') {
+        loadNewsFromLocation(generalLocation);
+    } else if(scope=='regional') {
+        geocoder.geocode({
+            'latLng': map.getCenter(),
+            'bounds': map.getBounds()
+        }, function(results, status) {
+            if(status == google.maps.GeocoderStatus.OK && results[0]) {
+                loadNewsFromLocation(results[0].formatted_address);
             }
-        }
-    });
+        });
+    }
 }
 
 function loadMoreNews() {
@@ -133,6 +150,7 @@ function loadMoreNews() {
                 $(newsArticle).find('td div a:first').css('font-size', '14px');
                 $(newsDiv).append(newsArticle);
             });
+            $('#news-results').scrollTop(0);
             $('#news-results').html($(newsDiv).html() || '<div class="no-results">No results found.</div>');
         }
     });
