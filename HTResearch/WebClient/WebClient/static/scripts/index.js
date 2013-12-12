@@ -257,7 +257,13 @@ function plotOrganization(data) {
         
         marker = new google.maps.Marker({
             map: map,
-            position: coord
+            position: coord,
+            icon: {
+                url: "/static/images/default_pin_small.png",
+                size: new google.maps.Size(39,32),
+                origin: new google.maps.Point(0,0),
+                anchor: new google.maps.Point(9,32)
+            }
         });
         
         orgData.img_path = "/static/images/office_building_icon.png";
