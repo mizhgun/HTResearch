@@ -84,16 +84,16 @@ function initialize() {
 }
 
 function getCookie(name) {
-    var arg=name+"=";
-    var argLength=arg.length;
-    var cookieLength=document.cookie.length;
-    var i=0;
-    while (i<cookieLength) {
-      var j=i+argLength;
+    var arg = name + "=";
+    var argLength = arg.length;
+    var cookieLength = document.cookie.length;
+    var i = 0;
+    while (i < cookieLength) {
+      var j = i + argLength;
       if (document.cookie.substring(i,j) == arg)
         return "here";
-      i=document.cookie.indexOf(" ",i)+1;
-      if (i==0) break;
+      i = document.cookie.indexOf(" ", i) + 1;
+      if (i == 0) break;
     }
     return null; 
 }
