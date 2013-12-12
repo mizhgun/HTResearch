@@ -20,6 +20,11 @@ center, div {
 p {
 	margin-top: 7%;
 	position: relative;
+	font-size: 1.5vw;
+}
+
+h1 {
+	font-size: 3vw;
 }
 
 .btn {
