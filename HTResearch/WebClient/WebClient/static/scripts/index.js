@@ -89,11 +89,10 @@ function initialize() {
             loadMoreNews();
         }
     });
+    // Initially trigger infinite scrolling if there's not enough to fill
 }
 
 function updateNewsLocation(scope) {
-    var geocoder = new google.maps.Geocoder();
-
     var loadNewsFromLocation = function(locationQuery) {
         var query = baseQuery + ' ' + locationQuery;
         var feedParam = newsUrl + query.split(/,?\s/).join('+');
@@ -117,60 +116,66 @@ function updateNewsLocation(scope) {
 }
 
 function loadMoreNews() {
-    newsCount += newsStepSize;
-    newsFeed.includeHistoricalEntries();
-    newsFeed.setNumEntries(newsCount);
-    newsFeed.load(function(result) {
-        if(!result.error) {
-            var articles = result.feed.entries;
+    if(newsFeed) {
+        newsCount += newsStepSize;
+        newsFeed.includeHistoricalEntries();
+        newsFeed.setNumEntries(newsCount);
+        newsFeed.load(function(result) {
+            if(!result.error) {
+                var articles = result.feed.entries;
 
-            // See if there might be more news to load after this
-            var more = true;
-            if(articles.length < newsCount) {
-                more = false;
-                newsCount = articles.length;
-            }
+                // See if there might be more news to load after this
+                var more = true;
+                if(articles.length < newsCount) {
+                    more = false;
+                    newsCount = articles.length;
+                }
 
-            // Construct html from news articles
-            $.template('newsTemplate', $('#news-template').html());
-            var newsDiv = $('<div></div>');
-            $.each(articles, function(index) {
-                var newsArticle = $.tmpl('newsTemplate', this);
-                // Do some HTML processing to make the articles look better
-                $(newsArticle).find('tr').each(function() {
-                    $(this).find('td:last').prepend($(this).find('td:first').html());
+                // Construct html from news articles
+                $.template('newsTemplate', $('#news-template').html());
+                var newsDiv = $('<div></div>');
+                $.each(articles, function(index) {
+                    var newsArticle = $.tmpl('newsTemplate', this);
+                    // Do some HTML processing to make the articles look better
+                    $(newsArticle).find('tr').each(function() {
+                        $(this).find('td:last').prepend($(this).find('td:first').html());
+                    });
+                    $(newsArticle).find('br, '
+                                      + 'tr td:first, '
+                                      + 'tr td:last div:first').remove();
+                    $(newsArticle).find('*').css('padding', '0');
+                    $(newsArticle).find('a').attr('target', '_blank');
+                    $(newsArticle).find('a, font').css({'display': 'block', 'margin-right': '5px'});
+                    $(newsArticle).find('a:has(img)').css({
+                        'width': '80px',
+                        'float': (index % 2 == 0) ? 'left' : 'right',
+                        'text-align': 'center'
+                    });
+                    $(newsArticle).find('img').css({
+                        'width': '80px',
+                        'height': '80px',
+                        'border-radius': '5px'
+                    });
+                    $(newsArticle).find('td div a:first').css('font-size', '14px');
+                    $(newsDiv).append(newsArticle);
                 });
-                $(newsArticle).find('br, '
-                                  + 'tr td:first, '
-                                  + 'tr td:last div:first').remove();
-                $(newsArticle).find('*').css('padding', '0');
-                $(newsArticle).find('a').attr('target', '_blank');
-                $(newsArticle).find('a, font').css({'display': 'block', 'margin-right': '5px'});
-                $(newsArticle).find('a:has(img)').css({
-                    'width': '80px',
-                    'float': (index % 2 == 0) ? 'left' : 'right',
-                    'text-align': 'center'
-                });
-                $(newsArticle).find('img').css({
-                    'width': '80px',
-                    'height': '80px',
-                    'border-radius': '5px'
-                });
-                $(newsArticle).find('td div a:first').css('font-size', '14px');
-                $(newsDiv).append(newsArticle);
-            });
-            if(!$(newsDiv).html()) {
-                $(newsDiv).append('<div class="no-results">No results found.</div>');
-            } else {
-                if(more) {
-                    $(newsDiv).append('<div class="news-footer ajax-loader"></div>');
+                if(!$(newsDiv).html()) {
+                    $(newsDiv).append('<div class="no-results">No results found.</div>');
                 } else {
-                    $(newsDiv).append('<div class="news-footer"><i class="glyphicon glyphicon-stop"></i></div>');
+                    if(more) {
+                        $(newsDiv).append('<div class="news-footer ajax-loader"></div>');
+                    } else {
+                        $(newsDiv).append('<div class="news-footer"><i class="glyphicon glyphicon-stop"></i></div>');
+                    }
+                }
+                var newsResultsDiv = $('#news-results');
+                newsResultsDiv.html($(newsDiv).html());
+                if(newsResultsDiv.scrollTop() + newsResultsDiv.innerHeight() >= newsResultsDiv[0].scrollHeight) {
+                    loadMoreNews();
                 }
             }
-            $('#news-results').html($(newsDiv).html());
-        }
-    });
+        });
+    }
 }
 
 function showSearchResults() {
