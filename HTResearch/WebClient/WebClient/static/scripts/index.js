@@ -3,7 +3,7 @@ var map;
 var initialLatLng = new google.maps.LatLng(21, 78);
 var searchedLatLng;
 var address;
-var orgData, contactData, pubData;
+var orgData = null, contactData = null, pubData = null;
 var infowindow = null;
 var marker = null;
 // for news loading
@@ -28,9 +28,8 @@ function initialize() {
 	  zoomControl: false,
 	  scaleControl: false
 	};
-        
-	//Didn't accept a jquery selector
-	map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
+    
+	map = new google.maps.Map($('#map-canvas')[0],mapOptions);
 
 	$('#signup-btn').click(function(e) {
 		$('#signup-div').easyModal({
@@ -73,7 +72,7 @@ function initialize() {
     google.maps.event.addListener(map, 'idle', function() {
         var scope = $('input[name=news-scope]:checked').val();
         if(scope == 'regional') {
-            updateNewsLocation($('input[name=news-scope]:checked').val());
+            updateNewsLocation(scope);
         }
     });
 
