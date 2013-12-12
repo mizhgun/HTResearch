@@ -11,13 +11,13 @@ from HTResearch.DataModel.model import User
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
-from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.WebClient.WebClient.models import LoginForm, SignupForm
 
 #region Globals
 ctx = ApplicationContext(DAOContext())
 SESSION_TIMEOUT = 1200
-logger = LoggingUtility().get_logger(LoggingSection.CLIENT, __name__)
+logger = get_logger(LoggingSection.CLIENT, __name__)
 #endregion
 
 
