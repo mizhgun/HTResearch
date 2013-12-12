@@ -72,7 +72,7 @@ function initialize() {
     // Retrieve news whenever ready
     google.maps.event.addListener(map, 'idle', function() {
         var scope = $('input[name=news-scope]:checked').val();
-        if(scope == 'regional') {
+        if(scope === 'regional') {
             updateNewsLocation($('input[name=news-scope]:checked').val());
         }
     });
@@ -101,9 +101,9 @@ function updateNewsLocation(scope) {
         loadMoreNews();
     };
 
-    if(scope=='general') {
+    if(scope === 'general') {
         loadNewsFromLocation(generalLocation);
-    } else if(scope=='regional') {
+    } else if(scope === 'regional') {
         geocoder.geocode({
             'latLng': map.getCenter(),
             'bounds': map.getBounds()
