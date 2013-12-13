@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from springpython.context import ApplicationContext
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
@@ -24,7 +24,7 @@ def contact_profile(request, contact_id):
     params = {"contact": contact,
               "org_url": org_url}
 
-    return render_to_response('contact_profile_template.html', params)
+    return render(request, 'contact_profile_template.html', params)
 
 
 def search_contacts(request):
@@ -46,4 +46,4 @@ def search_contacts(request):
             encode_dto(dto)
 
     params = {'contacts': contacts}
-    return render_to_response('contact_search_results.html', params)
+    return render(request, 'contact_search_results.html', params)

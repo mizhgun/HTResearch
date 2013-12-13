@@ -87,7 +87,10 @@ STATICFILES_FINDERS = (
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'n(bd1f1c%e8=_xad02x5qtfn%wgwpi492e$8_erx+d)!tpeoim'
-GOOGLE_MAPS_API_KEY = 'AIzaSyCSFnFpEICYiiz_v7iSLQC8E3Z2KpX9qu8'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'HTResearch.WebClient.WebClient.middleware.context_processors.user_info',
+)
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -105,6 +108,8 @@ MIDDLEWARE_CLASSES = (
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 ROOT_URLCONF = 'WebClient.urls'
 
