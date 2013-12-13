@@ -16,6 +16,12 @@ var baseQuery = '"human trafficking"'
 var generalLocation = 'india';
 var geocoder = new google.maps.Geocoder();
 
+var MARKER_VALUES = {
+    PREVENTION: 1 << 0,
+    PROTECTION: 1 << 1,
+    PROSECUTION: 1 << 2
+};
+
 // load Google Feeds API
 google.load('feeds', '1');
 
@@ -28,7 +34,7 @@ function initialize() {
 	  zoomControl: false,
 	  scaleControl: false
 	};
-        
+
 	//Didn't accept a jquery selector
 	map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
 
@@ -90,6 +96,29 @@ function initialize() {
         }
     });
     // Initially trigger infinite scrolling if there's not enough to fill
+
+    // Legend
+    var three_ps_legend = document.createElement('div');
+    var prevention = document.createElement('span');
+    var prosecution = document.createElement('span');
+    var protection = document.createElement('span');
+    $(prevention).text("Prevention");
+    $(prosecution).text("Prosecution");
+    $(protection).text("Protection");
+    $(prevention).addClass('label');
+    $(prosecution).addClass('label');
+    $(protection).addClass('label');
+    $(prevention).css('background-color', '#4ECDC4');
+    $(prosecution).css('background-color', '#C7F464');
+    $(protection).css('background-color', '#FF6B6B');
+    $(prevention).css('color', 'black');
+    $(prosecution).css('color', 'black');
+    $(protection).css('color', 'black');
+    $(three_ps_legend).css('margin-bottom','5px');
+    three_ps_legend.appendChild(prevention);
+    three_ps_legend.appendChild(prosecution);
+    three_ps_legend.appendChild(protection);
+    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(three_ps_legend);
 }
 
 function updateNewsLocation(scope) {
@@ -306,10 +335,54 @@ function plotOrganization(data) {
         if(marker){
             marker.setMap(null);
         }
-        
+
+        var marker_url = "";
+        var is_prev = $.inArray(5 ,data.types) > -1; // Value for prevention enum
+        var is_prot = $.inArray(6 ,data.types) > -1; // Value for protection enum
+        var is_pros = $.inArray(7 ,data.types) > -1; // Value for prosecution enum
+        var marker_switch = 0;
+        if (is_prev)
+            marker_switch |= MARKER_VALUES.PREVENTION;
+        if (is_prot)
+            marker_switch |= MARKER_VALUES.PROTECTION;
+        if (is_pros)
+            marker_switch |= MARKER_VALUES.PROSECUTION;
+        switch(marker_switch) {
+            case MARKER_VALUES.PREVENTION: //Prevention only
+                marker_url = "/static/images/prevention_pin_small.png"
+                break;
+            case MARKER_VALUES.PROTECTION: //Protection only
+                marker_url = "/static/images/protection_pin_small.png"
+                break;
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROTECTION): //Prevention and Protection
+                marker_url = "/static/images/prot_prev_pin_small.png"
+                break;
+            case MARKER_VALUES.PROSECUTION: //Prosecution only
+                marker_url = "/static/images/prosecution_pin_small.png"
+                break;
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROSECUTION): //Prevention and Prosecution
+                marker_url = "/static/images/prev_pros_pin_small.png"
+                break;
+            case (MARKER_VALUES.PROTECTION | MARKER_VALUES.PROSECUTION): //Protection and Prosecution
+                marker_url = "/static/images/prot_pros_pin_small.png"
+                break;
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROTECTION | MARKER_VALUES.PROSECUTION): //All
+                marker_url = "/static/images/all_pin_small.png"
+                break;
+            default: // keep default
+                marker_url = "/static/images/default_pin_small.png";
+                break;
+        }
+
         marker = new google.maps.Marker({
             map: map,
-            position: coord
+            position: coord,
+            icon: {
+                url: marker_url,
+                size: new google.maps.Size(39,32),
+                origin: new google.maps.Point(0,0),
+                anchor: new google.maps.Point(9,32)
+            }
         });
         
         orgData.img_path = "/static/images/office_building_icon.png";
