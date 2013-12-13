@@ -87,7 +87,6 @@ STATICFILES_FINDERS = (
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'n(bd1f1c%e8=_xad02x5qtfn%wgwpi492e$8_erx+d)!tpeoim'
-GOOGLE_MAPS_API_KEY = 'AIzaSyCSFnFpEICYiiz_v7iSLQC8E3Z2KpX9qu8'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'HTResearch.WebClient.WebClient.middleware.context_processors.user_info',
