@@ -2,13 +2,13 @@
 import unittest
 
 # project imports
-from HTResearch.Utilities.logutil import LoggingUtility, LoggingSection
+from HTResearch.Utilities.logutil import get_logger, LoggingSection
 
 
 class LoggingUtilityTest(unittest.TestCase):
 
     def test_logging(self):
-        logger = LoggingUtility().get_logger(LoggingSection.TEST, __name__)
+        logger = get_logger(LoggingSection.TEST, __name__)
 
         logger.debug("Logging some debug info.")
         logger.info("Logging some info.")

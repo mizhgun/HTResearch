@@ -5,9 +5,10 @@ from springpython.context import ApplicationContext
 
 from WebCrawler.spiders import *
 from HTResearch.Utilities.context import URLFrontierContext
-from HTResearch.Utilities.logutil import LoggingUtility, LoggingSection
+from HTResearch.Utilities.logutil import get_logger, LoggingSection
 
 if __name__ == '__main__':
+
  #             _,----'  _______________________  `----._
  #          ,-'  __,---'  ___________________  `---.__  `-.
  #       ,-'  ,-'  __,---'  _______________  `---.__  `-.  `-.
@@ -23,7 +24,7 @@ if __name__ == '__main__':
  #    /_\
 
 
-    logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, 'app.py')
+    logger = get_logger(LoggingSection.CRAWLER, 'app.py')
     logger.info("Starting a web crawl")
 
     ctx = ApplicationContext(URLFrontierContext())

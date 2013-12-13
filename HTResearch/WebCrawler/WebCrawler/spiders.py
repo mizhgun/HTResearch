@@ -1,6 +1,6 @@
 from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
 from HTResearch.Utilities.context import URLFrontierContext
-from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.Utilities.url_tools import UrlUtility
 
 from springpython.context import ApplicationContext
@@ -13,7 +13,7 @@ from scrapy import log
 import os
 
 # Since this logger can be shared by the whole module, we can instantiate it here
-logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
+logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class OrgSpider(BaseSpider):

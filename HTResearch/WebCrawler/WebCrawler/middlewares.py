@@ -6,7 +6,7 @@ from HTResearch.DataAccess.dao import URLMetadataDAO
 from HTResearch.Utilities.context import URLFrontierContext
 from HTResearch.Utilities.logutil import *
 
-_middleware_logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
+_middleware_logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class UrlQueueMiddleware(object):
