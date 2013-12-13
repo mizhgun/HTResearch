@@ -34,7 +34,7 @@ function initialize() {
 	var mapOptions = {
 	  center: initialLatLng,
 	  zoom: 5,
-	  mapTypeId: google.maps.MapTypeId.ROADMAP,
+	  mapTypeId: google.maps.MapTypeId.HYBRID,
 	  panControl: false,
 	  zoomControl: false,
 	  scaleControl: false
