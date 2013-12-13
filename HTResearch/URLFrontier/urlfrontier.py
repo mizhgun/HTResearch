@@ -11,10 +11,10 @@ from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.types import Singleton
-from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+from HTResearch.Utilities.logutil import LoggingSection, get_logger
 
 
-logger = LoggingUtility().get_logger(LoggingSection.FRONTIER, __name__)
+logger = get_logger(LoggingSection.FRONTIER, __name__)
 
 
 class CacheJobs():
