@@ -12,7 +12,7 @@ var newsUrl = 'https://news.google.com/news/feeds?output=rss&num=' + maxNewsCoun
 var newsFeed = null;
 var newsCount = 0;
 var newsStepSize = 6;
-var baseQuery = '"human trafficking"';
+var baseQuery = 'prostitution OR "sex trafficking" OR "human trafficking" OR brothel OR "child trafficking" OR "anti trafficking"';
 var generalLocation = 'india';
 var geocoder = new google.maps.Geocoder();
 var moreNews = true;
