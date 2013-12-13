@@ -116,7 +116,7 @@ function updateNewsLocation(scope) {
 }
 
 function loadMoreNews() {
-    if(newsFeed) {
+    if($('#news-results').find('.glyphicon-stop').length == 0 && newsFeed) {
         newsCount += newsStepSize;
         newsFeed.includeHistoricalEntries();
         newsFeed.setNumEntries(newsCount);
