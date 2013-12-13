@@ -38,5 +38,6 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
     url(r'^login/$', 'login', name='login'),
+    url(r'^logout/$', 'logout', name='logout'),
     url(r'^signup/$', 'signup', name='signup'),
 )
