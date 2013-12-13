@@ -37,7 +37,8 @@ function initialize() {
 	  mapTypeId: google.maps.MapTypeId.HYBRID,
 	  panControl: false,
 	  zoomControl: false,
-	  scaleControl: false
+	  scaleControl: false,
+      streetViewControl: false
 	};
 
 	//Didn't accept a jquery selector
