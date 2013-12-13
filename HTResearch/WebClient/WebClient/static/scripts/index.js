@@ -130,10 +130,10 @@ function getCookie(name) {
     var i = 0;
     while (i < cookieLength) {
       var j = i + argLength;
-      if (document.cookie.substring(i,j) == arg)
+      if (document.cookie.substring(i,j) === arg)
         return "here";
       i = document.cookie.indexOf(" ", i) + 1;
-      if (i == 0) break;
+      if (i === 0) break;
     }
     return null; 
 }
@@ -325,7 +325,7 @@ function showOrganizationModal() {
 
     // Search for news based on the selected organization
     var scope = $('input[name=news-scope]:checked').val();
-    if(scope == 'organization') {
+    if(scope === 'organization') {
         updateNewsLocation(scope);
     }
 
