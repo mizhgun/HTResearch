@@ -3,11 +3,11 @@ from scrapy.exceptions import DropItem
 from HTResearch.DataAccess.dao import *
 from HTResearch.Utilities.converter import *
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
-from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.WebCrawler.WebCrawler.items import ScrapedContact, ScrapedOrganization, ScrapedPublication, ScrapedUrl
 
 
-logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
+logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class ItemSwitch(object):
