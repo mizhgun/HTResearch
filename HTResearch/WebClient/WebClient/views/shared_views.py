@@ -55,6 +55,9 @@ def heatmap_coordinates(request):
     return HttpResponse(coords, content_type="application/json")
 
 
+def welcome(request):
+    return render(request, 'welcome.html')
+
 def get_http_404_page(request):
     template = get_template('404.html')
     html = template.render(Context({}))
