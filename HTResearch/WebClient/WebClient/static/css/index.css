@@ -310,6 +310,7 @@ a.disabled {
 
 .no-results {
     text-align: center;
+    padding: 24px 0;
 }
 
 .news-ctrls {
