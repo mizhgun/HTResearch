@@ -20,6 +20,7 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views.shared_views',
     url(r'^$', 'index', name='index'),
     url(r'^heatmap_coordinates/$', 'heatmap_coordinates', name='heatmap_coordinates'),
     url(r'^coming_soon/$', 'unimplemented', name='unimplemented'),
+    url(r'^welcome/$', 'welcome', name='welcome'),
 )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
@@ -38,5 +39,6 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
     url(r'^login/$', 'login', name='login'),
+    url(r'^logout/$', 'logout', name='logout'),
     url(r'^signup/$', 'signup', name='signup'),
 )
