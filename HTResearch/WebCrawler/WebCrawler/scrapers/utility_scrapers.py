@@ -114,6 +114,8 @@ class ContactNameScraper(object):
                     tag_list.pop(index + i - 1)
                 except ValueError:
                     pass
+                except IndexError:
+                    pass
                 i -= 1
             else:
                 i += 1
@@ -166,7 +168,10 @@ class ContactNameScraper(object):
                 else:
                     removes.append(name)
             for rm in removes:
-                names_list[i].remove(rm)
+                try:
+                    names_list[i].remove(rm)
+                except ValueError:
+                    pass
             if count > 3:
                 highest.append(i)
 
