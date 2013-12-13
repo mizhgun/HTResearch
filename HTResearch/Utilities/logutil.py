@@ -1,8 +1,8 @@
 import logging
+import logging.handlers
 import os
 import time
 
-from types import Singleton
 from data_structures import enum
 from config import get_config_value
 
@@ -16,30 +16,33 @@ LoggingSection = enum(
     'UTILITIES',
 )
 
+#region Setup
+logging.basicConfig(level=logging.INFO,
+                    format='[%(asctime)s %(levelname)s] %(name)s::%(funcName)s - %(message)s',
+                    datefmt='%x %X %Z')
+module_dir = os.path.dirname(__file__)
+logfile = os.path.join(module_dir, get_config_value('LOG', 'path'))
+logdir = os.path.join(module_dir, get_config_value('LOG', 'dir'))
 
-class LoggingUtility(object):
-    """
-    Provides a unified means of interacting with Python's logging module.
-    This class is necessary to reduce code redundancy when specifying the
-    basic configuration of Python's logging utility.
-    """
+if not os.path.exists(logdir):
+    os.mkdir(logdir)
 
-    __metaclass__ = Singleton
 
-    def __init__(self):
-        dir = os.path.dirname(__file__)
-        logfile = os.path.join(dir, get_config_value('LOG', 'path'))
-        logdir = os.path.join(dir, get_config_value('LOG', 'dir'))
-        if not os.path.exists(logdir):
-            os.mkdir(logdir)
+handler = logging.handlers.RotatingFileHandler(logfile,
+                                               maxBytes=8192,
+                                               backupCount=10,)
+formatter = logging.Formatter('[%(asctime)s %(levelname)s] %(name)s::%(funcName)s - %(message)s')
+formatter.datefmt = '%x %X %Z'
+formatter.converter = time.gmtime
+handler.setFormatter(formatter)
+#endregion
 
-        logging.Formatter.converter = time.gmtime
-        logging.basicConfig(level=logging.DEBUG,
-                            format='[%(asctime)s %(levelname)s] %(name)s::%(funcName)s - %(message)s',
-                            datefmt='%x %X %Z',
-                            filename=logfile,
-                            filemode='a+')
 
-    def get_logger(self, section, name):
-        section_name = LoggingSection.reverse_mapping[section].lower()
-        return logging.getLogger('htresearch.{0}.{1}'.format(section_name, name))
+def get_logger(section, name):
+    section_name = LoggingSection.reverse_mapping[section].lower()
+
+    logger = logging.getLogger('htresearch.{0}.{1}'.format(section_name, name))
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+
+    return logger
