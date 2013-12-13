@@ -216,9 +216,6 @@ class ContactPositionScraper(object):
                     return position
 
 
-
-
-
 class ContactPublicationsScraper(object):
 
     def __init__(self):

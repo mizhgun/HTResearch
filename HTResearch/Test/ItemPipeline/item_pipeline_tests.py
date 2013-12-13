@@ -91,10 +91,8 @@ class ItemPipelineTest(unittest.TestCase):
         self.assertEqual(assert_org.organization_url, self.org['organization_url'])
         self.assertEqual(assert_org.emails, self.org['emails'])
         self.assertEqual(assert_org.phone_numbers, self.org['phone_numbers'])
-        print assert_org
         partners = []
         for partner in assert_org.partners:
-            print partner
             partners.append({'organization_url': partner.organization_url})
         for partner in partners:
             self.assertIn(partner, self.org['partners'])

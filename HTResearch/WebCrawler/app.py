@@ -14,13 +14,13 @@ if __name__ == '__main__':
  #       ,-'  ,-'  __,---'  _______________  `---.__  `-.  `-.
  #     ,'  ,-'  ,-'  __,---'                `---.__  `-.  `-.  `.
  #    /  ,'  ,-'  ,-'                               `-.  `-.  `.  \
- #   / ,'  ,' ,--'     "There exist limitless          `--. `.  `. \
+ #   / ,'  ,' ,--'     "'There exist limitless          `--. `.  `. \
  #  | /  ,' ,'    opportunities in every industry.         `. `.  \ |
  # ,--. ,--.         Where there is an open mind,             _______
- #( `  "   ')     there will always be a frontier."          (_______)
- # >-  .  -<                                                 /       \
+ #( `  "   ')     there will always be a frontier.'          (_______)
+ # >-  .  -<              -Charles Kettering"                /       \
  #( ,      .)                                               ( G O L D )
- # `--'^`--'               Paul Poulsen                      \_______/
+ # `--'^`--'                -Paul Poulsen                    \_______/
  #    /_\
 
 
