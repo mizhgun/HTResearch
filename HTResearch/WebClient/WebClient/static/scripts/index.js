@@ -25,7 +25,7 @@ function initialize() {
 	  zoomControl: false,
 	  scaleControl: false
 	};
-        
+
 	//Didn't accept a jquery selector
 	map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
 
@@ -79,6 +79,29 @@ function initialize() {
             loadNews();
         }
     });
+
+    // Legend
+    var three_ps_legend = document.createElement('div');
+    var prevention = document.createElement('span');
+    var prosecution = document.createElement('span');
+    var protection = document.createElement('span');
+    $(prevention).text("Prevention");
+    $(prosecution).text("Prosecution");
+    $(protection).text("Protection");
+    $(prevention).addClass('label');
+    $(prosecution).addClass('label');
+    $(protection).addClass('label');
+    $(prevention).css('background-color', '#4ECDC4');
+    $(prosecution).css('background-color', '#C7F464');
+    $(protection).css('background-color', '#FF6B6B');
+    $(prevention).css('color', 'black');
+    $(prosecution).css('color', 'black');
+    $(protection).css('color', 'black');
+    $(three_ps_legend).css('margin-bottom','5px');
+    three_ps_legend.appendChild(prevention);
+    three_ps_legend.appendChild(prosecution);
+    three_ps_legend.appendChild(protection);
+    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(three_ps_legend);
 }
 
 function setNewsQuery(query) {
@@ -254,12 +277,50 @@ function plotOrganization(data) {
         if(marker){
             marker.setMap(null);
         }
-        
+
+        var marker_url = "";
+        var is_prev = $.inArray(5 ,data.types) > -1; // Value for prevention enum
+        var is_prot = $.inArray(6 ,data.types) > -1; // Value for protection enum
+        var is_pros = $.inArray(7 ,data.types) > -1; // Value for prosecution enum
+        var marker_switch = 0;
+        if (is_prev)
+            marker_switch |= 0x01;
+        if (is_prot)
+            marker_switch |= 0x02;
+        if (is_pros)
+            marker_switch |= 0x04;
+        switch(marker_switch) {
+            case 0x01: //Prevention only
+                marker_url = "/static/images/prevention_pin_small.png"
+                break;
+            case 0x02: //Protection only
+                marker_url = "/static/images/protection_pin_small.png"
+                break;
+            case 0x03: //Prevention and Protection
+                marker_url = "/static/images/prot_prev_pin_small.png"
+                break;
+            case 0x04: //Prosecution only
+                marker_url = "/static/images/prosecution_pin_small.png"
+                break;
+            case 0x05: //Prevention and Prosecution
+                marker_url = "/static/images/prev_pros_pin_small.png"
+                break;
+            case 0x06: //Protection and Prosecution
+                marker_url = "/static/images/prot_pros_pin_small.png"
+                break;
+            case 0x07: //All
+                marker_url = "/static/images/all_pin_small.png"
+                break;
+            default: // keep default
+                marker_url = "/static/images/default_pin_small.png";
+                break;
+        }
+
         marker = new google.maps.Marker({
             map: map,
             position: coord,
             icon: {
-                url: "/static/images/default_pin_small.png",
+                url: marker_url,
                 size: new google.maps.Size(39,32),
                 origin: new google.maps.Point(0,0),
                 anchor: new google.maps.Point(9,32)
