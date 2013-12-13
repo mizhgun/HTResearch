@@ -26,6 +26,11 @@ var MARKER_VALUES = {
 google.load('feeds', '1');
 
 function initialize() {
+    var visited=getCookie("htresearchv2");
+    if(!visited) {
+        window.location = '/welcome';
+    }
+
 	var mapOptions = {
 	  center: initialLatLng,
 	  zoom: 5,
@@ -72,9 +77,6 @@ function initialize() {
         }
     });
 
-    //This function is in welcome.js
-    google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
-
     // Retrieve news whenever ready
     google.maps.event.addListener(map, 'idle', function() {
         var scope = $('input[name=news-scope]:checked').val();
@@ -119,6 +121,21 @@ function initialize() {
     three_ps_legend.appendChild(prosecution);
     three_ps_legend.appendChild(protection);
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(three_ps_legend);
+}
+
+function getCookie(name) {
+    var arg = name + "=";
+    var argLength = arg.length;
+    var cookieLength = document.cookie.length;
+    var i = 0;
+    while (i < cookieLength) {
+      var j = i + argLength;
+      if (document.cookie.substring(i,j) == arg)
+        return "here";
+      i = document.cookie.indexOf(" ", i) + 1;
+      if (i == 0) break;
+    }
+    return null; 
 }
 
 function updateNewsLocation(scope) {
