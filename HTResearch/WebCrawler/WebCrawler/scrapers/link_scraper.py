@@ -2,10 +2,10 @@ from sgmllib import SGMLParseError
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from ..items import ScrapedUrl
 from HTResearch.Utilities.url_tools import UrlUtility
-from HTResearch.Utilities.logutil import LoggingUtility, LoggingSection
+from HTResearch.Utilities.logutil import get_logger, LoggingSection
 from datetime import datetime
 
-_linkscraper_logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
+_linkscraper_logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 class LinkScraper:
     """A scraper to find all URLs in a page """
