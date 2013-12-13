@@ -59,7 +59,7 @@ function initialize() {
     // prevent form submit on enter
     $('#search-box').bind('keyup keypress', function(e) {
         var code = e.keyCode || e.which;
-        if (code == 13) {
+        if (code === 13) {
             e.preventDefault();
             return false;
         }
@@ -121,7 +121,7 @@ function updateNewsLocation(scope) {
 }
 
 function loadMoreNews() {
-    if(newsFeed) {
+    if($('#news-results').find('.glyphicon-stop').length === 0 && newsFeed) {
         newsCount += newsStepSize;
         newsFeed.includeHistoricalEntries();
         newsFeed.setNumEntries(newsCount);
@@ -153,7 +153,7 @@ function loadMoreNews() {
                     $(newsArticle).find('a, font').css({'display': 'block', 'margin-right': '5px'});
                     $(newsArticle).find('a:has(img)').css({
                         'width': '80px',
-                        'float': (index % 2 == 0) ? 'left' : 'right',
+                        'float': (index % 2 === 0) ? 'left' : 'right',
                         'text-align': 'center'
                     });
                     $(newsArticle).find('img').css({
@@ -262,13 +262,13 @@ function showSearchResults() {
 var searchesPending = 0;
 function startAjaxSearch() {
     searchesPending++;
-    if (searchesPending == 1) {
+    if (searchesPending === 1) {
         $('#search-ajax-loader').removeClass('hidden');
     }
 }
 function endAjaxSearch() {
     searchesPending--;
-    if (searchesPending == 0) {
+    if (searchesPending === 0) {
         $('#search-ajax-loader').addClass('hidden');
     }
 }
