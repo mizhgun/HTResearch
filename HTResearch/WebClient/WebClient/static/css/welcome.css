@@ -1,0 +1,20 @@
+body {
+	overflow: hidden;
+	display: table; 
+}
+
+img {
+	width: 100%;
+	position: fixed;
+}
+
+div {
+	text-align: center;
+	position: relative;
+}
+
+.container {
+    display: table-cell;   
+    vertical-align: middle;
+    padding: 100px;
+}

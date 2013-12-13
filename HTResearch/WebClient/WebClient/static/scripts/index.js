@@ -12,11 +12,25 @@ var newsUrl = 'https://news.google.com/news/feeds?output=rss&num=' + maxNewsCoun
 var newsFeed = null;
 var newsCount = 0;
 var newsStepSize = 6;
+var baseQuery = '"human trafficking"'
+var generalLocation = 'india';
+var geocoder = new google.maps.Geocoder();
+
+var MARKER_VALUES = {
+    PREVENTION: 1 << 0,
+    PROTECTION: 1 << 1,
+    PROSECUTION: 1 << 2
+};
 
 // load Google Feeds API
 google.load('feeds', '1');
 
 function initialize() {
+    var visited=getCookie("htresearchv2");
+    if(!visited) {
+        window.location = '/welcome';
+    }
+
 	var mapOptions = {
 	  center: initialLatLng,
 	  zoom: 5,
@@ -25,7 +39,7 @@ function initialize() {
 	  zoomControl: false,
 	  scaleControl: false
 	};
-        
+
 	//Didn't accept a jquery selector
 	map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
 
@@ -57,73 +71,157 @@ function initialize() {
     // prevent form submit on enter
     $('#search-box').bind('keyup keypress', function(e) {
         var code = e.keyCode || e.which;
-        if (code == 13) {
+        if (code === 13) {
             e.preventDefault();
             return false;
         }
     });
 
-	$('a.org-link').click(function(e){
-        geocoder.geocode({'latLng': searchedLatLng, 'address': address}, plotOrganization);
+    // Retrieve news whenever ready
+    google.maps.event.addListener(map, 'idle', function() {
+        var scope = $('input[name=news-scope]:checked').val();
+        if(scope === 'regional') {
+            updateNewsLocation($('input[name=news-scope]:checked').val());
+        }
     });
 
-    //This function is in welcome.js
-    google.maps.event.addListenerOnce(map, 'idle', initiateTutorial);
+    // Make news scope switch work
+    $('input[name=news-scope]').change(function(e) {
+        $('#news-results').scrollTop(0);
+        updateNewsLocation(e.target.value);
+    });
 
-    // Retrieve news
-    setNewsQuery('human trafficking india');
-    loadNews();
     // Infinite scrolling for news
     $('#news-results').scroll(function() {
         if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-            loadNews();
+            loadMoreNews();
         }
     });
+    // Initially trigger infinite scrolling if there's not enough to fill
+
+    // Legend
+    var three_ps_legend = document.createElement('div');
+    var prevention = document.createElement('span');
+    var prosecution = document.createElement('span');
+    var protection = document.createElement('span');
+    $(prevention).text("Prevention");
+    $(prosecution).text("Prosecution");
+    $(protection).text("Protection");
+    $(prevention).addClass('label');
+    $(prosecution).addClass('label');
+    $(protection).addClass('label');
+    $(prevention).css('background-color', '#4ECDC4');
+    $(prosecution).css('background-color', '#C7F464');
+    $(protection).css('background-color', '#FF6B6B');
+    $(prevention).css('color', 'black');
+    $(prosecution).css('color', 'black');
+    $(protection).css('color', 'black');
+    $(three_ps_legend).css('margin-bottom','5px');
+    three_ps_legend.appendChild(prevention);
+    three_ps_legend.appendChild(prosecution);
+    three_ps_legend.appendChild(protection);
+    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(three_ps_legend);
 }
 
-function setNewsQuery(query) {
-    newsFeed = newsFeed || new google.feeds.Feed(newsUrl + query.split().join('+'));
-    newsCount = 0;
+function getCookie(name) {
+    var arg = name + "=";
+    var argLength = arg.length;
+    var cookieLength = document.cookie.length;
+    var i = 0;
+    while (i < cookieLength) {
+      var j = i + argLength;
+      if (document.cookie.substring(i,j) == arg)
+        return "here";
+      i = document.cookie.indexOf(" ", i) + 1;
+      if (i == 0) break;
+    }
+    return null; 
 }
 
-function loadNews() {
-    newsCount += newsStepSize;
-    newsFeed.includeHistoricalEntries();
-    newsFeed.setNumEntries(newsCount);
-    newsFeed.load(function(result) {
-        if(!result.error) {
-            var articles = result.feed.entries;
-            newsCount = articles.length;
-            $.template('newsTemplate', $('#news-template').html());
-            var newsDiv = $('<div></div>');
-            $.each(articles, function(index) {
-                var newsArticle = $.tmpl('newsTemplate', this);
-                // Do some HTML processing to make the articles look better
-                $(newsArticle).find('tr').each(function() {
-                    $(this).find('td:last').prepend($(this).find('td:first').html());
+function updateNewsLocation(scope) {
+    var loadNewsFromLocation = function(locationQuery) {
+        var query = baseQuery + ' ' + locationQuery;
+        var feedParam = newsUrl + query.split(/,?\s/).join('+');
+        newsFeed = new google.feeds.Feed(feedParam);
+        newsCount = 0;
+        loadMoreNews();
+    };
+
+    if(scope === 'general') {
+        loadNewsFromLocation(generalLocation);
+    } else if(scope === 'regional') {
+        geocoder.geocode({
+            'latLng': map.getCenter(),
+            'bounds': map.getBounds()
+        }, function(results, status) {
+            if(status === google.maps.GeocoderStatus.OK && results[0]) {
+                loadNewsFromLocation(results[0].formatted_address);
+            }
+        });
+    }
+}
+
+function loadMoreNews() {
+    if($('#news-results').find('.glyphicon-stop').length === 0 && newsFeed) {
+        newsCount += newsStepSize;
+        newsFeed.includeHistoricalEntries();
+        newsFeed.setNumEntries(newsCount);
+        newsFeed.load(function(result) {
+            if(!result.error) {
+                var articles = result.feed.entries;
+
+                // See if there might be more news to load after this
+                var more = true;
+                if(articles.length < newsCount) {
+                    more = false;
+                    newsCount = articles.length;
+                }
+
+                // Construct html from news articles
+                $.template('newsTemplate', $('#news-template').html());
+                var newsDiv = $('<div></div>');
+                $.each(articles, function(index) {
+                    var newsArticle = $.tmpl('newsTemplate', this);
+                    // Do some HTML processing to make the articles look better
+                    $(newsArticle).find('tr').each(function() {
+                        $(this).find('td:last').prepend($(this).find('td:first').html());
+                    });
+                    $(newsArticle).find('br, '
+                                      + 'tr td:first, '
+                                      + 'tr td:last div:first').remove();
+                    $(newsArticle).find('*').css('padding', '0');
+                    $(newsArticle).find('a').attr('target', '_blank');
+                    $(newsArticle).find('a, font').css({'display': 'block', 'margin-right': '5px'});
+                    $(newsArticle).find('a:has(img)').css({
+                        'width': '80px',
+                        'float': (index % 2 === 0) ? 'left' : 'right',
+                        'text-align': 'center'
+                    });
+                    $(newsArticle).find('img').css({
+                        'width': '80px',
+                        'height': '80px',
+                        'border-radius': '5px'
+                    });
+                    $(newsArticle).find('td div a:first').css('font-size', '14px');
+                    $(newsDiv).append(newsArticle);
                 });
-                $(newsArticle).find('br, '
-                                  + 'tr td:first, '
-                                  + 'tr td:last div:first').remove();
-                $(newsArticle).find('*').css('padding', '0');
-                $(newsArticle).find('a').attr('target', '_blank');
-                $(newsArticle).find('a, font').css({'display': 'block', 'margin-right': '5px'});
-                $(newsArticle).find('a:has(img)').css({
-                    'width': '80px',
-                    'float': (index % 2 == 0) ? 'left' : 'right',
-                    'text-align': 'center'
-                });
-                $(newsArticle).find('img').css({
-                    'width': '80px',
-                    'height': '80px',
-                    'border-radius': '5px'
-                });
-                $(newsArticle).find('td div a:first').css('font-size', '14px');
-                $(newsDiv).append(newsArticle);
-            });
-            $('#news-results').html($(newsDiv).html());
-        }
-    });
+                if(!$(newsDiv).html()) {
+                    $(newsDiv).append('<div class="no-results">No results found.</div>');
+                } else {
+                    if(more) {
+                        $(newsDiv).append('<div class="news-footer ajax-loader"></div>');
+                    } else {
+                        $(newsDiv).append('<div class="news-footer"><i class="glyphicon glyphicon-stop"></i></div>');
+                    }
+                }
+                var newsResultsDiv = $('#news-results');
+                newsResultsDiv.html($(newsDiv).html());
+                if(newsResultsDiv.scrollTop() + newsResultsDiv.innerHeight() >= newsResultsDiv[0].scrollHeight) {
+                    loadMoreNews();
+                }
+            }
+        });
+    }
 }
 
 function showSearchResults() {
@@ -205,13 +303,13 @@ function showSearchResults() {
 var searchesPending = 0;
 function startAjaxSearch() {
     searchesPending++;
-    if (searchesPending == 1) {
+    if (searchesPending === 1) {
         $('#search-ajax-loader').removeClass('hidden');
     }
 }
 function endAjaxSearch() {
     searchesPending--;
-    if (searchesPending == 0) {
+    if (searchesPending === 0) {
         $('#search-ajax-loader').addClass('hidden');
     }
 }
@@ -254,10 +352,54 @@ function plotOrganization(data) {
         if(marker){
             marker.setMap(null);
         }
-        
+
+        var marker_url = "";
+        var is_prev = $.inArray(5 ,data.types) > -1; // Value for prevention enum
+        var is_prot = $.inArray(6 ,data.types) > -1; // Value for protection enum
+        var is_pros = $.inArray(7 ,data.types) > -1; // Value for prosecution enum
+        var marker_switch = 0;
+        if (is_prev)
+            marker_switch |= MARKER_VALUES.PREVENTION;
+        if (is_prot)
+            marker_switch |= MARKER_VALUES.PROTECTION;
+        if (is_pros)
+            marker_switch |= MARKER_VALUES.PROSECUTION;
+        switch(marker_switch) {
+            case MARKER_VALUES.PREVENTION: //Prevention only
+                marker_url = "/static/images/prevention_pin_small.png"
+                break;
+            case MARKER_VALUES.PROTECTION: //Protection only
+                marker_url = "/static/images/protection_pin_small.png"
+                break;
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROTECTION): //Prevention and Protection
+                marker_url = "/static/images/prot_prev_pin_small.png"
+                break;
+            case MARKER_VALUES.PROSECUTION: //Prosecution only
+                marker_url = "/static/images/prosecution_pin_small.png"
+                break;
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROSECUTION): //Prevention and Prosecution
+                marker_url = "/static/images/prev_pros_pin_small.png"
+                break;
+            case (MARKER_VALUES.PROTECTION | MARKER_VALUES.PROSECUTION): //Protection and Prosecution
+                marker_url = "/static/images/prot_pros_pin_small.png"
+                break;
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROTECTION | MARKER_VALUES.PROSECUTION): //All
+                marker_url = "/static/images/all_pin_small.png"
+                break;
+            default: // keep default
+                marker_url = "/static/images/default_pin_small.png";
+                break;
+        }
+
         marker = new google.maps.Marker({
             map: map,
-            position: coord
+            position: coord,
+            icon: {
+                url: marker_url,
+                size: new google.maps.Size(39,32),
+                origin: new google.maps.Point(0,0),
+                anchor: new google.maps.Point(9,32)
+            }
         });
         
         orgData.img_path = "/static/images/office_building_icon.png";

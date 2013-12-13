@@ -5,12 +5,26 @@ from springpython.context import ApplicationContext
 
 from WebCrawler.spiders import *
 from HTResearch.Utilities.context import URLFrontierContext
-from HTResearch.Utilities.logutil import LoggingUtility, LoggingSection
+from HTResearch.Utilities.logutil import get_logger, LoggingSection
 
 if __name__ == '__main__':
-    #"There exist limitless opportunities in every industry.
-    #Where there is an open mind, there will always be a frontier."
-    logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, 'app.py')
+
+ #             _,----'  _______________________  `----._
+ #          ,-'  __,---'  ___________________  `---.__  `-.
+ #       ,-'  ,-'  __,---'  _______________  `---.__  `-.  `-.
+ #     ,'  ,-'  ,-'  __,---'                `---.__  `-.  `-.  `.
+ #    /  ,'  ,-'  ,-'                               `-.  `-.  `.  \
+ #   / ,'  ,' ,--'     "There exist limitless          `--. `.  `. \
+ #  | /  ,' ,'    opportunities in every industry.         `. `.  \ |
+ # ,--. ,--.         Where there is an open mind,             _______
+ #( `  "   ')     there will always be a frontier."          (_______)
+ # >-  .  -<                                                 /       \
+ #( ,      .)                                               ( G O L D )
+ # `--'^`--'               Paul Poulsen                      \_______/
+ #    /_\
+
+
+    logger = get_logger(LoggingSection.CRAWLER, 'app.py')
     logger.info("Starting a web crawl")
 
     ctx = ApplicationContext(URLFrontierContext())

@@ -25,7 +25,7 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
 
-_utilityscrapers_logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
+_utilityscrapers_logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 class ContactNameScraper(object):
     def __init__(self):
