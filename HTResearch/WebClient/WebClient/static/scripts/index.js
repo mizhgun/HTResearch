@@ -173,7 +173,6 @@ function loadMoreNews() {
         newsCount += newsStepSize;
         newsFeed.includeHistoricalEntries();
         newsFeed.setNumEntries(newsCount);
-        console.log(newsFeed);
         newsFeed.load(function(result) {
             if(!result.error) {
                 var articles = result.feed.entries;
@@ -322,13 +321,14 @@ function endAjaxSearch() {
 
 // Show modals
 function showOrganizationModal() {
-    console.log('showing organization modal');
+    orgData = $(this).data();
+
+    // Search for news based on the selected organization
     var scope = $('input[name=news-scope]:checked').val();
     if(scope == 'organization') {
         updateNewsLocation(scope);
     }
 
-    orgData = $(this).data();
     if (orgData.latlng && orgData.latlng.length > 0) {
         // Get the lat, long values of the address
         searchedLatLng = new google.maps.LatLng(orgData.latlng[0], orgData.latlng[1]);
