@@ -13,6 +13,12 @@ var newsFeed = null;
 var newsCount = 0;
 var newsStepSize = 6;
 
+var MARKER_VALUES = {
+    PREVENTION: 1 << 0,
+    PROTECTION: 1 << 1,
+    PROSECUTION: 1 << 2
+};
+
 // load Google Feeds API
 google.load('feeds', '1');
 
@@ -284,31 +290,31 @@ function plotOrganization(data) {
         var is_pros = $.inArray(7 ,data.types) > -1; // Value for prosecution enum
         var marker_switch = 0;
         if (is_prev)
-            marker_switch |= 0x01;
+            marker_switch |= MARKER_VALUES.PREVENTION;
         if (is_prot)
-            marker_switch |= 0x02;
+            marker_switch |= MARKER_VALUES.PROTECTION;
         if (is_pros)
-            marker_switch |= 0x04;
+            marker_switch |= MARKER_VALUES.PROSECUTION;
         switch(marker_switch) {
-            case 0x01: //Prevention only
+            case MARKER_VALUES.PREVENTION: //Prevention only
                 marker_url = "/static/images/prevention_pin_small.png"
                 break;
-            case 0x02: //Protection only
+            case MARKER_VALUES.PROTECTION: //Protection only
                 marker_url = "/static/images/protection_pin_small.png"
                 break;
-            case 0x03: //Prevention and Protection
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROTECTION): //Prevention and Protection
                 marker_url = "/static/images/prot_prev_pin_small.png"
                 break;
-            case 0x04: //Prosecution only
+            case MARKER_VALUES.PROSECUTION: //Prosecution only
                 marker_url = "/static/images/prosecution_pin_small.png"
                 break;
-            case 0x05: //Prevention and Prosecution
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROSECUTION): //Prevention and Prosecution
                 marker_url = "/static/images/prev_pros_pin_small.png"
                 break;
-            case 0x06: //Protection and Prosecution
+            case (MARKER_VALUES.PROTECTION | MARKER_VALUES.PROSECUTION): //Protection and Prosecution
                 marker_url = "/static/images/prot_pros_pin_small.png"
                 break;
-            case 0x07: //All
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROTECTION | MARKER_VALUES.PROSECUTION): //All
                 marker_url = "/static/images/all_pin_small.png"
                 break;
             default: // keep default
