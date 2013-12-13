@@ -2,23 +2,23 @@
 default behaviors*/
 
 a {
-	color: #009999;
+	color: #005555;
 }
 
 a:hover {
-	color: #008888;
+	color: #004444;
 }
 
 .btn-primary {
-	color: #ffeeff;
-	background-color: #009999;
-	border-color: #008888;
+	color: #bbaabb;
+	background-color: #005555;
+	border-color: #004444;
 }
 
 .btn-primary:hover {
-	color: #ddccdd;
-	background-color: #008888;
-	border-color: #007777;
+	color: #887788;
+	background-color: #004444;
+	border-color: #003333;
 }
 
 /* Sticky footer styles
