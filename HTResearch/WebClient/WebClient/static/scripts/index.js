@@ -111,7 +111,7 @@ function updateNewsLocation(scope) {
                 loadNewsFromLocation(results[0].formatted_address);
             }
         });
-    } else if(scope='organization') {
+    } else if(scope === 'organization') {
         if(orgData) {
             loadNewsFromLocation(orgData.name);
         } else {
