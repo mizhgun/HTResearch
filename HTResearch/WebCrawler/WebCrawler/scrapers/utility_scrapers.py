@@ -27,6 +27,7 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 
 _utilityscrapers_logger = get_logger(LoggingSection.CRAWLER, __name__)
 
+
 class ContactNameScraper(object):
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt')) as f:
@@ -35,7 +36,7 @@ class ContactNameScraper(object):
         self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
         self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
 
-    """ Just formats the tags and adds a > to the elements that don't have it """
+    # Just formats the tags and adds a > to the elements that don't have it
     @staticmethod
     def _add_closing_symbol(tag_list):
         # since the regex finds either tags but not attributes, some elements might have just the <a part,
@@ -45,7 +46,7 @@ class ContactNameScraper(object):
                 tag_list[i] = t + '>'
         return tag_list
 
-    """ Counts the parent divs, if there is a <div><a></a><p>hello</p>, only parents would be <div><p>, return 2 """
+    # Counts the parent divs, if there is a <div><a></a><p>hello</p>, only parents would be <div><p>, return 2
     @staticmethod
     def _count_parent_tags(tag_list):
         parent_counter = 0
@@ -56,8 +57,8 @@ class ContactNameScraper(object):
                 parent_counter -= 1
         return parent_counter
 
-    """ This function uses other class functions to find the xpath of potential names
-     returns the xpath as far as some threshold % of all the found xpaths """
+    #  This function uses other class functions to find the xpath of potential names
+    #  returns the xpath as far as some threshold % of all the found xpaths
     def _find_all_xpaths(self, hxs):
         # Gets the body (including html tags) and body_text (no tags), whatever gets found should be in both, since a
         # name should be visible
@@ -98,7 +99,7 @@ class ContactNameScraper(object):
         xpaths = list(set(xpaths))
         return xpaths
 
-    """ Returns one 'xpath' string """
+    # Returns one 'xpath' string
     @staticmethod
     def _find_xpath(tag_list, parent_counter):
         i = 0
@@ -189,7 +190,7 @@ class ContactNameScraper(object):
             items.append(item)
         return items
 
-    """ Take out the tags that don't have an ending tag, such as <input> """
+    # Take out the tags that don't have an ending tag, such as <input>
     @staticmethod
     def _remove_unpaired_tags(tag_list):
         # this part is to check if there's a tag that does not close or doesn't have an open tag (such as </br>)
@@ -431,7 +432,6 @@ class OrgContactsScraper(object):
                                                        else None][0]
             contacts[names[i].get('name')]['organization'] = org_name
         return contacts
-
 
 
 class OrgFacebookScraper(object):
