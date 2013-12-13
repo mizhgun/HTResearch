@@ -267,7 +267,7 @@ a.disabled {
     bottom: 0;
     overflow-x: hidden;
     overflow-y: scroll;
-    padding: 10px;
+    padding: 32px 10px 10px 10px;
     background-color: #ddd;
 }
 
@@ -297,4 +297,31 @@ a.disabled {
 }
 
 .article .article-content {
+}
+
+.no-results {
+    text-align: center;
+}
+
+.news-ctrls {
+    width: 100%;
+    height: 36px;
+    text-align: center;
+    padding-top: 4px;
+}
+
+.news-ctrls .btn-group {
+    z-index: 1;
+}
+
+.news-footer {
+    width: 100%;
+    height: 36px;
+    color: #888;
+}
+
+.news-footer .glyphicon {
+    width: 100%;
+    margin-top: 8px;
+    text-align: center;
 }
