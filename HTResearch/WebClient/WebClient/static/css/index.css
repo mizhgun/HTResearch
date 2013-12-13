@@ -31,6 +31,8 @@ body {
     padding: 10px;
     position: relative;
     z-index: 1;
+    transition: 1s;
+    -webkit-transition: 1s;
 }
 
 #search-box-div:hover {
