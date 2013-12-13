@@ -534,33 +534,46 @@ class ScraperTests(unittest.TestCase):
                 else:
                     contacts.append(ret)
 
-        assert_list = [{'email': ['lalitha.gollamudi@gmail.com'],
+        assert_list = [{
+                         'email': 'lalitha.gollamudi@gmail.com',
                          'first_name': 'Lalitha',
                          'last_name': 'Gollamudi',
                          'organization': {'name': 'PRAJWALA'},
-                         'position': [None],
-                         'phone': [None]}, {'email': ['praj_2010@yahoo.com'],
+                         'position': None,
+                         'phone': None
+                         },
+                       {
+                         'email': 'praj_2010@yahoo.com',
                          'first_name': 'Ms',
                          'last_name': 'Merline',
                          'organization': {'name': 'PRAJWALA'},
-                         'position': [None],
-                         'phone': ['914024410813']}, {'email': ['lavanya.ravulapalli@gmail.com'],
+                         'position': None,
+                         'phone': '914024410813',
+                         },
+                       {
+                         'email': 'lavanya.ravulapalli@gmail.com',
                          'first_name': 'Ms. Lavanya',
                          'last_name': 'Ravulapalli',
                          'organization': {'name': 'PRAJWALA'},
-                         'position': [None],
-                         'phone': [None]}, {'email': ['kmulhauser@consultingwomen.com'],
+                         'position': None,
+                         'phone': None
+                         },
+                       {
+                         'email': 'kmulhauser@consultingwomen.com',
                          'first_name': 'Ms Karen',
                          'last_name': 'Mulhuaser',
                          'organization': {'name': 'PRAJWALA'},
-                         'position': [None],
-                         'phone': [None]}, {'email': ['b.damico@proconf.ch'],
+                         'position': None,
+                         'phone': None,
+                         },
+                       {
+                         'email': 'b.damico@proconf.ch',
                          'first_name': 'Ms',
                          'last_name': 'Beatrice',
                          'organization': {'name': 'PRAJWALA'},
-                         'position': [None],
-                         'phone': [None]
-        }]
+                         'position': None,
+                         'phone': None,
+                         }]
 
         for test in assert_list:
             self.assertIn(test, contacts, 'Contact \'' + str(test) + '\' not found')
