@@ -2,6 +2,7 @@ from ..items import *
 from utility_scrapers import *
 import string
 import re
+from scrapy.http import HtmlResponse
 from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
@@ -96,15 +97,16 @@ class OrganizationScraper():
             return False
         else:
             # this is homepage, scrape for keywords
-            hxs = HtmlXPathSelector(response)
-            site_text = hxs.select('//html//text()').extract()
-            site_text = [element.strip() for element in site_text if element.strip() != '']
+            if isinstance(response, HtmlResponse):
+                hxs = HtmlXPathSelector(response)
+                site_text = hxs.select('//html//text()').extract()
+                site_text = [element.strip() for element in site_text if element.strip() != '']
 
-            for word in self._required_words:
-                for sentence in site_text:
-                    sentence = self._punctuation.sub(' ', sentence)
-                    if word in sentence.lower():
-                        return True
+                for word in self._required_words:
+                    for sentence in site_text:
+                        sentence = self._punctuation.sub(' ', sentence)
+                        if word in sentence.lower():
+                            return True
             # no keyword found, check if we already added organization
 
         return False
