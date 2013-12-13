@@ -38,7 +38,7 @@ function initialize() {
 	  panControl: false,
 	  zoomControl: false,
 	  scaleControl: false,
-      streetViewControl: false,
+      streetViewControl: false
 	};
 
 	//Didn't accept a jquery selector
