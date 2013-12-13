@@ -301,7 +301,8 @@ class KeywordScraper(object):
             all_words = self.append_words(all_words, words)
 
         #Run a frequency distribution on the web page body
-        freq_dist = FreqDist(all_words)
+        all_words_no_punct = [word.translate(None, string.punctuation) for word in all_words]
+        freq_dist = FreqDist(all_words_no_punct)
 
         #Remove ignored words
         for word in self._stopwords:
