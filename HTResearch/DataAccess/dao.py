@@ -260,7 +260,13 @@ class OrganizationDAO(DAO):
         else:
             same_twitter = Q()
 
-        existing_dto = self.dto.objects(same_phone | same_email | same_url | same_fb | same_twitter).first()
+        # organizations have unique names
+        if org_dto.name:
+            same_name = Q(name=org_dto.name)
+        else:
+            same_name = Q()
+
+        existing_dto = self.dto.objects(same_phone | same_email | same_url | same_fb | same_twitter | same_name).first()
         return existing_dto
 
 
