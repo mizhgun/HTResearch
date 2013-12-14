@@ -285,18 +285,64 @@ function plotMarker(data) {
 		});
 
         google.maps.event.addListener(new_marker, 'click', function() {
-            $.each(markers, function(index, value) {
-                value.infowindow.close();
-            });
-		    new_infowindow.open(map,new_marker);
+            var thisMarker = findMarker(new_marker);
+            if (!thisMarker) {
+                new_infowindow.open(map, new_marker);
+                closeAllInfowindows();
+            } else if (thisMarker.open) {
+                closeAllInfowindows();
+                thisMarker.infowindow.close();
+                thisMarker.open = false;
+            } else {
+                closeAllInfowindows();
+                thisMarker.infowindow.open(map,new_marker);
+                thisMarker.open = true;
+            }
 		});
 
         markers.push({
             id: data.id,
             marker: new_marker,
-            infowindow: new_infowindow
+            infowindow: new_infowindow,
+            open: false
         });
      }
+}
+
+function removeAllMarkers() {
+    $.each(markers, function(index,value){
+        value.marker.setMap(null);
+    });
+    markers = [];
+}
+
+function closeAllInfowindows() {
+    $.each(markers, function(index, value){
+        value.infowindow.close();
+        value.open = false;
+    });
+}
+
+function findMarker(marker) {
+    var retMarker;
+    for(var i = 0; i < markers.length; i++) {
+        if(marker == markers[i].marker){
+            retMarker = markers[i];
+            break;
+        }
+    }
+    return retMarker;
+}
+
+function findMarkerById(id) {
+    var marker;
+    for(var i = 0; i < markers.length; i++) {
+        if(id == markers[i].id){
+            marker = markers[i];
+            break;
+        }
+    }
+    return marker;
 }
 
 function showSearchResults() {
@@ -307,11 +353,7 @@ function showSearchResults() {
     var searchResultsDiv = $('#search-results-div');
 
     if(searchText) {
-        $.each(markers, function(index,value){
-            value.marker.setMap(null);
-        });
-        markers = [];
-
+        removeAllMarkers();
         // Put items to search for here.
         var searchItems = [
             {
@@ -409,9 +451,7 @@ function showOrganizationModal() {
         plotOrganization(orgData);
     }
     else{
-        $.each(markers, function(index, value){
-            value.infowindow.close();
-        });
+        closeAllInfowindows();
 
         var $modal = $('.modal').modal();
         createBootstrapModal($modal, '#bs-org-modal-template',orgData);
@@ -432,19 +472,12 @@ function plotOrganization(data) {
         var coord = new google.maps.LatLng(data.latlng[0], data.latlng[1]);
         map.setCenter(coord);
 
-        $.each(markers, function(index, value){
-            value.infowindow.close();
-        });
+        closeAllInfowindows();
 
-        var marker;
-        for(var i = 0; i < markers.length; i++) {
-            if(data.id == markers[i].id){
-                marker = markers[i];
-                break;
-            }
-        }
+        var marker = findMarkerById(data.id);
 
         marker.infowindow.open(map,marker.marker);
+        marker.open = true;
     } else {
         var $modal = $('.modal').modal();
         createBootstrapModal($modal, '#bs-org-modal-template', data);
