@@ -332,7 +332,7 @@ function closeAllInfowindows() {
 function findMarker(marker) {
     var retMarker;
     for(var i = 0; i < markers.length; i++) {
-        if(marker == markers[i].marker){
+        if(marker === markers[i].marker){
             retMarker = markers[i];
             break;
         }
@@ -343,7 +343,7 @@ function findMarker(marker) {
 function findMarkerById(id) {
     var marker;
     for(var i = 0; i < markers.length; i++) {
-        if(id == markers[i].id){
+        if(id === markers[i].id){
             marker = markers[i];
             break;
         }
@@ -353,7 +353,7 @@ function findMarkerById(id) {
 
 function showSearchResults() {
     var searchText = $('#search-box').val().trim();
-    if (lastSearchedText == searchText)
+    if (lastSearchedText === searchText)
         return;
     lastSearchedText = searchText;
     var searchResultsDiv = $('#search-results-div');
