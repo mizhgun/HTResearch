@@ -3,6 +3,11 @@ from scrapy.exceptions import DropItem
 from HTResearch.DataAccess.dao import *
 from HTResearch.Utilities.converter import *
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from HTResearch.Utilities.logutil import LoggingSection, get_logger
+from HTResearch.WebCrawler.WebCrawler.items import ScrapedContact, ScrapedOrganization, ScrapedPublication, ScrapedUrl
+
+
+logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class ItemSwitch(object):
@@ -17,8 +22,6 @@ class ItemSwitch(object):
 
     def process_item(self, item, spider):
         """Consumes item from spider and passes to correct handler asynchronously"""
-
-        # extract the class of the item
         item_class = item.__class__.__name__
 
         # switch to handle item based on class type
@@ -26,7 +29,6 @@ class ItemSwitch(object):
             # Create DAO for URL with empty fields
             # Pass it to URLFrontier, which will add it iff it is new
             self._store_url(item)
-            pass 
         elif item_class == "ScrapedContact":
             self._store_contact(item)
         elif item_class == "ScrapedOrganization":
@@ -34,7 +36,9 @@ class ItemSwitch(object):
         elif item_class == "ScrapedPublication":
             self._store_publication(item)
         else:
-            raise DropItem("No behavior defined for item of type %s" % item_class)
+            msg = "No behavior defined for item of type %s" % item_class
+            logger.error(msg)
+            raise DropItem(msg)
         
         # return item to next piece of pipeline
         return item

@@ -5,11 +5,14 @@ from springpython.context import ApplicationContext
 
 from WebCrawler.spiders import *
 from HTResearch.Utilities.context import URLFrontierContext
-
+from HTResearch.Utilities.logutil import get_logger, LoggingSection
 
 if __name__ == '__main__':
     #"There exist limitless opportunities in every industry.
     #Where there is an open mind, there will always be a frontier."
+    logger = get_logger(LoggingSection.CRAWLER, 'app.py')
+    logger.info("Starting a web crawl")
+
     ctx = ApplicationContext(URLFrontierContext())
     frontier = ctx.get_object("URLFrontier")
     frontier.start_cache_process()
@@ -22,5 +25,3 @@ if __name__ == '__main__':
     crawler.start()
     log.start()
     reactor.run()
-
-

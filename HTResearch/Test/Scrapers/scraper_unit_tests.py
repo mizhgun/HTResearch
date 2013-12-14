@@ -2,15 +2,90 @@ import unittest
 import pickle
 import os.path
 
+from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import *
+from HTResearch.Test.Mocks.utility_scrapers import *
+from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
+from springpython.context import ApplicationContext
+from springpython.config import Object
+
 from bson.binary import Binary
 
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
-
+from HTResearch.Test.Mocks.connection import MockDBConnection
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
+
+
+class TestableDocumentScraperContext(DocumentScraperContext):
+    @Object()
+    def RegisteredOrgNameScraper(self):
+        return MockOrgNameScraper
+
+    @Object()
+    def RegisteredOrgAddressScraper(self):
+        return MockOrgAddressScraper
+
+    @Object()
+    def RegisteredOrgTypeScraper(self):
+        return MockOrgTypeScraper
+
+    @Object()
+    def RegisteredIndianPhoneNumberScraper(self):
+        return MockIndianPhoneNumberScraper
+
+    @Object()
+    def RegisteredUSPhoneNumberScraper(self):
+        return MockUSPhoneNumberScraper
+
+    @Object()
+    def RegisteredEmailScraper(self):
+        return MockEmailScraper
+
+    @Object()
+    def RegisteredOrgContactsScraper(self):
+        return MockOrgContactsScraper
+
+    @Object()
+    def RegisteredOrgUrlScraper(self):
+        return MockOrgUrlScraper
+
+    @Object()
+    def RegisteredOrgPartnersScraper(self):
+        return MockOrgPartnersScraper
+
+    @Object()
+    def RegisteredFacebookScraper(self):
+        return MockOrgFacebookScraper
+
+    @Object()
+    def RegisteredTwitterScraper(self):
+        return MockOrgTwitterScraper
+
+    @Object()
+    def RegisteredKeywordScraper(self):
+        return MockKeywordScraper
+
+
+class TestableUrlMetadataScraperContext(UrlMetadataScraperContext):
+    @Object()
+    def RegisteredURLMetadataDAO(self):
+        return MockURLMetadataDAO
+
+
+class TestableUtilityScraperContext(UtilityScraperContext):
+    @Object()
+    def RegisteredKeywordScraper(self):
+        return MockKeywordScraper
+
+
+class TestableDAOContext(DAOContext):
+
+    @Object()
+    def RegisteredDBConnection(self):
+        return MockDBConnection
 
 
 def file_to_response(test_file):
@@ -40,7 +115,7 @@ class ScraperTests(unittest.TestCase):
             url='http://www.halftheskymovement.org/partners'
         )
 
-        ctx = ApplicationContext(DAOContext())
+        ctx = ApplicationContext(TestableDAOContext())
 
         self.url_dto = DTOConverter.to_dto(URLMetadataDTO, urlmetadata)
         self.url_dto2 = DTOConverter.to_dto(URLMetadataDTO, urlmetadata2)
@@ -90,6 +165,7 @@ class ScraperTests(unittest.TestCase):
     def test_contact_name_scraper(self):
         test_files = [
             "httpapneaaporgaboutusourboard",
+            "httpnhrcnicinContactUshtm",
         ]
 
         contact_name_scraper = ContactNameScraper()
@@ -105,7 +181,8 @@ class ScraperTests(unittest.TestCase):
                     names.append(ret)
 
         # Hardcoded results based on the sites that were crawled
-        assert_list = [{'name': "Gloria Steinem"},
+        assert_list = [ # from first site, US names
+                       {'name': "Gloria Steinem"},
                        {'name': "Jennifer Buffett"},
                        {'name': "Peter Buffett"},
                        {'name': "Vishakha Desai"},
@@ -126,7 +203,32 @@ class ScraperTests(unittest.TestCase):
                        {'name': "Lela Goren"},
                        {'name': "Ellyson Perkins"},
                        {'name': "Mona Sinha"},
-        ]
+                        # from second site, Indian names
+                       {'name': "Smt. Parvinder Sohi Behuria, IRS"},
+                       {'name': 'Smt. Kanwaljit Deol, IPS'},
+                       {'name': 'Sh. A.K. Garg'},
+                       {'name': 'Sh. Alok Kumar Shrivastava, IAS'},
+                       {'name': 'Sh. Jaideep Singh Kochher, IES'},
+                       {'name': 'Sh. Chandra Kant Tyagi'},
+                       {'name': 'Sh. Krishna Pal Singh'},
+                       {'name': 'Sh. P.C. Joshi'},
+                       {'name': 'Sh. B.P. Vishwakarma'},
+                       {'name': 'Sh. Viplav Kumar'},
+                       {'name': 'Sh. A.K. Parashar'},
+                       {'name': 'Sh. Pupul Dutta Prasad'},
+                       {'name': 'Sh. Sanjay kumar Jain'},
+                       {'name': 'Dr. Savita Bhakhry'},
+                       {'name': 'Smt. Shoba George'},
+                       {'name': 'Sh. Sunil Arora'},
+                       {'name': 'Sh. Rishi Pal'},
+                       {'name': 'Sh. B.S. Nagar'},
+                       {'name': 'Sh. D.M. Tripathy'},
+                       {'name': 'Sh. Khwaja Abdul Hafeez'},
+                       {'name': 'Sh. Khaleel Ahmad'},
+                       {'name': 'Sh. Mujesh Kumar'},
+                       {'name': 'Sh. Indrajeet Kumar'},
+                       {'name': 'Sh. C.S. Mawri'},
+                       {'name': 'Sh. Krishna Kumar Shrivastava'}]
 
         for test in assert_list:
             self.assertIn(test, names, 'Name {0} not found'.format(str(test)))
@@ -137,6 +239,7 @@ class ScraperTests(unittest.TestCase):
             "httpbombayteenchallengeorg",
             "httpwwwtisseduTopMenuBarcontactuslocation1",
             "httpapneaaporgcontact",
+            "httpsetbeautifulfreeorg"
         ]
 
         email_scraper = EmailScraper()
@@ -156,10 +259,17 @@ class ScraperTests(unittest.TestCase):
                        "covdnhrc@nic.in",
                        "anilpradhanshilong@gmail.com",
                        "snarayan1946@gmail.com",
-                       "tvarghese@bombayteenchallenge.org"]
+                       "tvarghese@bombayteenchallenge.org",
+                       "kkdevaraj@bombayteenchallenge.org"]
 
         for test in assert_list:
             self.assertIn(test, emails, 'Email {0} not found'.format(str(test)))
+
+        # Make sure these aren't in the list
+        assert_not_list = ["ajax-loader@2x.gif"]
+
+        for test in assert_not_list:
+            self.assertNotIn(test, emails, '{0} should not be found'.format(str(test)))
 
     def test_indian_phone_number_scraper(self):
         test_files = [
@@ -194,10 +304,8 @@ class ScraperTests(unittest.TestCase):
             response = file_to_response(input_file)
             if response is not None:
                 ret = keyword_scraper.parse(response)
-                if isinstance(ret, type([])):
-                    keywords = keywords + ret
-                else:
-                    keywords.append(ret)
+                if isinstance(ret, type({})):
+                    keywords += ret.iterkeys()
 
         assert_list = ["nicolas", "cage"]
         for test in assert_list:
@@ -207,6 +315,7 @@ class ScraperTests(unittest.TestCase):
         test_files = [
             "httpwwwstoptraffickingnet",
             "httpnewsunledunewsroomsunltoday",
+            "httpespngocomespnradiodallasplay",
         ]
 
         link_scraper = LinkScraper()
@@ -247,6 +356,67 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test, links, "URL " + str(test) + " was not found")
 
+    def test_org_fb_scraper(self):
+        test_files = [
+            "httpbombayteenchallengeorg",
+            "httpwwwprajwalaindiacomhomehtml",
+            "httpwwwhalftheskymovementorg",
+            "httpapneaaporg",
+
+        ]
+
+        org_fb_scraper = OrgFacebookScraper()
+        facebook_links = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = org_fb_scraper.parse(response)
+                if isinstance(ret, list):
+                    facebook_links = facebook_links + ret
+                else:
+                    facebook_links.append(ret)
+
+        assert_list = [
+            "http://www.facebook.com/BombayTeenChallenge",
+            "https://www.facebook.com/sunitha.krishnan.33?ref=ts",
+            "https://www.facebook.com/HalftheGame",
+            "http://www.facebook.com/apneaap",
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, facebook_links, "Facebook link (" + test + ") not found")
+
+    def test_org_twitter_scraper(self):
+        test_files = [
+            "httpbombayteenchallengeorg",
+            "httpwwwprajwalaindiacomhomehtml",
+            "httpwwwhalftheskymovementorg",
+            "httpapneaaporg",
+            ]
+
+        org_tw_scraper = OrgTwitterScraper()
+        twitter_links = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = org_tw_scraper.parse(response)
+                if isinstance(ret, list):
+                    twitter_links = twitter_links + ret
+                else:
+                    twitter_links.append(ret)
+
+        assert_list = [
+            'https://twitter.com/bombaytc',
+            None,
+            'https://twitter.com/#!/half',
+            'http://www.twitter.com/apneaap'
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, twitter_links, "Twitter link (" + str(test) + ") not found")
+
     def test_org_name_scraper(self):
         test_files = [
             "httpbombayteenchallengeorg",
@@ -283,13 +453,14 @@ class ScraperTests(unittest.TestCase):
             self.assertIn(test, names, 'Name \'' + test + '\' not found')
 
     def test_org_type_scraper(self):
+        ctx = ApplicationContext(TestableUtilityScraperContext())
         test_files = [
             "httpbombayteenchallengeorg",
             "httpwwwnsagov",
             "httpwwwhalftheskymovementorg",
         ]
 
-        org_type_scraper = OrgTypeScraper()
+        org_type_scraper = ctx.get_object('OrgTypeScraper')
         types = []
 
         for input_file in test_files:
@@ -346,11 +517,13 @@ class ScraperTests(unittest.TestCase):
             self.assertNotIn(test, partner_urls, 'Invalid URL (not a partner org): %s' % test)
 
     def test_organization_scraper(self):
+        ctx = ApplicationContext(TestableDocumentScraperContext())
+
         test_files = [
             "httpbombayteenchallengeorg",
         ]
 
-        organization_scraper = OrganizationScraper()
+        organization_scraper = ctx.get_object("OrganizationScraper")
         orgs = []
 
         for input_file in test_files:
@@ -386,12 +559,16 @@ class ScraperTests(unittest.TestCase):
             'partners': [
                 # not yet implemented
             ],
+            'facebook': 'http://www.facebook.com/BombayTeenChallenge',
+            'twitter': 'https://twitter.com/bombaytc',
+            'keywords': {'[]': 44, 'access': 32, 'addict': 51, 'afraid': 32, 'allows': 32, 'ambedkar': 32, 'announced': 32, 'ash': 32, 'bandra': 32, 'beauty': 32, 'began': 32, 'betrayed': 32, 'blog': 64, 'bombay': 384, 'btc': 64, 'care': 51, 'challenge': 358, 'child': 64, 'contact': 64, 'district': 53, 'donate': 64, 'drug': 64, 'education': 89, 'education.': 39, 'gift': 64, 'health': 96, 'india': 96, 'life': 96, 'light': 64, 'live': 64, 'men': 53, 'mumbai': 128, 'music': 83, 'office': 38, 'out.': 39, 'program': 85, 'reach': 64, 'read': 96, 'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'street': 96, 'teen': 384, 'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'wa': 64, 'woman': 112},
         }]
-
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
 
     def test_urlmetadata_scraper(self):
+        ctx = ApplicationContext(TestableUrlMetadataScraperContext())
+
         self.set_up_url_metadata_scraper_test()
 
         test_files = [
@@ -400,7 +577,7 @@ class ScraperTests(unittest.TestCase):
             "httpwwwhalftheskymovementorgpartners",
         ]
 
-        url_mds = UrlMetadataScraper()
+        url_mds = ctx.get_object("UrlMetadataScraper")
         scraped_urls = []
 
         for input_file in test_files:
@@ -419,19 +596,19 @@ class ScraperTests(unittest.TestCase):
         assert_list = [
             {
                 'checksum': Binary('154916369406075238760605425088915003118'),
-                'last_visited': datetime.now().date(),
+                'last_visited': datetime.utcnow().date(),
                 'update_freq': 0,
                 'url': 'http://bombayteenchallenge.org/'
             },
             {
                 'checksum': Binary('94565939257467841022060717122642335157'),
-                'last_visited': datetime.now().date(),
+                'last_visited': datetime.utcnow().date(),
                 'update_freq': 6, # incremented one from setup b/c diff checksum
                 'url': 'http://www.google.com'
             },
             {
                 'checksum': Binary('199553381546012383114562002951261892300'),
-                'last_visited': datetime.now().date(),
+                'last_visited': datetime.utcnow().date(),
                 'update_freq': 1,  # not incremented b/c checksum is same
                 'url': 'http://www.halftheskymovement.org/partners'
             },
@@ -442,7 +619,6 @@ class ScraperTests(unittest.TestCase):
 
         for test in assert_list:
             self.assertIn(test, scraped_urls, 'Invalid URL Metadata Didn\'t Find: %s' % str(test))
-
 
 
 if __name__ == '__main__':

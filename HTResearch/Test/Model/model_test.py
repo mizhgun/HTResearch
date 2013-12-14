@@ -11,7 +11,7 @@ class ModelTest(unittest.TestCase):
     def test_converter(self):
         my_contact = Contact(first_name="Jordan",
                              last_name="Degner",
-                             primary_phone=4029813230,
+                             phone=4029813230,
                              email="jdegner0129@gmail.com",
                              position="Software Engineer")
 
