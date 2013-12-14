@@ -3,11 +3,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from springpython.context import ApplicationContext
 from HTResearch.Utilities.context import DAOContext
-from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
+from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
 import json
 
-logger = LoggingUtility().get_logger(LoggingSection.CLIENT, __name__)
+logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
 
 

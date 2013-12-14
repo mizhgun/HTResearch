@@ -32,7 +32,7 @@ $.get('/get_org_keywords/', data)
 
 		d3.layout.cloud().size([800, 400])
 		.words(Object.keys(result).map(function(d) {
-		return {text: d, size: 10 + result[d]/5};
+		return {text: d, size: 10 + result[d]/3};
 	}))
     .padding(5)
     .rotate(0)

@@ -2,10 +2,10 @@ from __future__ import with_statement
 import os
 from urlparse import urlparse
 
-from logutil import LoggingUtility, LoggingSection
+from logutil import get_logger, LoggingSection
 
 
-logger = LoggingUtility().get_logger(LoggingSection.UTILITIES, __name__)
+logger = get_logger(LoggingSection.UTILITIES, __name__)
 
 
 class UrlUtility:
