@@ -15,6 +15,9 @@ obj/
 # Ignore config files
 *.cfg
 
+# Ignore the logging directory
+logs/
+
 # =========================
 # Windows detritus
 # =========================
