@@ -1,5 +1,7 @@
 from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
 from HTResearch.Utilities.context import URLFrontierContext
+from HTResearch.Utilities.logutil import LoggingSection, get_logger
+from HTResearch.Utilities.url_tools import UrlUtility
 
 from springpython.context import ApplicationContext
 from scrapers.document_scrapers import *
@@ -9,6 +11,9 @@ from scrapy.spider import BaseSpider
 from scrapy.http import Request
 from scrapy import log
 import os
+
+# Since this logger can be shared by the whole module, we can instantiate it here
+logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class OrgSpider(BaseSpider):
@@ -47,6 +52,8 @@ class OrgSpider(BaseSpider):
         We will get the first url to crawl from this.
         """
 
+        logger.info('Starting requests to the Organization crawler')
+
         # first URL to begin crawling
         # Returns a URLMetadata model, so we have to pull the url field
         start_url_obj = self.url_frontier.next_url(self.url_frontier_rules)
@@ -59,6 +66,7 @@ class OrgSpider(BaseSpider):
 
         if __debug__:
             log.msg('START_REQUESTS : start_url = %s' % start_url)
+            logger.debug('START_REQUESTS : start_url = %s' % start_url)
 
         request = Request(start_url, dont_filter=True)
 
@@ -127,7 +135,8 @@ class StopTraffickingSpider(BaseSpider):
             # grab directory entries
             self.directory_results = results
             #return Requests for each Popup page
-            return [Request(result.popup_url) for result in results]
+            for result in results:
+                yield Request(result.popup_url)
 
         # grab corresponding table entry 
         table_entry = next(entry for entry in self.directory_results if entry.popup_url == response.url)
@@ -137,8 +146,20 @@ class StopTraffickingSpider(BaseSpider):
             self.directory_results.remove(table_entry)
 
         items = self.scraper.parse_popup(response, table_entry)
+        url_item = self._get_url_metadata(items)
 
-        with open("Output/specific_page_scraper_output.txt", 'a') as f:
-            f.write(str(items) + "\n\n")
+        yield items
+        yield url_item
 
-        return items
+    def _get_url_metadata(self, item):
+        if not isinstance(item, ScrapedOrganization)\
+                or item['organization_url'] is None or item['organization_url'] == "":
+            return None
+
+        url_item = ScrapedUrl()
+        # Add http://'s since we removed them
+        url_item['url'] = 'http://' + item['organization_url']
+        url_item['domain'] = UrlUtility.get_domain(item['organization_url'])
+        url_item['last_visited'] = datetime(1, 1, 1)
+
+        return url_item
