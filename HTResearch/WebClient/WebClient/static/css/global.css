@@ -58,3 +58,17 @@ body {
   	top:40%; 
   	margin-top:-5e;
 }
+
+/* Forms
+----------------------------------------------------- */
+.form-wrapper {
+    max-width: 600px;
+}
+
+/* Helper classes
+----------------------------------------------------- */
+.center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
