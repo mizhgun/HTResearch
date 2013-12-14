@@ -21,6 +21,11 @@ a:hover {
 	border-color: #003333;
 }
 
+.btn-primary.active:hover {
+    color: #ffffff;
+    background-color: #125691;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 
