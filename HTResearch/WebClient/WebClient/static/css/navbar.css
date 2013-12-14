@@ -9,7 +9,7 @@ Backup 2 (Pale Mint Green): 66aa88;
 
 /* navbar */
 .navbar-default {
-	background-color: #009999;
+	background-color: #005555;
 }
 
 /* title */
@@ -23,31 +23,31 @@ Backup 2 (Pale Mint Green): 66aa88;
 }
 
 .navbar-default .navbar-nav > li > a:hover {
-    color: #333;
+    color: #111;
 }
 
 .navbar-default .navbar-nav > .active > a, 
 .navbar-default .navbar-nav > .active > a:hover, 
 .navbar-default .navbar-nav > .active > a:focus {
     color: white;
-    background-color: #008888; 
+    background-color: #004444; 
 }
 .navbar-default .navbar-nav > .open > a, 
 .navbar-default .navbar-nav > .open > a:hover, 
 .navbar-default .navbar-nav > .open > a:focus {
     color: white;
-    background-color: #008888; 
+    background-color: #004444; 
 }
 
 /* caret */
 .navbar-default .navbar-nav > li > a .caret {
-    border-top-color: #008888; 
-    border-bottom-color: #008888; 
+    border-top-color: #004444; 
+    border-bottom-color: #004444; 
 }
 
 .navbar-default .navbar-nav > li > a:hover .caret {
-    border-top-color: #008888; 
-    border-bottom-color: #008888; 
+    border-top-color: #004444; 
+    border-bottom-color: #004444; 
 }
 
 .navbar-default .navbar-nav > .open > a .caret, 
@@ -58,7 +58,7 @@ Backup 2 (Pale Mint Green): 66aa88;
 }
 
 .dropdown-menu {
-	background-color: #008888; 
+	background-color: #004444; 
 }
 
 .dropdown-menu > li > a {

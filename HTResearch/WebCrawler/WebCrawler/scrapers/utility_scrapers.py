@@ -26,7 +26,7 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 # Will likely remove/change them.
 
 
-_utilityscrapers_logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
+_utilityscrapers_logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class ContactNameScraper(object):
