@@ -1,0 +1,239 @@
+html { 
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0
+}
+
+#map-canvas {
+    display: block;
+    width: inherit;
+    height: inherit;
+}
+
+#wrapper {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#login-signup-div {
+    position:absolute;
+    z-index: 1;
+    top: 100px;
+    left: 5px;
+    width: 205px;
+    height: 72px;
+    opacity: 0.75;
+    border: 0;
+    padding: 0;
+}
+
+#login-signup-div:hover {
+    opacity:1.0;
+    filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
+/*#login-btn {
+    position:absolute;
+    top: 5px;
+    left: 10px;
+}
+
+#signup-btn {
+    position:absolute;
+    top: 5px;
+    left: 100px;
+}*/
+
+#custom-search-form {
+    position: absolute;
+    height: 60%;
+    width: 60%;
+    top: 10px;
+    left: 0px;
+}
+
+#custom-search-form .search-query {
+    position: absolute;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    left: 10px;
+    width: 150%;
+}
+
+#custom-search-form button {
+    border: 0;
+    /** belows styles are working good */
+    padding: 2px 5px;
+    margin-top: 2px;
+    position: relative;
+    height: 20%;
+    /* IE7-8 doesn't have border-radius, so don't indent the padding */
+    margin-bottom: 0;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.search-query:focus + button {
+    z-index: 3;
+}
+
+#signup-div {
+    position:absolute;
+    z-index: 1;
+    height: 400px;
+    width: 400px;
+}
+
+#login-div {
+    position:absolute;
+    z-index: 1;
+    height: 300px;
+    width: 400px;
+}
+
+#create-an-account {
+    position: absolute;
+    font-size: xx-large;
+    left: 20%;
+    top: 5%;
+}
+
+#login-header {
+    position: absolute;
+    font-size: xx-large;
+    left: 25%;
+    top: 3%;
+}
+
+#username-field {
+    position: relative;
+    top: 40px;
+    margin-bottom: 10px;
+}
+
+#email-field {
+    position: relative;
+    top: 50px;
+    margin-bottom: 10px;
+}
+
+#password-field {
+    position: relative;
+    top: 60px;
+    margin-bottom: 10px;
+}
+
+#create-account-btn {
+    position: relative;
+    top: 50px;
+    margin-top: 50px;
+    margin-bottom: 10px;
+}
+
+#search-results-div {
+    position: absolute;
+    z-index: 1;
+    top: 170px;
+    left: 5px;
+    width: 205px;
+    max-height: 500px;
+    opacity: 0.75;
+    overflow-y: scroll;
+    padding: 0px
+}
+
+#search-results-div:hover {
+    opacity:1.0;
+    filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
+#organization-list-header {
+    font-size: x-large;
+}
+
+#organization-search-list {
+    font-size: small;
+}
+
+#contact-list-header {
+    font-size: x-large;
+}
+
+#contact-search-list {
+    font-size: small;
+}
+
+#publication-list-header {
+
+    font-size: x-large;
+}
+
+#publication-search-list {
+
+    font-size: small;
+}
+
+#modal-cancel {
+    position: absolute;
+    margin-top: 5px;
+    bottom: 1px;
+    left: 165px;
+}
+
+#type-image {
+    margin-right: 5px;
+    height: 146px;
+    width: 124px;
+}
+
+#img-div {
+    float: left;
+}
+
+#firstHeading {
+    padding: 5px;
+}
+
+#addr-cell{
+    vertical-align: top;
+}
+
+#more-info {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+/*Navbar override*/
+.navbar {
+    margin-bottom: 0px;
+}
+
+.modal-row {
+    vertical-align: top;
+}
+
+ul {
+    list-style-position: inside;
+}
+
+#organization-results {
+    max-height: 150px;
+    overflow: auto;
+    margin-bottom: 20px;
+}
+
+#contact-results {
+    margin-top: 20px;
+}
+
+#publication-results {
+    margin-top: 20px;
+}

@@ -12,6 +12,9 @@ local_settings.py
 *.v12.suo
 obj/
 
+# Ignore config files
+*.cfg
+
 # =========================
 # Windows detritus
 # =========================

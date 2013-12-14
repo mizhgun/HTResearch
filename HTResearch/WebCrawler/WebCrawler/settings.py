@@ -8,9 +8,9 @@
 
 BOT_NAME = 'WebCrawler'
 
-LOG_ENABLED = False
+LOG_ENABLED = True
 
-SPIDER_MODULES = ['WebCrawler.spiders', 'WebCrawler.unittests']
+SPIDER_MODULES = ['WebCrawler.spiders', "WebCrawler.utility_spiders"]
 NEWSPIDER_MODULE = 'WebCrawler.spiders'
 
 ITEM_PIPELINES = {
