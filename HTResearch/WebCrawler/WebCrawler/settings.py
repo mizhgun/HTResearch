@@ -13,6 +13,10 @@ LOG_ENABLED = True
 SPIDER_MODULES = ['WebCrawler.spiders', "WebCrawler.utility_spiders"]
 NEWSPIDER_MODULE = 'WebCrawler.spiders'
 
+DOWNLOADER_MIDDLEWARES = {
+    'HTResearch.WebCrawler.WebCrawler.middlewares.UrlQueueMiddleware': 400,
+}
+
 ITEM_PIPELINES = {
     'HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches.ItemSwitch' : 100,
 }

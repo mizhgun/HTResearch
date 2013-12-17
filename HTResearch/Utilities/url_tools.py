@@ -2,6 +2,11 @@ from __future__ import with_statement
 import os
 from urlparse import urlparse
 
+from logutil import get_logger, LoggingSection
+
+
+logger = get_logger(LoggingSection.UTILITIES, __name__)
+
 
 class UrlUtility:
     tlds = None
@@ -40,4 +45,6 @@ class UrlUtility:
         if no_exception:
             return url
         else:
-            raise ValueError("Domain not in global list of TLDs")
+            msg = "Domain for URL=%s not in global list of TLDs" % url
+            logger.error(msg)
+            raise ValueError(msg)

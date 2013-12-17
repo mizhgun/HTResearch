@@ -10,6 +10,7 @@ from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Test.Mocks.connection import MockDBConnection
 from HTResearch.Test.Mocks.dao import *
+from HTResearch.DataModel.enums import AccountType
 
 
 class TestableDAOContext(DAOContext):
@@ -34,6 +35,9 @@ class TestableDAOContext(DAOContext):
     def RegisteredURLMetadataDAO(self):
         return MockURLMetadataDAO
 
+    @Object()
+    def RegisteredGeocode(self):
+        return lambda x: [0.0, 0.0]
 
 class DatabaseInteractionTest(unittest.TestCase):
 
@@ -55,6 +59,10 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.publication = Publication(title="The Book of Yee",
                                        authors=[self.contact])
         self.urlmetadata = URLMetadata(url="http://google.com")
+        self.user = User(first_name="Bee", last_name="Yee",
+                         email="beeyee@yee.com", password="iambeeyee",
+                         background="I love bees and yees",
+                         account_type=AccountType.COLLABORATOR)
 
         self.ctx = ApplicationContext(TestableDAOContext())
 
@@ -172,7 +180,6 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'PublicationDAO tests passed'
 
-
     def test_urlmetadata_dao(self):
         url_dto = DTOConverter.to_dto(URLMetadataDTO, self.urlmetadata)
         url_dao = self.ctx.get_object("URLMetadataDAO")
@@ -200,6 +207,37 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'URLMetadataDAO tests passed'
 
+    def test_user_dao(self):
+        user_dto = DTOConverter.to_dto(UserDTO, self.user)
+        user_dao = self.ctx.get_object("UserDAO")
+
+        print 'Testing user creation ...'
+        user_dao.create_update(user_dto)
+
+        assert_user = user_dao.find(id=user_dto.id)
+
+        self.assertEqual(assert_user.id, user_dto.id)
+
+        print 'Testing user editing ...'
+        user_dto.first = "Byee"
+        user_dto.last = "Ybee"
+
+        user_dao.create_update(user_dto)
+
+        assert_user = user_dao.find(id=user_dto.id)
+
+        self.assertEqual(assert_user.id, user_dto.id)
+        self.assertEqual(assert_user.first_name, user_dto.first_name)
+        self.assertEqual(assert_user.last_name, user_dto.last_name)
+
+        print 'Testing user deletion ...'
+        user_dao.delete(user_dto)
+
+        assert_user = user_dao.find(id=user_dto.id)
+        self.assertTrue(assert_user is None)
+
+        print 'UserDAO tests passed'
+
     def test_merge_records(self):
         contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)
         contact_dao = self.ctx.get_object("ContactDAO")
@@ -209,13 +247,13 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Creating a duplicate and attempting an insert ...'
         new_contact = Contact(email="jdegner0129@gmail.com",
-                              primary_phone=4029813230)
+                              phone=4029813230)
         new_contact_dto = DTOConverter.to_dto(ContactDTO, new_contact)
         contact_dao.create_update(new_contact_dto)
 
         print 'Asserting that the old contact was updated'
         assert_contact = contact_dao.find(id=contact_dto.id)
-        self.assertEqual(assert_contact.primary_phone, new_contact_dto.primary_phone)
+        self.assertEqual(assert_contact.phone, new_contact_dto.phone)
 
         print 'Merge records tests passed'
 
