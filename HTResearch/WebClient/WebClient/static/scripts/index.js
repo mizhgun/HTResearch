@@ -2,19 +2,20 @@ var searchResultsVisible = false;
 var map;
 var initialLatLng = new google.maps.LatLng(21, 78);
 var searchedLatLng;
+var lastSearchedText;
 var address;
-var orgData, contactData, pubData;
-var infowindow = null;
-var marker = null;
+var orgData = null, contactData = null, pubData = null;
+var markers = [];
 // for news loading
 var maxNewsCount = 100;
 var newsUrl = 'https://news.google.com/news/feeds?output=rss&num=' + maxNewsCount + '&q=';
 var newsFeed = null;
 var newsCount = 0;
 var newsStepSize = 6;
-var baseQuery = '"human trafficking"'
+var baseQuery = 'prostitution OR "sex trafficking" OR "human trafficking" OR brothel OR "child trafficking" OR "anti trafficking"';
 var generalLocation = 'india';
 var geocoder = new google.maps.Geocoder();
+var moreNews = true;
 
 var MARKER_VALUES = {
     PREVENTION: 1 << 0,
@@ -37,11 +38,11 @@ function initialize() {
 	  mapTypeId: google.maps.MapTypeId.HYBRID,
 	  panControl: false,
 	  zoomControl: false,
-	  scaleControl: false
+	  scaleControl: false,
+      streetViewControl: false
 	};
 
-	//Didn't accept a jquery selector
-	map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
+	map = new google.maps.Map($('#map-canvas')[0],mapOptions);
 
 	$('#signup-btn').click(function(e) {
 		$('#signup-div').easyModal({
@@ -81,7 +82,7 @@ function initialize() {
     google.maps.event.addListener(map, 'idle', function() {
         var scope = $('input[name=news-scope]:checked').val();
         if(scope === 'regional') {
-            updateNewsLocation($('input[name=news-scope]:checked').val());
+            updateNewsLocation(scope);
         }
     });
 
@@ -130,15 +131,16 @@ function getCookie(name) {
     var i = 0;
     while (i < cookieLength) {
       var j = i + argLength;
-      if (document.cookie.substring(i,j) == arg)
+      if (document.cookie.substring(i,j) === arg)
         return "here";
       i = document.cookie.indexOf(" ", i) + 1;
-      if (i == 0) break;
+      if (i === 0) break;
     }
     return null; 
 }
 
 function updateNewsLocation(scope) {
+    moreNews = true;
     var loadNewsFromLocation = function(locationQuery) {
         var query = baseQuery + ' ' + locationQuery;
         var feedParam = newsUrl + query.split(/,?\s/).join('+');
@@ -158,11 +160,17 @@ function updateNewsLocation(scope) {
                 loadNewsFromLocation(results[0].formatted_address);
             }
         });
+    } else if(scope === 'organization') {
+        if(orgData) {
+            loadNewsFromLocation(orgData.name);
+        } else {
+            $('#news-results').html('<div class="no-results">Please select an organization.</div>');
+        }
     }
 }
 
 function loadMoreNews() {
-    if($('#news-results').find('.glyphicon-stop').length === 0 && newsFeed) {
+    if(moreNews && newsFeed) {
         newsCount += newsStepSize;
         newsFeed.includeHistoricalEntries();
         newsFeed.setNumEntries(newsCount);
@@ -171,11 +179,9 @@ function loadMoreNews() {
                 var articles = result.feed.entries;
 
                 // See if there might be more news to load after this
-                var more = true;
-                if(articles.length < newsCount) {
-                    more = false;
-                    newsCount = articles.length;
-                }
+                moreNews = (articles.length >= newsCount);
+
+                newsCount = articles.length;
 
                 // Construct html from news articles
                 $.template('newsTemplate', $('#news-template').html());
@@ -208,7 +214,7 @@ function loadMoreNews() {
                 if(!$(newsDiv).html()) {
                     $(newsDiv).append('<div class="no-results">No results found.</div>');
                 } else {
-                    if(more) {
+                    if(moreNews) {
                         $(newsDiv).append('<div class="news-footer ajax-loader"></div>');
                     } else {
                         $(newsDiv).append('<div class="news-footer"><i class="glyphicon glyphicon-stop"></i></div>');
@@ -216,7 +222,7 @@ function loadMoreNews() {
                 }
                 var newsResultsDiv = $('#news-results');
                 newsResultsDiv.html($(newsDiv).html());
-                if(newsResultsDiv.scrollTop() + newsResultsDiv.innerHeight() >= newsResultsDiv[0].scrollHeight) {
+                if(moreNews && newsResultsDiv.scrollTop() + newsResultsDiv.innerHeight() >= newsResultsDiv[0].scrollHeight) {
                     loadMoreNews();
                 }
             }
@@ -224,11 +230,136 @@ function loadMoreNews() {
     }
 }
 
+function plotMarker(data) {
+     if (data.latlng && data.latlng.length > 0 && data.latlng[0] && data.latlng[1]) {
+        var coord = new google.maps.LatLng(data.latlng[0], data.latlng[1]);
+
+        var marker_url = "";
+        var is_prev = $.inArray(5 ,data.types) > -1; // Value for prevention enum
+        var is_prot = $.inArray(6 ,data.types) > -1; // Value for protection enum
+        var is_pros = $.inArray(7 ,data.types) > -1; // Value for prosecution enum
+        var marker_switch = 0;
+        if (is_prev)
+            marker_switch |= MARKER_VALUES.PREVENTION;
+        if (is_prot)
+            marker_switch |= MARKER_VALUES.PROTECTION;
+        if (is_pros)
+            marker_switch |= MARKER_VALUES.PROSECUTION;
+        switch(marker_switch) {
+            case MARKER_VALUES.PREVENTION: //Prevention only
+                marker_url = "/static/images/prevention_pin_small.png"
+                break;
+            case MARKER_VALUES.PROTECTION: //Protection only
+                marker_url = "/static/images/protection_pin_small.png"
+                break;
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROTECTION): //Prevention and Protection
+                marker_url = "/static/images/prot_prev_pin_small.png"
+                break;
+            case MARKER_VALUES.PROSECUTION: //Prosecution only
+                marker_url = "/static/images/prosecution_pin_small.png"
+                break;
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROSECUTION): //Prevention and Prosecution
+                marker_url = "/static/images/prev_pros_pin_small.png"
+                break;
+            case (MARKER_VALUES.PROTECTION | MARKER_VALUES.PROSECUTION): //Protection and Prosecution
+                marker_url = "/static/images/prot_pros_pin_small.png"
+                break;
+            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROTECTION | MARKER_VALUES.PROSECUTION): //All
+                marker_url = "/static/images/all_pin_small.png"
+                break;
+            default: // keep default
+                marker_url = "/static/images/default_pin_small.png";
+                break;
+        }
+
+        var new_marker = new google.maps.Marker({
+            map: map,
+            position: coord,
+            icon: {
+                url: marker_url,
+                size: new google.maps.Size(39,32),
+                origin: new google.maps.Point(0,0),
+                anchor: new google.maps.Point(9,32)
+            }
+        });
+
+        data.img_path = "/static/images/office_building_icon.png";
+        var html = $("#modal-template").tmpl(data);
+
+        var new_infowindow = new google.maps.InfoWindow({
+		      content : html.html()
+		});
+
+        google.maps.event.addListener(new_marker, 'click', function() {
+            var thisMarker = findMarker(new_marker);
+            if (!thisMarker) {
+                new_infowindow.open(map, new_marker);
+                closeAllInfowindows();
+            } else if (thisMarker.open) {
+                closeAllInfowindows();
+                thisMarker.infowindow.close();
+                thisMarker.open = false;
+            } else {
+                closeAllInfowindows();
+                thisMarker.infowindow.open(map,new_marker);
+                thisMarker.open = true;
+            }
+		});
+
+        markers.push({
+            id: data.id,
+            marker: new_marker,
+            infowindow: new_infowindow,
+            open: false
+        });
+     }
+}
+
+function removeAllMarkers() {
+    $.each(markers, function(index,value){
+        value.marker.setMap(null);
+    });
+    markers = [];
+}
+
+function closeAllInfowindows() {
+    $.each(markers, function(index, value){
+        value.infowindow.close();
+        value.open = false;
+    });
+}
+
+function findMarker(marker) {
+    var retMarker;
+    for(var i = 0; i < markers.length; i++) {
+        if(marker === markers[i].marker){
+            retMarker = markers[i];
+            break;
+        }
+    }
+    return retMarker;
+}
+
+function findMarkerById(id) {
+    var marker;
+    for(var i = 0; i < markers.length; i++) {
+        if(id === markers[i].id){
+            marker = markers[i];
+            break;
+        }
+    }
+    return marker;
+}
+
 function showSearchResults() {
     var searchText = $('#search-box').val().trim();
+    if (lastSearchedText === searchText)
+        return;
+    lastSearchedText = searchText;
     var searchResultsDiv = $('#search-results-div');
 
     if(searchText) {
+        removeAllMarkers();
         // Put items to search for here.
         var searchItems = [
             {
@@ -279,6 +410,9 @@ function showSearchResults() {
                 $(item.listSelector).html(data);
                 $('.modal').modal({ show: false });
                 $(item.linkSelector).click(item.linkCallback);
+                $(item.linkSelector).each(function(index, value) {
+                    plotMarker($(value).data());
+                });
             }).fail(function() {
                 console.log(item.name, 'search failed');
             }).always(function() {
@@ -317,18 +451,20 @@ function endAjaxSearch() {
 // Show modals
 function showOrganizationModal() {
     orgData = $(this).data();
+
+    // Search for news based on the selected organization
+    var scope = $('input[name=news-scope]:checked').val();
+    if(scope === 'organization') {
+        updateNewsLocation(scope);
+    }
+
     if (orgData.latlng && orgData.latlng.length > 0) {
         // Get the lat, long values of the address
         searchedLatLng = new google.maps.LatLng(orgData.latlng[0], orgData.latlng[1]);
         plotOrganization(orgData);
     }
     else{
-        if(marker){
-            marker.setMap(null);
-        }
-        if (infowindow){
-            infowindow.close();
-        }
+        closeAllInfowindows();
 
         var $modal = $('.modal').modal();
         createBootstrapModal($modal, '#bs-org-modal-template',orgData);
@@ -349,77 +485,12 @@ function plotOrganization(data) {
         var coord = new google.maps.LatLng(data.latlng[0], data.latlng[1]);
         map.setCenter(coord);
 
-        if(marker){
-            marker.setMap(null);
-        }
+        closeAllInfowindows();
 
-        var marker_url = "";
-        var is_prev = $.inArray(5 ,data.types) > -1; // Value for prevention enum
-        var is_prot = $.inArray(6 ,data.types) > -1; // Value for protection enum
-        var is_pros = $.inArray(7 ,data.types) > -1; // Value for prosecution enum
-        var marker_switch = 0;
-        if (is_prev)
-            marker_switch |= MARKER_VALUES.PREVENTION;
-        if (is_prot)
-            marker_switch |= MARKER_VALUES.PROTECTION;
-        if (is_pros)
-            marker_switch |= MARKER_VALUES.PROSECUTION;
-        switch(marker_switch) {
-            case MARKER_VALUES.PREVENTION: //Prevention only
-                marker_url = "/static/images/prevention_pin_small.png"
-                break;
-            case MARKER_VALUES.PROTECTION: //Protection only
-                marker_url = "/static/images/protection_pin_small.png"
-                break;
-            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROTECTION): //Prevention and Protection
-                marker_url = "/static/images/prot_prev_pin_small.png"
-                break;
-            case MARKER_VALUES.PROSECUTION: //Prosecution only
-                marker_url = "/static/images/prosecution_pin_small.png"
-                break;
-            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROSECUTION): //Prevention and Prosecution
-                marker_url = "/static/images/prev_pros_pin_small.png"
-                break;
-            case (MARKER_VALUES.PROTECTION | MARKER_VALUES.PROSECUTION): //Protection and Prosecution
-                marker_url = "/static/images/prot_pros_pin_small.png"
-                break;
-            case (MARKER_VALUES.PREVENTION | MARKER_VALUES.PROTECTION | MARKER_VALUES.PROSECUTION): //All
-                marker_url = "/static/images/all_pin_small.png"
-                break;
-            default: // keep default
-                marker_url = "/static/images/default_pin_small.png";
-                break;
-        }
+        var marker = findMarkerById(data.id);
 
-        marker = new google.maps.Marker({
-            map: map,
-            position: coord,
-            icon: {
-                url: marker_url,
-                size: new google.maps.Size(39,32),
-                origin: new google.maps.Point(0,0),
-                anchor: new google.maps.Point(9,32)
-            }
-        });
-        
-        orgData.img_path = "/static/images/office_building_icon.png";
-
-        var html = $("#modal-template").tmpl(data);
-
-        if(infowindow){
-            infowindow.close();
-        }
-
-        infowindow = new google.maps.InfoWindow({
-		      content : html.html()
-		});
-
-        infowindow.open(map,marker);
-        
-        google.maps.event.addListener(marker, 'click', function() {
-		    infowindow.open(map,marker);
-		});
-
+        marker.infowindow.open(map,marker.marker);
+        marker.open = true;
     } else {
         var $modal = $('.modal').modal();
         createBootstrapModal($modal, '#bs-org-modal-template', data);
