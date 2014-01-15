@@ -33,6 +33,15 @@ class ContactNameScraper(object):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt')) as f:
             self._names = f.read().splitlines()
         self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Sh', 'Smt', 'Prof']
+
+        # Make a regex check for if a potential name is actually a date. Not concerned with months that aren't in the
+        # names list
+        self._date = re.compile(r'Jan ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)|'
+                                r'April ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)|'
+                                r'May ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)|'
+                                r'June ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)|'
+                                r'July ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)|'
+                                r'August ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)')
         self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
         self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
 
@@ -153,7 +162,7 @@ class ContactNameScraper(object):
                     # Changes from unicode, removes punctuation, and strips whitespace
                     changed = name.encode('ascii', 'ignore').translate(string.maketrans('', ''), string.punctuation)\
                         .strip()
-                    if changed == '':
+                    if changed == '' or self._date.search(changed):
                         removes.append(name)
                     name_split = changed.split()
                     if len(name_split) > 5:
