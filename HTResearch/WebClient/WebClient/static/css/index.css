@@ -269,11 +269,6 @@ ul {
     z-index: 10;
 }
 
-a.disabled {
-    color: #c0c0c0;
-    text-decoration: none;
-}
-
 #news-results {
     position: absolute;
     left: 0;
