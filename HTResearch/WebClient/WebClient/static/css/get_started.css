@@ -30,3 +30,15 @@
   line-height: 1;
   letter-spacing: -1px;
 }
+
+@media (min-width: 768px) {
+  .featurette-heading {
+    font-size: 40px;
+  }
+}
+
+@media (min-width: 992px) {
+  .featurette-heading {
+    margin-top: 120px;
+  }
+}
