@@ -83,6 +83,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'compressor.finders.CompressorFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -133,6 +134,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_windows_tools',
     'WebClient',
+    'less',
+    'compressor',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -174,3 +177,11 @@ LOGGING = {
         },
     }
 }
+
+COMPRESS_PRECOMPILERS = (
+    ('text/less', 'lessc {infile} {outfile}'),
+)
+
+COMPRESS_OUTPUT_DIR = 'lib/bootstrap'
+
+INTERNAL_IPS = ('127.0.0.1',)
