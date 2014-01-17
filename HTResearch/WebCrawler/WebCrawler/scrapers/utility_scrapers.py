@@ -140,6 +140,7 @@ class ContactNameScraper(object):
 
         return s
 
+    # Will get the list of xpaths of potential names and check those xpaths for additional names
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
 
