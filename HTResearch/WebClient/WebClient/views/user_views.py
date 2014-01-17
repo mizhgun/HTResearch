@@ -1,9 +1,11 @@
 # stdlib imports
+from datetime import datetime
+
 from django.shortcuts import render
+
 from django.http import HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password
 from springpython.context import ApplicationContext
-from datetime import datetime
 
 # project imports
 from HTResearch.DataAccess.dto import UserDTO, OrganizationDTO

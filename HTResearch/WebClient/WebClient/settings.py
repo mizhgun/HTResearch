@@ -5,7 +5,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+# ('Your Name', 'your_email@example.com'),
 )
 
 MANAGERS = ADMINS
@@ -13,11 +13,11 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'NAME': '', # Or path to database file if using sqlite3.
+        'USER': '', # Not used with sqlite3.
+        'PASSWORD': '', # Not used with sqlite3.
+        'HOST': '', # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '', # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -62,8 +62,8 @@ SITE_ROOT = os.path.abspath(os.path.dirname(__file__))
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join( SITE_ROOT, 'static')
-SITE_STATIC_ROOT = os.path.join( SITE_ROOT, 'local_static')
+STATIC_ROOT = os.path.join(SITE_ROOT, 'static')
+SITE_STATIC_ROOT = os.path.join(SITE_ROOT, 'local_static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -82,7 +82,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
     'compressor.finders.CompressorFinder',
 )
 
@@ -97,7 +97,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    #     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -122,7 +122,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 
-    os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
+    os.path.join(os.path.dirname(__file__), 'templates').replace('\\', '/'),
 )
 
 INSTALLED_APPS = (

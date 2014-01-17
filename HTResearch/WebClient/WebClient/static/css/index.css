@@ -1,4 +1,4 @@
-html { 
+html {
     height: 100%;
 }
 
@@ -105,14 +105,14 @@ input:focus {
 }
 
 #signup-div {
-    position:absolute;
+    position: absolute;
     z-index: 1;
     height: 400px;
     width: 400px;
 }
 
 #login-div {
-    position:absolute;
+    position: absolute;
     z-index: 1;
     height: 300px;
     width: 400px;
@@ -166,14 +166,14 @@ input:focus {
     max-height: -o-calc(100% - 80px);
     max-height: calc(100% - 80px);
     opacity: 0.5;
-    filter:alpha(opacity=50); /* For IE8 and earlier */
+    filter: alpha(opacity=50); /* For IE8 and earlier */
     transition: opacity 1s;
     -webkit-transition: opaicty 1s;
 }
 
 #search-box-div:hover #search-results-div {
-    opacity:1.0;
-    filter:alpha(opacity=100); /* For IE8 and earlier */
+    opacity: 1.0;
+    filter: alpha(opacity=100); /* For IE8 and earlier */
 }
 
 .search-query:focus {
@@ -199,7 +199,7 @@ input:focus {
     left: 165px;
 }
 
-#addr-cell{
+#addr-cell {
     vertical-align: top;
 }
 
@@ -224,7 +224,7 @@ input:focus {
 }
 
 #org-building-icon {
-    margin:0px;
+    margin: 0px;
 }
 
 ul {

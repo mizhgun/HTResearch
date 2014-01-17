@@ -14,14 +14,12 @@ from HTResearch.Test.Mocks.dao import MockURLMetadataDAO
 
 
 class TestableURLFrontierContext(URLFrontierContext):
-
     @Object()
     def RegisteredURLMetadataDAO(self):
         return MockURLMetadataDAO
 
 
 class TestableDAOContext(DAOContext):
-
     @Object()
     def RegisteredDBConnection(self):
         return MockDBConnection
@@ -79,7 +77,7 @@ class URLFrontierTest(unittest.TestCase):
 
             print 'Push an even older URL'
             oldest_url = URLMetadata(url="http://test2001.com",
-                                     last_visited=(start_time - timedelta(days=x+1)))
+                                     last_visited=(start_time - timedelta(days=x + 1)))
             frontier.put_url(oldest_url)
 
             print 'Empty the cache'
@@ -93,6 +91,7 @@ class URLFrontierTest(unittest.TestCase):
             frontier.terminate_cache_process()
 
             self.urlfrontier_tear_down()
+
 
 if __name__ == '__main__':
     try:
