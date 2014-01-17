@@ -10,13 +10,11 @@ a:hover {
 }
 
 .btn-primary {
-	color: #bbaabb;
 	background-color: #005555;
 	border-color: #004444;
 }
 
 .btn-primary:hover {
-	color: #887788;
 	background-color: #004444;
 	border-color: #003333;
 }
