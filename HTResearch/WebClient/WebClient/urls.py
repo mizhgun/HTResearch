@@ -42,4 +42,5 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
                         url(r'^login/$', 'login', name='login'),
                         url(r'^logout/$', 'logout', name='logout'),
                         url(r'^signup/$', 'signup', name='signup'),
+                        url(r'^invite/$', 'send_invite', name='invite')
 )
