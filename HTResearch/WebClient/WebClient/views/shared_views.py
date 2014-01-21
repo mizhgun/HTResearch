@@ -30,6 +30,7 @@ def encode_dto(dto):
     json_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) not in string_types]
     for field in json_fields:
         dto[field] = MongoJSONEncoder().encode(dto[field])
+    return dto
 
 
 def heatmap_coordinates(request):

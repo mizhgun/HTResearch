@@ -41,14 +41,28 @@ class DAO(object):
         with self.conn():
             return self.dto.objects(**constraints).first()
 
+    def count(self, search=None, **constraints):
+        with self.conn():
+            # Do text search or grab by constraints
+            if search is not None:
+                return len(self.text_search(search, None))
+            else:
+                return self.dto.objects(**constraints).count()
+
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
-    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[], **constraints):
+    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=None, search=None, **constraints):
         with self.conn():
-            if len(sort_fields) > 0:
-                ret = self.dto.objects(**constraints).order_by(sort_fields)
+            # Do text search or grab by constraints
+            if search is not None:
+                ret = self.text_search(search, num_elements, sort_fields=[sort_fields])
             else:
                 ret = self.dto.objects(**constraints)
+
+            # Sort if there are sort fields
+            if sort_fields is not None and len(sort_fields) > 0 and search is None:
+                ret = ret.order_by(sort_fields)
+
             if num_elements is not None:
                 return ret[:num_elements]
             elif page_size is not None and page is not None:
@@ -98,10 +112,20 @@ class DAO(object):
             # sort by fields
             if 'sort_fields' in sort_params.keys():
                 for field in reversed(sort_params['sort_fields']):
-                    results.sort(key=lambda result: result[field])
+                    if len(field) == 0:
+                        break;
+                    if field[0] == '-':
+                        results.sort(key=lambda result: result[field[1:]], reverse=True)
+                    elif field[0] == '+':
+                        results.sort(key=lambda result: result[field[1:]])
+                    else:
+                        results.sort(key=lambda result: result[field])
 
             # return the last num_elements
-            return results[:num_elements]
+            if num_elements is not None and num_elements > 0:
+                return results[:num_elements]
+            else:
+                return results
 
 
 class ContactDAO(DAO):

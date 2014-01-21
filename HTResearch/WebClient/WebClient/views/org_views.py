@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from springpython.context import ApplicationContext
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
+from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
 import json
 
@@ -79,10 +80,19 @@ def get_org_keywords(request):
 def get_org_rank_rows(request):
     start = int(request.GET['start'])
     end = int(request.GET['end'])
-    sort = request.GET['sort']
+    page_size = end - start + 1
+    if 'search' in request.GET:
+        search = request.GET['search']
+    else:
+        search = None
+    if 'sort' in request.GET:
+        sort = request.GET['sort']
+    else:
+        sort = ()
 
     org_dao = ctx.get_object('OrganizationDAO')
-    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=sort))
+    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=sort, search=search))
+    records = org_dao.count(search)
 
     # add netloc to urls if needed
     for org in organizations:
@@ -91,9 +101,12 @@ def get_org_rank_rows(request):
             if netloc == "":
                 org.organization_url = "//" + org.organization_url
 
+    obj = {
+        'data': organizations,
+        'records': records
+    }
 
-    params = {'organizations': organizations}
-    return render(request, 'org_rank_row.html', params)
+    return HttpResponse(MongoJSONEncoder().encode(obj), content_type="application/text")
 
 
 def org_rank(request, sort_method=''):
