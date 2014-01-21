@@ -65,6 +65,10 @@
                             item.organization_url = '<a target="_blank" href="' + item.organization_url + '">Site</a>';
                         else
                             item.organization_url = '';
+                        if (item.phone_numbers)
+                            item.phone_numbers = item.phone_numbers.join(', ');
+                        else
+                            item.phone_numbers = '';
                         if (item.emails)
                             item.emails = item.emails.join(', ');
                         else
@@ -74,7 +78,7 @@
                         else
                             item.facebook = '';
                         if (item.twitter)
-                            item.twitter = '<a target="_blank" href="' + item.twitter + '">tw</a>';
+                            item.twitter = '<a target="_blank" href="' + item.twitter + '">TW</a>';
                         else
                             item.twitter = '';
                     });

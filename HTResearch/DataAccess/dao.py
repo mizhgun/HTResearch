@@ -113,7 +113,7 @@ class DAO(object):
             if 'sort_fields' in sort_params.keys():
                 for field in reversed(sort_params['sort_fields']):
                     if len(field) == 0:
-                        break;
+                        break
                     if field[0] == '-':
                         results.sort(key=lambda result: result[field[1:]], reverse=True)
                     elif field[0] == '+':
