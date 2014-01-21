@@ -467,12 +467,13 @@ class ScraperTests(unittest.TestCase):
             response = file_to_response(input_file)
             if response is not None:
                 ret = org_type_scraper.parse(response)
+                print ret
                 if isinstance(ret, type([])):
                     types = types + ret
                 else:
                     types.append(ret)
 
-        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PROTECTION]
+        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PREVENTION, OrgTypesEnum.PROTECTION]
         for test in assert_list:
             self.assertIn(test, types, 'Type \'' + OrgTypesEnum.reverse_mapping[test] + '\' not found')
 

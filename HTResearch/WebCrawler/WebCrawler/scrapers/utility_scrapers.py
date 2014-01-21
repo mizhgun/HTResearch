@@ -621,6 +621,22 @@ class OrgTypeScraper(object):
                 'development',
                 'community',
                 'ownership',
+                'avoidance',
+                'blockage',
+                'determent',
+                'forestalling',
+                'halt',
+                'hindrance',
+                'impediment',
+                'inhibitor',
+                'interception',
+                'interruption',
+                'obstacle',
+                'obstruction',
+                'prohibition',
+                'stoppage',
+                'thwarting',
+                'deterence',
             ],
             OrgTypesEnum.PROTECTION: [
                 'protection',
@@ -634,6 +650,32 @@ class OrgTypeScraper(object):
                 'freedom',
                 'opportunity',
                 'women',
+                'conservation',
+                'insurance',
+                'preservation',
+                'safeguard',
+                'safety',
+                'security',
+                'shelter',
+                'stability',
+                'assurance',
+                'barrier',
+                'cover',
+                'custody',
+                'defense',
+                'fix',
+                'guard',
+                'invulnerability',
+                'reassurance',
+                'refuge',
+                'safekeeping',
+                'salvation',
+                'screen',
+                'self-defense',
+                'shield',
+                'strength',
+                'surety',
+                'guarding',
             ],
             OrgTypesEnum.PROSECUTION: [
                 'prosecution',
@@ -644,6 +686,13 @@ class OrgTypeScraper(object):
                 'regulatory',
                 'regulation',
                 'justice',
+                'case',
+                'cause',
+                'claim',
+                'lawsuit',
+                'litigation',
+                'proceeding',
+                'suit',
             ],
         }
 
@@ -695,6 +744,8 @@ class OrgTypeScraper(object):
                 types.append(type)
             if len(types) >= self._max_types:
                 break
+        if OrgTypesEnum.PREVENTION not in self._type_words.iterkeys() and OrgTypesEnum.PROTECTION not in self._type_words.iterkeys() and OrgTypesEnum.PROSECUTION not in self._type_words.iterkeys():
+            types.append(OrgTypesEnum.PREVENTION)
 
         return types or [OrgTypesEnum.UNKNOWN]
 
