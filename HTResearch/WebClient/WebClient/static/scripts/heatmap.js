@@ -42,7 +42,7 @@ function loadCoordinates(success_cb) {
         data: {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
         },
-        success: function(json_string) {
+        success: function (json_string) {
             var coordinates = $.parseJSON(json_string);
             var i;
             for (i = 0; i < coordinates.length; i++) {
@@ -71,7 +71,7 @@ function toggleHeatMap() {
     }
 }
 
-$(window).load(function() {
+$(window).load(function () {
     initHeatmap();
 
     var heatmap_control_div = document.createElement('div');
@@ -83,7 +83,7 @@ $(window).load(function() {
     $(heatmap_toggle_control).text('Toggle Heat Map');
     heatmap_control_div.appendChild(heatmap_toggle_control);
 
-    google.maps.event.addDomListener(heatmap_toggle_control, 'click', function(){
+    google.maps.event.addDomListener(heatmap_toggle_control, 'click', function () {
         $(this).attr("disabled", "true");
         toggleHeatMap();
         $(this).removeAttr("disabled");

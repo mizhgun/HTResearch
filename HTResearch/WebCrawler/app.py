@@ -1,7 +1,6 @@
 from twisted.internet import reactor
 from scrapy.crawler import Crawler
 from scrapy.utils.project import get_project_settings
-from springpython.context import ApplicationContext
 
 from WebCrawler.spiders import *
 from HTResearch.Utilities.context import URLFrontierContext

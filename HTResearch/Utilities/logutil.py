@@ -27,10 +27,9 @@ logdir = os.path.join(module_dir, get_config_value('LOG', 'dir'))
 if not os.path.exists(logdir):
     os.mkdir(logdir)
 
-
 handler = logging.handlers.RotatingFileHandler(logfile,
                                                maxBytes=8192,
-                                               backupCount=10,)
+                                               backupCount=10, )
 formatter = logging.Formatter('[%(asctime)s %(levelname)s] %(name)s::%(funcName)s - %(message)s')
 formatter.datefmt = '%x %X %Z'
 formatter.converter = time.gmtime

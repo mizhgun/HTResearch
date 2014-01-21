@@ -6,12 +6,12 @@ import string
 import datetime
 import hashlib
 import operator
+from sgmllib import SGMLParseError
 
 from nltk import FreqDist, WordNetLemmatizer
 from scrapy.selector import HtmlXPathSelector
 from scrapy.selector import XPathSelectorList
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
-from sgmllib import SGMLParseError
 from bson.binary import Binary
 
 from ..items import *
@@ -20,6 +20,7 @@ from HTResearch.Utilities.converter import *
 from HTResearch.Utilities.logutil import *
 from link_scraper import LinkScraper
 from HTResearch.DataModel.enums import OrgTypesEnum
+
 
 
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
@@ -38,6 +39,7 @@ class ContactNameScraper(object):
         self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
 
     """ Just formats the tags and adds a > to the elements that don't have it """
+
     @staticmethod
     def _add_closing_symbol(tag_list):
         # since the regex finds either tags but not attributes, some elements might have just the <a part,
@@ -48,6 +50,7 @@ class ContactNameScraper(object):
         return tag_list
 
     """ Counts the parent divs, if there is a <div><a></a><p>hello</p>, only parents would be <div><p>, return 2 """
+
     @staticmethod
     def _count_parent_tags(tag_list):
         parent_counter = 0
@@ -60,6 +63,7 @@ class ContactNameScraper(object):
 
     """ This function uses other class functions to find the xpath of potential names
      returns the xpath as far as some threshold % of all the found xpaths """
+
     def _find_all_xpaths(self, hxs):
         # Gets the body (including html tags) and body_text (no tags), whatever gets found should be in both, since a
         # name should be visible
@@ -101,6 +105,7 @@ class ContactNameScraper(object):
         return xpaths
 
     """ Returns one 'xpath' string """
+
     @staticmethod
     def _find_xpath(tag_list, parent_counter):
         i = 0
@@ -111,7 +116,7 @@ class ContactNameScraper(object):
                 tag_list.remove(tag)
                 tag_list.reverse()
                 try:
-                    index = tag_list[len(tag_list)-i:].index(tag[0] + tag[2:])
+                    index = tag_list[len(tag_list) - i:].index(tag[0] + tag[2:])
                     tag_list.reverse()
                     tag_list.pop(index + i - 1)
                 except ValueError:
@@ -120,7 +125,7 @@ class ContactNameScraper(object):
             else:
                 i += 1
 
-        tag_list = tag_list[:parent_counter+3]
+        tag_list = tag_list[:parent_counter + 3]
 
         s = ''.join(tag_list)
         s = s.replace('<', '')
@@ -150,7 +155,7 @@ class ContactNameScraper(object):
             for name in checker:
                 if name.strip():
                     # Changes from unicode, removes punctuation, and strips whitespace
-                    changed = name.encode('ascii', 'ignore').translate(string.maketrans('', ''), string.punctuation)\
+                    changed = name.encode('ascii', 'ignore').translate(string.maketrans('', ''), string.punctuation) \
                         .strip()
                     if changed == '':
                         removes.append(name)
@@ -187,6 +192,7 @@ class ContactNameScraper(object):
         return items
 
     """ Take out the tags that don't have an ending tag, such as <input> """
+
     @staticmethod
     def _remove_unpaired_tags(tag_list):
         # this part is to check if there's a tag that does not close or doesn't have an open tag (such as </br>)
@@ -200,13 +206,11 @@ class ContactNameScraper(object):
 
 
 class ContactPositionScraper(object):
-
     def __init__(self):
         self.position = ""
 
 
 class ContactPublicationsScraper(object):
-
     def __init__(self):
         self.publications = []
 
@@ -220,7 +224,6 @@ class EmailScraper(object):
         self.c_data = re.compile(r'(.*?)<!\[CDATA(.*?)]]>(.*?)', re.DOTALL)
 
     def parse(self, response):
-
         hxs = HtmlXPathSelector(response)
 
         # body will get emails that are just text in the body
@@ -228,14 +231,14 @@ class EmailScraper(object):
 
         # Remove C_Data tags, since they are showing up in the body text for some reason
         body = XPathSelectorList([text for text in body if not (re.match(self.c_data, text.extract()) or
-                                  text.extract().strip() == '')])
+                                                                text.extract().strip() == '')])
 
         body = body.re(self.email_regex)
 
         # hrefs will get emails from hrefs
         hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(self.email_regex)
 
-        emails = body+hrefs
+        emails = body + hrefs
 
         # Take out the unicode or whatever, and substitute [at] for @ and [dot] for .
         for i in range(len(emails)):
@@ -260,7 +263,7 @@ class KeywordScraper(object):
 
     def format_extracted_text(self, list):
         for i in range(len(list)):
-            list[i] = list[i].encode('ascii','ignore')
+            list[i] = list[i].encode('ascii', 'ignore')
         return list
 
     def append_words(self, append_to, source):
@@ -284,11 +287,11 @@ class KeywordScraper(object):
         #Parse the response
         hxs = HtmlXPathSelector(response)
 
-        elements = ['h1', 'h2','h3','h4','h5','h6','p','a','b','code','em','italic',
-                    'small','strong','div','span','li','th','td','a[contains(@href, "image")]']
+        elements = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'b', 'code', 'em', 'italic',
+                    'small', 'strong', 'div', 'span', 'li', 'th', 'td', 'a[contains(@href, "image")]']
 
         for element in elements:
-            words = hxs.select('//'+element+'/text()').extract()
+            words = hxs.select('//' + element + '/text()').extract()
             all_words = self.append_words(all_words, words)
 
         #Run a frequency distribution on the web page body
@@ -300,7 +303,8 @@ class KeywordScraper(object):
                 del freq_dist[word]
 
         # Take the NUM_KEYWORDS most frequent keywords
-        most_freq_keywords = dict(sorted(freq_dist.iteritems(), key=operator.itemgetter(1), reverse=True)[:self.NUM_KEYWORDS])
+        most_freq_keywords = dict(
+            sorted(freq_dist.iteritems(), key=operator.itemgetter(1), reverse=True)[:self.NUM_KEYWORDS])
         return most_freq_keywords
 
 
@@ -367,24 +371,24 @@ class OrgAddressScraper(object):
                     counter = 0
                     while check in self._cities:
                         city = check
-                        check = body[i-1-counter] + " " + city
+                        check = body[i - 1 - counter] + " " + city
                         counter += 1
-                    if len(body[i+1]) == 6 and body[i+1].isdigit():
-                        city_and_zip.append((city, body[i+1]))
-                    elif len(body[i+1]) == 3 and len(body[i+2]) == 3 and body[i+1].isdigit() and body[i+2].isdigit():
-                        city_and_zip.append((city, body[i+1] + body[i+2]))
+                    if len(body[i + 1]) == 6 and body[i + 1].isdigit():
+                        city_and_zip.append((city, body[i + 1]))
+                    elif len(body[i + 1]) == 3 and len(body[i + 2]) == 3 and body[i + 1].isdigit() and body[
+                                i + 2].isdigit():
+                        city_and_zip.append((city, body[i + 1] + body[i + 2]))
         address_list = []
         for i in range(len(city_and_zip)):
             item = ScrapedAddress()
             item['city'] = city_and_zip[i][0]
             item['zip_code'] = city_and_zip[i][1]
             address_list.append(item)
-        # the database is expecting a single string, so I'm going to just return first for now -Paul-
+            # the database is expecting a single string, so I'm going to just return first for now -Paul-
         return address_list[0]['city'] + " " + address_list[0]['zip_code'] if len(address_list) > 0 else ''
 
 
 class OrgContactsScraper(object):
-
     def __init__(self):
         pass
 
@@ -393,7 +397,6 @@ class OrgContactsScraper(object):
 
 
 class OrgFacebookScraper(object):
-
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?facebook\.com/.+(?:/)?$", re.IGNORECASE)
         self.fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
@@ -413,7 +416,6 @@ class OrgFacebookScraper(object):
 
 
 class OrgTwitterScraper(object):
-
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?twitter\.com/(?:#!/)?\w+(?:/)?$", re.IGNORECASE)
         self.tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
@@ -433,7 +435,6 @@ class OrgTwitterScraper(object):
 
 
 class OrgNameScraper(object):
-
     def __init__(self):
         self._split_punctuation = re.compile(r"[ \w']+")
         #Load words to be ignored
@@ -479,12 +480,11 @@ class OrgNameScraper(object):
             if acronym == url:
                 org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
                 break
-        # Returning string instead of ScrapedOrgName to make transition to DB easier
+            # Returning string instead of ScrapedOrgName to make transition to DB easier
         return org_name['name']
 
 
 class OrgPartnersScraper(object):
-
     def __init__(self):
         self._link_scraper = LinkScraper()
         self._partner_text = 'partner'
@@ -534,7 +534,8 @@ class OrgPartnersScraper(object):
         elements = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
         partner_page = False
         for e in elements:
-            found = hxs.select("//%s[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'partner')]" % e)
+            found = hxs.select(
+                "//%s[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'partner')]" % e)
             if found and '/a/' not in self._path_to(found):
                 partner_page = True
                 break
@@ -572,7 +573,6 @@ class OrgPartnersScraper(object):
 
 
 class OrgTypeScraper(object):
-
     def __init__(self):
         # Lemmatizer for shortening each word to a more-commonly-used form of the word
         self._lemmatizer = WordNetLemmatizer()
@@ -716,7 +716,7 @@ class OrgTypeScraper(object):
 
         # Get keywords
         keywords_dict = keyword_scraper_inst.parse(response)
-        keywords = map(lambda(k, v): k, sorted(keywords_dict.items(), key=lambda(k, v): v, reverse=True))
+        keywords = map(lambda (k, v): k, sorted(keywords_dict.items(), key=lambda (k, v): v, reverse=True))
 
         # Get all words
         all_words = []
@@ -724,7 +724,7 @@ class OrgTypeScraper(object):
         elements = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'b', 'code', 'em', 'italic',
                     'small', 'strong', 'div', 'span', 'li', 'th', 'td', 'a[contains(@href, "image")]']
         for element in elements:
-            words = hxs.select('//'+element+'/text()').extract()
+            words = hxs.select('//' + element + '/text()').extract()
             keyword_scraper_inst.append_words(all_words, words)
 
         all_words = list(set(self._lemmatizer.lemmatize(word) for word in all_words))
@@ -737,7 +737,7 @@ class OrgTypeScraper(object):
         # (this means that government and religion types are mutually exclusive)
         elif any(word in self._religion_words for word in all_words):
             types.append(OrgTypesEnum.RELIGIOUS)
-        # Other types
+            # Other types
         for type in self._type_words.iterkeys():
             rank = self._min_index_found(keywords, self._type_words[type])
             if rank < self._max_rank:
@@ -751,7 +751,6 @@ class OrgTypeScraper(object):
 
 
 class OrgUrlScraper(object):
-
     def __init__(self):
         pass
 
@@ -762,37 +761,31 @@ class OrgUrlScraper(object):
 
 
 class PublicationAuthorsScraper(object):
-
     def __init__(self):
         authors = []
 
 
 class PublicationDateScraper(object):
-
     def __init__(self):
         partners = []
 
 
 class PublicationPublisherScraper(object):
-
     def __init__(self):
         publisher = []
 
 
 class PublicationTitleScraper(object):
-
     def __init__(self):
         titles = []
 
 
 class PublicationTypeScraper(object):
-
     def __init__(self):
         type = []
 
 
 class UrlMetadataScraper(object):
-
     def __init__(self):
         self.dao = URLMetadataDAO
 
@@ -845,10 +838,10 @@ class UrlMetadataScraper(object):
 
 
 class USPhoneNumberScraper(object):
-
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-        us_format_regex = re.compile(r'\b(?! )1?\s?[(-./]?\s?[2-9][0-8][0-9]\s?[)-./]?\s?[2-9][0-9]{2}\s?\W?\s?[0-9]{4}\b')
+        us_format_regex = re.compile(
+            r'\b(?! )1?\s?[(-./]?\s?[2-9][0-8][0-9]\s?[)-./]?\s?[2-9][0-9]{2}\s?\W?\s?[0-9]{4}\b')
         # body will get phone numbers that are just text in the body
         body = hxs.select('//body').re(us_format_regex)
 
@@ -856,7 +849,7 @@ class USPhoneNumberScraper(object):
 
         # Remove unicode indicators
         for i in range(len(phone_nums)):
-            phone_nums[i] = phone_nums[i].encode('ascii','ignore')
+            phone_nums[i] = phone_nums[i].encode('ascii', 'ignore')
 
         # Makes it a set then back to a list to take out duplicates that may have been both in the body and links
         phone_nums = list(set(phone_nums))

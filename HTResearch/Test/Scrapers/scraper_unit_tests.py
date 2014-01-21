@@ -1,20 +1,17 @@
 import unittest
 import pickle
-import os.path
 
-from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import *
-from HTResearch.Test.Mocks.utility_scrapers import *
-from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
 from springpython.context import ApplicationContext
 from springpython.config import Object
 
-from bson.binary import Binary
-
+from HTResearch.Test.Mocks.utility_scrapers import *
+from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Test.Mocks.connection import MockDBConnection
+
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
 
@@ -82,7 +79,6 @@ class TestableUtilityScraperContext(UtilityScraperContext):
 
 
 class TestableDAOContext(DAOContext):
-
     @Object()
     def RegisteredDBConnection(self):
         return MockDBConnection
@@ -181,7 +177,7 @@ class ScraperTests(unittest.TestCase):
                     names.append(ret)
 
         # Hardcoded results based on the sites that were crawled
-        assert_list = [ # from first site, US names
+        assert_list = [# from first site, US names
                        {'name': "Gloria Steinem"},
                        {'name': "Jennifer Buffett"},
                        {'name': "Peter Buffett"},
@@ -203,7 +199,7 @@ class ScraperTests(unittest.TestCase):
                        {'name': "Lela Goren"},
                        {'name': "Ellyson Perkins"},
                        {'name': "Mona Sinha"},
-                        # from second site, Indian names
+                       # from second site, Indian names
                        {'name': "Smt. Parvinder Sohi Behuria, IRS"},
                        {'name': 'Smt. Kanwaljit Deol, IPS'},
                        {'name': 'Sh. A.K. Garg'},
@@ -393,7 +389,7 @@ class ScraperTests(unittest.TestCase):
             "httpwwwprajwalaindiacomhomehtml",
             "httpwwwhalftheskymovementorg",
             "httpapneaaporg",
-            ]
+        ]
 
         org_tw_scraper = OrgTwitterScraper()
         twitter_links = []
@@ -537,33 +533,42 @@ class ScraperTests(unittest.TestCase):
                     orgs.append(ret)
 
         assert_list = [{
-            'name': 'Bombay Teen Challenge',
-            'types': [
-                OrgTypesEnum.RELIGIOUS,
-                OrgTypesEnum.EDUCATION,
-                OrgTypesEnum.PREVENTION,
-            ],
-            'phone_numbers': [
-                '16157124863',  # US number
-                '912226042242'  # indian number
-            ],
-            'emails': [
-                'tvarghese@bombayteenchallenge.org',
-                'kkdevaraj@bombayteenchallenge.org',
-            ],
-            'address':
-                'Mumbai 400052',
-            'contacts': [
-                # not yet implemented
-            ],
-            'organization_url': 'bombayteenchallenge.org/',
-            'partners': [
-                # not yet implemented
-            ],
-            'facebook': 'http://www.facebook.com/BombayTeenChallenge',
-            'twitter': 'https://twitter.com/bombaytc',
-            'keywords': {'[]': 44, 'access': 32, 'addict': 51, 'afraid': 32, 'allows': 32, 'ambedkar': 32, 'announced': 32, 'ash': 32, 'bandra': 32, 'beauty': 32, 'began': 32, 'betrayed': 32, 'blog': 64, 'bombay': 384, 'btc': 64, 'care': 51, 'challenge': 358, 'child': 64, 'contact': 64, 'district': 53, 'donate': 64, 'drug': 64, 'education': 89, 'education.': 39, 'gift': 64, 'health': 96, 'india': 96, 'life': 96, 'light': 64, 'live': 64, 'men': 53, 'mumbai': 128, 'music': 83, 'office': 38, 'out.': 39, 'program': 85, 'reach': 64, 'read': 96, 'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'street': 96, 'teen': 384, 'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'wa': 64, 'woman': 112},
-        }]
+                           'name': 'Bombay Teen Challenge',
+                           'types': [
+                               OrgTypesEnum.RELIGIOUS,
+                               OrgTypesEnum.EDUCATION,
+                               OrgTypesEnum.PREVENTION,
+                           ],
+                           'phone_numbers': [
+                               '16157124863', # US number
+                               '912226042242'  # indian number
+                           ],
+                           'emails': [
+                               'tvarghese@bombayteenchallenge.org',
+                               'kkdevaraj@bombayteenchallenge.org',
+                           ],
+                           'address':
+                               'Mumbai 400052',
+                           'contacts': [
+                               # not yet implemented
+                           ],
+                           'organization_url': 'bombayteenchallenge.org/',
+                           'partners': [
+                               # not yet implemented
+                           ],
+                           'facebook': 'http://www.facebook.com/BombayTeenChallenge',
+                           'twitter': 'https://twitter.com/bombaytc',
+                           'keywords': {'[]': 44, 'access': 32, 'addict': 51, 'afraid': 32, 'allows': 32,
+                                        'ambedkar': 32, 'announced': 32, 'ash': 32, 'bandra': 32, 'beauty': 32,
+                                        'began': 32, 'betrayed': 32, 'blog': 64, 'bombay': 384, 'btc': 64, 'care': 51,
+                                        'challenge': 358, 'child': 64, 'contact': 64, 'district': 53, 'donate': 64,
+                                        'drug': 64, 'education': 89, 'education.': 39, 'gift': 64, 'health': 96,
+                                        'india': 96, 'life': 96, 'light': 64, 'live': 64, 'men': 53, 'mumbai': 128,
+                                        'music': 83, 'office': 38, 'out.': 39, 'program': 85, 'reach': 64, 'read': 96,
+                                        'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'street': 96, 'teen': 384,
+                                        'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'wa': 64,
+                                        'woman': 112},
+                       }]
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
 
@@ -610,7 +615,7 @@ class ScraperTests(unittest.TestCase):
             {
                 'checksum': Binary('199553381546012383114562002951261892300'),
                 'last_visited': datetime.utcnow().date(),
-                'update_freq': 1,  # not incremented b/c checksum is same
+                'update_freq': 1, # not incremented b/c checksum is same
                 'url': 'http://www.halftheskymovement.org/partners'
             },
         ]
