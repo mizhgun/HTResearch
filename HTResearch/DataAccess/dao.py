@@ -4,6 +4,7 @@ from connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.geocoder import geocode
 from mongoengine.fields import StringField, URLField, EmailField
+import re
 
 
 class DAO(object):
@@ -65,43 +66,37 @@ class DAO(object):
 
             return ret
 
-    # Search all string fields for text and return list of results
-    # NOTE: may be slower than MongoDB's text search feature, which is unfortunately unusable because it is in beta
-    def text_search(self, text, num_elements, **sort_params):
+    # Search string fields for text and return list of results
+    def text_search(self, text, fields, num_elements=10, **sort_params):
         with self.conn():
-            # Find all string fields
             fields_dict = self.dto._fields
-            string_types = (StringField, URLField, EmailField)
-            string_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) in string_types]
+            entry_query = self._get_query(text, fields)
+            found_entries = self.dto.objects.filter(entry_query)
+            if 'sort_fields' in sort_params:
+                found_entries = found_entries.order_by(sort_params['sort_fields'])
+            return found_entries[:num_elements]
 
-            # Search for each term in each string field
-            result_lists = []
-            for term in text.split():
-                results = [list(self.dto.objects(**{field + '__icontains': term})) for field in string_fields]
-                results = reduce(lambda x, y: x + y, results)  # flatten to list of results
-                result_lists.append(results)
+    def _normalize_query(self, query_string,
+                         findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
+                         normspace=re.compile(r'\s{2,}').sub):
+        return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
 
-            # Search by "AND" with search terms (change to any if you want "OR")
-            combo = all
-            results = []
-            if result_lists:
-                results = [item for item in result_lists[0] if combo(item in list for list in result_lists)]
-
-            # filter by required fields, only take results with the non-None fields
-            if 'required_fields' in sort_params.keys():
-                for key in sort_params['required_fields']:
-                    results = [r for r in results if r[key]]
-
-            # Remove duplicates
-            results = list(set(results))
-
-            # sort by fields
-            if 'sort_fields' in sort_params.keys():
-                for field in reversed(sort_params['sort_fields']):
-                    results.sort(key=lambda result: result[field])
-
-            # return the last num_elements
-            return results[:num_elements]
+    def _get_query(self, query_string, search_fields):
+        query = None # Query to search for every search term
+        terms = self._normalize_query(query_string)
+        for term in terms:
+            or_query = None
+            for field_name in search_fields:
+                q = Q(**{'%s__icontains' % field_name: term})
+                if or_query is None:
+                    or_query = q
+                else:
+                    or_query = or_query | q
+            if query is None:
+                query = or_query
+            else:
+                query = query & or_query
+        return query
 
 
 class ContactDAO(DAO):
