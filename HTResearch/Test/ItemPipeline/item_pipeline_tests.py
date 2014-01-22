@@ -7,7 +7,6 @@ from springpython.config import Object
 from HTResearch.WebCrawler.WebCrawler.items import ScrapedOrganization
 from HTResearch.Utilities.context import ItemPipelineContext
 from HTResearch.DataModel.enums import OrgTypesEnum
-from HTResearch.Test.Mocks.connection import MockDBConnection
 from HTResearch.Test.Mocks.dao import *
 
 
@@ -76,6 +75,7 @@ class ItemPipelineTest(unittest.TestCase):
             self.assertIn(partner, self.org['partners'])
 
         print "Item Switch Test Passed"
+
 
 if __name__ == '__main__':
     try:

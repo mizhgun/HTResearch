@@ -1,8 +1,5 @@
 import json
-from mongoengine.fields import ObjectId, StringField, URLField
-from HTResearch.DataModel.model import *
-from HTResearch.DataAccess.dto import *
-from UserString import MutableString
+from mongoengine.fields import ObjectId
 
 
 class MongoJSONEncoder(json.JSONEncoder):
@@ -21,7 +18,7 @@ class MongoJSONEncoder(json.JSONEncoder):
         # If a custom object, encode ourselves
         elif not self._check_if_encodable(o):
             return self._encode_ref(o)
-        # Otherwise, return
+            # Otherwise, return
         return json.JSONEncoder.default(self, o)
 
     def encode(self, o):

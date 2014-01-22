@@ -6,95 +6,95 @@
     <link href="http://www.fuelcdn.com/fuelux-imh/2.4.0/css/fuelux.css" rel="stylesheet"/>
 {% endblock %}
 {% block bootstrap %}
-<script src="http://www.fuelcdn.com/fuelux-imh/2.4.0/loader.min.js" type="text/javascript"></script>
+    <script src="http://www.fuelcdn.com/fuelux-imh/2.4.0/loader.min.js" type="text/javascript"></script>
 {% endblock %}
 
 
 {% block content %}
-<script>
-    $(function () {
-        $('#org-rank-table').datagrid({
-            dataSource: new OrgDataSource({
-                // Column definitions for Datagrid
-                columns: [
-                    {
-                        property: 'num',
-                        label: '#',
-                        sortable: false
-                    },
-                    {
-                        property: 'name',
-                        label: 'Name',
-                        sortable: true
-                    },
-                    {
-                        property: 'address',
-                        label: 'Address',
-                        sortable: false
-                    },
-                    {
-                        property: 'phone_numbers',
-                        label: 'Phone Numbers',
-                        sortable: false
-                    },
-                    {
-                        property: 'emails',
-                        label: 'E-Mails',
-                        sortable: false
-                    },
-                    {
-                        property: 'organization_url',
-                        label: 'Website',
-                        sortable: false
-                    },
-                    {
-                        property: 'facebook',
-                        label: 'Facebook',
-                        sortable: false
-                    },
-                    {
-                        property: 'twitter',
-                        label: 'Twitter',
-                        sortable: false
+    <script>
+        $(function () {
+            $('#org-rank-table').datagrid({
+                dataSource: new OrgDataSource({
+                    // Column definitions for Datagrid
+                    columns: [
+                        {
+                            property: 'num',
+                            label: '#',
+                            sortable: false
+                        },
+                        {
+                            property: 'name',
+                            label: 'Name',
+                            sortable: true
+                        },
+                        {
+                            property: 'address',
+                            label: 'Address',
+                            sortable: false
+                        },
+                        {
+                            property: 'phone_numbers',
+                            label: 'Phone Numbers',
+                            sortable: false
+                        },
+                        {
+                            property: 'emails',
+                            label: 'E-Mails',
+                            sortable: false
+                        },
+                        {
+                            property: 'organization_url',
+                            label: 'Website',
+                            sortable: false
+                        },
+                        {
+                            property: 'facebook',
+                            label: 'Facebook',
+                            sortable: false
+                        },
+                        {
+                            property: 'twitter',
+                            label: 'Twitter',
+                            sortable: false
+                        }
+                    ],
+                    formatter: function (items, startIndex) {
+                        $.each(items, function (index, item) {
+                            item.num = (startIndex + index) + '<span style="display: none;" class="org-data-row-id">' + item.id + '</span>';
+                            if (item.organization_url)
+                                item.organization_url = '<a target="_blank" href="' + item.organization_url + '">Site</a>';
+                            else
+                                item.organization_url = '';
+                            if (item.phone_numbers)
+                                item.phone_numbers = item.phone_numbers.join(', ');
+                            else
+                                item.phone_numbers = '';
+                            if (item.emails)
+                                item.emails = item.emails.join(', ');
+                            else
+                                item.emails = '';
+                            if (item.facebook)
+                                item.facebook = '<a target="_blank" href="' + item.facebook + '">FB</a>';
+                            else
+                                item.facebook = '';
+                            if (item.twitter)
+                                item.twitter = '<a target="_blank" href="' + item.twitter + '">TW</a>';
+                            else
+                                item.twitter = '';
+                        });
                     }
-                ],
-                formatter: function (items, startIndex) {
-                    $.each(items, function(index, item) {
-                        item.num = (startIndex + index) + '<span style="display: none;" class="org-data-row-id">' + item.id + '</span>';
-                        if (item.organization_url)
-                            item.organization_url = '<a target="_blank" href="' + item.organization_url + '">Site</a>';
-                        else
-                            item.organization_url = '';
-                        if (item.phone_numbers)
-                            item.phone_numbers = item.phone_numbers.join(', ');
-                        else
-                            item.phone_numbers = '';
-                        if (item.emails)
-                            item.emails = item.emails.join(', ');
-                        else
-                            item.emails = '';
-                        if (item.facebook)
-                            item.facebook = '<a target="_blank" href="' + item.facebook + '">FB</a>';
-                        else
-                            item.facebook = '';
-                        if (item.twitter)
-                            item.twitter = '<a target="_blank" href="' + item.twitter + '">TW</a>';
-                        else
-                            item.twitter = '';
-                    });
-                }
-            }),
-            stretchHeight: true
-        });
+                }),
+                stretchHeight: true
+            });
 
-        $('#org-rank-table').on('dblclick', 'tbody > tr', function() {
-            var id = $(this).find('.org-data-row-id').html();
-            if (id)
-                window.location.href = '/organization/' + id;
-        })
-    });
-</script>
-<div class="fuelux" style="padding: 10px;">
+            $('#org-rank-table').on('dblclick', 'tbody > tr', function () {
+                var id = $(this).find('.org-data-row-id').html();
+                if (id)
+                    window.location.href = '/organization/' + id;
+            })
+        });
+    </script>
+    <div class="fuelux" style="padding: 10px;">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12" style="overflow-x: scroll">
             <table id="org-rank-table" class="table table-hover table-bordered datagrid">
@@ -117,7 +117,7 @@
                 <tfoot>
                 <tr>
                     <th>
-                        <div class="datagrid-footer-left" >
+                        <div class="datagrid-footer-left">
                             <div class="grid-controls">
                             <span>
                                 <span class="grid-start"></span> -
@@ -157,9 +157,7 @@
                                 </div>
 
 
-
-
-                                 <span>of <span class="grid-pages"></span></span>
+                                <span>of <span class="grid-pages"></span></span>
                                 <button type="button" class="btn grid-nextpage"><i
                                         class="icon-chevron-right"></i>
                                 </button>
@@ -172,5 +170,4 @@
             </table>
         </div>
     </div>
-</div>
 {% endblock %}

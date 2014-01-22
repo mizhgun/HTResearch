@@ -13,7 +13,8 @@ class UrlUtility:
 
     @staticmethod
     def _populate_tlds():
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources/effective_tld_names.dat.txt')) as f:
+        with open(
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources/effective_tld_names.dat.txt')) as f:
             UrlUtility.tlds = [line.strip() for line in f if line[0] not in "/\n"]
 
     @staticmethod
@@ -39,7 +40,7 @@ class UrlUtility:
             if exception_candidate in UrlUtility.tlds:
                 return ".".join(url_elements[i:])
             if candidate in UrlUtility.tlds or wildcard_candidate in UrlUtility.tlds:
-                return ".".join(url_elements[i-1:])
+                return ".".join(url_elements[i - 1:])
                 # returns domain.co.uk
 
         if no_exception:
