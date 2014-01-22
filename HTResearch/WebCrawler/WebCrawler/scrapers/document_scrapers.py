@@ -1,14 +1,19 @@
-from ..items import *
-from utility_scrapers import *
 import string
 import re
+<<<<<<< HEAD
 from scrapy.http import HtmlResponse
+=======
+
+from utility_scrapers import *
+
+>>>>>>> R4_GhostRider
 from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
 
 
 class ContactScraper():
+<<<<<<< HEAD
 
     def parse(self, response):
         #get all the values out of the dictionary that the Contact scraper returns
@@ -29,6 +34,10 @@ class ContactScraper():
             contact['organization'] = organization
             contacts.append(contact)
         return contacts
+=======
+    def __init__(self):
+        contact = None
+>>>>>>> R4_GhostRider
 
 
 class OrganizationScraper():
@@ -102,17 +111,25 @@ class OrganizationScraper():
                 site_text = hxs.select('//html//text()').extract()
                 site_text = [element.strip() for element in site_text if element.strip() != '']
 
+<<<<<<< HEAD
                 for word in self._required_words:
                     for sentence in site_text:
                         sentence = self._punctuation.sub(' ', sentence)
                         if word in sentence.lower():
                             return True
             # no keyword found, check if we already added organization
+=======
+            for word in self._required_words:
+                for sentence in site_text:
+                    sentence = self._punctuation.sub(' ', sentence)
+                    if word in sentence.lower():
+                        return True
+                        # no keyword found, check if we already added organization
+>>>>>>> R4_GhostRider
 
         return False
 
 
 class PublicationScraper():
-
     def __init__(self):
         publication = None

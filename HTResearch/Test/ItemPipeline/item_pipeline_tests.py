@@ -7,7 +7,6 @@ from springpython.config import Object
 from HTResearch.WebCrawler.WebCrawler.items import ScrapedOrganization, ScrapedContact
 from HTResearch.Utilities.context import ItemPipelineContext
 from HTResearch.DataModel.enums import OrgTypesEnum
-from HTResearch.Test.Mocks.connection import MockDBConnection
 from HTResearch.Test.Mocks.dao import *
 
 
@@ -99,6 +98,7 @@ class ItemPipelineTest(unittest.TestCase):
 
         print "Item Switch Test Passed"
 
+<<<<<<< HEAD
     def test_switch_scraped_contact(self):
 
         print "Creating ItemSwitch"
@@ -128,6 +128,8 @@ class ItemPipelineTest(unittest.TestCase):
         self.assertEqual(assert_contact.position, self.contact['position'])
 
         print "Item Switch Test Passed"
+=======
+>>>>>>> R4_GhostRider
 
 if __name__ == '__main__':
     try:

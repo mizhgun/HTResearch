@@ -1,8 +1,15 @@
 from mongoengine import Q
+from mongoengine.fields import StringField, URLField, EmailField
+
 from dto import *
+
 from connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
+<<<<<<< HEAD
 from mongoengine.fields import StringField, URLField, EmailField
+=======
+from HTResearch.Utilities.geocoder import geocode
+>>>>>>> R4_GhostRider
 
 
 class DAO(object):
@@ -10,6 +17,7 @@ class DAO(object):
     A generic DAO class that may be subclassed by DAOs for operations on
     specific documents.
     """
+
     def __init__(self):
         self.conn = DBConnection
 
@@ -42,7 +50,8 @@ class DAO(object):
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
-    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[], **constraints):
+    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[],
+                 **constraints):
         with self.conn():
             if len(sort_fields) > 0:
                 ret = self.dto.objects(**constraints).order_by(sort_fields)
@@ -60,7 +69,7 @@ class DAO(object):
                 if end is None:
                     return ret[start:]
                 else:
-                    return ret[start:end+1]
+                    return ret[start:end + 1]
 
             return ret
 
@@ -107,6 +116,7 @@ class ContactDAO(DAO):
     """
     A DAO for the Contact document
     """
+
     def __init__(self):
         super(ContactDAO, self).__init__()
         self.dto = ContactDTO
@@ -162,6 +172,7 @@ class OrganizationDAO(DAO):
     """
     A DAO for the Organization document
     """
+
     def __init__(self):
         super(OrganizationDAO, self).__init__()
         self.dto = OrganizationDTO
@@ -274,6 +285,7 @@ class PublicationDAO(DAO):
     """
     A DAO for the Publication document
     """
+
     def __init__(self):
         super(PublicationDAO, self).__init__()
         self.dto = PublicationDTO
@@ -332,6 +344,7 @@ class URLMetadataDAO(DAO):
     """
     A DAO for the URLMetadata document
     """
+
     def __init__(self):
         super(URLMetadataDAO, self).__init__()
         self.dto = URLMetadataDTO
@@ -365,7 +378,6 @@ class URLMetadataDAO(DAO):
 
 
 class UserDAO(DAO):
-
     def __init__(self):
         super(UserDAO, self).__init__()
         self.dto = UserDTO
