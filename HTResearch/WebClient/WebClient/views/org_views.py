@@ -3,13 +3,17 @@ import json
 
 from django.shortcuts import render
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from springpython.context import ApplicationContext
 
+from HTResearch.DataAccess.dto import URLMetadataDTO
+from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.context import DAOContext
-
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
+from HTResearch.Utilities.converter import DTOConverter
+from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
+from HTResearch.WebClient.WebClient.models import RequestOrgForm
 
 
 logger = get_logger(LoggingSection.CLIENT, __name__)
@@ -56,6 +60,35 @@ def organization_profile(request, org_id):
               "scheme": scheme
     }
     return render(request, 'organization_profile.html', params)
+
+
+def request_organization(request):
+    if 'user_id' not in request.session:
+        HttpResponseRedirect('/login')
+
+    form = RequestOrgForm(request.POST or None)
+    error = ''
+    success = ''
+
+    if request.method == 'POST':
+        if form.is_valid():
+            url = form.cleaned_data['url']
+            dao = ctx.get_object('URLMetadataDAO')
+
+            try:
+                metadata = URLMetadata(url=url, domain=UrlUtility.get_domain(url))
+            except ValueError:
+                error = "Oops! We don't recognize that domain. Please try another."
+
+            try:
+                dto = DTOConverter.to_dto(URLMetadataDTO, metadata)
+                dao.create_update(dto)
+            except:
+                error = 'Something went wrong with your request. Please try again later.'
+
+            success = 'Your request has been sent successfully!'
+
+    return render(request, 'request_organization.html', {'form': form, 'success': success, 'error': error})
 
 
 def get_org_keywords(request):
