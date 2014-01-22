@@ -60,7 +60,7 @@
                 ],
                 formatter: function (items, startIndex) {
                     $.each(items, function(index, item) {
-                        item.num = startIndex + index;
+                        item.num = (startIndex + index) + '<span style="display: none;" class="org-data-row-id">' + item.id + '</span>';
                         if (item.organization_url)
                             item.organization_url = '<a target="_blank" href="' + item.organization_url + '">Site</a>';
                         else
@@ -86,12 +86,18 @@
             }),
             stretchHeight: true
         });
+
+        $('#org-rank-table').on('dblclick', 'tbody > tr', function() {
+            var id = $(this).find('.org-data-row-id').html();
+            if (id)
+                window.location.href = '/organization/' + id;
+        })
     });
 </script>
 <div class="fuelux" style="padding: 10px;">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12" style="overflow-x: scroll">
-            <table id="org-rank-table" class="table table-bordered datagrid">
+            <table id="org-rank-table" class="table table-hover table-bordered datagrid">
                 <thead>
                 <tr>
                     <th>
