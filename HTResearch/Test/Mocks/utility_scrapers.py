@@ -6,6 +6,7 @@ import string
 import datetime
 import hashlib
 import operator
+import heapq
 
 from nltk import FreqDist, WordNetLemmatizer
 from scrapy.selector import HtmlXPathSelector
@@ -325,8 +326,8 @@ class MockKeywordScraper(object):
                 del freq_dist[word]
 
         # Take the NUM_KEYWORDS most frequent keywords
-        most_freq_keywords = dict(sorted(freq_dist.iteritems(), key=operator.itemgetter(1), reverse=True)[:self.NUM_KEYWORDS])
-        return most_freq_keywords
+        most_freq_keywords = heapq.nlargest(self.NUM_KEYWORDS, freq_dist, key=freq_dist.get)
+        return ' '.join(most_freq_keywords)
 
 
 class MockOrgAddressScraper(object):
@@ -647,8 +648,7 @@ class MockOrgTypeScraper(object):
         keyword_scraper_inst = self._keyword_scraper()
 
         # Get keywords
-        keywords_dict = keyword_scraper_inst.parse(response)
-        keywords = map(lambda(k, v): k, sorted(keywords_dict.items(), key=lambda(k, v): v, reverse=True))
+        keywords = keyword_scraper_inst.parse(response).split(' ')
 
         # Get all words
         all_words = []

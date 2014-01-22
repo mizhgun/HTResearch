@@ -31,7 +31,7 @@ class OrganizationDTO(mongo.Document):
     partners = mongo.ListField(mongo.ReferenceField('self'), db_field='ps')
     facebook = mongo.URLField(db_field='f')
     twitter = mongo.URLField(db_field='t')
-    keywords = mongo.MapField(mongo.FloatField(), db_field='ks')
+    keywords = mongo.StringField(db_field='ks')
 
 
 class PublicationDTO(mongo.Document):
