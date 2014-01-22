@@ -1,22 +1,22 @@
 {% if organizations.count > 0 %}
     {% for organization in organizations %}
         <li>
-            <a  class="org-link"
-                id="org-{{ organization.id }}"
-                data-id="{{ organization.id }}"
-                data-name="{{ organization.name }}"
-                data-address="{{ organization.address }}"
-                data-latlng="{{ organization.latlng }}"
-                data-types="{{ organization.types }}"
-                data-phone_numbers="{{ organization.phone_numbers }}"
-                data-email_key="{{ organization.email_key }}"
-                data-emails="{{ organization.emails }}"
-                data-contacts="{{ organization.contacts }}"
-                data-organization_url="{{ organization.organization_url }}"
-                data-partners="{{ organization.partners }}"
-                data-facebook="{{ organization.facebook }}"
-                data-twitter="{{ organization.twitter }}"
-            href="javascript:void(0)">
+            <a class="org-link"
+               id="org-{{ organization.id }}"
+               data-id="{{ organization.id }}"
+               data-name="{{ organization.name }}"
+               data-address="{{ organization.address }}"
+               data-latlng="{{ organization.latlng }}"
+               data-types="{{ organization.types }}"
+               data-phone_numbers="{{ organization.phone_numbers }}"
+               data-email_key="{{ organization.email_key }}"
+               data-emails="{{ organization.emails }}"
+               data-contacts="{{ organization.contacts }}"
+               data-organization_url="{{ organization.organization_url }}"
+               data-partners="{{ organization.partners }}"
+               data-facebook="{{ organization.facebook }}"
+               data-twitter="{{ organization.twitter }}"
+               href="javascript:void(0)">
                 {% if organization.name or not organization.organization_url %}
                     {{ organization.name }}
                 {% else %}

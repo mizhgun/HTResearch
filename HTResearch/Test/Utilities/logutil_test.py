@@ -6,7 +6,6 @@ from HTResearch.Utilities.logutil import get_logger, LoggingSection
 
 
 class LoggingUtilityTest(unittest.TestCase):
-
     def test_logging(self):
         logger = get_logger(LoggingSection.TEST, __name__)
 

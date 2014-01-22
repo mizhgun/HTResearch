@@ -30,8 +30,8 @@ function getRows(start, end, sortField) {
             'sort': sortField,
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
         },
-        success: function(data) {
-            $(data).filter('.org-rank-row').each(function(index) {
+        success: function (data) {
+            $(data).filter('.org-rank-row').each(function (index) {
                 lastIndex++;
                 $(this).children('.org-rank-index').text(lastIndex.toString());
                 $(this).dblclick(trClick);
@@ -49,13 +49,13 @@ function lazyLoadRows() {
     getRows(start, end, sortField);
 }
 
-$(window).scroll(function() {
-    if($(window).scrollTop() == $(document).height() - $(window).height()) {
+$(window).scroll(function () {
+    if ($(window).scrollTop() == $(document).height() - $(window).height()) {
         lazyLoadRows();
     }
 })
 
-$(function() {
+$(function () {
     lazyLoadRows();
 
     $('#org-rank-table thead th').click(sortOnColumn);
