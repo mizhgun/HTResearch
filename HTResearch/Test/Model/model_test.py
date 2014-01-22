@@ -64,12 +64,6 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(model_contact.organization.name, org_model.name)
 
 
-
-
-
-
-
-
 if __name__ == '__main__':
     try:
         unittest.main()
