@@ -1,22 +1,22 @@
 {% extends "global.html" %}
 
-{% block imports%}
-    <title>Organization - {{contact.first_name}}</title>
-{%  endblock %}
+{% block imports %}
+    <title>Organization - {{ contact.first_name }}</title>
+{% endblock %}
 
 {% block content %}
     <div id="wrapper">
         <div class="row" style="padding-top: 5px;">
-            <center><h1> {% if contact.first_name %}{{contact.first_name}}{% endif %}
-                {% if contact.last_name %}{{contact.last_name}}{% endif %}</h1></center>
+            <center><h1> {% if contact.first_name %}{{ contact.first_name }}{% endif %}
+                {% if contact.last_name %}{{ contact.last_name }}{% endif %}</h1></center>
             {% if contact.position %}
-                <center><h3>{{contact.position}}</h3></center>
+                <center><h3>{{ contact.position }}</h3></center>
             {% endif %}
         </div>
 
         <div class="row">
             <div class="col-md-1"></div>
-             <hr class="col-md-10"></hr>
+            <hr class="col-md-10"></hr>
             <div class="col-md-1"></div>
         </div>
 
@@ -26,19 +26,19 @@
                     <h2>Contact Information</h2>
 
                     <p>Phone Number:
-                        {{ contact.phone_number}}
+                        {{ contact.phone_number }}
                     </p>
 
-                    <p>Email Address: 
-                        {{ contact.email}}
+                    <p>Email Address:
+                        {{ contact.email }}
                     </p>
 
                     <p>Organization:
-                        <a target="_blank" href="{{ org_url }}">{{ contact.organization.id }}</a>
+                        <a target="_blank" href="{{ org_url }}">{{ contact.organization.name }}</a>
                     </p>
 
                     <p>Publications:
-                        {% for pub in contact.publications %} 
+                        {% for pub in contact.publications %}
                             {{ pub.title }}
                         {% endfor %}
                     </p>

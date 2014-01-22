@@ -1,14 +1,14 @@
-from ..items import *
-from utility_scrapers import *
 import string
 import re
+
+from utility_scrapers import *
+
 from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
 
 
 class ContactScraper():
-
     def __init__(self):
         contact = None
 
@@ -83,12 +83,11 @@ class OrganizationScraper():
                     sentence = self._punctuation.sub(' ', sentence)
                     if word in sentence.lower():
                         return True
-            # no keyword found, check if we already added organization
+                        # no keyword found, check if we already added organization
 
         return False
 
 
 class PublicationScraper():
-
     def __init__(self):
         publication = None

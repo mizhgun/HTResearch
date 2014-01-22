@@ -2,16 +2,16 @@
     {% for contact in contacts %}
         <li>
             <a class="contact-link"
-                id="org-{{ contact.id }}"
-                data-id="{{ contact.id }}"
-                data-first_name="{{ contact.first_name }}"
-                data-last_name="{{ contact.last_name }}"
-                data-phone_number="{{ contact.phone_number }}"
-                data-email="{{ contact.email }}"
-                data-organization="{{ contact.organization }}"
-                data-publications="{{ contact.publications }}"
-                data-position="{{ contact.position }}"
-            href="javascript:void(0)">
+               id="org-{{ contact.id }}"
+               data-id="{{ contact.id }}"
+               data-first_name="{{ contact.first_name }}"
+               data-last_name="{{ contact.last_name }}"
+               data-phone_number="{{ contact.phone_number }}"
+               data-email="{{ contact.email }}"
+               data-organization="{{ contact.organization }}"
+               data-publications="{{ contact.publications }}"
+               data-position="{{ contact.position }}"
+               href="javascript:void(0)">
                 {% if contact.first_name %}{{ contact.first_name }}{% endif %}
                 {% if contact.last_name %}{{ contact.last_name }}{% endif %}</a>
         </li>

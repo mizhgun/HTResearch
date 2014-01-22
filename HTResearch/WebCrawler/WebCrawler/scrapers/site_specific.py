@@ -30,7 +30,7 @@ class StopTraffickingDotInScraper:
         # Create XPath selector
         if isinstance(response, TextResponse):
             hxs = HtmlXPathSelector(response)
-        
+
             # get our data from the gvFaq table
             table = hxs.select('//table[@id="gvFaq"]')
             # first row is headers, so grab everything after
@@ -53,7 +53,7 @@ class StopTraffickingDotInScraper:
             #Create _TableDate items to store data for parsing popups
             items = self._create_items(states, districts, orgnames, categories, contacts, contact_numbers, cids)
 
-        return items 
+        return items
 
     def parse_popup(self, response, table_entry):
         """Parse a Popup from StopTrafficking.in (and integrate with table data)"""
@@ -83,8 +83,10 @@ class StopTraffickingDotInScraper:
         # turn lists into single variables
         keys = popup.keys()
         for key in keys:
-            if popup[key]: popup[key] = popup[key][0]
-            else: popup[key] = None
+            if popup[key]:
+                popup[key] = popup[key][0]
+            else:
+                popup[key] = None
 
         # Turn comma-separated values to lists, alter names, etc.
         popup = self.parse_popup_fields(popup, table_entry)
@@ -147,14 +149,14 @@ class StopTraffickingDotInScraper:
 
         #create contact
         contact = ScrapedContact(
-            first_name = first,
-            last_name = last,
-            primary_phone= primary_no,
-            secondary_phone = sec_no, 
-            email = email,
-            organization = None,
-            publications = None,
-            position = '') 
+            first_name=first,
+            last_name=last,
+            primary_phone=primary_no,
+            secondary_phone=sec_no,
+            email=email,
+            organization=None,
+            publications=None,
+            position='')
         return contact
 
     def _create_org(self, popup):
@@ -199,7 +201,7 @@ class StopTraffickingDotInScraper:
             partners=None)
 
         return organization
-    
+
     def _get_org_contacts(self, popup):
         # if no contact names, return
         if not popup['contact_name']:
@@ -224,22 +226,22 @@ class StopTraffickingDotInScraper:
             last = names[1]
 
             primary = None
-            if len(numbers) > i+1:
+            if len(numbers) > i + 1:
                 primary = numbers[i]
 
             email = None
-            if len(emails) > i+1:
+            if len(emails) > i + 1:
                 email = emails[i]
 
             contact = ScrapedContact(
-                first_name = first, 
-                last_name = last, 
-                primary_phone = primary,
-                secondary_phone = None, 
-                email = email,
-                organization = None, # this will be done automatically
-                publications = None,
-                position = '') 
+                first_name=first,
+                last_name=last,
+                primary_phone=primary,
+                secondary_phone=None,
+                email=email,
+                organization=None, # this will be done automatically
+                publications=None,
+                position='')
 
             contacts.append(contact)
 
@@ -247,7 +249,7 @@ class StopTraffickingDotInScraper:
 
         return contacts
 
-    def _edit_org(self, org, data = None):
+    def _edit_org(self, org, data=None):
         if org is None:
             return None
 
@@ -258,10 +260,10 @@ class StopTraffickingDotInScraper:
             org = data['category'] + " (" + state + ', ' + district + ')'
         return org
 
-    def _edit_category(self, category, data = None):
+    def _edit_category(self, category, data=None):
         return category
 
-    def _edit_contact_name(self, contact_name, data = None):
+    def _edit_contact_name(self, contact_name, data=None):
         if contact_name is None:
             return None
 
@@ -277,29 +279,29 @@ class StopTraffickingDotInScraper:
 
         return contacts
 
-    def _edit_serv_area(self, serv_area, data = None):
+    def _edit_serv_area(self, serv_area, data=None):
         return serv_area
 
-    def _edit_interests(self, interests, data = None):
+    def _edit_interests(self, interests, data=None):
         return interests
 
-    def _edit_address(self, address, data = None):
+    def _edit_address(self, address, data=None):
         return address
 
-    def _edit_state(self, state, data = None):
+    def _edit_state(self, state, data=None):
         return state
 
-    def _edit_district(self, district, data = None):
+    def _edit_district(self, district, data=None):
         return district
 
-    def _edit_url(self, url, data = None):
+    def _edit_url(self, url, data=None):
         new_url = None
         if url:
             parse = urlparse(url)
             new_url = '%s/' % parse.netloc
         return new_url
 
-    def _edit_phone(self, phone, data = None):
+    def _edit_phone(self, phone, data=None):
         if phone is None:
             return None
 
@@ -309,7 +311,7 @@ class StopTraffickingDotInScraper:
         parsed_phones = []
 
         # create our translate helper to get digits
-        all = string.maketrans('','')
+        all = string.maketrans('', '')
         nodigs = all.translate(all, string.digits)
 
         for num in phones:
@@ -323,13 +325,12 @@ class StopTraffickingDotInScraper:
             elif len(ascii) > 0:
                 parsed_phones[len(parsed_phones) - 1] += ('/' + ascii)
 
-
         return parsed_phones
 
-    def _edit_email(self, email, data = None):
+    def _edit_email(self, email, data=None):
         if email is None:
             return None
-        # split emails on commas or semicolons
+            # split emails on commas or semicolons
         if "," in email:
             return email.split(',')
         return email.split(';')
@@ -356,7 +357,7 @@ class StopTraffickingDotInScraper:
         # grab count from states, but should be same for all
         count = len(states)
         urls = [self._map_cid_to_url(cid) for cid in cids]
-        
+
         items = []
         # iterate over states, but we could use anything
         for i in xrange(0, count):
@@ -375,9 +376,9 @@ class StopTraffickingDotInScraper:
     class _TableData:
         """An intermediate class to hold table data"""
 
-        def __init__(self, state = None, district = None,
-                     org_name = None, popup_url = None, categories = None,
-                     contacts = None, contact_numbers = None):
+        def __init__(self, state=None, district=None,
+                     org_name=None, popup_url=None, categories=None,
+                     contacts=None, contact_numbers=None):
             self.state = state
             self.district = district
             self.org_name = org_name

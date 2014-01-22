@@ -19,16 +19,15 @@ def contact_profile(request, contact_id):
         print e.message
         return get_http_404_page(request)
 
-    org_url = '/organization/'+contact.organization.id if contact.organization else ''
+    org_url = '/organization/' + str(contact.organization.id) if contact.organization else ''
 
     params = {"contact": contact,
               "org_url": org_url}
 
-    return render(request, 'contact_profile_template.html', params)
+    return render(request, 'contact_profile.html', params)
 
 
 def search_contacts(request):
-
     if request.method == 'GET':
         search_text = request.GET['search_text']
     else:
