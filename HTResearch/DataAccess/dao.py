@@ -5,11 +5,7 @@ from dto import *
 
 from connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
-<<<<<<< HEAD
-from mongoengine.fields import StringField, URLField, EmailField
-=======
 from HTResearch.Utilities.geocoder import geocode
->>>>>>> R4_GhostRider
 
 
 class DAO(object):

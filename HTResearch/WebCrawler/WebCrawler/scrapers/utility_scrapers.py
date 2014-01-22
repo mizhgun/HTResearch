@@ -245,7 +245,9 @@ class ContactNameScraper(object):
 
         for str in body:
             str_split = str.split()
-            for i, split_index in enumerate(str_split):
+            # for i, split_index in enumerate(str_split):
+            for i in range(len(str_split)-1, 0, -1):
+                split_index = str_split[i]
                 if passed:
                     passed = False
                     continue
