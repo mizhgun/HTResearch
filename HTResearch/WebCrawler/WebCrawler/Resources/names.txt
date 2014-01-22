@@ -538,7 +538,6 @@ Anabelle
 Anadi
 Anahita
 Anais
-Anal
 Analiese
 Analise
 Anallese
@@ -948,7 +947,6 @@ Ashu
 Ashutosh
 Ashwin
 Ashwini
-Asia
 Asit
 Asita
 Aslam
@@ -1133,7 +1131,6 @@ Banerjee
 Banhi
 Banita
 Bankebihari
-Banker
 Bankim
 Bankimchandra
 Bansi
@@ -1212,12 +1209,10 @@ Bathsheba
 Batsheva
 Battacharjee
 Baxter
-Bay
 Bayard
 Bea
 Beale
 Bealle
-Bear
 Bearnard
 Beatrice
 Beatrisa
@@ -1278,7 +1273,6 @@ Benoite
 Benson
 Bentley
 Benton
-Beowulf
 Berchtold
 Berenice
 Beret
@@ -1662,7 +1656,6 @@ Camille
 Cammi
 Cammie
 Cammy
-Canada
 Candace
 Candi
 Candice
@@ -2100,7 +2093,6 @@ Chriss
 Chrissa
 Chrissie
 Chrissy
-Christ
 Christa
 Christabel
 Christabella
@@ -2152,7 +2144,6 @@ Cindi
 Cindie
 Cindra
 Cindy
-Cinnamon
 Cissie
 Cissy
 Clair
@@ -2324,7 +2315,6 @@ Cornelius
 Cornelle
 Cornellis
 Cornie
-Corny
 Correna
 Correy
 Corri
@@ -2460,7 +2450,6 @@ Daniella
 Danielle
 Danika
 Danila
-Danish
 Danit
 Danita
 Danna
@@ -2873,7 +2862,6 @@ Dode
 Dodi
 Dodie
 Dody
-Doe
 Doll
 Dolley
 Dolli
@@ -3316,7 +3304,6 @@ Ender
 Endora
 Engelbart
 Engelbert
-Engineer
 Englebart
 Englebert
 Engracia
@@ -3495,7 +3482,6 @@ Falak
 Falgu
 Falguni
 Fallon
-Fan
 Fanchette
 Fanchon
 Fancie
@@ -3552,7 +3538,6 @@ Faythe
 Fazeel
 Federica
 Federico
-Fedora
 Felecia
 Felicdad
 Felice
@@ -4061,7 +4046,6 @@ Gloria
 Gloriana
 Gloriane
 Glorianna
-Glory
 Glyn
 Glynda
 Glynis
@@ -4095,8 +4079,6 @@ Gomati
 Gomer
 Gonzales
 Gonzalo
-Goober
-Goose
 Gopal
 Gopalakrishnan
 Gopalan
@@ -4432,7 +4414,6 @@ Hasmukh
 Hassan
 Hastin
 Hastings
-Hasty
 Hattangady
 Hatti
 Hattie
@@ -4610,9 +4591,7 @@ Holly
 Holly-Anne
 Hollyanne
 Homer
-Honey
 Honnenahalli
-Honor
 Honoria
 Hope
 Horace
@@ -4665,7 +4644,6 @@ Hyacintha
 Hyacinthe
 Hyacinthia
 Hyacinthie
-Hyatt
 Hyman
 Hymie
 Hynala
@@ -5051,7 +5029,6 @@ Janus
 Jany
 Janya
 Japa
-Japan
 Japendra
 Japesh
 Jaquelin
@@ -5410,7 +5387,6 @@ Joyann
 Joyce
 Joycelin
 Joye
-Joyous
 Juan
 Juana
 Juanita
@@ -5809,6 +5785,7 @@ Kaylee
 Kayley
 Kaylil
 Kaylyn
+Keaton
 Kedar
 Kedarnath
 Kedia
@@ -5940,7 +5917,6 @@ Kimmi
 Kimmie
 Kimmo
 Kimmy
-Kin
 Kincaid
 King
 Kingsley
@@ -5978,7 +5954,6 @@ Kishori
 Kissee
 Kissiah
 Kissie
-Kit
 Kitti
 Kittie
 Kittur
@@ -6609,7 +6584,6 @@ Lucine
 Lucio
 Lucita
 Lucius
-Lucky
 Lucretia
 Lucy
 Ludvig
@@ -6633,7 +6607,6 @@ Lurleen
 Lurlene
 Lurline
 Lusa
-Lust
 Luther
 Luthra
 Luthria
@@ -7368,7 +7341,6 @@ Merchant
 Merchia
 Merci
 Mercie
-Mercy
 Meredeth
 Meredith
 Meredithe
@@ -7536,7 +7508,6 @@ Mmarianne
 Modesta
 Modestia
 Modestine
-Modesty
 Modi
 Moe
 Mohaiemen
@@ -7587,7 +7558,6 @@ Moore
 Moorthy
 Mora
 Mordecai
-More
 Moreen
 Morena
 Morgan
@@ -7914,7 +7884,6 @@ Natwar
 Naueshwara
 Nauhar
 Nauka
-Naval
 Navalan
 Navaneet
 Navaneeta
@@ -8498,13 +8467,11 @@ Panna
 Pannalal
 Pansie
 Pansy
-Pant
 Panth
 Panyala
 Paola
 Paolina
 Paolo
-Papa
 Papatranal
 Parag
 Parakram
@@ -8579,7 +8546,6 @@ Patel
 Paten
 Pathik
 Pathin
-Patience
 Patin
 Paton
 Patralika
@@ -9032,7 +8998,6 @@ Raakaa
 Raakhi
 Raashi
 Rab
-Rabbi
 Rabi
 Rabinder
 Rabindra
@@ -9251,7 +9216,6 @@ Ranjitsinhji
 Ranjiv
 Ranna
 Ransell
-Ransom
 Rantidev
 Raoul
 Raphael
@@ -9328,7 +9292,6 @@ Rebecka
 Rebeka
 Rebekah
 Rebekkah
-Red
 Redford
 Redmond
 Ree
@@ -9856,7 +9819,6 @@ Sally
 Sallyann
 Sallyanne
 Salman
-Salmon
 Salome
 Salomo
 Salomon
@@ -10150,7 +10112,6 @@ Sebastian
 Sebastiano
 Sebastien
 Secunda
-See
 Seema
 Seemanta
 Seetamraju
@@ -10675,7 +10636,6 @@ Skipper
 Skippie
 Skippy
 Skipton
-Sky
 Skye
 Skylar
 Skyler
@@ -10742,7 +10702,6 @@ Someshwar
 Somnath
 Sompalli
 Somu
-Son
 Sona
 Sonakshi
 Sonal
@@ -10787,7 +10746,6 @@ Spence
 Spencer
 Spense
 Spenser
-Spike
 Spiro
 Spiros
 Spoorthi
@@ -10901,12 +10859,9 @@ Sthanumurthy
 Stig
 Stillman
 Stillmann
-Sting
-Stinky
 Stirling
 Stoddard
 Storey
-Storm
 Stormi
 Stormie
 Stormy
@@ -11074,7 +11029,6 @@ Suniti
 Sunny
 Sunondo
 Sunrita
-Sunshine
 Sunthari
 Suparna
 Suppiah
@@ -12342,7 +12296,6 @@ Warner
 Warren
 Wasan
 Waseem
-Wash
 Washington
 Wat
 Waverley
@@ -12379,7 +12332,6 @@ Werner
 Wes
 Wesley
 Weslie
-West
 Westbrook
 Westbrooke
 Westleigh
@@ -12438,9 +12390,7 @@ Wilow
 Wilson
 Wilt
 Wilton
-Win
 Windham
-Windy
 Winfield
 Winford
 Winfred
@@ -12478,9 +12428,7 @@ Woodman
 Woodrow
 Woody
 Worden
-Worth
 Worthington
-Worthy
 Wren
 Wrennie
 Wright
