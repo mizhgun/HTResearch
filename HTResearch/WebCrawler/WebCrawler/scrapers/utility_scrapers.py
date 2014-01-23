@@ -744,7 +744,7 @@ class OrgTypeScraper(object):
                 types.append(type)
             if len(types) >= self._max_types:
                 break
-        if OrgTypesEnum.PREVENTION not in self._type_words.iterkeys() and OrgTypesEnum.PROTECTION not in self._type_words.iterkeys() and OrgTypesEnum.PROSECUTION not in self._type_words.iterkeys():
+        if OrgTypesEnum.PREVENTION not in types and OrgTypesEnum.PROTECTION not in types and OrgTypesEnum.PROSECUTION not in types:
             types.append(OrgTypesEnum.PREVENTION)
 
         return types or [OrgTypesEnum.UNKNOWN]

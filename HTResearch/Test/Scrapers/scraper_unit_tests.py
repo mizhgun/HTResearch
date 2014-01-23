@@ -463,7 +463,6 @@ class ScraperTests(unittest.TestCase):
             response = file_to_response(input_file)
             if response is not None:
                 ret = org_type_scraper.parse(response)
-                print ret
                 if isinstance(ret, type([])):
                     types = types + ret
                 else:
