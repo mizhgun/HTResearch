@@ -221,7 +221,7 @@ class ContactNameScraper(object):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/lastnames.txt'), 'r') as f:
             lnames = f.read().splitlines()
             self._last_names = [lname.title() for lname in lnames]
-        self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Sh', 'Smt', 'Prof', 'Shri', 'Sh.']
+        self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Sh', 'Smt', 'Prof', 'Shri']
 
         # Make a regex check for if a potential name is actually a date. Not concerned with months that aren't in the
         # names list
@@ -243,38 +243,48 @@ class ContactNameScraper(object):
         names = []
         passed = False
 
-        for str in body:
-            str_split = str.split()
+        for s in body:
+            str_split = s.split()
+            same_name = False
+            i = len(str_split) - 1
+            name_to_add = ""
             # for i, split_index in enumerate(str_split):
-            for i in range(len(str_split)-1, 0, -1):
-                split_index = str_split[i]
-                if passed:
-                    passed = False
-                    continue
-                # check if it's a last name, if it is, continue to add words before it as long as it a "name" format
-                # and it's not a title such as "Miss"
+            while i >= 0:
+                split_index = str_split[i].replace('.', '')
                 if split_index in self._last_names and split_index != str_split[0]:
-                    name_to_add = split_index
-                    c = 1
-                    while i > 0 and str_split[i-1].istitle() and str_split[i-1] not in self._titles and \
-                            str_split[i-1] not in self._stopwords and c < len(str_split):
-                        name_to_add = str_split[i-c] + " " + name_to_add
-                        # names.append(str_split[i-1] + " " + split_index)
+                    name_to_add = split_index + " " + name_to_add
+                elif split_index in self._names:
+                    name_to_add = split_index + " " + name_to_add
+                    if (i+1) < len(str_split) and (str_split[i+1].istitle() or str_split[i+1].isupper()) and \
+                                    str_split[i+1] not in self._stopwords and str_split[i+1] not in name_to_add:
+                        name_to_add += str_split[i+1]
+                elif (split_index not in self._stopwords or len(split_index) == 1) and split_index not in self._titles \
+                    and (split_index.istitle() or split_index.isupper()) and name_to_add:
+                    name_to_add = split_index + " " + name_to_add
+                elif not split_index.istitle():
+                    break
+                i -= 1
 
-                        # c++ lulz
-                        c += 1
-                    names.append(name_to_add)
-                    continue
-
-                if split_index in self._names:
-                    name_to_add = split_index
-                    if i < len(str_split)-1 and str_split[i+1].istitle() and str_split[i+1] not in self._stopwords:
-                        name_to_add += " " + str_split[i+1]
-                        passed = True
-                    names.append(name_to_add)
-                # elif split_index in self._last_names and split_index[0].isupper() \
-                #     and i > 0 and str_split[i-1][0].isupper():
-                #     names.append(str_split[i-1] + " " + split_index)
+            if name_to_add:
+                names.append(name_to_add)
+                # if split_index in self._last_names and split_index != str_split[0]:
+                #     name_to_add = split_index
+                #     c = 1
+                #     while i > 0 and str_split[i-1].istitle() and str_split[i-1] not in self._titles and \
+                #             str_split[i-1] not in self._stopwords and c < len(str_split):
+                #         name_to_add = str_split[i-c] + " " + name_to_add
+                #
+                #         # c++ lulz
+                #         c += 1
+                #     names.append(name_to_add)
+                #     continue
+                #
+                # if split_index in self._names and split_index not in self._titles:
+                #     name_to_add = split_index
+                #     if i < len(str_split)-1 and str_split[i+1].istitle() and str_split[i+1] not in self._stopwords:
+                #         name_to_add += " " + str_split[i+1]
+                #         passed = True
+                #     names.append(name_to_add)
         names = [name.encode('ascii', 'ignore') for name in names]
         items = []
         for i in range(len(names)):
@@ -285,17 +295,16 @@ class ContactNameScraper(object):
 
 
 class ContactPositionScraper(object):
+    def __init__(self):
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/positions.txt')) as f:
+            self._positions = f.read().splitlines()
+        self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
+        self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
 
-        def __init__(self):
-            with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/positions.txt')) as f:
-                self._positions = f.read().splitlines()
-            self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
-            self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
-
-        def parse(self, response):
-            for position in self._positions:
-                if string.find(response.body, position) is not -1:
-                    return position
+    def parse(self, response):
+        for position in self._positions:
+            if string.find(response.body, position) is not -1:
+                return position
 
 
 class ContactPublicationsScraper(object):
@@ -497,8 +506,8 @@ class OrgContactsScraper(object):
                 n = string.find(response.body, name.get('name'))    #find the index of each contact so we can search
                 contact_indices.append(n)                           #only between the contacts for their info
         for i in range(len(names)):
-            if i < len(names)-1:
-                cr = response.replace(body=response.body[contact_indices[i]:contact_indices[i+1]])
+            if i < len(names) - 1:
+                cr = response.replace(body=response.body[contact_indices[i]:contact_indices[i + 1]])
             else:
                 cr = response.replace(body=response.body[contact_indices[i]:])
             contacts[names[i].get('name')]['position'] = [position_scraper.parse(cr)
@@ -598,7 +607,7 @@ class OrgNameScraper(object):
             if acronym == url:
                 org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
                 break
-            # Returning string instead of ScrapedOrgName to make transition to DB easier
+                # Returning string instead of ScrapedOrgName to make transition to DB easier
         return org_name['name']
 
 
