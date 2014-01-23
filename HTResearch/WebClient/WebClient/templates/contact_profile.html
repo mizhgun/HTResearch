@@ -1,49 +1,84 @@
 {% extends "global.html" %}
 
 {% block imports %}
-    <title>Organization - {{ contact.first_name }}</title>
+    <title>Contact - {{ contact.first_name }}</title>
+    <link href="/static/css/contact_profile.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
-    <div id="wrapper">
-        <div class="row" style="padding-top: 5px;">
-            <center><h1> {% if contact.first_name %}{{ contact.first_name }}{% endif %}
-                {% if contact.last_name %}{{ contact.last_name }}{% endif %}</h1></center>
+    <div class="top-bar">
+        <div class="top-bar-panel center-block">
+            <h5 style="text-align: center; margin: 0;"><strong>CONTACT</strong></h5>
+            <span class="top-bar-glyph center-block glyphicon glyphicon-user"></span>
+        </div>
+    </div>
+
+    </div>
+    <div class="row" style="padding-top: 5px;">
+        <div class="col-lg-offset-1 col-md-offset-1 col-sm-offset-1 col-lg-10 col-md-10 col-sm-10">
+            <h1> {% if contact.first_name %}{{ contact.first_name }}{% endif %}
+                {% if contact.last_name %}{{ contact.last_name }}{% endif %}</h1>
             {% if contact.position %}
-                <center><h3>{{ contact.position }}</h3></center>
+                <h1>
+                    <small>{{ contact.position }}</small>
+                </h1>
             {% endif %}
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-md-1"></div>
-            <hr class="col-md-10"></hr>
-            <div class="col-md-1"></div>
-        </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <hr class="col-md-10"></hr>
+        <div class="col-md-1"></div>
+    </div>
 
-        <div class="row">
-            <div id="info-wrap" class="container well">
-                <center class="lead">
-                    <h2>Contact Information</h2>
-
-                    <p>Phone Number:
-                        {{ contact.phone_number }}
-                    </p>
-
-                    <p>Email Address:
-                        {{ contact.email }}
-                    </p>
-
-                    <p>Organization:
-                        <a target="_blank" href="{{ org_url }}">{{ contact.organization.name }}</a>
-                    </p>
-
-                    <p>Publications:
-                        {% for pub in contact.publications %}
-                            {{ pub.title }}
-                        {% endfor %}
-                    </p>
-                </center>
+    <div class="row">
+        <div class="col-lg-offset-1 col-md-offset-1 col-sm-offset-1 col-lg-10 col-md-10 col-sm-10">
+            <div class="pull-left panel info-glyph">
+                <span class="center-block glyphicon glyphicon-earphone"></span>
             </div>
+            <h4>Phone Number</h4>
+
+            <p>{% if contact.phone %}{{ contact.phone }}{% else %}None{% endif %}</p>
+
+            <span class="clearfix"></span>
+
+            <div class="pull-left panel info-glyph">
+                <span class="center-block glyphicon glyphicon-envelope"></span>
+            </div>
+            <h4>Email Address</h4>
+
+            <p>{% if contact.email %}{{ contact.email }}{% else %}None{% endif %}</p>
+
+            <span class="clearfix"></span>
+
+            <div class="pull-left panel info-glyph">
+                <span class="center-block glyphicon glyphicon-globe"></span>
+            </div>
+            <h4>Organization</h4>
+
+            <p>
+                {% if org_url %}
+                    <a target="_blank" href="{{ org_url }}">{{ contact.organization.name }}</a>
+                {% else %}
+                    None
+                {% endif %}
+            </p>
+
+            <span class="clearfix"></span>
+
+            <div class="pull-left panel info-glyph">
+                <span class="center-block glyphicon glyphicon-file"></span>
+            </div>
+            <h4>Publications</h4>
+            {% if contact.publications %}
+                {% for pub in contact.publications %}
+                    <p>{{ pub.title }}</p>
+                {% endfor %}
+            {% else %}
+                <p>None</p>
+            {% endif %}
+            <span class="clearfix"></span>
         </div>
     </div>
 {% endblock %}
