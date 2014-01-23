@@ -147,7 +147,7 @@ def send_invite(request):
             password = get_config_value("MAIL", "password")
 
             try:
-                if not (username or password):
+                if not (username and password):
                     raise Exception
 
                 s = smtplib.SMTP('smtp.gmail.com:587')

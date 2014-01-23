@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
     $('#invite-form').validate({
         rules: {
             email: {

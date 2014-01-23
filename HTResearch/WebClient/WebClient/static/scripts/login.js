@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function () {
     $('#login-form').validate({
         rules: {
             email: {
