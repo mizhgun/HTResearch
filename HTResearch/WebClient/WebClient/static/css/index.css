@@ -1,4 +1,4 @@
-html { 
+html {
     height: 100%;
 }
 
@@ -105,14 +105,14 @@ input:focus {
 }
 
 #signup-div {
-    position:absolute;
+    position: absolute;
     z-index: 1;
     height: 400px;
     width: 400px;
 }
 
 #login-div {
-    position:absolute;
+    position: absolute;
     z-index: 1;
     height: 300px;
     width: 400px;
@@ -166,14 +166,14 @@ input:focus {
     max-height: -o-calc(100% - 80px);
     max-height: calc(100% - 80px);
     opacity: 0.5;
-    filter:alpha(opacity=50); /* For IE8 and earlier */
+    filter: alpha(opacity=50); /* For IE8 and earlier */
     transition: opacity 1s;
     -webkit-transition: opaicty 1s;
 }
 
 #search-box-div:hover #search-results-div {
-    opacity:1.0;
-    filter:alpha(opacity=100); /* For IE8 and earlier */
+    opacity: 1.0;
+    filter: alpha(opacity=100); /* For IE8 and earlier */
 }
 
 .search-query:focus {
@@ -199,29 +199,8 @@ input:focus {
     left: 165px;
 }
 
-#type-image {
-    margin-right: 5px;
-    height: 146px;
-    width: 124px;
-}
-
-#img-div {
-    float: left;
-}
-
-#firstHeading {
-    padding: 5px;
-    margin-top: 0;
-}
-
-#addr-cell{
+#addr-cell {
     vertical-align: top;
-}
-
-#more-info {
-    position: absolute;
-    bottom: 0;
-    right: 0;
 }
 
 #more-info-bs {
@@ -240,8 +219,12 @@ input:focus {
 }
 
 #map-modal {
-    height: 225px;
-    width: 425px;
+    padding: 0px;
+    margin: 0px;
+}
+
+#org-building-icon {
+    margin: 0px;
 }
 
 ul {
@@ -269,11 +252,6 @@ ul {
     z-index: 10;
 }
 
-a.disabled {
-    color: #c0c0c0;
-    text-decoration: none;
-}
-
 #news-results {
     position: absolute;
     left: 0;
@@ -283,7 +261,7 @@ a.disabled {
     overflow-x: hidden;
     overflow-y: scroll;
     padding: 32px 10px 10px 10px;
-    background-color: #ddd;
+    background-color: #eee;
 }
 
 .article {

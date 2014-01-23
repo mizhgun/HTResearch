@@ -6,7 +6,6 @@ from HTResearch.Utilities.geocoder import geocode
 
 
 class GeocodingTest(unittest.TestCase):
-
     def test_geocoding(self):
         addr = "4444 Browning Pl, Lincoln, NE, 68516"
         check = [40.7485215, -96.6579318]

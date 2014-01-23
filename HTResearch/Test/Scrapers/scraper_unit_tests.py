@@ -1,20 +1,17 @@
 import unittest
 import pickle
-import os.path
 
-from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import *
-from HTResearch.Test.Mocks.utility_scrapers import *
-from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
 from springpython.context import ApplicationContext
 from springpython.config import Object
 
-from bson.binary import Binary
-
+from HTResearch.Test.Mocks.utility_scrapers import *
+from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Test.Mocks.connection import MockDBConnection
+
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
 
@@ -82,7 +79,6 @@ class TestableUtilityScraperContext(UtilityScraperContext):
 
 
 class TestableDAOContext(DAOContext):
-
     @Object()
     def RegisteredDBConnection(self):
         return MockDBConnection
@@ -181,7 +177,7 @@ class ScraperTests(unittest.TestCase):
                     names.append(ret)
 
         # Hardcoded results based on the sites that were crawled
-        assert_list = [ # from first site, US names
+        assert_list = [# from first site, US names
                        {'name': "Gloria Steinem"},
                        {'name': "Jennifer Buffett"},
                        {'name': "Peter Buffett"},
@@ -203,7 +199,7 @@ class ScraperTests(unittest.TestCase):
                        {'name': "Lela Goren"},
                        {'name': "Ellyson Perkins"},
                        {'name': "Mona Sinha"},
-                        # from second site, Indian names
+                       # from second site, Indian names
                        {'name': "Smt. Parvinder Sohi Behuria, IRS"},
                        {'name': 'Smt. Kanwaljit Deol, IPS'},
                        {'name': 'Sh. A.K. Garg'},
@@ -393,7 +389,7 @@ class ScraperTests(unittest.TestCase):
             "httpwwwprajwalaindiacomhomehtml",
             "httpwwwhalftheskymovementorg",
             "httpapneaaporg",
-            ]
+        ]
 
         org_tw_scraper = OrgTwitterScraper()
         twitter_links = []
@@ -613,7 +609,7 @@ class ScraperTests(unittest.TestCase):
             {
                 'checksum': Binary('199553381546012383114562002951261892300'),
                 'last_visited': datetime.utcnow().date(),
-                'update_freq': 1,  # not incremented b/c checksum is same
+                'update_freq': 1, # not incremented b/c checksum is same
                 'url': 'http://www.halftheskymovement.org/partners'
             },
         ]

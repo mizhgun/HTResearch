@@ -1,7 +1,8 @@
 {% if organizations.count > 0 %}
     {% for organization in organizations %}
         <tr id="org-{{ organization.id }}" data-id="{{ organization.id }}" class="org-rank-row">
-            <td class="org-rank-index"></td>  {# org_rank.js will fill this field for us #}
+            <td class="org-rank-index"></td>
+            {# org_rank.js will fill this field for us #}
             <td class="org-rank-name">{{ organization.name }}</td>
             <td class="org-rank-address">{{ organization.address }}</td>
             <td class="org-rank-phones">{{ organization.phone_numbers|join:", " }}</td>

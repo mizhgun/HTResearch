@@ -18,7 +18,7 @@ DOWNLOADER_MIDDLEWARES = {
 }
 
 ITEM_PIPELINES = {
-    'HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches.ItemSwitch' : 100,
+    'HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches.ItemSwitch': 100,
 }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
