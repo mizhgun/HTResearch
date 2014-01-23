@@ -1,16 +1,16 @@
-from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
-from HTResearch.Utilities.context import URLFrontierContext
-from HTResearch.Utilities.logutil import LoggingSection, get_logger
-from HTResearch.Utilities.url_tools import UrlUtility
+import os
 
 from springpython.context import ApplicationContext
-from scrapers.document_scrapers import *
-from scrapers.utility_scrapers import OrgUrlScraper
-from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
 from scrapy.http import Request
 from scrapy import log
-import os
+
+from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
+
+from HTResearch.Utilities.context import URLFrontierContext
+
+from scrapers.document_scrapers import *
+from scrapers.site_specific import StopTraffickingDotInScraper
 
 # Since this logger can be shared by the whole module, we can instantiate it here
 logger = get_logger(LoggingSection.CRAWLER, __name__)
@@ -152,8 +152,8 @@ class StopTraffickingSpider(BaseSpider):
         yield url_item
 
     def _get_url_metadata(self, item):
-        if not isinstance(item, ScrapedOrganization)\
-                or item['organization_url'] is None or item['organization_url'] == "":
+        if not isinstance(item, ScrapedOrganization) \
+            or item['organization_url'] is None or item['organization_url'] == "":
             return None
 
         url_item = ScrapedUrl()

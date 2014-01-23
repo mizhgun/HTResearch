@@ -8,6 +8,7 @@ class MockDAO(object):
     A generic DAO class that may be subclassed by DAOs for operations on
     specific documents.
     """
+
     def __init__(self):
         self.conn = MockDBConnection
 
@@ -43,7 +44,8 @@ class MockDAO(object):
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
-    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[], **constraints):
+    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[],
+                 **constraints):
         with self.conn():
             if len(sort_fields) > 0:
                 ret = self.dto.objects(**constraints).order_by(sort_fields)
@@ -61,7 +63,7 @@ class MockDAO(object):
                 if end is None:
                     return ret[start:]
                 else:
-                    return ret[start:end+1]
+                    return ret[start:end + 1]
 
             return ret
 
@@ -81,10 +83,12 @@ class MockDAO(object):
             else:
                 return URLMetadataDTO.objects(req_query & blk_query)[:num_elements]
 
+
 class MockContactDAO(MockDAO):
     """
     A DAO for the Contact document
     """
+
     def __init__(self):
         super(MockContactDAO, self).__init__()
         self.dto = ContactDTO
@@ -114,6 +118,7 @@ class MockOrganizationDAO(MockDAO):
     """
     A DAO for the Organization document
     """
+
     def __init__(self):
         super(MockOrganizationDAO, self).__init__()
         self.dto = OrganizationDTO
@@ -140,6 +145,7 @@ class MockPublicationDAO(MockDAO):
     """
     A DAO for the Publication document
     """
+
     def __init__(self):
         super(MockPublicationDAO, self).__init__()
         self.dto = PublicationDTO
@@ -168,6 +174,7 @@ class MockURLMetadataDAO(MockDAO):
     """
     A DAO for the URLMetadata document
     """
+
     def __init__(self):
         super(MockURLMetadataDAO, self).__init__()
         self.dto = URLMetadataDTO
@@ -185,7 +192,6 @@ class MockURLMetadataDAO(MockDAO):
 
 
 class MockUserDAO(MockDAO):
-
     def __init__(self):
         super(MockUserDAO, self).__init__()
         self.dto = UserDTO

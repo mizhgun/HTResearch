@@ -19,7 +19,7 @@ def index(request):
     logger.info('Request made for index')
     args = {}
     args.update(csrf(request))
-    return render(request, 'index_template.html', args)
+    return render(request, 'index.html', args)
 
 
 # Encodes a DTO's non-string fields to JSON
@@ -58,8 +58,10 @@ def heatmap_coordinates(request):
 def welcome(request):
     return render(request, 'welcome.html')
 
+
 def get_started(request):
     return render(request, 'get_started.html')
+
 
 def get_http_404_page(request):
     template = get_template('404.html')

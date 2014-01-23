@@ -1,7 +1,5 @@
 # Library imports
-import os
 import hashlib
-from multiprocessing import Queue, Process, Condition, RLock, Array
 # stdlib imports
 from multiprocessing import Queue, Process, Condition, RLock
 from Queue import Empty, Full
@@ -73,7 +71,7 @@ def _monitor_cache(dao, max_size, cache, job_queue, job_cond, fill_cond, empty_c
             logger.info('Filling the cache')
             with fill_cond:
                 urls = dao().findmany_by_domains(max_size - cache.qsize(),
-                                                   req_doms, blk_doms, srt_list)
+                                                 req_doms, blk_doms, srt_list)
                 for u in urls:
                     url_obj = DTOConverter.from_dto(URLMetadata, u)
                     try:

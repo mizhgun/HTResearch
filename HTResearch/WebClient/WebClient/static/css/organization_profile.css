@@ -1,24 +1,24 @@
 h2 {
-  text-align: center;
+    text-align: center;
 }
 
- #experience-input {
-  position: relative;
-  width: 100%;
+#experience-input {
+    position: relative;
+    width: 100%;
 }
 
 #experience-submit-btn {
-  position: relative;
-  top: 5px;
-  left: 40%;
+    position: relative;
+    top: 5px;
+    left: 40%;
 }
 
 #sidebar {
-  width: 350px;
-  margin-left: auto ;
-  margin-right: auto ;
+    width: 350px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #no-keywords {
-	display: none;
+    display: none;
 }
