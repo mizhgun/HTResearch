@@ -37,7 +37,6 @@ def search_contacts(request):
     contacts = []
 
     if search_text:
-        ctx = ApplicationContext(DAOContext())
         contact_dao = ctx.get_object('ContactDAO')
 
         contacts = contact_dao.text_search(text=search_text,

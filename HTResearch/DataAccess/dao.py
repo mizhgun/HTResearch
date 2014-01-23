@@ -73,7 +73,8 @@ class DAO(object):
             entry_query = self._get_query(text, fields)
             found_entries = self.dto.objects.filter(entry_query)
             if 'sort_fields' in sort_params:
-                found_entries = found_entries.order_by(sort_params['sort_fields'])
+                for field in reversed(sort_params['sort_fields']):
+                    found_entries = found_entries.order_by(field)
             return found_entries[:num_elements]
 
     def _normalize_query(self, query_string,
