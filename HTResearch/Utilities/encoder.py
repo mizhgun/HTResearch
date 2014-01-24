@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from mongoengine.fields import ObjectId
 
 
@@ -9,6 +10,9 @@ class MongoJSONEncoder(json.JSONEncoder):
         # If ObjectId, cast to string
         if isinstance(o, ObjectId):
             return str(o)
+        # Dat Datetime
+        elif isinstance(o, datetime):
+            return o.isoformat()
         # If a list of any items that are custom objects, encode them ourselves
         elif isinstance(o, list) and len(o) > 0 and any(not self._check_if_encodable(x) for x in o):
             new_list = []
