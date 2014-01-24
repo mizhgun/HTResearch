@@ -98,39 +98,6 @@ class ItemPipelineTest(unittest.TestCase):
 
         print "Item Switch Test Passed"
 
-<<<<<<< HEAD
-    def test_switch_scraped_contact(self):
-
-        print "Creating ItemSwitch"
-        item_switch = self.ctx.get_object("ItemSwitch")
-
-        print 'Passing ScrapedContact to ItemSwitch'
-        print 'NOTE: Passing "None" as spider as it is not used'
-        contact = item_switch.process_item(self.contact, None)
-
-        print 'Testing return value from item_switch'
-        self.assertEqual(contact, self.contact, "Expected value {0} != {1}".format(contact, self.contact))
-
-        print 'Grabbing stored contact from database'
-        contact_dao = self.ctx.get_object("ContactDAO")
-
-        assert_contact = contact_dao.find(first_name=self.contact['first_name'])
-
-        print 'Check that entry is retrievable'
-        self.assertIsNotNone(assert_contact)
-
-        print 'Testing equality...'
-        self.assertEqual(assert_contact.first_name, self.contact['first_name'])
-        self.assertEqual(assert_contact.last_name, self.contact['last_name'])
-        self.assertEqual(assert_contact.organization.name, self.contact['organization']['name'])
-        self.assertEqual(assert_contact.email, self.contact['email'])
-        self.assertEqual(assert_contact.phone, self.contact['phone'])
-        self.assertEqual(assert_contact.position, self.contact['position'])
-
-        print "Item Switch Test Passed"
-=======
->>>>>>> R4_GhostRider
-
 if __name__ == '__main__':
     try:
         unittest.main()

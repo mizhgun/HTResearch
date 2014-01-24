@@ -221,7 +221,14 @@ class ContactNameScraper(object):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/lastnames.txt'), 'r') as f:
             lnames = f.read().splitlines()
             self._last_names = [lname.title() for lname in lnames]
+
         self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Sh', 'Smt', 'Prof', 'Shri']
+        # catch Dr and Dr.
+        for x in self._titles:
+            if '.' not in x:
+                self._titles.append(x+'.')
+            else:
+                break
 
         # Make a regex check for if a potential name is actually a date. Not concerned with months that aren't in the
         # names list
@@ -241,55 +248,46 @@ class ContactNameScraper(object):
         body = hxs.select('//body//text()').extract()
         body = [s.strip() for s in body if s.strip()]
         names = []
-        passed = False
 
         for s in body:
             str_split = s.split()
-            same_name = False
             i = len(str_split) - 1
             name_to_add = ""
             # for i, split_index in enumerate(str_split):
+            # start at the back of string to get last name and then get all first names
             while i >= 0:
-                split_index = str_split[i].replace('.', '')
+                split_index = str_split[i]\
+                    # .replace('.', '')
+                # all_alpha = all(c.isalpha() for c in split_index)
+
+                # if it's in the last names and it isn't the first word in the string
                 if split_index in self._last_names and split_index != str_split[0]:
                     name_to_add = split_index + " " + name_to_add
+                # if in first names
                 elif split_index in self._names:
                     name_to_add = split_index + " " + name_to_add
+                    # if the last name wasn't caught but first name was and next word is last name format
                     if (i+1) < len(str_split) and (str_split[i+1].istitle() or str_split[i+1].isupper()) and \
-                                    str_split[i+1] not in self._stopwords and str_split[i+1] not in name_to_add:
+                        str_split[i+1] not in self._stopwords and all(c.isalpha() or c == '.' for c in str_split[i+1]) and \
+                            str_split[i+1] not in name_to_add:
                         name_to_add += str_split[i+1]
+                # will catch a first name if a last name has been caught and if it's in correct name format
                 elif (split_index not in self._stopwords or len(split_index) == 1) and split_index not in self._titles \
-                    and (split_index.istitle() or split_index.isupper()) and name_to_add:
+                    and (split_index.istitle() or split_index.isupper()) and all(c.isalpha() or c == '.' for c in split_index) and \
+                        name_to_add:
                     name_to_add = split_index + " " + name_to_add
                 elif not split_index.istitle():
                     break
                 i -= 1
 
-            if name_to_add:
+            # only get names that are both first and last name
+            if name_to_add and len(name_to_add.split()) > 1:
                 names.append(name_to_add)
-                # if split_index in self._last_names and split_index != str_split[0]:
-                #     name_to_add = split_index
-                #     c = 1
-                #     while i > 0 and str_split[i-1].istitle() and str_split[i-1] not in self._titles and \
-                #             str_split[i-1] not in self._stopwords and c < len(str_split):
-                #         name_to_add = str_split[i-c] + " " + name_to_add
-                #
-                #         # c++ lulz
-                #         c += 1
-                #     names.append(name_to_add)
-                #     continue
-                #
-                # if split_index in self._names and split_index not in self._titles:
-                #     name_to_add = split_index
-                #     if i < len(str_split)-1 and str_split[i+1].istitle() and str_split[i+1] not in self._stopwords:
-                #         name_to_add += " " + str_split[i+1]
-                #         passed = True
-                #     names.append(name_to_add)
         names = [name.encode('ascii', 'ignore') for name in names]
         items = []
         for i in range(len(names)):
             item = ScrapedContactName()
-            item['name'] = names[i]
+            item['name'] = names[i].strip()
             items.append(item)
         return items
 
