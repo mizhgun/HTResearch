@@ -1,20 +1,21 @@
 # stdlib imports
 from datetime import datetime
-
 from django.shortcuts import render
-
 from django.http import HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password
+from email.mime.text import MIMEText
+import smtplib
 from springpython.context import ApplicationContext
 
 # project imports
 from HTResearch.DataAccess.dto import UserDTO, OrganizationDTO
 from HTResearch.DataModel.model import User
 from HTResearch.DataModel.enums import OrgTypesEnum
+from HTResearch.Utilities.config import get_config_value
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
-from HTResearch.WebClient.WebClient.models import LoginForm, SignupForm
+from HTResearch.WebClient.WebClient.models import LoginForm, SignupForm, InviteForm
 
 #region Globals
 ctx = ApplicationContext(DAOContext())
@@ -61,6 +62,9 @@ def logout(request):
 
 
 def signup(request):
+    if 'user_id' in request.session:
+        HttpResponseRedirect('/')
+
     error = ''
     form = SignupForm(request.POST or None)
 
@@ -107,3 +111,55 @@ def signup(request):
             return HttpResponseRedirect('/')
 
     return render(request, 'signup.html', {'form': form, 'error': error})
+
+
+def send_invite(request):
+    if 'user_id' not in request.session:
+        HttpResponseRedirect('/login')
+
+    form = InviteForm(request.POST or None)
+    error = ''
+    success = ''
+
+    if request.method == 'POST':
+        if form.is_valid():
+            to = form.cleaned_data['email']
+
+            logger.info('Request made to invite email={0} by user={1}'.format(
+                to, request.session['user_id']
+            ))
+
+            if 'message' in form.cleaned_data:
+                message = form.cleaned_data['message']
+
+            invitation = "Hello! You've just been invited to UNL HT Research by {0}."\
+                .format(request.session['name'])
+
+            if message:
+                invitation += " They've included a message below:\n\n%s" % message
+
+            mail = MIMEText(invitation)
+            mail['Subject'] = 'Come Join UNL HT Research!'
+            mail['From'] = 'jdegner0129@gmail.com'
+            mail['To'] = to
+
+            username = get_config_value("MAIL", "username")
+            password = get_config_value("MAIL", "password")
+
+            try:
+                if not (username and password):
+                    raise Exception
+
+                s = smtplib.SMTP('smtp.gmail.com:587')
+                s.starttls()
+                s.login(username, password)
+                s.sendmail('jdegner0129@gmail.com', [to], mail.as_string())
+                s.quit()
+                success = 'Your invite has been sent successfully!'
+            except:
+                logger.error('Invite request by user={0} to email={1} failed.'.format(
+                    request.session['user_id'], to
+                ))
+                error = 'Oops! It looks like something went wrong. Please try again later.'
+
+    return render(request, 'send_invite.html', {'form': form, 'error': error, 'success': success})
