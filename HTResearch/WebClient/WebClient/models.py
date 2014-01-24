@@ -57,5 +57,18 @@ class SignupForm(forms.Form):
 
         if password != confirm_password:
             raise ValidationError('Please ensure your passwords match.')
-
         return confirm_password
+
+
+class RequestOrgForm(forms.Form):
+    url = forms.URLField()
+
+    def clean_url(self):
+        url = self.cleaned_data['url']
+        ctx = ApplicationContext(DAOContext())
+        dao = ctx.get_object('OrganizationDAO')
+
+        if dao.find(organization_url=url):
+            raise ValidationError("Oops! Looks like we already have information on that organization.")
+
+        return url
