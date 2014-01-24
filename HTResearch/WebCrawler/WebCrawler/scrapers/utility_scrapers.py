@@ -341,12 +341,13 @@ class OrgContactsScraper(object):
             self._contacts[names[i].get('name')]['organization'] = org_name
         return self._contacts
 
+    # if any part of the name is in the email, take that email, otherwise just take the first element from the list
     def compare_emails(self, response, name):
         emails = self._email_scraper.parse(response)
         name_split = name.split()
         for email in emails:
             for split_index in name_split:
-                if split_index.lower() in email:
+                if split_index.lower() in email.lower():
                     return email
         return emails[0]
 
