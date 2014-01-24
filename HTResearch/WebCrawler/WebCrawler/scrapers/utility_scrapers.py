@@ -67,11 +67,11 @@ class ContactNameScraper(object):
             str_split = s.split()
             i = len(str_split) - 1
             name_to_add = ""
-            # start at the back of string to get last name and then get all first names
+            # start at the back of string to get last name and then get all previous names
             while i >= 0:
                 split_index = str_split[i]
 
-                # variables so below elif won't be so terrifying
+                # variables for below elif to not be so terrifying
                 stop_word = split_index not in self._stopwords or len(split_index) == 1
                 uppercase = split_index.istitle() or split_index.isupper()
                 all_alpha = all(c.isalpha() or c == '.' for c in split_index)
