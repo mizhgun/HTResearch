@@ -16,6 +16,7 @@
                data-partners="[{{ organization.partners|join:", " }}]"
                data-facebook="{{ organization.facebook }}"
                data-twitter="{{ organization.twitter }}"
+               data-keywords="['{{ organization.keywords_list|join:"', '" }}']"
                href="javascript:void(0)">
                 {% if organization.name or not organization.organization_url %}
                     {{ organization.name }}

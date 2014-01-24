@@ -11,6 +11,8 @@ from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
 
+from HTResearch.Utilities.encoder import MongoJSONEncoder
+
 
 logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
@@ -30,11 +32,13 @@ def search_organizations(request):
 
         organizations = org_dao.text_search(text=search_text, fields=['name', 'keywords', ], num_elements=10, sort_fields=['name'])
 
-        for dto in organizations:
-            encode_dto(dto)
-
-    params = {'organizations': organizations}
-    return render(request, 'org_search_results.html', params)
+    results = []
+    for dto in organizations:
+        org = dto.__dict__['_data']
+        org['keywords'] = org['keywords'].split(' ')
+        results.append(org)
+    data = {'results': results}
+    return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
 
 
 def organization_profile(request, org_id):

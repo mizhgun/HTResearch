@@ -3,6 +3,9 @@ from springpython.context import ApplicationContext
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
+from HTResearch.Utilities.encoder import MongoJSONEncoder
+from django.http import HttpResponse
+import json
 
 logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
@@ -43,8 +46,5 @@ def search_contacts(request):
                                            num_elements=10,
                                            sort_fields=['last_name'])
 
-        for dto in contacts:
-            encode_dto(dto)
-
-    params = {'contacts': contacts}
-    return render(request, 'contact_search_results.html', params)
+    data = {'results': map(lambda x: x.__dict__['_data'], contacts)}
+    return HttpResponse(MongoJSONEncoder().encode(data), 'application/json')
