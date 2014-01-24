@@ -14,6 +14,9 @@ class ContactDTO(mongo.Document):
     organization = mongo.ReferenceField('OrganizationDTO', db_field='o')
     publications = mongo.ListField(mongo.ReferenceField('PublicationDTO'), db_field='ps')
     position = mongo.StringField(db_field='pn')
+    valid = mongo.BooleanField(db_field='v', default=True)
+    last_updated = mongo.DateTimeField(db_field='lu')
+    updated_by = mongo.ObjectIdField(db_field='ub')
 
 
 class OrganizationDTO(mongo.Document):
@@ -32,6 +35,9 @@ class OrganizationDTO(mongo.Document):
     facebook = mongo.URLField(db_field='f')
     twitter = mongo.URLField(db_field='t')
     keywords = mongo.StringField(db_field='ks')
+    valid = mongo.BooleanField(db_field='v', default=True)
+    last_updated = mongo.DateTimeField(db_field='lu')
+    updated_by = mongo.ObjectIdField(db_field='ub')
 
 
 class PublicationDTO(mongo.Document):
@@ -43,6 +49,9 @@ class PublicationDTO(mongo.Document):
     publication_date = mongo.DateTimeField(db_field='d')
     types = mongo.ListField(mongo.IntField(), db_field='ts')
     content_url = mongo.URLField(db_field='u')
+    valid = mongo.BooleanField(db_field='v', default=True)
+    last_updated = mongo.DateTimeField(db_field='lu')
+    updated_by = mongo.ObjectIdField(db_field='ub')
 
 
 class URLMetadataDTO(mongo.Document):
@@ -54,6 +63,7 @@ class URLMetadataDTO(mongo.Document):
     score = mongo.IntField(db_field='s')
     update_freq = mongo.IntField(db_field='f')
     checksum = mongo.BinaryField(db_field='c')
+    last_updated = mongo.DateTimeField(db_field='lu')
 
 
 class UserDTO(mongo.Document):
@@ -68,3 +78,4 @@ class UserDTO(mongo.Document):
                                   choices=(AccountType.COLLABORATOR, AccountType.CONTRIBUTOR))
     org_type = mongo.IntField(db_field='ot', choices=ORG_TYPE_CHOICES)
     organization = mongo.ReferenceField(OrganizationDTO, db_field='o')
+    last_updated = mongo.DateTimeField(db_field='lu')

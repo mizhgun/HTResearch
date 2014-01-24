@@ -1,13 +1,13 @@
-$(function () {
-    $('#login-form').validate({
+$(function() {
+    $('#invite-form').validate({
         rules: {
             email: {
                 maxlength: 40,
                 required: true
             },
-            password: {
-                rangelength: [8, 40],
-                required: true
+            message: {
+                maxlength: 280,
+                required: false
             }
         },
         highlight: function (element) {
