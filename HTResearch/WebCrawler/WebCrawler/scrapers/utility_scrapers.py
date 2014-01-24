@@ -39,12 +39,10 @@ class ContactNameScraper(object):
             self._last_names = [lname.title() for lname in lnames]
 
         self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Sh', 'Smt', 'Prof', 'Shri']
+        length = len(self._titles)
         # catch Dr and Dr.
-        for x in self._titles:
-            if '.' not in x:
-                self._titles.append(x+'.')
-            else:
-                break
+        for i in range(0, length):
+            self._titles.append(self._titles[i]+'.')
 
         # Make a regex check for if a potential name is actually a date. Not concerned with months that aren't in the
         # names list
@@ -69,28 +67,35 @@ class ContactNameScraper(object):
             str_split = s.split()
             i = len(str_split) - 1
             name_to_add = ""
-            # for i, split_index in enumerate(str_split):
             # start at the back of string to get last name and then get all first names
             while i >= 0:
-                split_index = str_split[i]\
-                    # .replace('.', '')
-                # all_alpha = all(c.isalpha() for c in split_index)
+                split_index = str_split[i]
+
+                # variables so below elif won't be so terrifying
+                stop_word = split_index not in self._stopwords or len(split_index) == 1
+                uppercase = split_index.istitle() or split_index.isupper()
+                all_alpha = all(c.isalpha() or c == '.' for c in split_index)
 
                 # if it's in the last names and it isn't the first word in the string
                 if split_index in self._last_names and split_index != str_split[0]:
                     name_to_add = split_index + " " + name_to_add
+
                 # if in first names
                 elif split_index in self._names:
                     name_to_add = split_index + " " + name_to_add
+
                     # if the last name wasn't caught but first name was and next word is last name format
-                    if (i+1) < len(str_split) and (str_split[i+1].istitle() or str_split[i+1].isupper()) and \
-                        str_split[i+1] not in self._stopwords and all(c.isalpha() or c == '.' for c in str_split[i+1]) and \
-                            str_split[i+1] not in name_to_add:
-                        name_to_add += str_split[i+1]
+                    try:
+                        next_uppercase = str_split[i+1].istitle() or str_split[i+1].isupper()
+                        next_all_alpha = all(c.isalpha() or c == '.' for c in str_split[i+1])
+                        if next_uppercase and str_split[i+1] not in self._stopwords and \
+                                next_all_alpha and str_split[i+1] not in name_to_add:
+                            name_to_add += str_split[i+1]
+                    except IndexError:
+                        pass
+
                 # will catch a first name if a last name has been caught and if it's in correct name format
-                elif (split_index not in self._stopwords or len(split_index) == 1) and split_index not in self._titles \
-                    and (split_index.istitle() or split_index.isupper()) and all(c.isalpha() or c == '.' for c in split_index) and \
-                        name_to_add:
+                elif stop_word and split_index not in self._titles and uppercase and all_alpha and name_to_add:
                     name_to_add = split_index + " " + name_to_add
                 elif not split_index.istitle():
                     break
