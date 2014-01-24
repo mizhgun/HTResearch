@@ -486,20 +486,20 @@ class OrgAddressScraper(object):
 
 class OrgContactsScraper(object):
     def __init__(self):
-        pass
+        self._name_scraper = ContactNameScraper()
+        self._number_scraper = IndianPhoneNumberScraper()
+        self._email_scraper = EmailScraper()
+        self._position_scraper = ContactPositionScraper()
+        self._org_name_scraper = OrgNameScraper()
+        self._contacts = []
 
     def parse(self, response):
         contact_indices = []
-        name_scraper = ContactNameScraper()
-        number_scraper = IndianPhoneNumberScraper()
-        email_scraper = EmailScraper()
-        position_scraper = ContactPositionScraper()
-        org_name_scraper = OrgNameScraper()
 
-        names = name_scraper.parse(response)
-        org_name = org_name_scraper.parse(response)
+        names = self._name_scraper.parse(response)
+        org_name = self._org_name_scraper.parse(response)
         if names is not None:
-            contacts = {name.get('name'): {} for name in names}
+            self._contacts = {name.get('name'): {} for name in names}
             for name in names:
                 n = string.find(response.body, name.get('name'))    #find the index of each contact so we can search
                 contact_indices.append(n)                           #only between the contacts for their info
@@ -508,17 +508,26 @@ class OrgContactsScraper(object):
                 cr = response.replace(body=response.body[contact_indices[i]:contact_indices[i + 1]])
             else:
                 cr = response.replace(body=response.body[contact_indices[i]:])
-            contacts[names[i].get('name')]['position'] = [position_scraper.parse(cr)
-                                                          if position_scraper.parse(cr)
+            self._contacts[names[i].get('name')]['position'] = [self._position_scraper.parse(cr)
+                                                          if self._position_scraper.parse(cr)
                                                           else None][0]
-            contacts[names[i].get('name')]['number'] = [number_scraper.parse(cr)[0]
-                                                        if number_scraper.parse(cr)
+            self._contacts[names[i].get('name')]['number'] = [self._number_scraper.parse(cr)[0]
+                                                        if self._number_scraper.parse(cr)
                                                         else None][0]
-            contacts[names[i].get('name')]['email'] = [email_scraper.parse(cr)[0]
-                                                       if email_scraper.parse(cr)
+            self._contacts[names[i].get('name')]['email'] = [self.compare_emails(cr, names[i].get('name'))
+                                                       if self.compare_emails(cr, names[i].get('name'))
                                                        else None][0]
-            contacts[names[i].get('name')]['organization'] = org_name
-        return contacts
+            self._contacts[names[i].get('name')]['organization'] = org_name
+        return self._contacts
+
+    def compare_emails(self, response, name):
+        emails = self._email_scraper.parse(response)
+        name_split = name.split()
+        for email in emails:
+            for split_index in name_split:
+                if split_index.lower() in email:
+                    return email
+        return emails[0]
 
 
 class OrgFacebookScraper(object):

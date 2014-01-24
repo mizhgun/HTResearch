@@ -531,7 +531,7 @@ class ScraperTests(unittest.TestCase):
                          'last_name': 'Gollamudi',
                          'organization': {'name': 'PRAJWALA'},
                          'position': None,
-                         'phone': None
+                         'phone': '914024410813',
                          },
                        {
                          'email': 'lavanya.ravulapalli@gmail.com',
@@ -550,20 +550,12 @@ class ScraperTests(unittest.TestCase):
                          'phone': None,
                          },
                        {
-                         'email': 'kmulhauser@consultingwomen.cosunitha_2002@yahoo.com',
+                         'email': 'sunitha_2002@yahoo.com',
                          'first_name': 'Sunitha',
                          'last_name': 'Krishnan',
                          'organization': {'name': 'PRAJWALA'},
                          'position': 'Chief Functionary',
                          'phone': '919848025014',
-                         },
-                       {
-                         'email': 'b.damico@proconf.ch',
-                         'first_name': 'Ms',
-                         'last_name': 'Beatrice',
-                         'organization': {'name': 'PRAJWALA'},
-                         'position': None,
-                         'phone': None,
                          }]
 
         for test in assert_list:
