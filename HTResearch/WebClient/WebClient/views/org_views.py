@@ -70,6 +70,7 @@ def get_org_keywords(request):
 
     org_dao = ctx.get_object('OrganizationDAO')
     org = org_dao.find(id=org_id)
+    keywords = org.keywords.split(' ')
     #Commenting out instead of deleting for demo purposes
     #If keywords aren't in the database, you should uncomment this and use Bombay Teen Challenge
     #org.keywords = {'access': 32, 'addicts': 51, 'afraid': 32, 'allows': 32, 'ambedkar': 32,
@@ -81,7 +82,7 @@ def get_org_keywords(request):
     #                'men': 53, 'mumbai': 102, 'music': 83, 'office': 38, 'out.': 39, 'programs': 53,
     #                'read': 96, 'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'streets': 64,
     #                'teen': 384, 'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'women': 112}
-    return HttpResponse(json.dumps(org.keywords), mimetype='application/json')
+    return HttpResponse(json.dumps(keywords), mimetype='application/json')
 
 
 def get_org_rank_rows(request):
