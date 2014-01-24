@@ -102,7 +102,7 @@ class ContactNameScraper(object):
                 i -= 1
 
             # only get names that are both first and last name
-            if name_to_add and len(name_to_add.split()) > 1:
+            if len(name_to_add.split()) > 1:
                 names.append(name_to_add)
         names = [name.encode('ascii', 'ignore') for name in names]
         items = []
