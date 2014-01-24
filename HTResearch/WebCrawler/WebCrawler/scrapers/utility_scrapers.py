@@ -97,7 +97,7 @@ class ContactNameScraper(object):
                 # will catch a first name if a last name has been caught and if it's in correct name format
                 elif stop_word and split_index not in self._titles and uppercase and all_alpha and name_to_add:
                     name_to_add = split_index + " " + name_to_add
-                elif not split_index.istitle():
+                elif not split_index.istitle() and name_to_add:
                     break
                 i -= 1
 
