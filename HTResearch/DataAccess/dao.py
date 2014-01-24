@@ -1,3 +1,4 @@
+from datetime import datetime
 from mongoengine import Q
 from mongoengine.fields import StringField, URLField, EmailField
 
@@ -28,6 +29,8 @@ class DAO(object):
                     else:
                         # TODO: Maybe we should merge all reference documents, as well?
                         pass
+
+            dto.last_updated = datetime.utcnow()
             dto.save()
             return dto
 
@@ -160,6 +163,7 @@ class ContactDAO(DAO):
                     saved_dto = self.merge_documents(existing_dto, contact_dto)
                     return saved_dto
 
+            contact_dto.last_updated = datetime.utcnow()
             contact_dto.save()
         return contact_dto
 
@@ -194,6 +198,8 @@ class OrganizationDAO(DAO):
                         if key == "types" and len(merged_list) > 1 and OrgTypesEnum.UNKNOWN in merged_list:
                             merged_list.remove(OrgTypesEnum.UNKNOWN)
                         setattr(existing_org_dto, key, attributes[key])
+
+            existing_org_dto.last_updated = datetime.utcnow()
             existing_org_dto.save()
             return existing_org_dto
 
@@ -216,6 +222,7 @@ class OrganizationDAO(DAO):
                     # Geocode it
                     org_dto.latlng = self.geocode(org_dto.address)
 
+            org_dto.last_updated = datetime.utcnow()
             org_dto.save()
         return org_dto
 
@@ -282,6 +289,7 @@ class PublicationDAO(DAO):
                 p = pub_dto.publisher
                 pub_dto.publisher = self.contact_dao().create_update(p)
 
+            pub_dto.last_updated = datetime.utcnow()
             pub_dto.save()
         return pub_dto
 
@@ -316,6 +324,7 @@ class URLMetadataDAO(DAO):
                     saved_dto = self.merge_documents(existing_dto, url_dto)
                     return saved_dto
 
+            url_dto.last_updated = datetime.utcnow()
             url_dto.save()
         return url_dto
 
@@ -350,5 +359,6 @@ class UserDAO(DAO):
                 o = user_dto.organization
                 user_dto.organization = self.org_dao().create_update(o)
 
+            user_dto.last_updated = datetime.utcnow()
             user_dto.save()
         return user_dto
