@@ -13,7 +13,6 @@ from HTResearch.Utilities.logutil import LoggingSection, get_logger
 
 
 logger = get_logger(LoggingSection.FRONTIER, __name__)
-logger_lock = RLock()
 
 
 class CacheJobs():
@@ -55,7 +54,7 @@ class URLFrontierRules:
 
 
 def _monitor_cache(dao, max_size, cache, job_queue, job_cond, fill_cond, empty_cond,
-                   req_doms, blk_doms, srt_list):
+                   req_doms, blk_doms, srt_list, logger_lock):
     while True:
         try:
             with job_cond:
@@ -113,6 +112,7 @@ class URLFrontier:
         self._job_conds = dict()
         self._cache_procs = dict()
         self._proc_counts = dict()
+        self._logger_lock = RLock()
 
     def start_cache_process(self, rules=URLFrontierRules()):
         with self._start_term_lock:
@@ -135,10 +135,11 @@ class URLFrontier:
                                                       self._empty_conds[cs],
                                                       rules.required_domains,
                                                       rules.blocked_domains,
-                                                      rules.sort_list))
+                                                      rules.sort_list,
+                                                      self._logger_lock))
                 self._proc_counts[cs] = 0
             if not self._cache_procs[cs].is_alive():
-                with logger_lock:
+                with self._logger_lock:
                     logger.info('Starting the cache process for rule=%s' % cs)
                 self._cache_procs[cs].start()
             self._proc_counts[cs] += 1
@@ -152,7 +153,7 @@ class URLFrontier:
             self._proc_counts[cs] -= 1
             if self._proc_counts[cs] <= 0:
                 if self._cache_procs[cs].is_alive():
-                    with logger_lock:
+                    with self._logger_lock:
                         logger.info('Stopping the cache process for rule %s' % cs)
                     self._cache_procs[cs].terminate()
                 del self._cache_procs[cs]
