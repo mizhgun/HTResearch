@@ -18,8 +18,8 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views.shared_views',
                        # url(r'^admin/', include(admin.site.urls)),
 
                        url(r'^$', 'index', name='index'),
-                       url(r'^heatmap_coordinates/$', 'heatmap_coordinates', name='heatmap_coordinates'),
-                       url(r'^coming_soon/$', 'unimplemented', name='unimplemented'),
+                       url(r'^heatmap-coordinates/$', 'heatmap_coordinates', name='heatmap-coordinates'),
+                       url(r'^coming-soon/$', 'unimplemented', name='unimplemented'),
                        url(r'^welcome/$', 'welcome', name='welcome'),
                        url(r'^get-started/$', 'get_started', name='get-started'),
 )

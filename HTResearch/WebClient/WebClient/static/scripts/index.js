@@ -364,7 +364,7 @@ function showSearchResults() {
         var searchItems = [
             {
                 name: 'Organization',
-                url: '/search_organizations/',
+                url: '/search-organizations/',
                 toggleSelector: '#organization-toggle',
                 collapseSelector: '#collapse-organizations',
                 listSelector: '#organization-search-list',
@@ -373,7 +373,7 @@ function showSearchResults() {
             },
             {
                 name: 'Contact',
-                url: '/search_contacts/',
+                url: '/search-contacts/',
                 toggleSelector: '#contact-toggle',
                 collapseSelector: '#collapse-contacts',
                 listSelector: '#contact-search-list',
