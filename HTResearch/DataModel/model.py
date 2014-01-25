@@ -28,7 +28,7 @@ class Organization(object):
                  emails=[], contacts=[],
                  organization_url=None,
                  partners=[], facebook=None, twitter=None,
-                 keywords={}, valid=True, updated_by=None):
+                 keywords=None, valid=True, updated_by=None):
         self.name = name
         self.address = address
         self.types = types
