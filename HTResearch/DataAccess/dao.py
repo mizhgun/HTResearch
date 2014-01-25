@@ -1,3 +1,4 @@
+from datetime import datetime
 from mongoengine import Q
 from mongoengine.fields import StringField, URLField, EmailField
 
@@ -28,6 +29,8 @@ class DAO(object):
                     else:
                         # TODO: Maybe we should merge all reference documents, as well?
                         pass
+
+            dto.last_updated = datetime.utcnow()
             dto.save()
             return dto
 
@@ -44,15 +47,29 @@ class DAO(object):
         with self.conn():
             return self.dto.objects(**constraints).first()
 
+    def count(self, search=None, **constraints):
+        with self.conn():
+            # Do text search or grab by constraints
+            if search is not None:
+                return len(self.text_search(search, None))
+            else:
+                return self.dto.objects(**constraints).count()
+
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
-    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[],
-                 **constraints):
+    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=None,
+                 search=None, **constraints):
         with self.conn():
-            if len(sort_fields) > 0:
-                ret = self.dto.objects(**constraints).order_by(sort_fields)
+            # Do text search or grab by constraints
+            if search is not None:
+                ret = self.text_search(search, num_elements, sort_fields=[sort_fields])
             else:
                 ret = self.dto.objects(**constraints)
+
+            # Sort if there are sort fields
+            if sort_fields is not None and len(sort_fields) > 0 and search is None:
+                ret = ret.order_by(sort_fields)
+
             if num_elements is not None:
                 return ret[:num_elements]
             elif page_size is not None and page is not None:
@@ -102,10 +119,20 @@ class DAO(object):
             # sort by fields
             if 'sort_fields' in sort_params.keys():
                 for field in reversed(sort_params['sort_fields']):
-                    results.sort(key=lambda result: result[field])
+                    if len(field) == 0:
+                        break
+                    if field[0] == '-':
+                        results.sort(key=lambda result: result[field[1:]], reverse=True)
+                    elif field[0] == '+':
+                        results.sort(key=lambda result: result[field[1:]])
+                    else:
+                        results.sort(key=lambda result: result[field])
 
             # return the last num_elements
-            return results[:num_elements]
+            if num_elements is not None and num_elements > 0:
+                return results[:num_elements]
+            else:
+                return results
 
 
 class ContactDAO(DAO):
@@ -136,6 +163,7 @@ class ContactDAO(DAO):
                     saved_dto = self.merge_documents(existing_dto, contact_dto)
                     return saved_dto
 
+            contact_dto.last_updated = datetime.utcnow()
             contact_dto.save()
         return contact_dto
 
@@ -170,6 +198,8 @@ class OrganizationDAO(DAO):
                         if key == "types" and len(merged_list) > 1 and OrgTypesEnum.UNKNOWN in merged_list:
                             merged_list.remove(OrgTypesEnum.UNKNOWN)
                         setattr(existing_org_dto, key, attributes[key])
+
+            existing_org_dto.last_updated = datetime.utcnow()
             existing_org_dto.save()
             return existing_org_dto
 
@@ -192,6 +222,7 @@ class OrganizationDAO(DAO):
                     # Geocode it
                     org_dto.latlng = self.geocode(org_dto.address)
 
+            org_dto.last_updated = datetime.utcnow()
             org_dto.save()
         return org_dto
 
@@ -258,6 +289,7 @@ class PublicationDAO(DAO):
                 p = pub_dto.publisher
                 pub_dto.publisher = self.contact_dao().create_update(p)
 
+            pub_dto.last_updated = datetime.utcnow()
             pub_dto.save()
         return pub_dto
 
@@ -292,6 +324,7 @@ class URLMetadataDAO(DAO):
                     saved_dto = self.merge_documents(existing_dto, url_dto)
                     return saved_dto
 
+            url_dto.last_updated = datetime.utcnow()
             url_dto.save()
         return url_dto
 
@@ -326,5 +359,6 @@ class UserDAO(DAO):
                 o = user_dto.organization
                 user_dto.organization = self.org_dao().create_update(o)
 
+            user_dto.last_updated = datetime.utcnow()
             user_dto.save()
         return user_dto

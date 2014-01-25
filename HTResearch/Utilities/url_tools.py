@@ -3,12 +3,14 @@ import os
 from urlparse import urlparse
 
 from logutil import get_logger, LoggingSection
-
+from types import Singleton
 
 logger = get_logger(LoggingSection.UTILITIES, __name__)
 
 
 class UrlUtility:
+    __metaclass__ = Singleton
+
     tlds = None
 
     @staticmethod

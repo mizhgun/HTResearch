@@ -18,8 +18,8 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views.shared_views',
                        # url(r'^admin/', include(admin.site.urls)),
 
                        url(r'^$', 'index', name='index'),
-                       url(r'^heatmap-coordinates/$', 'heatmap_coordinates', name='heatmap-coordinates'),
-                       url(r'^coming-soon/$', 'unimplemented', name='unimplemented'),
+                       url(r'^heatmap_coordinates/$', 'heatmap_coordinates', name='heatmap_coordinates'),
+                       url(r'^coming_soon/$', 'unimplemented', name='unimplemented'),
                        url(r'^welcome/$', 'welcome', name='welcome'),
                        url(r'^get-started/$', 'get_started', name='get-started'),
 )
@@ -31,7 +31,8 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^org-rank/(\w+)$', 'org_rank', name='org-rank'),
                         url(r'^get-org-rank-rows/$', 'get_org_rank_rows', name='get-org-rank-rows'),
                         url(r'^get-org-keywords/$', 'get_org_keywords', name='get-org-keywords'),
-)
+                        url(r'^request-organization/$', 'request_organization', name='request_organization'),
+                        )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
                         url(r'^search-contacts/$', 'search_contacts', name='search-contacts'),
@@ -42,4 +43,5 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
                         url(r'^login/$', 'login', name='login'),
                         url(r'^logout/$', 'logout', name='logout'),
                         url(r'^signup/$', 'signup', name='signup'),
-)
+                        url(r'^invite/$', 'send_invite', name='invite'),
+                        )
