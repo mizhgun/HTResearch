@@ -210,16 +210,6 @@ class OrganizationDAO(DAO):
             org_dto.save()
         return org_dto
 
-    def text_search(self, text, fields, num_elements=10, **search_params):
-        results = super(OrganizationDAO, self).text_search(text, fields, num_elements, **search_params)
-        terms = self._normalize_query(text)
-        for type in OrgTypesEnum.reverse_mapping.values():
-            for term in terms:
-                if term.upper() in type.upper():
-                    #self.dto.objects(types=OrgTypesEnum.__dict__[type])
-                    break
-        return results
-
     def _smart_search_orgs(self, org_dto):
         # organizations have unique phone numbers
         if org_dto.phone_numbers:
