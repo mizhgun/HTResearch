@@ -621,6 +621,22 @@ class OrgTypeScraper(object):
                 'development',
                 'community',
                 'ownership',
+                'avoidance',
+                'blockage',
+                'determent',
+                'forestalling',
+                'halt',
+                'hindrance',
+                'impediment',
+                'inhibitor',
+                'interception',
+                'interruption',
+                'obstacle',
+                'obstruction',
+                'prohibition',
+                'stoppage',
+                'thwarting',
+                'deterence',
             ],
             OrgTypesEnum.PROTECTION: [
                 'protection',
@@ -634,6 +650,32 @@ class OrgTypeScraper(object):
                 'freedom',
                 'opportunity',
                 'women',
+                'conservation',
+                'insurance',
+                'preservation',
+                'safeguard',
+                'safety',
+                'security',
+                'shelter',
+                'stability',
+                'assurance',
+                'barrier',
+                'cover',
+                'custody',
+                'defense',
+                'fix',
+                'guard',
+                'invulnerability',
+                'reassurance',
+                'refuge',
+                'safekeeping',
+                'salvation',
+                'screen',
+                'self-defense',
+                'shield',
+                'strength',
+                'surety',
+                'guarding',
             ],
             OrgTypesEnum.PROSECUTION: [
                 'prosecution',
@@ -644,6 +686,13 @@ class OrgTypeScraper(object):
                 'regulatory',
                 'regulation',
                 'justice',
+                'case',
+                'cause',
+                'claim',
+                'lawsuit',
+                'litigation',
+                'proceeding',
+                'suit',
             ],
         }
 
@@ -680,6 +729,7 @@ class OrgTypeScraper(object):
 
         all_words = list(set(self._lemmatizer.lemmatize(word) for word in all_words))
 
+        threepees = False
         types = []
         # Government: check the URL
         if re.search(self._government_detector, urlparse(response.url).netloc):
@@ -689,12 +739,26 @@ class OrgTypeScraper(object):
         elif any(word in self._religion_words for word in all_words):
             types.append(OrgTypesEnum.RELIGIOUS)
             # Other types
-        for type in self._type_words.iterkeys():
-            rank = self._min_index_found(keywords, self._type_words[type])
-            if rank < self._max_rank:
-                types.append(type)
-            if len(types) >= self._max_types:
-                break
+
+        for word in keywords:
+        #go through keywords in order of frequency, checking if they associate with one of our types
+            for type in self._type_words.iterkeys():
+                if word in self._type_words[type]:
+                    types.append(type)
+                    if type == OrgTypesEnum.PREVENTION or type == OrgTypesEnum.PROTECTION or type == OrgTypesEnum.PROSECUTION:
+                        threepees = True
+                    #uniquify
+                    types = list(set(types))
+                if len(types) >= self._max_types:
+                    #if there are three types but none of them are P's, replace the last one with prevention
+                    if not threepees:
+                        types[self._max_types] = OrgTypesEnum.PREVENTION
+                        threepees = True
+                    break
+        #if there are less than three types and none of them are P's, append prevention
+        if not threepees:
+            types.append(OrgTypesEnum.PREVENTION)
+
 
         return types or [OrgTypesEnum.UNKNOWN]
 
