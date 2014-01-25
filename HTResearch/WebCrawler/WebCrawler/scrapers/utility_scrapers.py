@@ -65,10 +65,10 @@ class ContactNameScraper(object):
 
         for s in body:
             str_split = s.split()
-            i = len(str_split) - 1
+            length = len(str_split) - 1
             name_to_add = ""
             # start at the back of string to get last name and then get all previous names
-            while i >= 0:
+            for i in range(length, -1, -1):
                 split_index = str_split[i]
 
                 # variables for below elif to not be so terrifying
@@ -99,7 +99,6 @@ class ContactNameScraper(object):
                     name_to_add = split_index + " " + name_to_add
                 elif not split_index.istitle() and name_to_add:
                     break
-                i -= 1
 
             # only get names that are both first and last name
             if len(name_to_add.split()) > 1:
