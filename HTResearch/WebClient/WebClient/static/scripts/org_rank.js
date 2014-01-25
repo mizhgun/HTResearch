@@ -23,7 +23,7 @@ function sortOnColumn() {
 function getRows(start, end, sortField) {
     $.ajax({
         type: 'GET',
-        url: '/get_org_rank_rows/',
+        url: '/get-org-rank-rows/',
         data: {
             'start': start,
             'end': end,
