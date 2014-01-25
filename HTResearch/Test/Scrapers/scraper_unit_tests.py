@@ -467,8 +467,7 @@ class ScraperTests(unittest.TestCase):
                     types = types + ret
                 else:
                     types.append(ret)
-
-        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PROTECTION]
+        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PREVENTION, OrgTypesEnum.PROTECTION]
         for test in assert_list:
             self.assertIn(test, types, 'Type \'' + OrgTypesEnum.reverse_mapping[test] + '\' not found')
 
