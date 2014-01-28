@@ -379,7 +379,7 @@ class URLMetadataDAO(DAO):
         self.dto = URLMetadataDTO
 
     def merge_documents(self, dto, merge_dto):
-        with self.connn():
+        with self.conn():
             attributes = merge_dto._data
             for key in attributes:
                 if key == "last_visited":
