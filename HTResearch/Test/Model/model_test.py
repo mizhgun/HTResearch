@@ -46,8 +46,9 @@ class ModelTest(unittest.TestCase):
                              "{0} attribute not equal".format(attr))
 
     def test_item_converter(self):
+        ctx = ApplicationContext(TestableDAOContext())
         print 'Creating organization and contact item.'
-        org = MockOrganizationDAO()
+        org = ctx.get_object('OrganizationDAO')
         org_dto = OrganizationDTO(name="Univerisityee of Nyeebraska-Lincoln")
         org.create_update(org_dto)
         org_model = DTOConverter.from_dto(Organization, org_dto)
@@ -57,7 +58,6 @@ class ModelTest(unittest.TestCase):
                                       )
 
         print 'Converting contact to model.'
-        ctx = ApplicationContext(TestableDAOContext())
         converter = ctx.get_object('ModelConverter')
         model_contact = converter.to_model(Contact, contact_item)
 
