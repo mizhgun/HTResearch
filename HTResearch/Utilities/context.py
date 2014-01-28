@@ -5,6 +5,7 @@ from springpython.config import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import UrlMetadataScraper
 from HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches import ItemSwitch
+from HTResearch.Utilities.converter import ModelConverter
 
 
 class DAOContext(PythonConfig):
@@ -189,8 +190,20 @@ class ItemPipelineContext(DAOContext, URLFrontierContext):
     def ItemSwitch(self):
         switch = ItemSwitch()
         switch.frontier = self.URLFrontier()
-        switch.contact_dao = self.ContactDAO()
-        switch.org_dao = self.OrganizationDAO()
-        switch.pub_dao = self.PublicationDAO()
-        switch.url_dao = self.URLMetadataDAO()
+        switch.contact_dao = self.RegisteredContactDAO()()
+        switch.org_dao = self.RegisteredOrganizationDAO()()
+        switch.pub_dao = self.RegisteredPublicationDAO()()
+        switch.url_dao = self.RegisteredURLMetadataDAO()()
         return switch
+
+class ConverterContext(PythonConfig):
+
+    @Object
+    def ModelConverter(self):
+        converter = ModelConverter()
+        converter.dao = self.OrganizationDAO()
+        return converter
+
+    @Object
+    def OrganizationDAO(self):
+        return OrganizationDAO()
