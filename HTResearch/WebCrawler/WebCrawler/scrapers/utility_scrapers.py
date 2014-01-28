@@ -6,6 +6,7 @@ import string
 import datetime
 import hashlib
 import operator
+import heapq
 from sgmllib import SGMLParseError
 
 from nltk import FreqDist, WordNetLemmatizer
@@ -224,9 +225,8 @@ class KeywordScraper(object):
                 del freq_dist[word]
 
         # Take the NUM_KEYWORDS most frequent keywords
-        most_freq_keywords = dict(
-            sorted(freq_dist.iteritems(), key=operator.itemgetter(1), reverse=True)[:self.NUM_KEYWORDS])
-        return most_freq_keywords
+        most_freq_keywords = heapq.nlargest(self.NUM_KEYWORDS, freq_dist, key=freq_dist.get)
+        return ' '.join(most_freq_keywords)
 
 
 class IndianPhoneNumberScraper(object):
@@ -581,6 +581,22 @@ class OrgTypeScraper(object):
                 'development',
                 'community',
                 'ownership',
+                'avoidance',
+                'blockage',
+                'determent',
+                'forestalling',
+                'halt',
+                'hindrance',
+                'impediment',
+                'inhibitor',
+                'interception',
+                'interruption',
+                'obstacle',
+                'obstruction',
+                'prohibition',
+                'stoppage',
+                'thwarting',
+                'deterence',
             ],
             OrgTypesEnum.PROTECTION: [
                 'protection',
@@ -594,6 +610,32 @@ class OrgTypeScraper(object):
                 'freedom',
                 'opportunity',
                 'women',
+                'conservation',
+                'insurance',
+                'preservation',
+                'safeguard',
+                'safety',
+                'security',
+                'shelter',
+                'stability',
+                'assurance',
+                'barrier',
+                'cover',
+                'custody',
+                'defense',
+                'fix',
+                'guard',
+                'invulnerability',
+                'reassurance',
+                'refuge',
+                'safekeeping',
+                'salvation',
+                'screen',
+                'self-defense',
+                'shield',
+                'strength',
+                'surety',
+                'guarding',
             ],
             OrgTypesEnum.PROSECUTION: [
                 'prosecution',
@@ -604,6 +646,13 @@ class OrgTypeScraper(object):
                 'regulatory',
                 'regulation',
                 'justice',
+                'case',
+                'cause',
+                'claim',
+                'lawsuit',
+                'litigation',
+                'proceeding',
+                'suit',
             ],
         }
 
@@ -626,8 +675,7 @@ class OrgTypeScraper(object):
         keyword_scraper_inst = self._keyword_scraper()
 
         # Get keywords
-        keywords_dict = keyword_scraper_inst.parse(response)
-        keywords = map(lambda (k, v): k, sorted(keywords_dict.items(), key=lambda (k, v): v, reverse=True))
+        keywords = keyword_scraper_inst.parse(response)
 
         # Get all words
         all_words = []
@@ -640,6 +688,7 @@ class OrgTypeScraper(object):
 
         all_words = list(set(self._lemmatizer.lemmatize(word) for word in all_words))
 
+        threepees = False
         types = []
         # Government: check the URL
         if re.search(self._government_detector, urlparse(response.url).netloc):
@@ -649,12 +698,26 @@ class OrgTypeScraper(object):
         elif any(word in self._religion_words for word in all_words):
             types.append(OrgTypesEnum.RELIGIOUS)
             # Other types
-        for type in self._type_words.iterkeys():
-            rank = self._min_index_found(keywords, self._type_words[type])
-            if rank < self._max_rank:
-                types.append(type)
-            if len(types) >= self._max_types:
-                break
+
+        for word in keywords:
+        #go through keywords in order of frequency, checking if they associate with one of our types
+            for type in self._type_words.iterkeys():
+                if word in self._type_words[type]:
+                    types.append(type)
+                    if type == OrgTypesEnum.PREVENTION or type == OrgTypesEnum.PROTECTION or type == OrgTypesEnum.PROSECUTION:
+                        threepees = True
+                    #uniquify
+                    types = list(set(types))
+                if len(types) >= self._max_types:
+                    #if there are three types but none of them are P's, replace the last one with prevention
+                    if not threepees:
+                        types[self._max_types] = OrgTypesEnum.PREVENTION
+                        threepees = True
+                    break
+        #if there are less than three types and none of them are P's, append prevention
+        if not threepees:
+            types.append(OrgTypesEnum.PREVENTION)
+
 
         return types or [OrgTypesEnum.UNKNOWN]
 

@@ -290,14 +290,14 @@ class ScraperTests(unittest.TestCase):
         ]
 
         keyword_scraper = KeywordScraper()
-        keywords = []
+        keywords = ''
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
                 ret = keyword_scraper.parse(response)
-                if isinstance(ret, type({})):
-                    keywords += ret.iterkeys()
+                if isinstance(ret, type('')):
+                    keywords += ' ' + ret
 
         assert_list = ["nicolas", "cage"]
         for test in assert_list:
@@ -463,8 +463,7 @@ class ScraperTests(unittest.TestCase):
                     types = types + ret
                 else:
                     types.append(ret)
-
-        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PROTECTION]
+        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PREVENTION, OrgTypesEnum.PROTECTION]
         for test in assert_list:
             self.assertIn(test, types, 'Type \'' + OrgTypesEnum.reverse_mapping[test] + '\' not found')
 
@@ -581,42 +580,33 @@ class ScraperTests(unittest.TestCase):
                     orgs.append(ret)
 
         assert_list = [{
-                           'name': 'Bombay Teen Challenge',
-                           'types': [
-                               OrgTypesEnum.RELIGIOUS,
-                               OrgTypesEnum.EDUCATION,
-                               OrgTypesEnum.PREVENTION,
-                           ],
-                           'phone_numbers': [
-                               '16157124863', # US number
-                               '912226042242'  # indian number
-                           ],
-                           'emails': [
-                               'tvarghese@bombayteenchallenge.org',
-                               'kkdevaraj@bombayteenchallenge.org',
-                           ],
-                           'address':
-                               'Mumbai 400052',
-                           'contacts': [
-                               # not yet implemented
-                           ],
-                           'organization_url': 'bombayteenchallenge.org/',
-                           'partners': [
-                               # not yet implemented
-                           ],
-                           'facebook': 'http://www.facebook.com/BombayTeenChallenge',
-                           'twitter': 'https://twitter.com/bombaytc',
-                           'keywords': {'[]': 44, 'access': 32, 'addict': 51, 'afraid': 32, 'allows': 32,
-                                        'ambedkar': 32, 'announced': 32, 'ash': 32, 'bandra': 32, 'beauty': 32,
-                                        'began': 32, 'betrayed': 32, 'blog': 64, 'bombay': 384, 'btc': 64, 'care': 51,
-                                        'challenge': 358, 'child': 64, 'contact': 64, 'district': 53, 'donate': 64,
-                                        'drug': 64, 'education': 89, 'education.': 39, 'gift': 64, 'health': 96,
-                                        'india': 96, 'life': 96, 'light': 64, 'live': 64, 'men': 53, 'mumbai': 128,
-                                        'music': 83, 'office': 38, 'out.': 39, 'program': 85, 'reach': 64, 'read': 96,
-                                        'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'street': 96, 'teen': 384,
-                                        'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'wa': 64,
-                                        'woman': 112},
-                       }]
+            'name': 'Bombay Teen Challenge',
+            'types': [
+                OrgTypesEnum.RELIGIOUS,
+                OrgTypesEnum.EDUCATION,
+                OrgTypesEnum.PREVENTION,
+            ],
+            'phone_numbers': [
+                '16157124863',  # US number
+                '912226042242'  # indian number
+            ],
+            'emails': [
+                'tvarghese@bombayteenchallenge.org',
+                'kkdevaraj@bombayteenchallenge.org',
+            ],
+            'address':
+                'Mumbai 400052',
+            'contacts': [
+                # not yet implemented
+            ],
+            'organization_url': 'bombayteenchallenge.org/',
+            'partners': [
+                # not yet implemented
+            ],
+            'facebook': 'http://www.facebook.com/BombayTeenChallenge',
+            'twitter': 'https://twitter.com/bombaytc',
+            'keywords': 'bombay teen challenge seek mumbai woman health india life read street vocational education program music rescued blog btc child contact donate drug gift light live reach red trust wa district men safe addict care training [] education. out. office tel access afraid allows ambedkar announced ash bandra beauty began betrayed',
+        }]
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
 

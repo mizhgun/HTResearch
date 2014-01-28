@@ -34,7 +34,7 @@ class OrganizationDTO(mongo.Document):
     partners = mongo.ListField(mongo.ReferenceField('self'), db_field='ps')
     facebook = mongo.URLField(db_field='f')
     twitter = mongo.URLField(db_field='t')
-    keywords = mongo.MapField(mongo.FloatField(), db_field='ks')
+    keywords = mongo.StringField(db_field='ks')
     valid = mongo.BooleanField(db_field='v', default=True)
     last_updated = mongo.DateTimeField(db_field='lu')
     updated_by = mongo.ObjectIdField(db_field='ub')
