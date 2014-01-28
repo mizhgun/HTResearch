@@ -89,12 +89,10 @@ class DAO(object):
     # Search string fields for text and return list of results
     def text_search(self, text, fields, num_elements=10, **sort_params):
         with self.conn():
-            fields_dict = self.dto._fields
             entry_query = self._get_query(text, fields)
             found_entries = self.dto.objects.filter(entry_query)
             if 'sort_fields' in sort_params:
                 for field in reversed(sort_params['sort_fields']):
-<<<<<<< HEAD
                     found_entries = found_entries.order_by(field)
             return found_entries[:num_elements]
 
@@ -119,22 +117,6 @@ class DAO(object):
             else:
                 query = query & or_query
         return query
-=======
-                    if len(field) == 0:
-                        break
-                    if field[0] == '-':
-                        results.sort(key=lambda result: result[field[1:]], reverse=True)
-                    elif field[0] == '+':
-                        results.sort(key=lambda result: result[field[1:]])
-                    else:
-                        results.sort(key=lambda result: result[field])
-
-            # return the last num_elements
-            if num_elements is not None and num_elements > 0:
-                return results[:num_elements]
-            else:
-                return results
->>>>>>> R4_GhostRider
 
 
 class ContactDAO(DAO):

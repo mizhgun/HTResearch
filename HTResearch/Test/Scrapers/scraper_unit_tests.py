@@ -467,8 +467,7 @@ class ScraperTests(unittest.TestCase):
                     types = types + ret
                 else:
                     types.append(ret)
-
-        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PROTECTION]
+        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PREVENTION, OrgTypesEnum.PROTECTION]
         for test in assert_list:
             self.assertIn(test, types, 'Type \'' + OrgTypesEnum.reverse_mapping[test] + '\' not found')
 
@@ -559,10 +558,6 @@ class ScraperTests(unittest.TestCase):
             'twitter': 'https://twitter.com/bombaytc',
             'keywords': 'bombay teen challenge seek mumbai woman health india life read street vocational education program music rescued blog btc child contact donate drug gift light live reach red trust wa district men safe addict care training [] education. out. office tel access afraid allows ambedkar announced ash bandra beauty began betrayed',
         }]
-        #debug
-        print orgs[0]['keywords']
-        print assert_list[0]['keywords']
-        #end debug
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
 
