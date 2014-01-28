@@ -1,20 +1,17 @@
 import unittest
 import pickle
-import os.path
 
-from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import *
-from HTResearch.Test.Mocks.utility_scrapers import *
-from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
 from springpython.context import ApplicationContext
 from springpython.config import Object
 
-from bson.binary import Binary
-
+from HTResearch.Test.Mocks.utility_scrapers import *
+from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Test.Mocks.connection import MockDBConnection
+
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
 
@@ -82,7 +79,6 @@ class TestableUtilityScraperContext(UtilityScraperContext):
 
 
 class TestableDAOContext(DAOContext):
-
     @Object()
     def RegisteredDBConnection(self):
         return MockDBConnection
@@ -181,7 +177,7 @@ class ScraperTests(unittest.TestCase):
                     names.append(ret)
 
         # Hardcoded results based on the sites that were crawled
-        assert_list = [ # from first site, US names
+        assert_list = [# from first site, US names
                        {'name': "Gloria Steinem"},
                        {'name': "Jennifer Buffett"},
                        {'name': "Peter Buffett"},
@@ -194,7 +190,7 @@ class ScraperTests(unittest.TestCase):
                        {'name': "Lekha Poddar"},
                        {'name': "Namita Saraf"},
                        {'name': "Nayantara Palchoudhuri"},
-                       {'name': "Pallavi Shroff"},
+                       {'name': "Pallavi Shardul Shroff"},
                        {'name': "Sujata Prasad"},
                        {'name': "Suresh Neotia"},
                        {'name': "Lata Bajoria"},
@@ -203,32 +199,27 @@ class ScraperTests(unittest.TestCase):
                        {'name': "Lela Goren"},
                        {'name': "Ellyson Perkins"},
                        {'name': "Mona Sinha"},
-                        # from second site, Indian names
-                       {'name': "Smt. Parvinder Sohi Behuria, IRS"},
-                       {'name': 'Smt. Kanwaljit Deol, IPS'},
-                       {'name': 'Sh. A.K. Garg'},
-                       {'name': 'Sh. Alok Kumar Shrivastava, IAS'},
-                       {'name': 'Sh. Jaideep Singh Kochher, IES'},
-                       {'name': 'Sh. Chandra Kant Tyagi'},
-                       {'name': 'Sh. Krishna Pal Singh'},
-                       {'name': 'Sh. P.C. Joshi'},
-                       {'name': 'Sh. B.P. Vishwakarma'},
-                       {'name': 'Sh. Viplav Kumar'},
-                       {'name': 'Sh. A.K. Parashar'},
-                       {'name': 'Sh. Pupul Dutta Prasad'},
-                       {'name': 'Sh. Sanjay kumar Jain'},
-                       {'name': 'Dr. Savita Bhakhry'},
-                       {'name': 'Smt. Shoba George'},
-                       {'name': 'Sh. Sunil Arora'},
-                       {'name': 'Sh. Rishi Pal'},
-                       {'name': 'Sh. B.S. Nagar'},
-                       {'name': 'Sh. D.M. Tripathy'},
-                       {'name': 'Sh. Khwaja Abdul Hafeez'},
-                       {'name': 'Sh. Khaleel Ahmad'},
-                       {'name': 'Sh. Mujesh Kumar'},
-                       {'name': 'Sh. Indrajeet Kumar'},
-                       {'name': 'Sh. C.S. Mawri'},
-                       {'name': 'Sh. Krishna Kumar Shrivastava'}]
+                       # from second site, Indian names
+                       {'name': 'Rishi Prakash'},
+                       {'name': 'Vinod Seth'},
+                       {'name': 'S K Gandhi'},
+                       {'name': 'M S Gill'},
+                       {'name': 'Chandra Kant Tyagi'},
+                       {'name': 'Pooran Chandra Joshi'},
+                       {'name': 'K P Singh'},
+                       {'name': 'KHC Rao'},
+                       {'name': 'Ajay Kumar'},
+                       {'name': 'S. Narayan'},
+                       {'name': 'S. Jalaja'},
+                       {'name': 'R. Krishnamurthy'},
+                       {'name': 'Mukesh Kumar'},
+                       {'name': 'Jaimini Kumar Srivastava'},
+                       {'name': 'Utpal Narayan Sarkar'},
+                       {'name': 'Shoba George'},
+                       {'name': 'Om Prakash'},
+                       {'name': 'S K Shukla'},
+                       {'name': 'Sudhir Chopra'},
+                       {'name': 'C P Gupta'}]
 
         for test in assert_list:
             self.assertIn(test, names, 'Name {0} not found'.format(str(test)))
@@ -299,14 +290,14 @@ class ScraperTests(unittest.TestCase):
         ]
 
         keyword_scraper = KeywordScraper()
-        keywords = []
+        keywords = ''
 
         for input_file in test_files:
             response = file_to_response(input_file)
             if response is not None:
                 ret = keyword_scraper.parse(response)
-                if isinstance(ret, type({})):
-                    keywords += ret.iterkeys()
+                if isinstance(ret, type('')):
+                    keywords += ' ' + ret
 
         assert_list = ["nicolas", "cage"]
         for test in assert_list:
@@ -394,7 +385,7 @@ class ScraperTests(unittest.TestCase):
             "httpwwwprajwalaindiacomhomehtml",
             "httpwwwhalftheskymovementorg",
             "httpapneaaporg",
-            ]
+        ]
 
         org_tw_scraper = OrgTwitterScraper()
         twitter_links = []
@@ -472,8 +463,7 @@ class ScraperTests(unittest.TestCase):
                     types = types + ret
                 else:
                     types.append(ret)
-
-        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PROTECTION]
+        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PREVENTION, OrgTypesEnum.PROTECTION]
         for test in assert_list:
             self.assertIn(test, types, 'Type \'' + OrgTypesEnum.reverse_mapping[test] + '\' not found')
 
@@ -534,33 +524,38 @@ class ScraperTests(unittest.TestCase):
                 else:
                     contacts.append(ret)
 
-        assert_list = [{'email': ['lalitha.gollamudi@gmail.com'],
+        assert_list = [{
+                         'email': 'lalitha.gollamudi@gmail.com',
                          'first_name': 'Lalitha',
                          'last_name': 'Gollamudi',
                          'organization': {'name': 'PRAJWALA'},
-                         'position': [None],
-                         'phone': [None]}, {'email': ['praj_2010@yahoo.com'],
-                         'first_name': 'Ms',
-                         'last_name': 'Merline',
-                         'organization': {'name': 'PRAJWALA'},
-                         'position': [None],
-                         'phone': ['914024410813']}, {'email': ['lavanya.ravulapalli@gmail.com'],
-                         'first_name': 'Ms. Lavanya',
+                         'position': None,
+                         'phone': '914024410813',
+                         },
+                       {
+                         'email': 'lavanya.ravulapalli@gmail.com',
+                         'first_name': 'Lavanya',
                          'last_name': 'Ravulapalli',
                          'organization': {'name': 'PRAJWALA'},
-                         'position': [None],
-                         'phone': [None]}, {'email': ['kmulhauser@consultingwomen.com'],
-                         'first_name': 'Ms Karen',
+                         'position': None,
+                         'phone': None
+                         },
+                       {
+                         'email': 'kmulhauser@consultingwomen.com',
+                         'first_name': 'Karen',
                          'last_name': 'Mulhuaser',
                          'organization': {'name': 'PRAJWALA'},
-                         'position': [None],
-                         'phone': [None]}, {'email': ['b.damico@proconf.ch'],
-                         'first_name': 'Ms',
-                         'last_name': 'Beatrice',
+                         'position': None,
+                         'phone': None,
+                         },
+                       {
+                         'email': 'sunitha_2002@yahoo.com',
+                         'first_name': 'Sunitha',
+                         'last_name': 'Krishnan',
                          'organization': {'name': 'PRAJWALA'},
-                         'position': [None],
-                         'phone': [None]
-        }]
+                         'position': 'Chief Functionary',
+                         'phone': '919848025014',
+                         }]
 
         for test in assert_list:
             self.assertIn(test, contacts, 'Contact \'' + str(test) + '\' not found')
@@ -610,7 +605,7 @@ class ScraperTests(unittest.TestCase):
             ],
             'facebook': 'http://www.facebook.com/BombayTeenChallenge',
             'twitter': 'https://twitter.com/bombaytc',
-            'keywords': {'[]': 44, 'access': 32, 'addict': 51, 'afraid': 32, 'allows': 32, 'ambedkar': 32, 'announced': 32, 'ash': 32, 'bandra': 32, 'beauty': 32, 'began': 32, 'betrayed': 32, 'blog': 64, 'bombay': 384, 'btc': 64, 'care': 51, 'challenge': 358, 'child': 64, 'contact': 64, 'district': 53, 'donate': 64, 'drug': 64, 'education': 89, 'education.': 39, 'gift': 64, 'health': 96, 'india': 96, 'life': 96, 'light': 64, 'live': 64, 'men': 53, 'mumbai': 128, 'music': 83, 'office': 38, 'out.': 39, 'program': 85, 'reach': 64, 'read': 96, 'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'street': 96, 'teen': 384, 'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'wa': 64, 'woman': 112},
+            'keywords': 'bombay teen challenge seek mumbai woman health india life read street vocational education program music rescued blog btc child contact donate drug gift light live reach red trust wa district men safe addict care training [] education. out. office tel access afraid allows ambedkar announced ash bandra beauty began betrayed',
         }]
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
@@ -658,7 +653,7 @@ class ScraperTests(unittest.TestCase):
             {
                 'checksum': Binary('199553381546012383114562002951261892300'),
                 'last_visited': datetime.utcnow().date(),
-                'update_freq': 1,  # not incremented b/c checksum is same
+                'update_freq': 1, # not incremented b/c checksum is same
                 'url': 'http://www.halftheskymovement.org/partners'
             },
         ]

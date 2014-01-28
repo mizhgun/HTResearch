@@ -4,17 +4,14 @@ from springpython.context import ApplicationContext
 from springpython.config import Object
 
 # project imports
-from HTResearch.DataAccess.dto import *
 from HTResearch.DataModel.model import *
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
-from HTResearch.Test.Mocks.connection import MockDBConnection
 from HTResearch.Test.Mocks.dao import *
 from HTResearch.DataModel.enums import AccountType
 
 
 class TestableDAOContext(DAOContext):
-
     @Object()
     def RegisteredDBConnection(self):
         return MockDBConnection
@@ -39,8 +36,8 @@ class TestableDAOContext(DAOContext):
     def RegisteredGeocode(self):
         return lambda x: [0.0, 0.0]
 
-class DatabaseInteractionTest(unittest.TestCase):
 
+class DatabaseInteractionTest(unittest.TestCase):
     def setUp(self):
         print "New DatabaseInteractionTest running"
 
@@ -55,14 +52,14 @@ class DatabaseInteractionTest(unittest.TestCase):
                                          phone_numbers=[5555555555, "(555)555-5555"],
                                          facebook="http://www.facebook.com/yee",
                                          twitter="http://www.twitter.com/yee"
-                                         )
+        )
         self.publication = Publication(title="The Book of Yee",
                                        authors=[self.contact])
         self.urlmetadata = URLMetadata(url="http://google.com")
         self.user = User(first_name="Bee", last_name="Yee",
                          email="beeyee@yee.com", password="iambeeyee",
                          background="I love bees and yees",
-                         account_type=AccountType.BASIC)
+                         account_type=AccountType.COLLABORATOR)
 
         self.ctx = ApplicationContext(TestableDAOContext())
 
@@ -127,11 +124,11 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Testing organization text search ...'
 
-        assert_orgs = org_dao.text_search(num_elements=10, text='bEe YeE university ers')
+        assert_orgs = org_dao.text_search(num_elements=10, text='bEe YeE university ers', fields=['name', 'address', 'organization_url', 'keywords', ])
         self.assertEqual(assert_orgs[0].name, org_dto.name)
 
-        assert_orgs = org_dao.text_search(num_elements=10, text='yee adfgh905w')
-        self.assertEqual(assert_orgs, [])
+        assert_orgs = org_dao.text_search(num_elements=10, text='yee adfgh905w', fields=['name', 'address', 'organization_url', 'keywords', ])
+        self.assertEqual(list(assert_orgs), [])
 
         print 'Testing organization editing ...'
         org_dto.name = "Yee Universityee"
@@ -256,6 +253,7 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_contact.phone, new_contact_dto.phone)
 
         print 'Merge records tests passed'
+
 
 if __name__ == '__main__':
     try:

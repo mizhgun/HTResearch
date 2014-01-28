@@ -1,19 +1,19 @@
-from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
-from HTResearch.Utilities.context import URLFrontierContext
-from HTResearch.Utilities.logutil import LoggingSection, LoggingUtility
-from HTResearch.Utilities.url_tools import UrlUtility
+import os
 
 from springpython.context import ApplicationContext
-from scrapers.document_scrapers import *
-from scrapers.utility_scrapers import OrgUrlScraper
-from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
 from scrapy.http import Request
 from scrapy import log
-import os
+
+from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
+
+from HTResearch.Utilities.context import URLFrontierContext
+
+from scrapers.document_scrapers import *
+from scrapers.site_specific import StopTraffickingDotInScraper
 
 # Since this logger can be shared by the whole module, we can instantiate it here
-logger = LoggingUtility().get_logger(LoggingSection.CRAWLER, __name__)
+logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class OrgSpider(BaseSpider):
@@ -76,19 +76,22 @@ class OrgSpider(BaseSpider):
         yield request
 
     def parse(self, response):
-        ret = self.meta_data_scraper.parse(response)
-        if ret is not None:
-            yield ret
-        ret = self.org_scraper.parse(response)
-        if ret is not None:
-            yield ret
-            for scraper in self.scrapers:
-                ret = scraper.parse(response)
-                if isinstance(ret, type([])):
-                    for item in ret:
-                        yield item
-                else:
-                    yield ret
+        try:
+            ret = self.meta_data_scraper.parse(response)
+            if ret is not None:
+                yield ret
+            ret = self.org_scraper.parse(response)
+            if ret is not None:
+                yield ret
+                for scraper in self.scrapers:
+                    ret = scraper.parse(response)
+                    if isinstance(ret, type([])):
+                        for item in ret:
+                            yield item
+                    else:
+                        yield ret
+        except Exception as e:
+            logger.error(e.message)
 
         next_url = self.url_frontier.next_url(self.url_frontier_rules)
         timeout = 0
@@ -154,8 +157,8 @@ class StopTraffickingSpider(BaseSpider):
         yield url_item
 
     def _get_url_metadata(self, item):
-        if not isinstance(item, ScrapedOrganization)\
-                or item['organization_url'] is None or item['organization_url'] == "":
+        if not isinstance(item, ScrapedOrganization) \
+            or item['organization_url'] is None or item['organization_url'] == "":
             return None
 
         url_item = ScrapedUrl()

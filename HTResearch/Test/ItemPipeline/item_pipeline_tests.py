@@ -7,7 +7,6 @@ from springpython.config import Object
 from HTResearch.WebCrawler.WebCrawler.items import ScrapedOrganization, ScrapedContact
 from HTResearch.Utilities.context import ItemPipelineContext
 from HTResearch.DataModel.enums import OrgTypesEnum
-from HTResearch.Test.Mocks.connection import MockDBConnection
 from HTResearch.Test.Mocks.dao import *
 
 
@@ -62,7 +61,6 @@ class ItemPipelineTest(unittest.TestCase):
         self.ctx = ApplicationContext(TestablePipelineContext())
 
     def tearDown(self):
-        print 'dropping the test database'
         with MockDBConnection() as db:
             db.dropall()
 
@@ -91,43 +89,11 @@ class ItemPipelineTest(unittest.TestCase):
         self.assertEqual(assert_org.organization_url, self.org['organization_url'])
         self.assertEqual(assert_org.emails, self.org['emails'])
         self.assertEqual(assert_org.phone_numbers, self.org['phone_numbers'])
-        print assert_org
         partners = []
         for partner in assert_org.partners:
-            print partner
             partners.append({'organization_url': partner.organization_url})
         for partner in partners:
             self.assertIn(partner, self.org['partners'])
-
-        print "Item Switch Test Passed"
-
-    def test_switch_scraped_contact(self):
-
-        print "Creating ItemSwitch"
-        item_switch = self.ctx.get_object("ItemSwitch")
-
-        print 'Passing ScrapedContact to ItemSwitch'
-        print 'NOTE: Passing "None" as spider as it is not used'
-        contact = item_switch.process_item(self.contact, None)
-
-        print 'Testing return value from item_switch'
-        self.assertEqual(contact, self.contact, "Expected value {0} != {1}".format(contact, self.contact))
-
-        print 'Grabbing stored contact from database'
-        contact_dao = self.ctx.get_object("ContactDAO")
-
-        assert_contact = contact_dao.find(first_name=self.contact['first_name'])
-
-        print 'Check that entry is retrievable'
-        self.assertIsNotNone(assert_contact)
-
-        print 'Testing equality...'
-        self.assertEqual(assert_contact.first_name, self.contact['first_name'])
-        self.assertEqual(assert_contact.last_name, self.contact['last_name'])
-        self.assertEqual(assert_contact.organization.name, self.contact['organization']['name'])
-        self.assertEqual(assert_contact.email, self.contact['email'])
-        self.assertEqual(assert_contact.phone, self.contact['phone'])
-        self.assertEqual(assert_contact.position, self.contact['position'])
 
         print "Item Switch Test Passed"
 
