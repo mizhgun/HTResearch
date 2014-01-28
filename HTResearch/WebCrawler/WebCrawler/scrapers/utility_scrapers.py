@@ -30,20 +30,27 @@ _utilityscrapers_logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class ContactNameScraper(object):
-    def __init__(self):
+    try:
+        _names and _last_names and _stopwords and _titles
+    except NameError:
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt'), 'r') as f:
             names = f.read().splitlines()
-            self._names = [name.title() for name in names]
+            _names = [name.title() for name in names]
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/lastnames.txt'), 'r') as f:
             lnames = f.read().splitlines()
-            self._last_names = [lname.title() for lname in lnames]
+            _last_names = [lname.title() for lname in lnames]
+        #Load words to be ignored
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/stopwords.txt')) as f:
+            stopwords = f.read().splitlines()
+            _stopwords = [word.title() for word in stopwords]
 
-        self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Sh', 'Smt', 'Prof', 'Shri']
-        length = len(self._titles)
+        _titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Sh', 'Smt', 'Prof', 'Shri']
+        length = len(_titles)
         # catch Dr and Dr.
         for i in range(0, length):
-            self._titles.append(self._titles[i]+'.')
+            _titles.append(_titles[i]+'.')
 
+    def __init__(self):
         # Make a regex check for if a potential name is actually a date. Not concerned with months that aren't in the
         # names list
         self._date = re.compile(r'Jan ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)|'
@@ -52,16 +59,12 @@ class ContactNameScraper(object):
                                 r'June ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)|'
                                 r'August ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)')
 
-        #Load words to be ignored
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/stopwords.txt')) as f:
-            self._stopwords = f.read().splitlines()
-            self._stopwords = [word.title() for word in self._stopwords]
-
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
         body = hxs.select('//body//text()').extract()
         body = [s.strip() for s in body if s.strip()]
         names = []
+        cns = ContactNameScraper
 
         for s in body:
             str_split = s.split()
@@ -72,32 +75,34 @@ class ContactNameScraper(object):
                 split_index = str_split[i]
 
                 # variables for below elif to not be so terrifying
-                stop_word = split_index not in self._stopwords or len(split_index) == 1
+                stop_word = split_index not in cns._stopwords or len(split_index) == 1
                 uppercase = split_index.istitle() or split_index.isupper()
                 all_alpha = all(c.isalpha() or c == '.' for c in split_index)
+                date = re.match(self._date, split_index)
 
                 # if it's in the last names and it isn't the first word in the string
-                if split_index in self._last_names and split_index != str_split[0]:
+                if split_index in cns._last_names and split_index != str_split[0] and not date:
                     name_to_add = split_index + " " + name_to_add
 
                 # if in first names
-                elif split_index in self._names:
+                elif split_index in cns._names and not date:
                     name_to_add = split_index + " " + name_to_add
 
                     # if the last name wasn't caught but first name was and next word is last name format
                     try:
                         next_uppercase = str_split[i+1].istitle() or str_split[i+1].isupper()
                         next_all_alpha = all(c.isalpha() or c == '.' for c in str_split[i+1])
-                        if next_uppercase and str_split[i+1] not in self._stopwords and \
+                        if next_uppercase and str_split[i+1] not in cns._stopwords and \
                                 next_all_alpha and str_split[i+1] not in name_to_add:
                             name_to_add += str_split[i+1]
                     except IndexError:
                         pass
 
                 # will catch a first name if a last name has been caught and if it's in correct name format
-                elif stop_word and split_index not in self._titles and uppercase and all_alpha and name_to_add:
+                elif stop_word and split_index not in cns._titles and uppercase and all_alpha and \
+                        name_to_add and not date:
                     name_to_add = split_index + " " + name_to_add
-                elif not split_index.istitle() and name_to_add:
+                elif (not split_index.istitle() and name_to_add) or date:
                     break
 
             # only get names that are both first and last name

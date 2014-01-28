@@ -34,9 +34,6 @@ class ContactScraper():
 
 
 class OrganizationScraper():
-
-    _multiple = ['types', 'phone_number', 'email', 'partners', 'contacts']
-
     def __init__(self):
         self._scrapers = {
             'name': [OrgNameScraper],
@@ -51,7 +48,7 @@ class OrganizationScraper():
             'twitter': [OrgTwitterScraper],
             'keywords': [KeywordScraper],
         }
-        self._multiple = ['types', 'phone_numbers', 'emails', 'partners', ]
+        self._multiple = ['types', 'phone_numbers', 'emails', 'partners', 'contacts']
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',
                                 'human trafficking', 'brothel', 'child trafficking', 'anti trafficking',
                                 'social justice']

@@ -198,12 +198,13 @@ class OrganizationDAO(DAO):
 
         # Injected dependencies
         self.contact_dao = ContactDAO
+        self.geocode = geocode
 
     def merge_documents(self, existing_org_dto, new_org_dto):
         with self.conn():
             attributes = new_org_dto._data
             for key in attributes:
-                if attributes[key]:
+                if attributes[key] or key == 'latlng':
                     cur_attr = getattr(existing_org_dto, key)
                     if not cur_attr:
                         if key == 'latlng' and not attributes['latlng'] and attributes['address']:
@@ -255,6 +256,9 @@ class OrganizationDAO(DAO):
                     if cascade_add:
                         saved_dto = self._add_org_ref_to_children(saved_dto)
                     return saved_dto
+                elif org_dto.latlng is None and org_dto.address:
+                    # Geocode it
+                    org_dto.latlng = self.geocode(org_dto.address)
 
             org_dto.last_updated = datetime.utcnow()
             org_dto.save()

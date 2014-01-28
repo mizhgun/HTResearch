@@ -94,3 +94,4 @@ class User(object):
         self.account_type = account_type
         self.org_type = org_type
         self.organization = organization
+        self.last_updated = datetime.utcnow()

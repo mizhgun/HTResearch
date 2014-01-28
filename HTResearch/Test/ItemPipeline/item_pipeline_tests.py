@@ -61,7 +61,6 @@ class ItemPipelineTest(unittest.TestCase):
         self.ctx = ApplicationContext(TestablePipelineContext())
 
     def tearDown(self):
-        print 'dropping the test database'
         with MockDBConnection() as db:
             db.dropall()
 
