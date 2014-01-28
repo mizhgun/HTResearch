@@ -368,8 +368,9 @@ function showSearchResults() {
                 toggleSelector: '#organization-toggle',
                 collapseSelector: '#collapse-organizations',
                 listSelector: '#organization-search-list',
-                linkSelector: '.org-link',
-                linkCallback: showOrganizationModal
+                linkClass: 'org-link',
+                linkText: function(item) { return item.name },
+                onclick: showOrganizationModal
             },
             {
                 name: 'Contact',
@@ -377,47 +378,57 @@ function showSearchResults() {
                 toggleSelector: '#contact-toggle',
                 collapseSelector: '#collapse-contacts',
                 listSelector: '#contact-search-list',
-                linkSelector: '.contact-link',
-                linkCallback: showContactModal
+                linkClass: 'contact-link',
+                linkText: function(item) { return item.first_name + ' ' + item.last_name },
+                onclick: showContactModal
             }
         ];
 
         // Perform each search
-        _.each(searchItems, function (item) {
+        _.each(searchItems, function(searchItem) {
             startAjaxSearch();
             $.ajax({
                 type: 'GET',
-                url: item.url,
+                url: searchItem.url,
                 data: {
                     'search_text': $('#search-box').val(),
                     'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
                 },
                 dataType: 'html'
-            }).done(function (data) {
-                    data = data.trim();
-                    if (data) {
-                        $(item.toggleSelector).attr('data-toggle', 'collapse');
-                        $(item.toggleSelector).removeClass('disabled');
-                        $(item.collapseSelector).collapse('show');
-                    } else {
-                        $(item.toggleSelector).attr('data-toggle', '');
-                        $(item.toggleSelector).addClass('disabled');
-                        $(item.collapseSelector).collapse('hide');
-                    }
-                    $(item.toggleSelector).click(function (e) {
-                        e.preventDefault();
-                    });
-                    $(item.listSelector).html(data);
-                    $('.modal').modal({ show: false });
-                    $(item.linkSelector).click(item.linkCallback);
-                    $(item.linkSelector).each(function (index, value) {
+            }).done(function(data) {
+                data = JSON.parse(data);
+                $(searchItem.listSelector).html('');
+                _.each(data.results, function(item) {
+                    $('<a>' + searchItem.linkText(item) + '</a>')
+                        .addClass(searchItem.linkClass)
+                        .attr('href', 'javascript:void(0)')
+                        .data(item)
+                        .wrap('<li></li>')
+                        .parent()
+                        .appendTo(searchItem.listSelector);
+                });
+                if (data) {
+                    $(searchItem.toggleSelector).closest('.panel').show();
+                    $(searchItem.toggleSelector).attr('data-toggle', 'collapse');
+                    $(searchItem.toggleSelector).removeClass('disabled');
+                    $(searchItem.collapseSelector).collapse('show');
+                } else {
+                    $(searchItem.toggleSelector).closest('.panel').hide();
+                }
+                $(searchItem.toggleSelector).click(function (e) {
+                    e.preventDefault();
+                });
+                $('.modal').modal({ show: false });
+                $('.' + searchItem.linkClass)
+                    .click(searchItem.onclick)
+                    .each(function (index, value) {
                         plotMarker($(value).data());
                     });
-                }).fail(function () {
-                    console.log(item.name, 'search failed');
-                }).always(function () {
-                    endAjaxSearch();
-                });
+            }).fail(function(data) {
+                console.log(searchItem.name, 'search failed');
+            }).always(function () {
+                endAjaxSearch();
+            });
         });
 
         if (!searchResultsVisible) {

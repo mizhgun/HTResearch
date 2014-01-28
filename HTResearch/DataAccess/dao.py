@@ -1,11 +1,12 @@
+from datetime import datetime
 from mongoengine import Q
-from mongoengine.fields import StringField, URLField, EmailField
 
 from dto import *
 
 from connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.geocoder import geocode
+import re
 
 
 class DAO(object):
@@ -28,6 +29,8 @@ class DAO(object):
                     else:
                         # TODO: Maybe we should merge all reference documents, as well?
                         pass
+
+            dto.last_updated = datetime.utcnow()
             dto.save()
             return dto
 
@@ -44,15 +47,29 @@ class DAO(object):
         with self.conn():
             return self.dto.objects(**constraints).first()
 
+    def count(self, search=None, **constraints):
+        with self.conn():
+            # Do text search or grab by constraints
+            if search is not None:
+                return len(self.text_search(search, None))
+            else:
+                return self.dto.objects(**constraints).count()
+
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
-    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[],
-                 **constraints):
+    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=None,
+                 search=None, **constraints):
         with self.conn():
-            if len(sort_fields) > 0:
-                ret = self.dto.objects(**constraints).order_by(sort_fields)
+            # Do text search or grab by constraints
+            if search is not None:
+                ret = self.text_search(search, num_elements, sort_fields=[sort_fields])
             else:
                 ret = self.dto.objects(**constraints)
+
+            # Sort if there are sort fields
+            if sort_fields is not None and len(sort_fields) > 0 and search is None:
+                ret = ret.order_by(sort_fields)
+
             if num_elements is not None:
                 return ret[:num_elements]
             elif page_size is not None and page is not None:
@@ -69,43 +86,37 @@ class DAO(object):
 
             return ret
 
-    # Search all string fields for text and return list of results
-    # NOTE: may be slower than MongoDB's text search feature, which is unfortunately unusable because it is in beta
-    def text_search(self, text, num_elements, **sort_params):
+    # Search string fields for text and return list of results
+    def text_search(self, text, fields, num_elements=10, **sort_params):
         with self.conn():
-            # Find all string fields
-            fields_dict = self.dto._fields
-            string_types = (StringField, URLField, EmailField)
-            string_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) in string_types]
-
-            # Search for each term in each string field
-            result_lists = []
-            for term in text.split():
-                results = [list(self.dto.objects(**{field + '__icontains': term})) for field in string_fields]
-                results = reduce(lambda x, y: x + y, results)  # flatten to list of results
-                result_lists.append(results)
-
-            # Search by "AND" with search terms (change to any if you want "OR")
-            combo = all
-            results = []
-            if result_lists:
-                results = [item for item in result_lists[0] if combo(item in list for list in result_lists)]
-
-            # filter by required fields, only take results with the non-None fields
-            if 'required_fields' in sort_params.keys():
-                for key in sort_params['required_fields']:
-                    results = [r for r in results if r[key]]
-
-            # Remove duplicates
-            results = list(set(results))
-
-            # sort by fields
-            if 'sort_fields' in sort_params.keys():
+            entry_query = self._get_query(text, fields)
+            found_entries = self.dto.objects.filter(entry_query)
+            if 'sort_fields' in sort_params:
                 for field in reversed(sort_params['sort_fields']):
-                    results.sort(key=lambda result: result[field])
+                    found_entries = found_entries.order_by(field)
+            return found_entries[:num_elements]
 
-            # return the last num_elements
-            return results[:num_elements]
+    def _normalize_query(self, query_string,
+                         findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
+                         normspace=re.compile(r'\s{2,}').sub):
+        return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
+
+    def _get_query(self, query_string, search_fields):
+        query = None # Query to search for every search term
+        terms = self._normalize_query(query_string)
+        for term in terms:
+            or_query = None
+            for field_name in search_fields:
+                q = Q(**{'%s__icontains' % field_name: term})
+                if or_query is None:
+                    or_query = q
+                else:
+                    or_query = or_query | q
+            if query is None:
+                query = or_query
+            else:
+                query = query & or_query
+        return query
 
 
 class ContactDAO(DAO):
@@ -136,6 +147,7 @@ class ContactDAO(DAO):
                     saved_dto = self.merge_documents(existing_dto, contact_dto)
                     return saved_dto
 
+            contact_dto.last_updated = datetime.utcnow()
             contact_dto.save()
         return contact_dto
 
@@ -170,6 +182,8 @@ class OrganizationDAO(DAO):
                         if key == "types" and len(merged_list) > 1 and OrgTypesEnum.UNKNOWN in merged_list:
                             merged_list.remove(OrgTypesEnum.UNKNOWN)
                         setattr(existing_org_dto, key, attributes[key])
+
+            existing_org_dto.last_updated = datetime.utcnow()
             existing_org_dto.save()
             return existing_org_dto
 
@@ -192,6 +206,7 @@ class OrganizationDAO(DAO):
                     # Geocode it
                     org_dto.latlng = self.geocode(org_dto.address)
 
+            org_dto.last_updated = datetime.utcnow()
             org_dto.save()
         return org_dto
 
@@ -258,6 +273,7 @@ class PublicationDAO(DAO):
                 p = pub_dto.publisher
                 pub_dto.publisher = self.contact_dao().create_update(p)
 
+            pub_dto.last_updated = datetime.utcnow()
             pub_dto.save()
         return pub_dto
 
@@ -292,6 +308,7 @@ class URLMetadataDAO(DAO):
                     saved_dto = self.merge_documents(existing_dto, url_dto)
                     return saved_dto
 
+            url_dto.last_updated = datetime.utcnow()
             url_dto.save()
         return url_dto
 
@@ -326,5 +343,6 @@ class UserDAO(DAO):
                 o = user_dto.organization
                 user_dto.organization = self.org_dao().create_update(o)
 
+            user_dto.last_updated = datetime.utcnow()
             user_dto.save()
         return user_dto
