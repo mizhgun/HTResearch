@@ -124,11 +124,11 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Testing organization text search ...'
 
-        assert_orgs = org_dao.text_search(num_elements=10, text='bEe YeE university ers')
+        assert_orgs = org_dao.text_search(num_elements=10, text='bEe YeE university ers', fields=['name', 'address', 'organization_url', 'keywords', ])
         self.assertEqual(assert_orgs[0].name, org_dto.name)
 
-        assert_orgs = org_dao.text_search(num_elements=10, text='yee adfgh905w')
-        self.assertEqual(assert_orgs, [])
+        assert_orgs = org_dao.text_search(num_elements=10, text='yee adfgh905w', fields=['name', 'address', 'organization_url', 'keywords', ])
+        self.assertEqual(list(assert_orgs), [])
 
         print 'Testing organization editing ...'
         org_dto.name = "Yee Universityee"

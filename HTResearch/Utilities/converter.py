@@ -1,5 +1,6 @@
 from HTResearch.DataModel.model import *
 from HTResearch.DataAccess.dto import *
+from HTResearch.DataAccess.dao import *
 
 
 class DTOConverter(object):
@@ -7,6 +8,9 @@ class DTOConverter(object):
 
     @staticmethod
     def from_dto(cls, obj):
+        if obj is None:
+            return None
+
         new_cls = cls()
 
         for key in obj._data:
@@ -56,7 +60,9 @@ class ModelConverter(object):
                     setattr(new_model, key, [ModelConverter.to_model(Contact, c) for c in value])
                 elif key == 'publisher' and value is not None:
                     setattr(new_model, key, ModelConverter.to_model(Contact, value))
-                elif key == 'organizations' or key == 'partners':
+                elif key == 'organization':
+                    setattr(new_model, key, ModelConverter.to_model(Organization, value))
+                elif key == 'partners':
                     setattr(new_model, key, [ModelConverter.to_model(Organization, o) for o in value])
                 elif key == 'publications':
                     setattr(new_model, key, [ModelConverter.to_model(Publication, p) for p in value])

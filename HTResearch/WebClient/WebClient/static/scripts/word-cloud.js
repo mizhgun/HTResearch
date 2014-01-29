@@ -29,24 +29,25 @@ var data = {
     'org_id': document.URL.split("/")[4]
 }
 
-$.get('/get_org_keywords/', data)
+$.get('/get-org-keywords/', data)
     .done(function (result) {
-        if (!Object.keys(result).length) {
+        if(result) {
+            var coeff = 0.15;
+            d3.layout.cloud().size([800, 400])
+                .words(result.map(function (d, i) {
+                    console.log(d);
+                    return {text: d, size: 10 + 100 * Math.pow(Math.E, -coeff*i)};
+                }))
+                .padding(5)
+                .rotate(0)
+                .fontSize(function(d) {
+                    return d.size;
+                })
+                .on("end", draw)
+                .start();
+        } else {
             $('#no-keywords').show();
-            return;
         }
-
-        d3.layout.cloud().size([800, 400])
-            .words(Object.keys(result).map(function (d) {
-                return {text: d, size: 10 + result[d] / 3};
-            }))
-            .padding(5)
-            .rotate(0)
-            .fontSize(function (d) {
-                return d.size;
-            })
-            .on("end", draw)
-            .start();
-    }).fail(function (result) {
+    }).fail(function(result) {
         $('#no-keywords').show();
     });

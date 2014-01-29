@@ -38,7 +38,7 @@ function loadCoordinates(success_cb) {
     orgCoordinates.length = 0;
     $.ajax({
         type: 'GET',
-        url: '/heatmap_coordinates/',
+        url: '/heatmap-coordinates/',
         data: {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
         },

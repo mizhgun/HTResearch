@@ -31,6 +31,8 @@ class OrgSpider(BaseSpider):
         self.scrapers = []
         self.org_scraper = OrganizationScraper()
         self.meta_data_scraper = UrlMetadataScraper()
+        self.scrapers.append(OrganizationScraper())
+        self.scrapers.append(ContactScraper())
         self.scrapers.append(LinkScraper())
         self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
         self.ctx = ApplicationContext(URLFrontierContext())
@@ -74,19 +76,22 @@ class OrgSpider(BaseSpider):
         yield request
 
     def parse(self, response):
-        ret = self.meta_data_scraper.parse(response)
-        if ret is not None:
-            yield ret
-        ret = self.org_scraper.parse(response)
-        if ret is not None:
-            yield ret
-            for scraper in self.scrapers:
-                ret = scraper.parse(response)
-                if isinstance(ret, type([])):
-                    for item in ret:
-                        yield item
-                else:
-                    yield ret
+        try:
+            ret = self.meta_data_scraper.parse(response)
+            if ret is not None:
+                yield ret
+            ret = self.org_scraper.parse(response)
+            if ret is not None:
+                yield ret
+                for scraper in self.scrapers:
+                    ret = scraper.parse(response)
+                    if isinstance(ret, type([])):
+                        for item in ret:
+                            yield item
+                    else:
+                        yield ret
+        except Exception as e:
+            logger.error(e.message)
 
         next_url = self.url_frontier.next_url(self.url_frontier_rules)
         timeout = 0
