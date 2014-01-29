@@ -715,7 +715,8 @@ class OrgTypeScraper(object):
         keyword_scraper_inst = self._keyword_scraper()
 
         # Get keywords
-        keywords = keyword_scraper_inst.parse(response)
+        keyword_string = keyword_scraper_inst.parse(response)
+        keywords = keyword_string.split(' ')
 
         # Get all words
         all_words = []
