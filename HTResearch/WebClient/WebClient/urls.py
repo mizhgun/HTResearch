@@ -19,26 +19,26 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views.shared_views',
                        # url(r'^admin/', include(admin.site.urls)),
 
                        url(r'^$', 'index', name='index'),
-                       url(r'^heatmap_coordinates/$', 'heatmap_coordinates', name='heatmap_coordinates'),
-                       url(r'^coming_soon/$', 'unimplemented', name='unimplemented'),
+                       url(r'^heatmap-coordinates/$', 'heatmap_coordinates', name='heatmap-coordinates'),
+                       url(r'^coming-soon/$', 'unimplemented', name='unimplemented'),
                        url(r'^welcome/$', 'welcome', name='welcome'),
-                       url(r'^get_started/$', 'get_started', name='get_started'),
-                       )
+                       url(r'^get-started/$', 'get_started', name='get-started'),
+)
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
-                        url(r'^search_organizations/$', 'search_organizations', name='search_organizations'),
-                        url(r'^organization/(\w+)', 'organization_profile', name='org_prof'),
-                        url(r'^org_rank$', 'org_rank', name='org_rank'),
-                        url(r'^org_rank/(\w+)$', 'org_rank', name='org_rank'),
-                        url(r'^get_org_rank_rows/$', 'get_org_rank_rows', name='get_org_rank_rows'),
-                        url(r'^get_org_keywords/$', 'get_org_keywords', name='get_org_keywords'),
+                        url(r'^search-organizations/$', 'search_organizations', name='search-organizations'),
+                        url(r'^organization/(\w+)', 'organization_profile', name='org-prof'),
+                        url(r'^org-rank$', 'org_rank', name='org-rank'),
+                        url(r'^org-rank/(\w+)$', 'org_rank', name='org-rank'),
+                        url(r'^get-org-rank-rows/$', 'get_org_rank_rows', name='get-org-rank-rows'),
+                        url(r'^get-org-keywords/$', 'get_org_keywords', name='get-org-keywords'),
                         url(r'^request-organization/$', 'request_organization', name='request_organization'),
                         )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
-                        url(r'^search_contacts/$', 'search_contacts', name='search_contacts'),
-                        url(r'^contact/(\w+)', 'contact_profile', name='con_prof'),
-                        )
+                        url(r'^search-contacts/$', 'search_contacts', name='search-contacts'),
+                        url(r'^contact/(\w+)', 'contact_profile', name='con-prof'),
+)
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
                         url(r'^login/$', 'login', name='login'),
