@@ -356,7 +356,7 @@ class ScraperTests(unittest.TestCase):
         test_files = [
             "httpbombayteenchallengeorg",
             "httpwwwprajwalaindiacomhomehtml",
-            "httpwwwhalftheskymovementorg",
+            "httpwwwhalftheskymovementorgpagesabouthalftheskymovement",
             "httpapneaaporg",
 
         ]

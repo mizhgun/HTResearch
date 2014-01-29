@@ -748,6 +748,7 @@ class OrgTypeScraper(object):
                         threepees = True
                     #uniquify
                     types = list(set(types))
+                    break
                 if len(types) >= self._max_types:
                     #if there are three types but none of them are P's, replace the last one with prevention
                     if not threepees:
