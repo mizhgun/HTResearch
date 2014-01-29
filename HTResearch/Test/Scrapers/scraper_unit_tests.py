@@ -190,7 +190,7 @@ class ScraperTests(unittest.TestCase):
                        {'name': "Lekha Poddar"},
                        {'name': "Namita Saraf"},
                        {'name': "Nayantara Palchoudhuri"},
-                       {'name': "Pallavi Shroff"},
+                       {'name': "Pallavi Shardul Shroff"},
                        {'name': "Sujata Prasad"},
                        {'name': "Suresh Neotia"},
                        {'name': "Lata Bajoria"},
@@ -200,34 +200,30 @@ class ScraperTests(unittest.TestCase):
                        {'name': "Ellyson Perkins"},
                        {'name': "Mona Sinha"},
                        # from second site, Indian names
-                       {'name': "Smt. Parvinder Sohi Behuria, IRS"},
-                       {'name': 'Smt. Kanwaljit Deol, IPS'},
-                       {'name': 'Sh. A.K. Garg'},
-                       {'name': 'Sh. Alok Kumar Shrivastava, IAS'},
-                       {'name': 'Sh. Jaideep Singh Kochher, IES'},
-                       {'name': 'Sh. Chandra Kant Tyagi'},
-                       {'name': 'Sh. Krishna Pal Singh'},
-                       {'name': 'Sh. P.C. Joshi'},
-                       {'name': 'Sh. B.P. Vishwakarma'},
-                       {'name': 'Sh. Viplav Kumar'},
-                       {'name': 'Sh. A.K. Parashar'},
-                       {'name': 'Sh. Pupul Dutta Prasad'},
-                       {'name': 'Sh. Sanjay kumar Jain'},
-                       {'name': 'Dr. Savita Bhakhry'},
-                       {'name': 'Smt. Shoba George'},
-                       {'name': 'Sh. Sunil Arora'},
-                       {'name': 'Sh. Rishi Pal'},
-                       {'name': 'Sh. B.S. Nagar'},
-                       {'name': 'Sh. D.M. Tripathy'},
-                       {'name': 'Sh. Khwaja Abdul Hafeez'},
-                       {'name': 'Sh. Khaleel Ahmad'},
-                       {'name': 'Sh. Mujesh Kumar'},
-                       {'name': 'Sh. Indrajeet Kumar'},
-                       {'name': 'Sh. C.S. Mawri'},
-                       {'name': 'Sh. Krishna Kumar Shrivastava'}]
+                       {'name': 'Rishi Prakash'},
+                       {'name': 'Vinod Seth'},
+                       {'name': 'S K Gandhi'},
+                       {'name': 'M S Gill'},
+                       {'name': 'Chandra Kant Tyagi'},
+                       {'name': 'Pooran Chandra Joshi'},
+                       {'name': 'K P Singh'},
+                       {'name': 'KHC Rao'},
+                       {'name': 'Ajay Kumar'},
+                       {'name': 'S. Narayan'},
+                       {'name': 'S. Jalaja'},
+                       {'name': 'R. Krishnamurthy'},
+                       {'name': 'Mukesh Kumar'},
+                       {'name': 'Jaimini Kumar Srivastava'},
+                       {'name': 'Utpal Narayan Sarkar'},
+                       {'name': 'Shoba George'},
+                       {'name': 'Om Prakash'},
+                       {'name': 'S K Shukla'},
+                       {'name': 'Sudhir Chopra'},
+                       {'name': 'C P Gupta'}]
 
         for test in assert_list:
             self.assertIn(test, names, 'Name {0} not found'.format(str(test)))
+
 
     def test_email_scraper(self):
         test_files = [
@@ -510,6 +506,59 @@ class ScraperTests(unittest.TestCase):
         ]
         for test in assert_list:
             self.assertNotIn(test, partner_urls, 'Invalid URL (not a partner org): %s' % test)
+
+    def test_contact_scraper(self):
+        test_files = [
+            "httpwwwprajwalaindiacomcontactushtml",
+        ]
+
+        contact_scraper = ContactScraper()
+        contacts = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = contact_scraper.parse(response)
+                if isinstance(ret, type([])):
+                    contacts = contacts + ret
+                else:
+                    contacts.append(ret)
+
+        assert_list = [{
+                         'email': 'lalitha.gollamudi@gmail.com',
+                         'first_name': 'Lalitha',
+                         'last_name': 'Gollamudi',
+                         'organization': {'name': 'PRAJWALA'},
+                         'position': None,
+                         'phone': '914024410813',
+                         },
+                       {
+                         'email': 'lavanya.ravulapalli@gmail.com',
+                         'first_name': 'Lavanya',
+                         'last_name': 'Ravulapalli',
+                         'organization': {'name': 'PRAJWALA'},
+                         'position': None,
+                         'phone': None
+                         },
+                       {
+                         'email': 'kmulhauser@consultingwomen.com',
+                         'first_name': 'Karen',
+                         'last_name': 'Mulhuaser',
+                         'organization': {'name': 'PRAJWALA'},
+                         'position': None,
+                         'phone': None,
+                         },
+                       {
+                         'email': 'sunitha_2002@yahoo.com',
+                         'first_name': 'Sunitha',
+                         'last_name': 'Krishnan',
+                         'organization': {'name': 'PRAJWALA'},
+                         'position': 'Chief Functionary',
+                         'phone': '919848025014',
+                         }]
+
+        for test in assert_list:
+            self.assertIn(test, contacts, 'Contact \'' + str(test) + '\' not found')
 
     def test_organization_scraper(self):
         ctx = ApplicationContext(TestableDocumentScraperContext())
