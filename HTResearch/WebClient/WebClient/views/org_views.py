@@ -16,6 +16,8 @@ from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
 from HTResearch.WebClient.WebClient.models import RequestOrgForm
 
+from HTResearch.Utilities.encoder import MongoJSONEncoder
+
 
 logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
@@ -33,13 +35,15 @@ def search_organizations(request):
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
 
-        organizations = org_dao.text_search(search_text, 10, sort_fields=['name'])
+        organizations = org_dao.text_search(text=search_text, fields=['name', 'keywords', ], num_elements=10, sort_fields=['name'])
 
-        for dto in organizations:
-            encode_dto(dto)
-
-    params = {'organizations': organizations}
-    return render(request, 'org_search_results.html', params)
+    results = []
+    for dto in organizations:
+        org = dto.__dict__['_data']
+        org['keywords'] = org['keywords'].split(' ')
+        results.append(org)
+    data = {'results': results}
+    return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
 
 
 def organization_profile(request, org_id):
@@ -100,6 +104,7 @@ def get_org_keywords(request):
 
     org_dao = ctx.get_object('OrganizationDAO')
     org = org_dao.find(id=org_id)
+    keywords = org.keywords.split(' ')
     #Commenting out instead of deleting for demo purposes
     #If keywords aren't in the database, you should uncomment this and use Bombay Teen Challenge
     #org.keywords = {'access': 32, 'addicts': 51, 'afraid': 32, 'allows': 32, 'ambedkar': 32,
@@ -111,7 +116,7 @@ def get_org_keywords(request):
     #                'men': 53, 'mumbai': 102, 'music': 83, 'office': 38, 'out.': 39, 'programs': 53,
     #                'read': 96, 'red': 64, 'rescued': 83, 'safe': 53, 'seek': 160, 'streets': 64,
     #                'teen': 384, 'tel': 34, 'training': 51, 'trust': 64, 'vocational': 96, 'women': 112}
-    return HttpResponse(json.dumps(org.keywords), mimetype='application/json')
+    return HttpResponse(json.dumps(keywords), mimetype='application/json')
 
 
 def get_org_rank_rows(request):
