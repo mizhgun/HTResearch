@@ -4,4 +4,4 @@ $('.btn').click(function () {
     document.cookie = "htresearchv2=amaterasu; path=/; expires=" + expire;
 
     window.location = '/get-started/';
-})
+});
