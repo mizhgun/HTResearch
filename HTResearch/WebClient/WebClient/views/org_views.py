@@ -40,7 +40,8 @@ def search_organizations(request):
     results = []
     for dto in organizations:
         org = dto.__dict__['_data']
-        org['keywords'] = org['keywords'].split(' ')
+        # Split organization keyword string into list of words
+        org['keywords'] = org['keywords'].split()
         results.append(org)
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
