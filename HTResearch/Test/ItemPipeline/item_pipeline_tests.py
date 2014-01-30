@@ -4,7 +4,7 @@ from springpython.context import ApplicationContext
 from springpython.config import Object
 
 # project imports
-from HTResearch.WebCrawler.WebCrawler.items import ScrapedOrganization
+from HTResearch.WebCrawler.WebCrawler.items import ScrapedOrganization, ScrapedContact
 from HTResearch.Utilities.context import ItemPipelineContext
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Test.Mocks.dao import *
@@ -14,6 +14,18 @@ class TestablePipelineContext(ItemPipelineContext):
     @Object()
     def RegisteredDBConnection(self):
         return MockDBConnection
+
+    @Object()
+    def RegisteredContactDAO(self):
+        return MockContactDAO
+
+    @Object()
+    def RegisteredOrganizationDAO(self):
+        return MockOrganizationDAO
+
+    @Object()
+    def RegisteredPublicationDAO(self):
+        return MockPublicationDAO
 
 
 class ItemPipelineTest(unittest.TestCase):
@@ -35,6 +47,15 @@ class ItemPipelineTest(unittest.TestCase):
                 {'organization_url': 'http://www.mencanstoprape.org/'},
                 {'organization_url': 'http://novofoundation.org/'},
             ]
+        )
+
+        self.contact = ScrapedContact(
+            first_name="Djordan",
+            last_name="Jdegner",
+            phone=5555555555,
+            email='djordan@jdegner.com',
+            organization={'name': 'Yoyodyne'},
+            position='Software Jdeveloper'
         )
 
         self.ctx = ApplicationContext(TestablePipelineContext())
@@ -75,7 +96,6 @@ class ItemPipelineTest(unittest.TestCase):
             self.assertIn(partner, self.org['partners'])
 
         print "Item Switch Test Passed"
-
 
 if __name__ == '__main__':
     try:
