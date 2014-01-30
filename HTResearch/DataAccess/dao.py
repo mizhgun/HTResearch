@@ -96,27 +96,27 @@ class DAO(object):
                     found_entries = found_entries.order_by(field)
             return found_entries[:num_elements]
 
+    # Create search term list from search string
     def _normalize_query(self, query_string,
                          findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
                          normspace=re.compile(r'\s{2,}').sub):
         return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
 
+    # Get a query representing text search results
     def _get_query(self, query_string, search_fields):
         query = None # Query to search for every search term
         terms = self._normalize_query(query_string)
         for term in terms:
             or_query = None
             for field_name in search_fields:
-                q = Q(**{'%s__icontains' % field_name: term})
-                if or_query is None:
-                    or_query = q
-                else:
-                    or_query = or_query | q
-            if query is None:
-                query = or_query
-            else:
-                query = query & or_query
+                q = self._term_query(term, field_name)
+                or_query = or_query | q if or_query else q
+            query = query & or_query if query else or_query
         return query
+
+    # Get a Q searching for a single term
+    def _term_query(self, term, field_name):
+        return Q(**{'%s__icontains' % field_name: term})
 
 
 class ContactDAO(DAO):
@@ -209,6 +209,21 @@ class OrganizationDAO(DAO):
             org_dto.last_updated = datetime.utcnow()
             org_dto.save()
         return org_dto
+
+    # Query searching for organizations by a single term
+    def _term_query(self, term, field_name):
+        q = None
+        if field_name == 'types':
+            types = OrgTypesEnum.mapping.keys()
+            print types
+            matches = [OrgTypesEnum.mapping[type] for type in types if term.lower() in type.lower()]
+            for match in matches:
+                new_query = Q(types=match)
+                q = q | new_query if q else new_query
+        else:
+            q = super(OrganizationDAO, self)._term_query(term, field_name)
+
+        return q
 
     def _smart_search_orgs(self, org_dto):
         # organizations have unique phone numbers
