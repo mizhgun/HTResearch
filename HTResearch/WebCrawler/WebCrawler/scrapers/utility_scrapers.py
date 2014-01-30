@@ -27,188 +27,108 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 # ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
 # Will likely remove/change them.
 
-
 _utilityscrapers_logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class ContactNameScraper(object):
+    try:
+        _names and _last_names and _stopwords and _titles
+    except NameError:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt'), 'r') as f:
+            names = f.read().splitlines()
+            _names = [name.title() for name in names]
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/lastnames.txt'), 'r') as f:
+            lnames = f.read().splitlines()
+            _last_names = [lname.title() for lname in lnames]
+        #Load words to be ignored
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/stopwords.txt')) as f:
+            stopwords = f.read().splitlines()
+            _stopwords = [word.title() for word in stopwords]
+
+        _titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Sh', 'Smt', 'Prof', 'Shri']
+        length = len(_titles)
+        # catch Dr and Dr.
+        for i in range(0, length):
+            _titles.append(_titles[i]+'.')
+
     def __init__(self):
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/names.txt')) as f:
-            self._names = f.read().splitlines()
-        self._titles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Sh', 'Smt', 'Prof']
-        self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
-        self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
-
-    """ Just formats the tags and adds a > to the elements that don't have it """
-
-    @staticmethod
-    def _add_closing_symbol(tag_list):
-        # since the regex finds either tags but not attributes, some elements might have just the <a part,
-        # so add the > if needed (such as <a href=...)
-        for i, t in enumerate(tag_list):
-            if t[-1] != '>':
-                tag_list[i] = t + '>'
-        return tag_list
-
-    """ Counts the parent divs, if there is a <div><a></a><p>hello</p>, only parents would be <div><p>, return 2 """
-
-    @staticmethod
-    def _count_parent_tags(tag_list):
-        parent_counter = 0
-        for i, t in enumerate(tag_list):
-            if '/' not in t:
-                parent_counter += 1
-            else:
-                parent_counter -= 1
-        return parent_counter
-
-    """ This function uses other class functions to find the xpath of potential names
-     returns the xpath as far as some threshold % of all the found xpaths """
-
-    def _find_all_xpaths(self, hxs):
-        # Gets the body (including html tags) and body_text (no tags), whatever gets found should be in both, since a
-        # name should be visible
-        body = hxs.select('//body').extract()
-        body = (body[0].encode('ascii', 'ignore')).strip()
-
-        # keep the tags but remove the tag attributes such as name and class
-        body = re.sub(self._remove_attributes, r'<\1>', body)
-
-        # find the paired tags, remove the ones that don't have a pair such as <input>
-        all_paired_tags = list(set(re.findall(self._tag, body)))
-        all_paired_tags = self._add_closing_symbol(all_paired_tags)
-        all_paired_tags = self._remove_unpaired_tags(all_paired_tags)
-
-        # Get literally just the text, so when checking each element, it won't grab any tags
-        no_tags = (re.sub(r'<.*?>', '', body)).splitlines()
-        no_tags = ' '.join(no_tags)
-
-        xpaths = []
-
-        for item in no_tags.split():
-            if (item in self._titles or item in self._names) and item in body:
-                tags = re.findall(self._tag, body[:body.index(item)])
-                tags = self._add_closing_symbol(tags)
-
-                # this part is to check if there's a tag that does not close or doesn't have an open tag (such as </br>)
-                # remove the tags that don't have a match
-                check_tags = list(set(tags))
-                for t in check_tags:
-                    if '/' not in t and (t[0] + '/' + t[1:]) not in all_paired_tags:
-                        tags = [x for x in tags if x != t]
-                    elif '/' in t and (t[0] + t[2:]) not in all_paired_tags:
-                        tags = [x for x in tags if x != t]
-
-                parent_counter = self._count_parent_tags(tags)
-                xpaths.append(self._find_xpath(tags, parent_counter))
-
-        xpaths = list(set(xpaths))
-        return xpaths
-
-    """ Returns one 'xpath' string """
-
-    @staticmethod
-    def _find_xpath(tag_list, parent_counter):
-        i = 0
-        while i < parent_counter or i < len(tag_list):
-            tag = tag_list[i]
-            if '/' in tag:
-                # remove ending tag
-                tag_list.remove(tag)
-                tag_list.reverse()
-                try:
-                    index = tag_list[len(tag_list) - i:].index(tag[0] + tag[2:])
-                    tag_list.reverse()
-                    tag_list.pop(index + i - 1)
-                except ValueError:
-                    pass
-                i -= 1
-            else:
-                i += 1
-
-        tag_list = tag_list[:parent_counter + 3]
-
-        s = ''.join(tag_list)
-        s = s.replace('<', '')
-        s = s.replace('>', '/')
-        s = '//' + s
-        s += 'text()'
-
-        return s
+        # Make a regex check for if a potential name is actually a date. Not concerned with months that aren't in the
+        # names list
+        self._date = re.compile(r'Jan ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)|'
+                                r'April ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)|'
+                                r'May ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)|'
+                                r'June ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)|'
+                                r'August ([0-9]{4}|[0-9]{1,2}|[0-9]{1,2}(rd|th|nd)?)')
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-
-        xpaths = self._find_all_xpaths(hxs)
-
-        names_list = []
-        for xpath in xpaths:
-            names_list.append(hxs.select(xpath).extract())
-
-        # check which xpath has the most names
-        # if the xpath has at least 4 valid names (maybe change this in the future somehow?),
-        # then keep it, otherwise it may be catching a singular wrong thing
-        highest = []
-
-        for i, checker in enumerate(names_list):
-            removes = []
-            count = 0
-            for name in checker:
-                if name.strip():
-                    # Changes from unicode, removes punctuation, and strips whitespace
-                    changed = name.encode('ascii', 'ignore').translate(string.maketrans('', ''), string.punctuation) \
-                        .strip()
-                    if changed == '':
-                        removes.append(name)
-                    name_split = changed.split()
-                    if len(name_split) > 5:
-                        removes.append(name)
-                        continue
-
-                    for n in name_split:
-                        if n in self._names or n in self._titles:
-                            count += 1
-                            break
-                        elif n == name_split[-1]:
-                            removes.append(name)
-                else:
-                    removes.append(name)
-            for rm in removes:
-                names_list[i].remove(rm)
-            if count > 3:
-                highest.append(i)
-
+        body = hxs.select('//body//text()').extract()
+        body = [s.strip() for s in body if s.strip()]
         names = []
-        for i in highest:
-            for j in range(len(names_list[i])):
-                names_list[i][j] = names_list[i][j].encode('ascii', 'ignore').strip()
-            names += names_list[i]
-        names = filter(bool, names)
+        cns = ContactNameScraper
 
+        for s in body:
+            str_split = s.split()
+            length = len(str_split) - 1
+            name_to_add = ""
+            # start at the back of string to get last name and then get all previous names
+            for i in range(length, -1, -1):
+                split_index = str_split[i]
+
+                # variables for below elif to not be so terrifying
+                stop_word = split_index not in cns._stopwords or len(split_index) == 1
+                uppercase = split_index.istitle() or split_index.isupper()
+                all_alpha = all(c.isalpha() or c == '.' for c in split_index)
+                date = re.match(self._date, split_index)
+
+                # if it's in the last names and it isn't the first word in the string
+                if split_index in cns._last_names and split_index != str_split[0] and not date:
+                    name_to_add = split_index + " " + name_to_add
+
+                # if in first names
+                elif split_index in cns._names and not date:
+                    name_to_add = split_index + " " + name_to_add
+
+                    # if the last name wasn't caught but first name was and next word is last name format
+                    try:
+                        next_uppercase = str_split[i+1].istitle() or str_split[i+1].isupper()
+                        next_all_alpha = all(c.isalpha() or c == '.' for c in str_split[i+1])
+                        if next_uppercase and str_split[i+1] not in cns._stopwords and \
+                                next_all_alpha and str_split[i+1] not in name_to_add:
+                            name_to_add += str_split[i+1]
+                    except IndexError:
+                        pass
+
+                # will catch a first name if a last name has been caught and if it's in correct name format
+                elif stop_word and split_index not in cns._titles and uppercase and all_alpha and \
+                        name_to_add and not date:
+                    name_to_add = split_index + " " + name_to_add
+                elif (not split_index.istitle() and name_to_add) or date:
+                    break
+
+            # only get names that are both first and last name
+            if len(name_to_add.split()) > 1:
+                names.append(name_to_add)
+        names = [name.encode('ascii', 'ignore') for name in names]
         items = []
         for i in range(len(names)):
             item = ScrapedContactName()
-            item['name'] = names[i]
+            item['name'] = names[i].strip()
             items.append(item)
         return items
-
-    """ Take out the tags that don't have an ending tag, such as <input> """
-
-    @staticmethod
-    def _remove_unpaired_tags(tag_list):
-        # this part is to check if there's a tag that does not close or doesn't have an open tag (such as </br>)
-        # remove the tags that don't have a match
-        for t in tag_list:
-            if '/' not in t and (t[0] + '/' + t[1:]) not in tag_list:
-                tag_list = [x for x in tag_list if x != t]
-            elif '/' in t and (t[0] + t[2:]) not in tag_list:
-                tag_list = [x for x in tag_list if x != t]
-        return tag_list
 
 
 class ContactPositionScraper(object):
     def __init__(self):
-        self.position = ""
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/positions.txt')) as f:
+            self._positions = f.read().splitlines()
+        self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
+        self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
+
+    def parse(self, response):
+        for position in self._positions:
+            if string.find(response.body, position) is not -1:
+                return position
 
 
 class ContactPublicationsScraper(object):
@@ -296,7 +216,8 @@ class KeywordScraper(object):
             all_words = self.append_words(all_words, words)
 
         #Run a frequency distribution on the web page body
-        freq_dist = FreqDist(all_words)
+        all_words_no_punct = [word.translate(None, string.punctuation) for word in all_words]
+        freq_dist = FreqDist(all_words_no_punct)
 
         #Remove ignored words
         for word in self._stopwords:
@@ -390,10 +311,49 @@ class OrgAddressScraper(object):
 
 class OrgContactsScraper(object):
     def __init__(self):
-        pass
+        self._name_scraper = ContactNameScraper()
+        self._number_scraper = IndianPhoneNumberScraper()
+        self._email_scraper = EmailScraper()
+        self._position_scraper = ContactPositionScraper()
+        self._org_name_scraper = OrgNameScraper()
+        self._contacts = []
 
     def parse(self, response):
-        return [] # not yet implemented
+        contact_indices = []
+
+        names = self._name_scraper.parse(response)
+        org_name = self._org_name_scraper.parse(response)
+        if names is not None:
+            self._contacts = {name.get('name'): {} for name in names}
+            for name in names:
+                n = string.find(response.body, name.get('name'))    #find the index of each contact so we can search
+                contact_indices.append(n)                           #only between the contacts for their info
+        for i in range(len(names)):
+            if i < len(names) - 1:
+                cr = response.replace(body=response.body[contact_indices[i]:contact_indices[i + 1]])
+            else:
+                cr = response.replace(body=response.body[contact_indices[i]:])
+            self._contacts[names[i].get('name')]['position'] = [self._position_scraper.parse(cr)
+                                                          if self._position_scraper.parse(cr)
+                                                          else None][0]
+            self._contacts[names[i].get('name')]['number'] = [self._number_scraper.parse(cr)[0]
+                                                        if self._number_scraper.parse(cr)
+                                                        else None][0]
+            self._contacts[names[i].get('name')]['email'] = [self.compare_emails(cr, names[i].get('name'))
+                                                       if self.compare_emails(cr, names[i].get('name'))
+                                                       else None][0]
+            self._contacts[names[i].get('name')]['organization'] = org_name
+        return self._contacts
+
+    # if any part of the name is in the email, take that email, otherwise just take the first element from the list
+    def compare_emails(self, response, name):
+        emails = self._email_scraper.parse(response)
+        name_split = name.split()
+        for email in emails:
+            for split_index in name_split:
+                if split_index.lower() in email.lower():
+                    return email
+        return emails[0]
 
 
 class OrgFacebookScraper(object):
@@ -480,7 +440,7 @@ class OrgNameScraper(object):
             if acronym == url:
                 org_name['name'] = potential_name.encode('ascii', 'ignore').strip()
                 break
-            # Returning string instead of ScrapedOrgName to make transition to DB easier
+                # Returning string instead of ScrapedOrgName to make transition to DB easier
         return org_name['name']
 
 
