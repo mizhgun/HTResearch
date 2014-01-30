@@ -29,7 +29,7 @@ var data = {
     'org_id': document.URL.split("/")[4]
 }
 
-$.get('/get_org_keywords/', data)
+$.get('/get-org-keywords/', data)
     .done(function (result) {
         if(result) {
             var coeff = 0.15;
