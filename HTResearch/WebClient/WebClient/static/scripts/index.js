@@ -359,7 +359,6 @@ function showSearchResults() {
     var searchResultsDiv = $('#search-results-div');
 
     if (searchText) {
-        removeAllMarkers();
         // Put items to search for here.
         var searchItems = [
             {
@@ -438,12 +437,12 @@ function showSearchResults() {
         }
     } else {
         if (searchResultsVisible) {
-            removeAllMarkers();
             searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
 
             searchResultsVisible = false;
         }
     }
+    removeAllMarkers();
 }
 
 var searchesPending = 0;
