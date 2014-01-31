@@ -69,7 +69,7 @@
 
             <p>
                 {% if organization.phone_numbers %}
-                    {{ organization.phone_numbers|join:", " }}
+                    {{ organization.phone_numbers|join:",<br />" }}
                 {% else %}
                     None
                 {% endif %}
