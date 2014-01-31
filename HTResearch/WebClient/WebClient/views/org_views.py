@@ -34,7 +34,7 @@ def search_organizations(request):
 
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
-        organizations = org_dao.text_search(text=search_text, num_elements=10, sort_fields=['name'])
+        organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['name'])
 
     results = []
     for dto in organizations:
