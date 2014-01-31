@@ -438,6 +438,7 @@ function showSearchResults() {
         }
     } else {
         if (searchResultsVisible) {
+            removeAllMarkers();
             searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
 
             searchResultsVisible = false;
