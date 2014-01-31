@@ -20,12 +20,12 @@ OrgDataSource.prototype = {
      */
     data: function (options, callback) {
 
-        var url = '/get_org_rank_rows/';
+        var url = '/get-org-rank-rows/';
         var self = this;
 
         var request = {
             type: 'GET',
-            url: '/get_org_rank_rows/',
+            url: '/get-org-rank-rows/',
             data: {
                 'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
             },

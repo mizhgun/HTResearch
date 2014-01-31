@@ -14,8 +14,7 @@ class ScrapedAddress(Item):
 class ScrapedContact(Item):
     first_name = Field()
     last_name = Field()
-    primary_phone = Field()
-    secondary_phone = Field()
+    phone = Field()
     email = Field()
     organization = Field()
     publications = Field()
