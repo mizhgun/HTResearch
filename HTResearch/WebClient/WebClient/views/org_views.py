@@ -34,8 +34,7 @@ def search_organizations(request):
 
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
-        fields = ['name', 'keywords','address', 'types', 'email_key', 'organization_url', ]
-        organizations = org_dao.text_search(text=search_text, fields=fields, num_elements=10, sort_fields=['name'])
+        organizations = org_dao.text_search(text=search_text, num_elements=10, sort_fields=['name'])
 
     results = []
     for dto in organizations:

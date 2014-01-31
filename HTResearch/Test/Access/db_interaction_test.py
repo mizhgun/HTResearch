@@ -51,7 +51,11 @@ class DatabaseInteractionTest(unittest.TestCase):
                                          emails=["info@yee.com", "stuff@yee.com"],
                                          phone_numbers=[5555555555, "(555)555-5555"],
                                          facebook="http://www.facebook.com/yee",
-                                         twitter="http://www.twitter.com/yee"
+                                         twitter="http://www.twitter.com/yee",
+                                         types=[OrgTypesEnum.RELIGIOUS,
+                                                OrgTypesEnum.GOVERNMENT,
+                                                OrgTypesEnum.PROSECUTION,
+                                                ]
         )
         self.publication = Publication(title="The Book of Yee",
                                        authors=[self.contact])
@@ -124,10 +128,10 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Testing organization text search ...'
 
-        assert_orgs = org_dao.text_search(num_elements=10, text='bEe YeE university ers', fields=['name', 'address', 'organization_url', 'keywords', ])
+        assert_orgs = org_dao.findmany(search='bEe YeE university ers Religious govern secUTION', num_elements=10)
         self.assertEqual(assert_orgs[0].name, org_dto.name)
 
-        assert_orgs = org_dao.text_search(num_elements=10, text='yee adfgh905w', fields=['name', 'address', 'organization_url', 'keywords', ])
+        assert_orgs = org_dao.findmany(search='prevention', num_elements=10)
         self.assertEqual(list(assert_orgs), [])
 
         print 'Testing organization editing ...'
