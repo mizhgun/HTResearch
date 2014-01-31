@@ -358,6 +358,7 @@ function showSearchResults() {
     lastSearchedText = searchText;
     var searchResultsDiv = $('#search-results-div');
 
+    removeAllMarkers();
     if (searchText) {
         // Put items to search for here.
         var searchItems = [
@@ -442,7 +443,6 @@ function showSearchResults() {
             searchResultsVisible = false;
         }
     }
-    removeAllMarkers();
 }
 
 var searchesPending = 0;
