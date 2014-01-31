@@ -22,3 +22,7 @@ h2 {
 #no-keywords {
     display: none;
 }
+
+#word-cloud {
+    text-align: center;
+}

@@ -353,7 +353,9 @@ class OrgContactsScraper(object):
             for split_index in name_split:
                 if split_index.lower() in email.lower():
                     return email
-        return emails[0]
+        if emails:
+            return emails[0]
+        return None
 
 
 class OrgFacebookScraper(object):
@@ -675,7 +677,8 @@ class OrgTypeScraper(object):
         keyword_scraper_inst = self._keyword_scraper()
 
         # Get keywords
-        keywords = keyword_scraper_inst.parse(response)
+        keyword_string = keyword_scraper_inst.parse(response)
+        keywords = keyword_string.split()
 
         # Get all words
         all_words = []
@@ -708,6 +711,7 @@ class OrgTypeScraper(object):
                         threepees = True
                     #uniquify
                     types = list(set(types))
+                    break
                 if len(types) >= self._max_types:
                     #if there are three types but none of them are P's, replace the last one with prevention
                     if not threepees:
