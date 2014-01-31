@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 from django.core.cache import cache
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponseRedirect
 from django.template.loader import get_template
 from django.template import Context
 from django.core.context_processors import csrf
 from django.shortcuts import render
+
 from mongoengine.fields import StringField, URLField, EmailField
 from springpython.context import ApplicationContext
 from HTResearch.Utilities.encoder import MongoJSONEncoder
@@ -61,7 +62,10 @@ def welcome(request):
 
 
 def get_started(request):
-    return render(request, 'get_started.html')
+    param = {'logged_in': False}
+    if 'user_id' in request.session:
+        param['logged_in'] = True
+    return render(request, 'get_started.html', param)
 
 
 def get_http_404_page(request):
