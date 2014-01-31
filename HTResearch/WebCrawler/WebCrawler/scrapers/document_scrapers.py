@@ -41,7 +41,7 @@ class OrganizationScraper():
             'types': [OrgTypeScraper],
             'phone_numbers': [USPhoneNumberScraper, IndianPhoneNumberScraper],
             'emails': [EmailScraper],
-            'contacts': [OrgContactsScraper],
+            'contacts': [ContactScraper],
             'organization_url': [OrgUrlScraper],
             'partners': [OrgPartnersScraper],
             'facebook': [OrgFacebookScraper],
