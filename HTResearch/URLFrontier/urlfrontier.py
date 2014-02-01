@@ -197,11 +197,11 @@ class URLFrontier:
         cs = rules.checksum
         with self._mid_empty_conds[cs]:
             with self._empty_conds[cs]:
-                with self._job_conds[cs]:
-                    self._job_queues[cs].put(CacheJobs.Empty)
-                    self._job_conds[cs].notify()
                 while not self._url_queues[cs].empty():
+                    with self._job_conds[cs]:
+                        self._job_queues[cs].put(CacheJobs.Empty)
+                        self._job_conds[cs].notify()
                     timeout = 10
-                    while timeout:
+                    while not self._url_queues[cs].empty() and timeout:
                         self._empty_conds[cs].wait(1)
                         timeout -= 1
