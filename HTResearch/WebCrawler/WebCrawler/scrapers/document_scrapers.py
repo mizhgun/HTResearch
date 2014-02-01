@@ -12,6 +12,26 @@ class ContactScraper():
     def __init__(self):
         contact = None
 
+    def parse(self, response):
+        #get all the values out of the dictionary that the Contact scraper returns
+        org_contact_scraper = OrgContactsScraper()
+        contact_dicts = org_contact_scraper.parse(response)
+        contacts = []
+        for name in contact_dicts.iterkeys():
+            contact = ScrapedContact()
+            name_split = name.split()
+            n = len(name_split)
+            contact['first_name'] = ' '.join(name_split[0:n-1])
+            contact['last_name'] = name_split[n-1]
+            contact['phone'] = contact_dicts[name]['number']
+            contact['email'] = contact_dicts[name]['email']
+            contact['position'] = contact_dicts[name]['position']
+            organization = ScrapedOrganization()
+            organization['name'] = contact_dicts[name]['organization']
+            contact['organization'] = organization
+            contacts.append(contact)
+        return contacts
+
 
 class OrganizationScraper():
     def __init__(self):
@@ -21,14 +41,14 @@ class OrganizationScraper():
             'types': [OrgTypeScraper],
             'phone_numbers': [USPhoneNumberScraper, IndianPhoneNumberScraper],
             'emails': [EmailScraper],
-            'contacts': [OrgContactsScraper],
+            'contacts': [ContactScraper],
             'organization_url': [OrgUrlScraper],
             'partners': [OrgPartnersScraper],
             'facebook': [OrgFacebookScraper],
             'twitter': [OrgTwitterScraper],
             'keywords': [KeywordScraper],
         }
-        self._multiple = ['types', 'phone_numbers', 'emails', 'contacts', 'partners', ]
+        self._multiple = ['types', 'phone_numbers', 'emails', 'partners', 'contacts']
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',
                                 'human trafficking', 'brothel', 'child trafficking', 'anti trafficking',
                                 'social justice']
@@ -48,6 +68,8 @@ class OrganizationScraper():
                     organization[field] = []
                     for scraper in self._scrapers[field]:
                         organization[field] += scraper().parse(response)
+                elif field == 'contacts':
+                    organization[field] = []
                 else:
                     # Get single field (e.g. name)
                     results = (self._scrapers[field][0])().parse(response)
