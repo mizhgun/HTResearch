@@ -121,6 +121,14 @@
             {% for partner in organization.partners %}
                 <p><a href="/organization/{{ partner.id }}">{{ partner.name }}</a></p>
             {% endfor %}
+
+            <span class="clearfix"></span>
+
+            <div class="pull-left panel info-glyph">
+                <span class="center-block glyphicon glyphicon-tag"></span>
+            </div>
+            <h4>Types</h4>
+            <p>{{ types|join:", " }}</p>
         </div>
     </div>
 
