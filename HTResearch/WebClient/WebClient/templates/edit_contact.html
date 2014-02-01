@@ -27,13 +27,15 @@
                 </div>
             {% endif %}
 
-            <form role="form" id="edit-contact-form" method="post" action="/edit-contact/{{ form.contact_id }}/">
-                {{ csrf_token }}
-                <input type="hidden" id="id_contact_id" value="{{ form.contact_id }}">
+            <form role="form" id="edit-contact-form" method="post" action="/edit-contact/{{ model.contact_id }}/">
+                {% csrf_token %}
+                <input type="hidden" id="id_contact_id" name="contact_id" value="{{ model.contact_id }}">
 
-                <div class="form-group">
-                    <label for="id_valid" class="control-label">Invalid?</label>
-                    <input type="checkbox" id="id_valid" class="form-control" checked="{{ form.invalid }}">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="id_invalid" name="invalid" {% if model.invalid %}checked{% endif %}>
+                         Invalid?
+                    </label>
                 </div>
 
                 {% if form.first_name.errors %}
@@ -42,7 +44,8 @@
                     <div class="form-group">
                 {% endif %}
                     <label for="id_first_name" class="control-label">First name</label>
-                    <input type="text" id="id_first_name" class="form-control" name="first_name" value="{{ form.first_name }}">
+                    <input type="text" id="id_first_name" class="form-control" name="first_name"
+                           value="{{ model.first_name }}">
 
                     {% if form.first_name.errors %}
                         <span class="help-block">
@@ -59,7 +62,8 @@
                     <div class="form-group">
                 {% endif %}
                     <label for="id_last_name" class="control-label">Last name</label>
-                    <input type="text" id="id_last_name" class="form-control" name="last_name" value="{{ form.last_name }}">
+                    <input type="text" id="id_last_name" class="form-control" name="last_name"
+                           value="{{ model.last_name }}">
 
                     {% if form.last_name.errors %}
                         <span class="help-block">
@@ -76,7 +80,8 @@
                     <div class="form-group">
                 {% endif %}
                     <label for="id_phone" class="control-label">Phone</label>
-                    <input type="text" id="id_first_name" class="form-control" name="phone" value="{{ form.phone }}">
+                    <input type="text" id="id_phone" class="form-control" name="phone"
+                           value="{{ model.phone }}">
 
                     {% if form.phone.errors %}
                         <span class="help-block">
@@ -93,7 +98,7 @@
                     <div class="form-group">
                 {% endif %}
                     <label for="id_email" class="control-label">Email</label>
-                    <input type="text" id="id_email" class="form-control" name="email" value="{{ form.email }}">
+                    <input type="text" id="id_email" class="form-control" name="email" value="{{ model.email }}">
 
                     {% if form.email.errors %}
                         <span class="help-block">
@@ -110,7 +115,8 @@
                     <div class="form-group">
                 {% endif %}
                     <label for="id_position" class="control-label">Position</label>
-                    <input type="text" id="id_position" class="form-control" name="organization" value="{{ form.position }}">
+                    <input type="text" id="id_position" class="form-control" name="position"
+                           value="{{ model.position }}">
 
                     {% if form.position.errors %}
                         <span class="help-block">
@@ -120,6 +126,8 @@
                         </span>
                     {% endif %}
                 </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
     </div>

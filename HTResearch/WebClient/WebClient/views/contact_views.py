@@ -6,7 +6,7 @@ import json
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
-from HTResearch.WebClient.WebClient.models import EditContactForm
+from HTResearch.WebClient.WebClient.models import EditContactForm, EditContactModel
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 
 logger = get_logger(LoggingSection.CLIENT, __name__)
@@ -19,7 +19,7 @@ def contact_profile(request, contact_id):
 
     try:
         contact = contact_dao.find(id=contact_id)
-    except Exception as e:
+    except Exception:
         logger.error('Exception encountered on contact lookup for contact_id=%s' % contact_id)
         return get_http_404_page(request)
 
@@ -63,30 +63,28 @@ def edit_contact(request, contact_id):
         logger.error('Exception encountered on contact lookup for contact_id=%s' % contact_id)
         return get_http_404_page(request)
 
+    form = EditContactForm(request.POST or None)
+    model = EditContactModel(contact=contact)
+
     if request.method == 'POST':
-        form = EditContactForm(request.POST)
         valid_edit = True
 
         if form.is_valid():
             data = form.cleaned_data
+            model = EditContactModel(form=data)
 
-            if data['first_name']:
-                contact.first_name = form.first_name
-            if data['last_name']:
-                contact.last_name = form.last_name
-            if data['email']:
-                contact.email = form.email
-            if data['phone']:
-                try:
-                    stripped_phone = form.phone.translate(None, '()-.')
-                    contact.phone = int(stripped_phone)
-                except:
-                    form.phone.errors = ['Please enter a valid phone number.']
-                    valid_edit = False
-            if data['position']:
-                contact.position = form.position
-            if data['invalid']:
-                contact.valid = not form.invalid
+            if 'first_name' in data:
+                contact.first_name = data['first_name']
+            if 'last_name' in data:
+                contact.last_name = data['last_name']
+            if 'email' in data:
+                contact.email = data['email']
+            if 'phone' in data:
+                contact.phone = data['phone']
+            if 'position' in data:
+                contact.position = data['position']
+            if 'invalid' in data:
+                contact.valid = not data['invalid']
 
             if valid_edit:
                 try:
@@ -94,14 +92,5 @@ def edit_contact(request, contact_id):
                     success = 'The contact has been updated successfully!'
                 except:
                     error = 'Oops! There was an error updating the contact. Please try again soon.'
-    else:
-        form = EditContactForm()
-        form.contact_id = str(contact_id)
-        form.first_name = contact.first_name if contact.first_name else ""
-        form.last_name = contact.last_name if contact.last_name else ""
-        form.email = contact.email if contact.email else ""
-        form.phone = str(contact.phone) if contact.phone else ""
-        form.position = contact.position if contact.position else ""
-        form.invalid = not contact.valid
 
-    return render(request, {'form': form, 'success': success, 'error': error})
+    return render(request, 'edit_contact.html', {'form': form, 'model': model, 'success': success, 'error': error})

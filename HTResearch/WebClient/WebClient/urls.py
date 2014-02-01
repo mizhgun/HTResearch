@@ -37,7 +37,7 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
                         url(r'^search_contacts/$', 'search_contacts', name='search_contacts'),
                         url(r'^contact/(\w+)', 'contact_profile', name='con_prof'),
-                        url(r'^edit-contact/(w+)', 'edit_contact', name='edit-contact'),
+                        url(r'^edit-contact/(\w+)', 'edit_contact', name='edit-contact'),
                         )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
