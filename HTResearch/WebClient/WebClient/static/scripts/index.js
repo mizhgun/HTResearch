@@ -290,6 +290,12 @@ function plotMarker(data) {
             content: html.html()
         });
 
+        $(document).bind("mousedown", function(e){
+            if((!$(e.target).parents('#map-modal').size() || e.target.id == "map-modal")) {
+                closeAllInfowindows();
+            }
+        })
+
         google.maps.event.addListener(new_marker, 'click', function () {
             var thisMarker = findMarker(new_marker);
             if (!thisMarker) {
