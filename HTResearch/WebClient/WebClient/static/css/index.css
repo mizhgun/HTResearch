@@ -171,10 +171,10 @@ input:focus {
     position: absolute;
     overflow-y: auto;
     width: 90%;
-    max-height: -moz-calc(100% - 80px);
-    max-height: -webkit-calc(100% - 80px);
-    max-height: -o-calc(100% - 80px);
-    max-height: calc(100% - 80px);
+    max-height: -moz-calc(100% - 128px);
+    max-height: -webkit-calc(100% - 128px);
+    max-height: -o-calc(100% - 128px);
+    max-height: calc(100% - 128px);
     opacity: 0.5;
     filter: alpha(opacity=50); /* For IE8 and earlier */
     transition: opacity 1s;
