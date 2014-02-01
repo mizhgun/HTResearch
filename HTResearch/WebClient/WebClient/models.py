@@ -75,47 +75,17 @@ class RequestOrgForm(forms.Form):
 
 
 class EditContactForm(forms.Form):
-    contact_id = forms.CharField(widget=forms.HiddenInput)
     first_name = forms.CharField(max_length=25, required=False)
     last_name = forms.CharField(max_length=25, required=False)
     phone = forms.CharField(required=False)
     email = forms.EmailField(max_length=40, required=False)
     position = forms.CharField(max_length=60, required=False)
-    invalid = forms.BooleanField()
+    invalid = forms.BooleanField(required=False)
 
     def clean_phone(self):
-        phone = self.cleaned_data['phone']
+        phone = str(self.cleaned_data['phone'])
         try:
             stripped_phone = phone.translate(None, '()-. ')
             return stripped_phone
         except:
             raise ValidationError("Please enter a valid phone number.")
-
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        ctx = ApplicationContext(DAOContext())
-        contact_dao = ctx.get_object('ContactDAO')
-        user_dao = ctx.get_object('UserDAO')
-
-        if contact_dao.find(email=email) or user_dao.find(email=email):
-            raise ValidationError("A contact with that email address already exists.")
-
-
-class EditContactModel():
-    def __init__(self, contact=None, form=None):
-        if contact:
-            self.contact_id = str(contact.id)
-            self.first_name = contact.first_name if contact.first_name else ""
-            self.last_name = contact.last_name if contact.last_name else ""
-            self.email = contact.email if contact.email else ""
-            self.phone = str(contact.phone) if contact.phone else ""
-            self.position = contact.position if contact.position else ""
-            self.invalid = not contact.valid
-        elif form:
-            self.contact_id = form['contact_id'] if form['contact_id'] else ""
-            self.first_name = form['first_name'] if form['first_name'] else ""
-            self.last_name = form['last_name'] if form['last_name'] else ""
-            self.email = form['email'] if form['email'] else ""
-            self.phone = form['phone'] if form['phone'] else ""
-            self.position = form['position'] if form['position'] else ""
-            self.invalid = form['invalid'] if form['invalid'] else ""
