@@ -128,7 +128,9 @@
                 <span class="center-block glyphicon glyphicon-tag"></span>
             </div>
             <h4>Types</h4>
-            <p>{{ types|join:", " }}</p>
+            {% if types %}
+                <p>{{ types|join:", " }}</p>
+            {% endif %}
         </div>
     </div>
 
