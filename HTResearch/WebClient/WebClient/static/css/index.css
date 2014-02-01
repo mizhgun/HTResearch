@@ -37,6 +37,16 @@ body {
     position: absolute;
 }
 
+#search-box-div .count {
+    font-size: 10pt;
+}
+#search-box-div .panel-heading {
+    line-height: 1.1;
+}
+#contact-search-list, #organization-search-list {
+    list-style-position: outside;
+}
+
 .header {
     height: 50px;
 }
