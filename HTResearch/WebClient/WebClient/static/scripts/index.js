@@ -358,8 +358,8 @@ function showSearchResults() {
     lastSearchedText = searchText;
     var searchResultsDiv = $('#search-results-div');
 
+    removeAllMarkers();
     if (searchText) {
-        removeAllMarkers();
         // Put items to search for here.
         var searchItems = [
             {
