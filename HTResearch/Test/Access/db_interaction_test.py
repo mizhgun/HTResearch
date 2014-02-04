@@ -51,7 +51,13 @@ class DatabaseInteractionTest(unittest.TestCase):
                                          emails=["info@yee.com", "stuff@yee.com"],
                                          phone_numbers=[5555555555, "(555)555-5555"],
                                          facebook="http://www.facebook.com/yee",
-                                         twitter="http://www.twitter.com/yee"
+                                         twitter="http://www.twitter.com/yee",
+                                         address="5124 Yeesy Street Omaha, NE 68024",
+                                         keywords="intj enfp entp isfp enfj istj",
+                                         types=[OrgTypesEnum.RELIGIOUS,
+                                                OrgTypesEnum.GOVERNMENT,
+                                                OrgTypesEnum.PROSECUTION,
+                                                ]
         )
         self.publication = Publication(title="The Book of Yee",
                                        authors=[self.contact])
@@ -112,7 +118,10 @@ class DatabaseInteractionTest(unittest.TestCase):
                                   emails=org_dto.emails,
                                   phone_numbers=org_dto.phone_numbers,
                                   facebook=org_dto.facebook,
-                                  twitter=org_dto.twitter)
+                                  twitter=org_dto.twitter,
+                                  address=org_dto.address,
+                                  keywords=org_dto.keywords,
+                                  types=org_dto.types[0])
         self.assertEqual(assert_org.name, org_dto.name)
         self.assertEqual(assert_org.organization_url, org_dto.organization_url)
         self.assertEqual(assert_org.contacts, org_dto.contacts)
@@ -124,11 +133,24 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Testing organization text search ...'
 
-        assert_orgs = org_dao.text_search(num_elements=10, text='bEe YeE university ers', fields=['name', 'address', 'organization_url', 'keywords', ])
+        assert_orgs = org_dao.findmany(search='bEe YeE university ers Religious govern secUTION ISFP Yeesy',
+                                       num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
         self.assertEqual(assert_orgs[0].name, org_dto.name)
 
-        assert_orgs = org_dao.text_search(num_elements=10, text='yee adfgh905w', fields=['name', 'address', 'organization_url', 'keywords', ])
-        self.assertEqual(list(assert_orgs), [])
+        assert_orgs = org_dao.findmany(search='prevention advocacy', num_elements=10)
+        self.assertEqual(len(assert_orgs), 0)
+
+        assert_orgs = org_dao.findmany(search='religious', search_fields=['types', ], num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
+        self.assertEqual(assert_orgs[0].name, org_dto.name)
+
+        assert_orgs = org_dao.findmany(search='ISFP', search_fields=['keywords', ], num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
+
+        assert_orgs = org_dao.findmany(search='omaha', search_fields=['address', ], num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
+        self.assertEqual(assert_orgs[0].name, org_dto.name)
 
         print 'Testing organization editing ...'
         org_dto.name = "Yee Universityee"

@@ -34,13 +34,13 @@ def search_organizations(request):
 
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
-
-        organizations = org_dao.text_search(text=search_text, fields=['name', 'keywords', ], num_elements=10, sort_fields=['name'])
+        organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['name'])
 
     results = []
     for dto in organizations:
         org = dto.__dict__['_data']
-        org['keywords'] = org['keywords'].split(' ')
+        # Split organization keyword string into list of words
+        org['keywords'] = org['keywords'].split()
         results.append(org)
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
