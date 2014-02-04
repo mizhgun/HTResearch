@@ -1,5 +1,6 @@
 from datetime import datetime
 from mongoengine import Q
+from mongoengine.fields import StringField
 
 from dto import *
 
@@ -51,18 +52,21 @@ class DAO(object):
         with self.conn():
             # Do text search or grab by constraints
             if search is not None:
-                return len(self.text_search(search, None))
+                return len(self._text_search(search, None))
             else:
                 return self.dto.objects(**constraints).count()
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
     def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=None,
-                 search=None, **constraints):
+                 search=None, search_fields=None, **constraints):
         with self.conn():
             # Do text search or grab by constraints
             if search is not None:
-                ret = self.text_search(search, num_elements, sort_fields=[sort_fields])
+                ret = self._text_search(search,
+                                       fields=search_fields,
+                                       num_elements=num_elements,
+                                       sort_fields=[sort_fields])
             else:
                 ret = self.dto.objects(**constraints)
 
@@ -87,36 +91,43 @@ class DAO(object):
             return ret
 
     # Search string fields for text and return list of results
-    def text_search(self, text, fields, num_elements=10, **sort_params):
+    def _text_search(self, text, fields, **sort_params):
         with self.conn():
+            # Search default fields if none given
+            if fields is None:
+                fields = self._default_search_fields()
             entry_query = self._get_query(text, fields)
             found_entries = self.dto.objects.filter(entry_query)
             if 'sort_fields' in sort_params:
                 for field in reversed(sort_params['sort_fields']):
                     found_entries = found_entries.order_by(field)
-            return found_entries[:num_elements]
+            return found_entries
 
+    # Create search term list from search string
     def _normalize_query(self, query_string,
                          findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
                          normspace=re.compile(r'\s{2,}').sub):
         return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
 
+    # Get a query representing text search results
     def _get_query(self, query_string, search_fields):
         query = None # Query to search for every search term
         terms = self._normalize_query(query_string)
         for term in terms:
             or_query = None
             for field_name in search_fields:
-                q = Q(**{'%s__icontains' % field_name: term})
-                if or_query is None:
-                    or_query = q
-                else:
-                    or_query = or_query | q
-            if query is None:
-                query = or_query
-            else:
-                query = query & or_query
+                q = self._term_query(term, field_name)
+                or_query = or_query | q if or_query else q
+            query = query & or_query if query else or_query
         return query
+
+    # Get a Q searching for a single term
+    def _term_query(self, term, field_name):
+        return Q(**{'%s__icontains' % field_name: term})
+
+    # Default search fields: all string fields
+    def _default_search_fields(self):
+        return [key for key, value in self.dto._fields.iteritems() if isinstance(value, StringField)]
 
 
 class ContactDAO(DAO):
@@ -249,6 +260,24 @@ class OrganizationDAO(DAO):
             if cascade_add:
                 org_dto = self._add_org_ref_to_children(org_dto)
         return org_dto
+
+    # Query searching for organizations by a single term
+    def _term_query(self, term, field_name):
+        q = None
+        if field_name == 'types':
+            types = OrgTypesEnum.mapping.keys()
+            matches = [OrgTypesEnum.mapping[type] for type in types if term.lower() in type.lower()]
+            for match in matches:
+                new_query = Q(types=match)
+                q = q | new_query if q else new_query
+        else:
+            q = super(OrganizationDAO, self)._term_query(term, field_name)
+
+        return q
+
+    # Default fields for organization text searching
+    def _default_search_fields(self):
+        return ['name', 'keywords', 'address', 'types', 'email_key', 'organization_url', ]
 
     def _smart_search_orgs(self, org_dto):
         # organizations have unique phone numbers
