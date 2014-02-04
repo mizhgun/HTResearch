@@ -41,10 +41,9 @@ def search_contacts(request):
     if search_text:
         contact_dao = ctx.get_object('ContactDAO')
 
-        contacts = contact_dao.text_search(text=search_text,
-                                           fields=['first_name', 'last_name', 'position', ],
-                                           num_elements=10,
-                                           sort_fields=['last_name'])
+        contacts = contact_dao.findmany(text=search_text,
+                                        num_elements=10,
+                                        sort_fields=['last_name'])
 
     data = {'results': map(lambda x: x.__dict__['_data'], contacts)}
     return HttpResponse(MongoJSONEncoder().encode(data), 'application/json')
