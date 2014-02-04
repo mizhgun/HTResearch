@@ -353,7 +353,9 @@ class OrgContactsScraper(object):
             for split_index in name_split:
                 if split_index.lower() in email.lower():
                     return email
-        return emails[0]
+        if emails:
+            return emails[0]
+        return None
 
 
 class OrgFacebookScraper(object):
