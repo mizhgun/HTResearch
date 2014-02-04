@@ -352,7 +352,7 @@ class ScraperTests(unittest.TestCase):
         test_files = [
             "httpbombayteenchallengeorg",
             "httpwwwprajwalaindiacomhomehtml",
-            "httpwwwhalftheskymovementorg",
+            "httpwwwhalftheskymovementorgpagesabouthalftheskymovement",
             "httpapneaaporg",
 
         ]
@@ -383,7 +383,7 @@ class ScraperTests(unittest.TestCase):
         test_files = [
             "httpbombayteenchallengeorg",
             "httpwwwprajwalaindiacomhomehtml",
-            "httpwwwhalftheskymovementorg",
+            "httpwwwhalftheskymovementorgpagesabouthalftheskymovement",
             "httpapneaaporg",
         ]
 
@@ -413,7 +413,7 @@ class ScraperTests(unittest.TestCase):
         test_files = [
             "httpbombayteenchallengeorg",
             "httpwwwprajwalaindiacomhomehtml",
-            "httpwwwhalftheskymovementorg",
+            "httpwwwhalftheskymovementorgpagesabouthalftheskymovement",
             "httpapneaaporg",
             "httpwwwbbaorgin",
             "httpwwwijmorg",
@@ -449,7 +449,7 @@ class ScraperTests(unittest.TestCase):
         test_files = [
             "httpbombayteenchallengeorg",
             "httpwwwnsagov",
-            "httpwwwhalftheskymovementorg",
+            "httpwwwhalftheskymovementorgpagesabouthalftheskymovement",
         ]
 
         org_type_scraper = ctx.get_object('OrgTypeScraper')

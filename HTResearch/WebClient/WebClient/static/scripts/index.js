@@ -364,22 +364,22 @@ function showSearchResults() {
         var searchItems = [
             {
                 name: 'Organization',
-                url: '/search_organizations/',
+                url: '/search-organizations/',
                 toggleSelector: '#organization-toggle',
                 collapseSelector: '#collapse-organizations',
                 listSelector: '#organization-search-list',
                 linkClass: 'org-link',
-                linkText: function(item) { return item.name },
+                linkText: function(item) { return item.name || item.organization_url || ''; },
                 onclick: showOrganizationModal
             },
             {
                 name: 'Contact',
-                url: '/search_contacts/',
+                url: '/search-contacts/',
                 toggleSelector: '#contact-toggle',
                 collapseSelector: '#collapse-contacts',
                 listSelector: '#contact-search-list',
                 linkClass: 'contact-link',
-                linkText: function(item) { return item.first_name + ' ' + item.last_name },
+                linkText: function(item) { return (item.first_name || '') + ' ' + (item.last_name || '') },
                 onclick: showContactModal
             }
         ];
