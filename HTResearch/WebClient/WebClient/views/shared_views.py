@@ -62,10 +62,7 @@ def welcome(request):
 
 
 def get_started(request):
-    param = {'logged_in': False}
-    if 'user_id' in request.session:
-        param['logged_in'] = True
-    return render(request, 'get_started.html', param)
+    return render(request, 'get_started.html')
 
 
 def get_http_404_page(request):
