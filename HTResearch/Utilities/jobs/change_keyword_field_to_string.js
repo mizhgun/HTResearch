@@ -1,5 +1,3 @@
-db = connect('unlhtprod.cloudapp.net:27017/ht');
-
 var c = db.organization_d_t_o.find();
 while(c.hasNext()) {
 	var org = c.next();
