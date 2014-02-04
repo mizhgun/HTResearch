@@ -72,3 +72,20 @@ class RequestOrgForm(forms.Form):
             raise ValidationError("Oops! Looks like we already have information on that organization.")
 
         return url
+
+
+class EditOrganizationForm(forms.Form):
+    name = forms.CharField(maxlength=80, required=False)
+    address = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        if 'emails' in kwargs:
+            i = 1
+            for key, value in kwargs.pop('emails'):
+                self.fields["email-{0}".format(i)] = forms.EmailField(required=False, initial=value)
+
+        if 'phone_numbers' in kwargs:
+            i = 1
+            for key, value in kwargs.pop('phone_numbers'):
+                self.fields["phone-{0}".format(i)] = forms.CharField(required=False, initial=value)
+

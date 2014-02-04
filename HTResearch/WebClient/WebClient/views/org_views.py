@@ -8,6 +8,7 @@ from springpython.context import ApplicationContext
 
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
+from HTResearch.DataModel.enums import AccountType
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.Utilities.converter import DTOConverter
@@ -96,6 +97,27 @@ def request_organization(request):
     return render(request, 'request_organization.html', {'form': form, 'success': success, 'error': error})
 
 
+def edit_organization(request, org_id):
+    if 'user_id' not in request.session:
+        logger.error('Bad request made to edit org={0} without login'.format(org_id))
+        return HttpResponseRedirect('/login')
+    elif 'account_type' not in request.session or request.session['account_type'] != AccountType.CONTRIBUTOR:
+        user_id = request.session['user_id']
+        logger.error('Bad request made to edit org={0} by user={1}: Not a contributor account'.format(org_id, user_id))
+        return HttpResponseRedirect('/')
+    else:
+        user_id = request.session['user_id']
+
+    try:
+        dao = ctx.get_object('OrganizationDAO')
+        org = dao.find(id=org_id)
+    except:
+        logger.error('Exception encountered on organization lookup for org={0} by user={1}'.format(org_id, user_id))
+        return get_http_404_page()
+
+    form = EditOrganizationForm(request.POST or None, initial=_create_org_dict(org))
+
+
 def get_org_keywords(request):
     if request.method == 'GET':
         org_id = request.GET['org_id']
@@ -153,3 +175,18 @@ def get_org_rank_rows(request):
 
 def org_rank(request, sort_method=''):
     return render(request, 'org_rank.html')
+
+
+def _create_org_dict(org):
+    org_dict = {
+        'name': org.name if org.name else "",
+        'address': org.address if org.address else "",
+        'types': org.types if org.types else [],
+        'emails': org.emails if org.emails else [],
+        'url': org.organization_url if org.organization_url else "",
+        'facebook': org.facebook if org.facebook else "",
+        'twitter': org.twitter if org.twitter else "",
+        'keywords': org.keywords if org.keywords else "",
+        'invalid': not org.valid
+    }
+    return org_dict
