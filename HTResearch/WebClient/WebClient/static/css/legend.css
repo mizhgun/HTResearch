@@ -1,0 +1,31 @@
+#legend .key {
+    display: inline-block;
+}
+.pin {
+    height: 40px;
+    width: 24px;
+    background-repeat: no-repeat;
+    margin: 0 auto;
+}
+.prevention>.pin {
+    background-image: url("/static/images/prevention_pin_small.png");
+}
+.protection>.pin {
+    background-image: url("/static/images/protection_pin_small.png");
+}
+.prosecution>.pin {
+    background-image: url("/static/images/prosecution_pin_small.png");
+}
+.prevention>.label {
+    background-color: #4ECDC4;
+}
+.protection>.label {
+    background-color: #FF6B6B;
+}
+.prosecution>.label {
+    background-color: #C7F464;
+}
+.key .label {
+    color: black;
+    font-size: 12px;
+}
