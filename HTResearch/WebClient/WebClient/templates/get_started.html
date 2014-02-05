@@ -72,7 +72,13 @@
         <hr class="featurette-divider">
 
         <div id="complete-tutorial-btn">
-            <a href="/" class="btn btn-primary btn-lg">Finish Tutorial</a>
+            <a
+            {% if username %}
+                href="/"
+            {% else %}
+                href="/signup/"
+            {% endif %}
+            class="btn btn-primary btn-lg">Finish Tutorial</a>
         </div>
 
         <!-- /END THE FEATURETTES -->
