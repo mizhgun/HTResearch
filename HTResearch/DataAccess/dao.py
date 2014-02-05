@@ -46,7 +46,7 @@ class DAO(object):
     # passed constraints that are reference types!
     def find(self, **constraints):
         with self.conn():
-            return self.dto.objects(**constraints).first()
+            return self.dto.objects(Q(**constraints) & self._valid_query()).first()
 
     def count(self, search=None, **constraints):
         with self.conn():
@@ -54,7 +54,7 @@ class DAO(object):
             if search is not None:
                 return len(self._text_search(search, None))
             else:
-                return self.dto.objects(**constraints).count()
+                return self.dto.objects(Q(**constraints) & self._valid_query()).count()
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
@@ -68,11 +68,11 @@ class DAO(object):
                                        num_elements=num_elements,
                                        sort_fields=[sort_fields])
             else:
-                ret = self.dto.objects(**constraints)
+                ret = self.dto.objects(Q(**constraints) & self._valid_query())
 
             # Sort if there are sort fields
             if sort_fields is not None and len(sort_fields) > 0 and search is None:
-                ret = ret.order_by(sort_fields)
+                ret = ret.order_by(*sort_fields)
 
             if num_elements is not None:
                 return ret[:num_elements]
@@ -90,18 +90,22 @@ class DAO(object):
 
             return ret
 
+    # Query to get all valid objects
+    def _valid_query(self):
+        return Q()
+
     # Search string fields for text and return list of results
     def _text_search(self, text, fields, **sort_params):
-        with self.conn():
-            # Search default fields if none given
-            if fields is None:
-                fields = self._default_search_fields()
-            entry_query = self._get_query(text, fields)
-            found_entries = self.dto.objects.filter(entry_query)
-            if 'sort_fields' in sort_params:
-                for field in reversed(sort_params['sort_fields']):
-                    found_entries = found_entries.order_by(field)
-            return found_entries
+        # Search default fields if none given
+        if fields is None:
+            fields = self._default_search_fields()
+        entry_query = self._get_query(text, fields)
+        found_entries = self.dto.objects(entry_query & self._valid_query())
+        if 'sort_fields' in sort_params:
+            found_entries = found_entries.order_by(*sort_params['sort_fields'])
+        if type(self) == OrganizationDAO:
+            print map(lambda x: x['name'], found_entries)
+        return found_entries
 
     # Create search term list from search string
     def _normalize_query(self, query_string,
@@ -260,6 +264,10 @@ class OrganizationDAO(DAO):
             if cascade_add:
                 org_dto = self._add_org_ref_to_children(org_dto)
         return org_dto
+
+    # Query getting valid organizations: must have a valid name
+    def _valid_query(self):
+        return Q(name__ne=None) & Q(name__ne='')
 
     # Query searching for organizations by a single term
     def _term_query(self, term, field_name):
