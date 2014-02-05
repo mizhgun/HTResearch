@@ -196,11 +196,17 @@ class URLFrontier:
     def empty_cache(self, rules=URLFrontierRules()):
         cs = rules.checksum
         with self._mid_empty_conds[cs]:
-            with self._job_conds[cs]:
-                self._job_queues[cs].put(CacheJobs.Empty)
-                self._job_conds[cs].notify()
             with self._empty_conds[cs]:
-                timeout = 10
-                while not self._url_queues[cs].empty() and timeout:
-                    self._empty_conds[cs].wait()
-                    timeout -= 1
+                repeat = True
+                while repeat:
+                    with self._job_conds[cs]:
+                        self._job_queues[cs].put(CacheJobs.Empty)
+                        self._job_conds[cs].notify()
+                    try:
+                        timeout = 10
+                        while not self._url_queues[cs].empty() and timeout:
+                            self._empty_conds[cs].wait(1)
+                            timeout -= 1
+                        self._url_queues.get(block=False)
+                    except Exception as e:
+                        repeat = False

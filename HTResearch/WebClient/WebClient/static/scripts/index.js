@@ -358,8 +358,8 @@ function showSearchResults() {
     lastSearchedText = searchText;
     var searchResultsDiv = $('#search-results-div');
 
+    removeAllMarkers();
     if (searchText) {
-        removeAllMarkers();
         // Put items to search for here.
         var searchItems = [
             {
@@ -369,7 +369,7 @@ function showSearchResults() {
                 collapseSelector: '#collapse-organizations',
                 listSelector: '#organization-search-list',
                 linkClass: 'org-link',
-                linkText: function(item) { return item.name },
+                linkText: function(item) { return item.name || item.organization_url || ''; },
                 onclick: showOrganizationModal
             },
             {
@@ -379,7 +379,7 @@ function showSearchResults() {
                 collapseSelector: '#collapse-contacts',
                 listSelector: '#contact-search-list',
                 linkClass: 'contact-link',
-                linkText: function(item) { return item.first_name + ' ' + item.last_name },
+                linkText: function(item) { return (item.first_name || '') + ' ' + (item.last_name || '') },
                 onclick: showContactModal
             }
         ];

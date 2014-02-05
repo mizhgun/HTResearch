@@ -12,6 +12,7 @@ from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.url_tools import UrlUtility
+from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
 from HTResearch.WebClient.WebClient.models import RequestOrgForm
@@ -34,13 +35,13 @@ def search_organizations(request):
 
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
-
-        organizations = org_dao.text_search(text=search_text, fields=['name', 'keywords', ], num_elements=10, sort_fields=['name'])
+        organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['name'])
 
     results = []
     for dto in organizations:
         org = dto.__dict__['_data']
-        org['keywords'] = org['keywords'].split(' ')
+        # Split organization keyword string into list of words
+        org['keywords'] = org['keywords'].split()
         results.append(org)
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
@@ -61,9 +62,15 @@ def organization_profile(request, org_id):
     if org.organization_url is not None:
         scheme = urlparse(org.organization_url).scheme
 
+    type_nums = org['types']
+    org_types = []
+    for org_type in type_nums:
+        org_types.append(OrgTypesEnum.reverse_mapping[org_type].title())
+
     params = {"organization": org,
-              "scheme": scheme
-    }
+              "scheme": scheme,
+              "types": org_types,
+              }
     return render(request, 'organization_profile.html', params)
 
 
