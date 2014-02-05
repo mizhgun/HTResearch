@@ -15,7 +15,7 @@ from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
-from HTResearch.WebClient.WebClient.models import RequestOrgForm
+from HTResearch.WebClient.WebClient.models import RequestOrgForm, EditOrganizationForm
 
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 
@@ -115,7 +115,55 @@ def edit_organization(request, org_id):
         logger.error('Exception encountered on organization lookup for org={0} by user={1}'.format(org_id, user_id))
         return get_http_404_page()
 
-    form = EditOrganizationForm(request.POST or None, initial=_create_org_dict(org))
+    emails = org.emails if org.emails else []
+    phone_numbers = org.phone_numbers if org.phone_numbers else []
+    types = org.types if org.types else []
+
+    form = EditOrganizationForm(request.POST or None,
+                                initial=_create_org_dict(org),
+                                emails=emails,
+                                phone_numbers=phone_numbers,
+                                types=types,)
+    error = ''
+    success = ''
+
+    if request.method == 'POST':
+        if form.is_valid():
+            data = form.cleaned_data
+            emails = form.emails()
+            phone_numbers = form.phone_numbers()
+            types = form.types()
+
+            if 'name' in data:
+                org.name = data['name'].strip() or None
+            if 'address' in data:
+                org.address = data['address'].strip() or None
+            if 'url' in data:
+                org.organization_url = data['url'].strip() or None
+            if 'keywords' in data:
+                org.keywords = (k.strip() for k in data['keywords'].split(',')) or None
+            if 'facebook' in data:
+                org.facebook = data['facebook'].strip() or None
+            if 'twitter' in data:
+                org.twitter = data['twitter'].strip() or None
+            if emails:
+                org.emails = [e for e in emails if e is not None]
+            if phone_numbers:
+                org.phone_numbers = [n for n in phone_numbers if n is not None]
+            if types:
+                org.types = [t for t in types if t is not None]
+
+            try:
+                dao.create_update(org)
+                success = 'The organization has been updated successfully!'
+                logger.info('Org={0} updated by user={1}'.format(org_id, user_id))
+            except:
+                error = 'Oops! There was an error updating the organization. Please try again later.'
+
+    return render(request, "edit_organization.html", {'form': form,
+                                                      'org_id': org_id,
+                                                      'success': success,
+                                                      'error': error})
 
 
 def get_org_keywords(request):
@@ -181,12 +229,10 @@ def _create_org_dict(org):
     org_dict = {
         'name': org.name if org.name else "",
         'address': org.address if org.address else "",
-        'types': org.types if org.types else [],
-        'emails': org.emails if org.emails else [],
         'url': org.organization_url if org.organization_url else "",
+        'keywords': org.keywords.replace(' ', ', ') if org.keywords else "",
         'facebook': org.facebook if org.facebook else "",
         'twitter': org.twitter if org.twitter else "",
-        'keywords': org.keywords if org.keywords else "",
         'invalid': not org.valid
     }
     return org_dict

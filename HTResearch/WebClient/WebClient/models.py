@@ -77,15 +77,62 @@ class RequestOrgForm(forms.Form):
 class EditOrganizationForm(forms.Form):
     name = forms.CharField(maxlength=80, required=False)
     address = forms.CharField(required=False)
+    url = forms.URLField(required=False)
+    facebook = forms.URLField(required=False)
+    twitter = forms.URLField(required=False)
+    keywords = forms.CharField(widget=forms.Textarea, required=False)
+    invalid = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
+        super(EditOrganizationForm, self).__init__(*args, **kwargs)
         if 'emails' in kwargs:
             i = 1
-            for key, value in kwargs.pop('emails'):
-                self.fields["email-{0}".format(i)] = forms.EmailField(required=False, initial=value)
+            for email in kwargs.pop('emails'):
+                self.fields["email-{0}".format(i)] = forms.EmailField(required=False,
+                                                                      initial=email,
+                                                                      label="Email {0}".format(i))
 
         if 'phone_numbers' in kwargs:
             i = 1
-            for key, value in kwargs.pop('phone_numbers'):
-                self.fields["phone-{0}".format(i)] = forms.CharField(required=False, initial=value)
+            for num in kwargs.pop('phone_numbers'):
+                self.fields["phone-{0}".format(i)] = forms.CharField(required=False,
+                                                                     initial=num,
+                                                                     label="Phone {0}".format(i))
 
+        if 'types' in kwargs:
+            i = 1
+            for org_type in kwargs.pop('types'):
+                self.fields["type-{0}".format(i)] = forms.ChoiceField(required=False,
+                                                                      choices=ORG_TYPE_CHOICES,
+                                                                      initial=org_type,
+                                                                      label="Type {0}".format(i))
+
+    def email_fields(self):
+        for name, field in self.fields.items():
+            if name.startswith('email-'):
+                yield field
+
+    def phone_fields(self):
+        for name, field in self.fields.items():
+            if name.startswith('phone-'):
+                yield field
+
+    def type_fields(self):
+        for name, field in self.fields.items():
+            if name.startswith('phone-'):
+                yield field
+
+    def emails(self):
+        for key, value in self.cleaned_data.items():
+            if key.startswith('email-'):
+                yield value
+
+    def phone_numbers(self):
+        for key, value in self.cleaned_data.items():
+            if key.startswith('phone-'):
+                yield value
+
+    def types(self):
+        for key, value in self.cleaned_data.items():
+            if key.startswith('type-'):
+                yield value
