@@ -12,6 +12,7 @@ from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.url_tools import UrlUtility
+from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
 from HTResearch.WebClient.WebClient.models import RequestOrgForm
@@ -61,9 +62,15 @@ def organization_profile(request, org_id):
     if org.organization_url is not None:
         scheme = urlparse(org.organization_url).scheme
 
+    type_nums = org['types']
+    org_types = []
+    for org_type in type_nums:
+        org_types.append(OrgTypesEnum.reverse_mapping[org_type].title())
+
     params = {"organization": org,
-              "scheme": scheme
-    }
+              "scheme": scheme,
+              "types": org_types,
+              }
     return render(request, 'organization_profile.html', params)
 
 
