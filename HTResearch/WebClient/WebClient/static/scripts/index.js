@@ -293,7 +293,7 @@ function plotMarker(data) {
         $(document).bind("mousedown", function(e){
             //TODO: Find a not janky way - Marcus
             $('#map-modal').parent().parent().parent().attr('id', 'map-modal-parent');
-            if((!$(e.target).parents('#map-modal-parent').size() || e.target.id == "map-modal")) {
+            if((!$(e.target).parents('#map-modal-parent').size() || e.target.id == "map-modal-parent")) {
                 closeAllInfowindows();
             }
         });
