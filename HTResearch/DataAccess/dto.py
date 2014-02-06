@@ -38,7 +38,7 @@ class OrganizationDTO(mongo.Document):
     valid = mongo.BooleanField(db_field='v', default=True)
     last_updated = mongo.DateTimeField(db_field='lu')
     updated_by = mongo.ObjectIdField(db_field='ub')
-    references = mongo.ReferenceField(document_type=PageRankInfo, db_field='r')
+    references = mongo.ReferenceField(document_type=PageRankInfoDTO, db_field='r')
 
 
 class PageRankInfoDTO(mongo.EmbeddedDocument):
@@ -46,7 +46,7 @@ class PageRankInfoDTO(mongo.EmbeddedDocument):
 
     total_with_self = mongo.LongField(min_value=0, max_value=None, db_field='ts')
     total = mongo.LongField(min_value=0, max_value=None, db_field='t')
-    references = mongo.ListField(field=mongo.EmbeddedDocumentField(field=PageRankVector), db_field='r')
+    references = mongo.ListField(field=mongo.EmbeddedDocumentField(field=PageRankVectorDTO), db_field='r')
 
 
 class PageRankVectorDTO(mongo.EmbeddedDocument):
@@ -54,7 +54,7 @@ class PageRankVectorDTO(mongo.EmbeddedDocument):
 
     organization = mongo.ReferenceField(document_type=OrganizationDTO, db_field='o')
     count = mongo.LongField(min_value=0, max_value=None, db_field='c')
-    pages = mongo.ListField(field=mongo.EmbeddedDocumentField(field=UrlCountPair), db_field='p')
+    pages = mongo.ListField(field=mongo.EmbeddedDocumentField(field=UrlCountPairDTO), db_field='p')
 
 
 class PublicationDTO(mongo.Document):
