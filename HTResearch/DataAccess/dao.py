@@ -111,7 +111,7 @@ class DAO(object):
 
     # Get a query representing text search results
     def _get_query(self, query_string, search_fields):
-        query = None # Query to search for every search term
+        query = None  # Query to search for every search term
         terms = self._normalize_query(query_string)
         for term in terms:
             or_query = None
@@ -202,7 +202,10 @@ class OrganizationDAO(DAO):
         with self.conn():
             attributes = new_org_dto._data
             for key in attributes:
-                if attributes[key] or key == 'latlng':
+                if key == 'references' and attributes[key]:
+                    self._merge_page_rank_info(attributes[key], getattr(existing_org_dto, key),
+                                         getattr(existing_org_dto, 'last_updated'), getattr(existing_org_dto, 'id'))
+                elif attributes[key] or key == 'latlng':
                     cur_attr = getattr(existing_org_dto, key)
                     if not cur_attr:
                         if key == 'latlng' and not attributes['latlng'] and attributes['address']:
@@ -217,6 +220,9 @@ class OrganizationDAO(DAO):
             existing_org_dto.last_updated = datetime.utcnow()
             existing_org_dto.save()
             return existing_org_dto
+
+    def _merge_page_rank_info(self, new_references, existing_references, last_updated, id):
+        pass
 
     def _add_org_ref_to_children(self, org_dto):
         for i in range(len(org_dto.contacts)):
