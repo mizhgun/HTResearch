@@ -75,7 +75,7 @@ class RequestOrgForm(forms.Form):
 
 
 class EditOrganizationForm(forms.Form):
-    name = forms.CharField(maxlength=80, required=False)
+    name = forms.CharField(max_length=80, required=False)
     address = forms.CharField(required=False)
     url = forms.URLField(required=False)
     facebook = forms.URLField(required=False)
@@ -84,55 +84,61 @@ class EditOrganizationForm(forms.Form):
     invalid = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
+        emails = kwargs.pop('emails') if 'emails' in kwargs else []
+        phone_numbers = kwargs.pop('phone_numbers') if 'phone_numbers' in kwargs else []
+        types = kwargs.pop('types') if 'types' in kwargs else []
+
         super(EditOrganizationForm, self).__init__(*args, **kwargs)
-        if 'emails' in kwargs:
-            i = 1
-            for email in kwargs.pop('emails'):
-                self.fields["email-{0}".format(i)] = forms.EmailField(required=False,
-                                                                      initial=email,
-                                                                      label="Email {0}".format(i))
+        i = 1
+        for email in emails:
+            self.fields["email-{0}".format(i)] = forms.EmailField(required=False,
+                                                                  initial=email,
+                                                                  max_length=40,
+                                                                  label="Email {0}".format(i))
 
-        if 'phone_numbers' in kwargs:
-            i = 1
-            for num in kwargs.pop('phone_numbers'):
-                self.fields["phone-{0}".format(i)] = forms.CharField(required=False,
-                                                                     initial=num,
-                                                                     label="Phone {0}".format(i))
+        i = 1
+        for num in phone_numbers:
+            self.fields["phone-{0}".format(i)] = forms.CharField(required=False,
+                                                                 initial=num,
+                                                                 label="Phone {0}".format(i))
 
-        if 'types' in kwargs:
-            i = 1
-            for org_type in kwargs.pop('types'):
-                self.fields["type-{0}".format(i)] = forms.ChoiceField(required=False,
-                                                                      choices=ORG_TYPE_CHOICES,
-                                                                      initial=org_type,
-                                                                      label="Type {0}".format(i))
+        i = 1
+        for org_type in types:
+            self.fields["type-{0}".format(i)] = forms.ChoiceField(required=False,
+                                                                  choices=ORG_TYPE_CHOICES,
+                                                                  initial=org_type,
+                                                                  label="Type {0}".format(i))
 
-    def email_fields(self):
-        for name, field in self.fields.items():
-            if name.startswith('email-'):
-                yield field
-
-    def phone_fields(self):
-        for name, field in self.fields.items():
-            if name.startswith('phone-'):
-                yield field
-
-    def type_fields(self):
-        for name, field in self.fields.items():
-            if name.startswith('phone-'):
-                yield field
 
     def emails(self):
-        for key, value in self.cleaned_data.items():
-            if key.startswith('email-'):
-                yield value
+        if hasattr(self, 'cleaned_data'):
+            for key, value in self.cleaned_data.items():
+                if key.startswith('email-'):
+                    field = self.fields[key]
+                    yield {'id': 'id_' + key, 'label': field.label, 'value': value}
+        else:
+            for name, field in self.fields.items():
+                if name.startswith('email-'):
+                    yield {'id': 'id_' + name, 'label': field.label, 'value': field.initial}
 
     def phone_numbers(self):
-        for key, value in self.cleaned_data.items():
-            if key.startswith('phone-'):
-                yield value
+        if hasattr(self, 'cleaned_data'):
+            for key, value in self.cleaned_data.items():
+                if key.startswith('phone-'):
+                    field = self.fields[key]
+                    yield {'id': 'id_' + key, 'label': field.label, 'value': value}
+        else:
+            for name, field in self.fields.items():
+                if name.startswith('phone-'):
+                    yield {'id': 'id_' + name, 'label': field.label, 'value': field.initial}
 
     def types(self):
-        for key, value in self.cleaned_data.items():
-            if key.startswith('type-'):
-                yield value
+        if hasattr(self, 'cleaned_data'):
+            for key, value in self.cleaned_data.items():
+                if key.startswith('type-'):
+                    field = self.fields[key]
+                    yield {'id': 'id_' + key, 'label': field.label, 'value': value}
+        else:
+            for name, field in self.fields.items():
+                if name.startswith('type-'):
+                    yield {'id': 'id_' + name, 'label': field.label, 'value': field.initial}

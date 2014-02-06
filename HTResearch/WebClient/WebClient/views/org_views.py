@@ -130,28 +130,28 @@ def edit_organization(request, org_id):
     if request.method == 'POST':
         if form.is_valid():
             data = form.cleaned_data
-            emails = form.emails()
-            phone_numbers = form.phone_numbers()
-            types = form.types()
+            new_emails = []
+            new_phone_nums = []
+            new_types = []
 
-            if 'name' in data:
-                org.name = data['name'].strip() or None
-            if 'address' in data:
-                org.address = data['address'].strip() or None
-            if 'url' in data:
-                org.organization_url = data['url'].strip() or None
-            if 'keywords' in data:
-                org.keywords = (k.strip() for k in data['keywords'].split(',')) or None
-            if 'facebook' in data:
-                org.facebook = data['facebook'].strip() or None
-            if 'twitter' in data:
-                org.twitter = data['twitter'].strip() or None
-            if emails:
-                org.emails = [e for e in emails if e is not None]
-            if phone_numbers:
-                org.phone_numbers = [n for n in phone_numbers if n is not None]
-            if types:
-                org.types = [t for t in types if t is not None]
+            for key, value in data:
+                if key == 'keywords':
+                    org.keywords = [k.strip() for k in value.split(',')] if value else None
+                elif key.startswith('email-'):
+                    new_emails.push(value.strip())
+                elif key.startswith('phone-'):
+                    new_phone_nums.push(value.strip())
+                elif key.startswith('type-'):
+                    new_types.push(value.strip())
+                else:
+                    setattr(org, key, value.strip()) if value else None
+
+            if new_emails:
+                org.emails = [e for e in new_emails if e]
+            if new_phone_nums:
+                org.phone_numbers = [p for p in new_phone_nums if p]
+            if new_types:
+                org.types = [t for t in new_types if t]
 
             try:
                 dao.create_update(org)

@@ -32,7 +32,8 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^org-rank/(\w+)$', 'org_rank', name='org-rank'),
                         url(r'^get-org-rank-rows/$', 'get_org_rank_rows', name='get-org-rank-rows'),
                         url(r'^get-org-keywords/$', 'get_org_keywords', name='get-org-keywords'),
-                        url(r'^request-organization/$', 'request_organization', name='request_organization'),
+                        url(r'^request-organization/$', 'request_organization', name='request-organization'),
+                        url(r'^edit-organization/(\w+)', 'edit_organization', name='edit-organization')
                         )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
