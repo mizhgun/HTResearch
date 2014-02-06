@@ -52,7 +52,7 @@ class PageRankInfoDTO(mongo.EmbeddedDocument):
 class PageRankVectorDTO(mongo.EmbeddedDocument):
     """A DTO wrapper for counting referenced organizations"""
 
-    organization = mongo.ReferenceField(document_type=OrganizationDTO, db_field='o')
+    org_domain = mongo.StringField(db_field='o')
     count = mongo.LongField(min_value=0, max_value=None, db_field='c')
     pages = mongo.ListField(field=mongo.EmbeddedDocumentField(field=UrlCountPairDTO), db_field='p')
 
