@@ -398,7 +398,7 @@ function showSearchResults() {
             }).done(function(data) {
                 data = JSON.parse(data);
                 $(searchItem.listSelector).html('');
-                $(searchItem.toggleSelector).parent().next('.count').text(data.results.length + " results");
+                $(searchItem.toggleSelector).parent().next('.count').text(data.results.length + ' results');
                 _.each(data.results, function(item) {
                     $('<a>' + searchItem.linkText(item) + '</a>')
                         .addClass(searchItem.linkClass)
