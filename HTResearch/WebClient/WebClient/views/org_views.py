@@ -41,7 +41,7 @@ def search_organizations(request):
     for dto in organizations:
         org = dto.__dict__['_data']
         # Split organization keyword string into list of words
-        org['keywords'] = org['keywords'].split()
+        org['keywords'] = (org['keywords'] or '').split()
         results.append(org)
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
@@ -140,7 +140,7 @@ def get_org_rank_rows(request):
         sort = ()
 
     org_dao = ctx.get_object('OrganizationDAO')
-    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=sort, search=search))
+    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=[sort], search=search))
     records = org_dao.count(search)
 
     # add netloc to urls if needed

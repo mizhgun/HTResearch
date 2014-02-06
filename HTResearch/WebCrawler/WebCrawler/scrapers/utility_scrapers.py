@@ -450,18 +450,9 @@ class OrgPartnersScraper(object):
     def __init__(self):
         self._link_scraper = LinkScraper()
         self._partner_text = 'partner'
-        self._netloc_ignore = [
-            'youtube.com',
-            'www.youtube.com',
-            'google.com',
-            'www.google.com',
-            'twitter.com',
-            'www.twitter.com',
-            'facebook.com',
-            'www.facebook.com',
-            'bit.ly',
-            'ow.ly',
-        ]
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               '../Resources/blocked_org_domains.txt')) as f:
+            self._blocked_domains = map(lambda x: x.rstrip(), f)
 
     # Find the path to selected node(s)
     def _path_to(self, sel):
@@ -476,14 +467,14 @@ class OrgPartnersScraper(object):
     # (returns 0 if not all external links)
     def _external_link_count(self, page_url, sel):
         count = 0
-        checked_netlocs = []
+        checked_domains = []
         for href in sel.select('@href').extract():
             link_url = urlparse(urljoin(page_url.geturl(), href))
             # link is external
             if link_url.netloc != page_url.netloc:
-                # link is not to an ignored netloc
-                if link_url.netloc not in self._netloc_ignore:
-                    checked_netlocs.append(link_url.netloc)
+                # link is not to a blocked domain
+                if not any(link_url.netloc.endswith(domain) for domain in self._blocked_domains):
+                    checked_domains.append(link_url.netloc)
                     count += 1
         return count
 
@@ -526,7 +517,7 @@ class OrgPartnersScraper(object):
             partner_hrefs = partner_links.select('@href').extract()
             for href in partner_hrefs:
                 link_url = urlparse(urljoin(page_url.geturl(), href))
-                if link_url.netloc not in self._netloc_ignore + [page_url.netloc]:
+                if link_url.netloc not in self._blocked_domains + [page_url.netloc]:
                     partner = ScrapedOrganization()
                     partner['organization_url'] = '%s/' % link_url.netloc
                     partners.append(partner)
