@@ -105,3 +105,12 @@
     font-size: 4em;
     vertical-align: middle;
 }
+
+.info-glyph-fa-center {
+  display: table;
+    text-align: center;
+}
+
+.info-glyph-fa-center span {
+    display: table-cell;
+}
