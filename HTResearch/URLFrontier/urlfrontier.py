@@ -152,17 +152,17 @@ class URLFrontier:
 
             self._proc_counts[cs] -= 1
             if self._proc_counts[cs] <= 0:
-                if self._cache_procs[cs].is_alive():
+                if self._cache_procs.has_key(cs) and self._cache_procs[cs].is_alive():
                     with self._logger_lock:
                         logger.info('Stopping the cache process for rule %s' % cs)
                     self._cache_procs[cs].terminate()
-                del self._cache_procs[cs]
-                del self._url_queues[cs]
-                del self._job_queues[cs]
-                del self._next_url_locks[cs]
-                del self._fill_conds[cs]
-                del self._empty_conds[cs]
-                del self._job_conds[cs]
+                    del self._cache_procs[cs]
+                    del self._url_queues[cs]
+                    del self._job_queues[cs]
+                    del self._next_url_locks[cs]
+                    del self._fill_conds[cs]
+                    del self._empty_conds[cs]
+                    del self._job_conds[cs]
 
     def next_url(self, rules=URLFrontierRules()):
         cs = rules.checksum
