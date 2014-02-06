@@ -665,6 +665,32 @@ class ScraperTests(unittest.TestCase):
             self.assertIn(test, scraped_urls, 'Invalid URL Metadata Didn\'t Find: %s' % str(test))
 
 
+    def test_publication_scraper(self):
+        test_files = [
+            "httpscholargooglecomscholarhlenqpaulbtnGassdt12C28",
+        ]
+
+        pub_scraper = PublicationCitationSourceScraper()
+        sources = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = pub_scraper.parse(response)
+                print ret
+                if isinstance(ret, list):
+                    sources = sources + ret
+                else:
+                    sources.append(ret)
+
+        assert_list = [
+            'FD5U1mFUAe8J', 'GouvW1uXQv4J', 'A_punTK0il4J', '09vlKiKyzVMJ', '1MI5x95WVlIJ', '5RnnsNt0VwwJ', 'HZXqLOywHBMJ', '_mfiSSkjBDMJ', 'hjmy2wt_cq8J', 'qoyC2e35yt4J'
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, sources, "Publication source (" + test + ") not found")
+
+
 if __name__ == '__main__':
     try:
         unittest.main()
