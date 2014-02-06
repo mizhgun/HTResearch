@@ -44,8 +44,8 @@ class OrganizationDTO(mongo.Document):
 class PageRankInfoDTO(mongo.EmbeddedDocument):
     """A DTO wrapper for Information related to PageRank """
 
-    total_with_self = mongo.LongField(min_value=0, max_value=None, db_field='ts')
-    total = mongo.LongField(min_value=0, max_value=None, db_field='t')
+    total_with_self = mongo.LongField(min_value=0, db_field='ts')
+    total = mongo.LongField(min_value=0, db_field='t')
     references = mongo.ListField(field=mongo.EmbeddedDocumentField(field=PageRankVectorDTO), db_field='r')
 
 
@@ -53,7 +53,7 @@ class PageRankVectorDTO(mongo.EmbeddedDocument):
     """A DTO wrapper for counting referenced organizations"""
 
     org_domain = mongo.StringField(db_field='o')
-    count = mongo.LongField(min_value=0, max_value=None, db_field='c')
+    count = mongo.LongField(min_value=0, db_field='c')
     pages = mongo.ListField(field=mongo.EmbeddedDocumentField(field=UrlCountPairDTO), db_field='p')
 
 
@@ -75,7 +75,7 @@ class UrlCountPairDTO(mongo.EmbeddedDocument):
     """A DTO wrapper for pairing Source URLs and the Number of References to some Page"""
 
     url = mongo.URLField(db_field='u')
-    count = mongo.LongField(min_value=0, max_value=None, db_field='c')
+    count = mongo.LongField(min_value=0, db_field='c')
 
 
 class URLMetadataDTO(mongo.Document):
