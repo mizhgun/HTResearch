@@ -9,7 +9,6 @@
 }
 .key .label {
     color: black;
-    font-size: 15px;
     display: inline-block;
     width: 100%;
     margin: 5px;
@@ -19,6 +18,7 @@
     background-repeat: no-repeat;
     padding: 0 16px 0 24px;
     height: 32px;
+    font-size: large;
 }
 .key.prevention {
     background-image: url("/static/images/prevention_pin_small.png");
