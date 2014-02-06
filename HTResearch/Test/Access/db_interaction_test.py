@@ -266,7 +266,7 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Creating a duplicate and attempting an insert ...'
         new_contact = Contact(email="jdegner0129@gmail.com",
-                              phone=4029813230)
+                              phone=['4029813230'])
         new_contact_dto = DTOConverter.to_dto(ContactDTO, new_contact)
         contact_dao.create_update(new_contact_dto)
 

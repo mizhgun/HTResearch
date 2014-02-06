@@ -38,7 +38,13 @@
             </div>
             <h4>Phone Number</h4>
 
-            <p>{% if contact.phone %}{{ contact.phone }}{% else %}None{% endif %}</p>
+            <p>
+                {% if contact.phone %}
+                    {{ contact.phone|join:",<br />" }}
+                {% else %}
+                    None
+                {% endif %}
+            </p>
 
             <span class="clearfix"></span>
 

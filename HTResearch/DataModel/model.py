@@ -5,7 +5,7 @@ class Contact(object):
     """A Model class for an anti-trafficking contact."""
 
     def __init__(self, first_name=None, last_name=None,
-                 phone=None, email=None, organization=None,
+                 phone=[], email=None, organization=None,
                  publications=[], position=None, valid=True,
                  updated_by=None):
         self.first_name = first_name

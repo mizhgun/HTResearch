@@ -530,7 +530,7 @@ class ScraperTests(unittest.TestCase):
                          'last_name': 'Gollamudi',
                          'organization': {'name': 'PRAJWALA'},
                          'position': None,
-                         'phone': '914024410813',
+                         'phone': ['914024410813'],
                          },
                        {
                          'email': 'lavanya.ravulapalli@gmail.com',
@@ -538,7 +538,7 @@ class ScraperTests(unittest.TestCase):
                          'last_name': 'Ravulapalli',
                          'organization': {'name': 'PRAJWALA'},
                          'position': None,
-                         'phone': None
+                         'phone': []
                          },
                        {
                          'email': 'kmulhauser@consultingwomen.com',
@@ -546,7 +546,7 @@ class ScraperTests(unittest.TestCase):
                          'last_name': 'Mulhuaser',
                          'organization': {'name': 'PRAJWALA'},
                          'position': None,
-                         'phone': None,
+                         'phone': [],
                          },
                        {
                          'email': 'sunitha_2002@yahoo.com',
@@ -554,7 +554,7 @@ class ScraperTests(unittest.TestCase):
                          'last_name': 'Krishnan',
                          'organization': {'name': 'PRAJWALA'},
                          'position': 'Chief Functionary',
-                         'phone': '919848025014',
+                         'phone': ['919848025014'],
                          }]
 
         for test in assert_list:
