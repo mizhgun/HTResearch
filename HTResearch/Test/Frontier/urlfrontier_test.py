@@ -1,5 +1,4 @@
 # Library imports
-import os
 import unittest
 from datetime import datetime, timedelta
 from springpython.config import Object
