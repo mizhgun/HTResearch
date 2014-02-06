@@ -8,6 +8,7 @@ $(function() {
 				maxlength: 25
 			},
 			email: {
+                email: true,
 				maxlength: 40
 			},
 			position: {
