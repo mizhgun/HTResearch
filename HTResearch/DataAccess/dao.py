@@ -66,12 +66,12 @@ class DAO(object):
                 ret = self._text_search(search,
                                        fields=search_fields,
                                        num_elements=num_elements,
-                                       sort_fields=[sort_fields])
+                                       sort_fields=sort_fields)
             else:
                 ret = self.dto.objects(Q(**constraints) & self._valid_query())
 
             # Sort if there are sort fields
-            if sort_fields is not None and len(sort_fields) > 0 and search is None:
+            if sort_fields is not None and len(sort_fields) > 0:
                 ret = ret.order_by(*sort_fields)
 
             if num_elements is not None:
@@ -103,8 +103,6 @@ class DAO(object):
         found_entries = self.dto.objects(entry_query & self._valid_query())
         if 'sort_fields' in sort_params:
             found_entries = found_entries.order_by(*sort_params['sort_fields'])
-        if type(self) == OrganizationDAO:
-            print map(lambda x: x['name'], found_entries)
         return found_entries
 
     # Create search term list from search string

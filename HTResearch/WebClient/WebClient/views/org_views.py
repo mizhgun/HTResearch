@@ -35,7 +35,7 @@ def search_organizations(request):
 
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
-        organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields='name')
+        organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['name'])
 
     results = []
     for dto in organizations:
@@ -140,7 +140,7 @@ def get_org_rank_rows(request):
         sort = ()
 
     org_dao = ctx.get_object('OrganizationDAO')
-    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=sort, search=search))
+    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=[sort], search=search))
     records = org_dao.count(search)
 
     # add netloc to urls if needed
