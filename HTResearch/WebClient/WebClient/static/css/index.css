@@ -37,6 +37,16 @@ body {
     position: absolute;
 }
 
+#search-box-div .count {
+    font-size: 0.714em;
+}
+#search-box-div .panel-heading {
+    line-height: 1.1;
+}
+#contact-search-list, #organization-search-list {
+    list-style-position: outside;
+}
+
 .header {
     height: 50px;
 }
@@ -161,10 +171,7 @@ input:focus {
     position: absolute;
     overflow-y: auto;
     width: 90%;
-    max-height: -moz-calc(100% - 80px);
-    max-height: -webkit-calc(100% - 80px);
-    max-height: -o-calc(100% - 80px);
-    max-height: calc(100% - 80px);
+    max-height: 75%;
     opacity: 0.5;
     filter: alpha(opacity=50); /* For IE8 and earlier */
     transition: opacity 1s;
