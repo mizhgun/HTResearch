@@ -63,10 +63,7 @@ class DAO(object):
         with self.conn():
             # Do text search or grab by constraints
             if search is not None:
-                ret = self._text_search(search,
-                                       fields=search_fields,
-                                       num_elements=num_elements,
-                                       sort_fields=sort_fields)
+                ret = self._text_search(search, fields=search_fields)
             else:
                 ret = self.dto.objects(Q(**constraints) & self._valid_query())
 
@@ -95,14 +92,12 @@ class DAO(object):
         return Q()
 
     # Search string fields for text and return list of results
-    def _text_search(self, text, fields, **sort_params):
+    def _text_search(self, text, fields):
         # Search default fields if none given
         if fields is None:
             fields = self._default_search_fields()
         entry_query = self._get_query(text, fields)
         found_entries = self.dto.objects(entry_query & self._valid_query())
-        if 'sort_fields' in sort_params:
-            found_entries = found_entries.order_by(*sort_params['sort_fields'])
         return found_entries
 
     # Create search term list from search string
