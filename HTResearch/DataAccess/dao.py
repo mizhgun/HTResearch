@@ -183,6 +183,9 @@ class ContactDAO(DAO):
             contact_dto.save()
         return contact_dto
 
+    def _valid_query(self):
+        return Q(valid=True)
+
 
 class OrganizationDAO(DAO):
     """
@@ -263,9 +266,9 @@ class OrganizationDAO(DAO):
                 org_dto = self._add_org_ref_to_children(org_dto)
         return org_dto
 
-    # Query getting valid organizations: must have a valid name
+    # Query getting valid organizations: must be valid and have a valid name
     def _valid_query(self):
-        return Q(name__ne=None) & Q(name__ne='')
+        return Q(name__ne=None) & Q(name__ne='') & Q(valid=True)
 
     # Query searching for organizations by a single term
     def _term_query(self, term, field_name):
