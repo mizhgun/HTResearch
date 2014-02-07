@@ -49,7 +49,7 @@ class MockDAO(object):
                  **constraints):
         with self.conn():
             if len(sort_fields) > 0:
-                ret = self.dto.objects(**constraints).order_by(sort_fields)
+                ret = self.dto.objects(**constraints).order_by(*sort_fields)
             else:
                 ret = self.dto.objects(**constraints)
             if num_elements is not None:

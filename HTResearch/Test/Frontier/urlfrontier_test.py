@@ -35,10 +35,13 @@ class URLFrontierTest(unittest.TestCase):
 
     def tearDown(self):
         self.urlfrontier_tear_down()
+        frontier = self.frontier_ctx.get_object("URLFrontier")
+        frontier.terminate_cache_process()
 
     def urlfrontier_tear_down(self):
         with MockDBConnection() as db:
             db.dropall()
+
 
     def test_urlfrontier(self):
         for i in range(5):
