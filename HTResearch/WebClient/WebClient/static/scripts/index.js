@@ -358,8 +358,8 @@ function showSearchResults() {
     lastSearchedText = searchText;
     var searchResultsDiv = $('#search-results-div');
 
+    removeAllMarkers();
     if (searchText) {
-        removeAllMarkers();
         // Put items to search for here.
         var searchItems = [
             {
@@ -398,6 +398,7 @@ function showSearchResults() {
             }).done(function(data) {
                 data = JSON.parse(data);
                 $(searchItem.listSelector).html('');
+                $(searchItem.toggleSelector).parent().next('.count').text(data.results.length + ' results');
                 _.each(data.results, function(item) {
                     $('<a>' + searchItem.linkText(item) + '</a>')
                         .addClass(searchItem.linkClass)
