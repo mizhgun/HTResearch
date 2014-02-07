@@ -148,7 +148,7 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Testing organization text search ...'
 
-        assert_orgs = org_dao.findmany(search='bEe YeE university ers Religious govern secUTION ISFP Yeesy',
+        assert_orgs = org_dao.findmany(search='YeE university ers Religious govern secUTION ISFP Yeesy',
                                        num_elements=10)
         self.assertEqual(len(assert_orgs), 1)
         self.assertEqual(assert_orgs[0].name, org_dto.name)
