@@ -112,50 +112,51 @@ class OrganizationScraper():
 
 class PublicationScraper():
     def __init__(self):
+        #Scrapers
+        self.key_scraper = PublicationCitationSourceScraper()
+        self.title_scraper = PublicationTitleScraper()
+        self.author_scraper = PublicationAuthorsScraper()
+        self.date_scraper = PublicationDateScraper()
+        self.publisher_scraper = PublicationPublisherScraper()
+        self.pub_url_scraper = PublicationURLScraper()
+        self.titles = []
+        self.publications = []
         pass
 
-    def parse(self, response):
+    #Second
+    def parse_citation_page(self, response):
+        pub = ScrapedPublication
+        pub['title'] = self.title_scraper.parse(response)
+        self.titles.append(pub['title'])
+        pub['authors'] = self.author_scraper.parse(response)
+        pub['publication_date'] = self.date_scraper.parse(response)
+        pub['publisher'] = self.publisher_scraper(response)
+        self.publications.append(pub)
+
+    #Third
+    def parse_pub_urls(self, response):
+        #Rescrape main page for links
+        self.pub_url_scraper.seed_titles(self.titles)
+
+        #Use original response now that we have the list of titles
+        pub_urls = self.pub_url_scraper.parse(response)
+
+        #Assign urls after scraping
+        for index, publication in enumerate(self.publications):
+            self.publications[index]['content_url'] = pub_urls[index]
+
+    #First
+    def parse_main_page(self, response):
         #Must scrape several pubs at a time
         #Each page will have roughly 10 publications
         publications = []
 
-        #Scrapers
-        key_scraper = PublicationCitationSourceScraper()
-        title_scraper = PublicationTitleScraper()
-        author_scraper = PublicationAuthorsScraper()
-        date_scraper = PublicationDateScraper()
-        pub_url_scraper = PublicationURLScraper()
-
         #Response is the main GS results page
-        keys = key_scraper.parse(response)
+        keys = self.key_scraper.parse(response)
 
         next_urls = []
         for key in keys:
             #All ajax calls use this format
             next_urls.append('scholar.google.com/scholar?q=info:' + key + ':scholar.google.com/&output=cite&scirp=0&hl=en')
 
-        #TODO Use new urls to create new responses
-        new_responses = []
-        titles = []
-
-        #Create individual pubs
-        #Pseudocoded model
-        for resp in new_responses:
-                pub = ''
-                pub.title = title_scraper.parse(resp)
-                titles.append(pub.title)
-                pub.authors = author_scraper.parse(resp)
-                pub.date = date_scraper.parse(resp)
-                publications.append(pub)
-
-        #Rescrape main page for links
-        pub_url_scraper.seed_titles(titles)
-
-        #Use original response now that we have the list of titles
-        pub_urls = pub_url_scraper.parse(response)
-
-        #Assign urls after scraping
-        for index, publication in enumerate(publications):
-            publications[index].url = pub_urls[index]
-
-        return publications
+        return next_urls

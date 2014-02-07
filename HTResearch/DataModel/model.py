@@ -49,7 +49,7 @@ class Organization(object):
 class Publication(object):
     """A Model class for an anti-trafficking research publication."""
 
-    def __init__(self, title=None, authors=[],
+    def __init__(self, title=None, authors=None,
                  publisher=None, publication_date=datetime.utcnow(),
                  types=[], content_url=None, valid=True,
                  updated_by=None):
