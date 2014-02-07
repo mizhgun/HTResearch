@@ -102,25 +102,8 @@ function initialize() {
 
     // Legend
     var three_ps_legend = document.createElement('div');
-    var prevention = document.createElement('span');
-    var prosecution = document.createElement('span');
-    var protection = document.createElement('span');
-    $(prevention).text("Prevention");
-    $(prosecution).text("Prosecution");
-    $(protection).text("Protection");
-    $(prevention).addClass('label');
-    $(prosecution).addClass('label');
-    $(protection).addClass('label');
-    $(prevention).css('background-color', '#4ECDC4');
-    $(prosecution).css('background-color', '#C7F464');
-    $(protection).css('background-color', '#FF6B6B');
-    $(prevention).css('color', 'black');
-    $(prosecution).css('color', 'black');
-    $(protection).css('color', 'black');
     $(three_ps_legend).css('margin-bottom', '5px');
-    three_ps_legend.appendChild(prevention);
-    three_ps_legend.appendChild(prosecution);
-    three_ps_legend.appendChild(protection);
+    $(three_ps_legend).html($("#map-legend").html());
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(three_ps_legend);
 }
 
@@ -288,6 +271,14 @@ function plotMarker(data) {
 
         var new_infowindow = new google.maps.InfoWindow({
             content: html.html()
+        });
+
+        $(document).bind("mousedown", function(e){
+            //TODO: Find a not janky way - Marcus
+            $('#map-modal').parents().eq(2).attr('id', 'map-modal-parent');
+            if((!$(e.target).parents('#map-modal-parent').size() || e.target.id == "map-modal-parent")) {
+                closeAllInfowindows();
+            }
         });
 
         google.maps.event.addListener(new_marker, 'click', function () {

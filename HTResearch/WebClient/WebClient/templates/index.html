@@ -9,6 +9,7 @@
             src="https://maps.googleapis.com/maps/api/js?&sensor=false&libraries=visualization"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <link href="static/css/index.css" rel="stylesheet">
+    <link href="static/css/legend.css" rel="stylesheet">
     <script src="static/scripts/index.js" type="text/javascript"></script>
     <script src="static/scripts/heatmap.js" type="text/javascript"></script>
 {% endblock %}
@@ -18,7 +19,8 @@
     {% include "org_modal.html" %}
     {% include "org_bs_modal.html" %}
     {% include "contact_modal.html" %}
-    {% include "publication_modal.html" %}
+    {% include "publication_modal.html" %}}
+    {% include "map_legend.html" %}
     <div id="wrapper">
         <div class="row">
             <div class="col-md-2 search-div">
