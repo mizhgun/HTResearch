@@ -152,22 +152,6 @@
                     </div>
                 {% endfor %}
 
-                {% if form.keywords.errors %}
-                    <div class="form-group has-error">
-                {% else %}
-                    <div class="form-group">
-                {% endif %}
-                    <label for="id_keywords" class="control-label">Keywords</label>
-                    <textarea id="id_keywords" name="keywords" class="form-control">{{ form.keywords.value }}</textarea>
-                    {% if form.keywords.errors %}
-                        <span class="help-block">
-                            {% for error in form.keywords.errors %}
-                            {{ error|escape }}<br/>
-                            {% endfor %}
-                        </span>
-                    {% endif %}
-                </div>
-
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>

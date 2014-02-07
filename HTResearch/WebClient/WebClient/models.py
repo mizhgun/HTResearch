@@ -79,9 +79,8 @@ class EditOrganizationForm(forms.Form):
     name = forms.CharField(max_length=80, required=False)
     address = forms.CharField(required=False)
     organization_url = forms.URLField(required=False)
-    facebook = forms.URLField(required=False)
-    twitter = forms.URLField(required=False)
-    keywords = forms.CharField(widget=forms.Textarea, required=False)
+    facebook = forms.URLField(required=False, max_length=60)
+    twitter = forms.URLField(required=False, max_length=60)
     invalid = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):

@@ -137,9 +137,7 @@ def edit_organization(request, org_id):
 
             try:
                 for key, value in data.items():
-                    if key == 'keywords':
-                        org.keywords = ' '.join([k.strip() for k in value.split(', ')]) if value else None
-                    elif key.startswith('email'):
+                    if key.startswith('email'):
                         new_emails.append(value.strip())
                     elif key.startswith('phone'):
                         new_phone_nums.append(value.strip())
