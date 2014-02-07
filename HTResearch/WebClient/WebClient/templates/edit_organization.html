@@ -111,7 +111,7 @@
                     <div class="form-group">
                 {% endif %}
                     <label for="id_facebook" class="control-label">Facebook</label>
-                    <input type="url" id="id_facebook" name="facebook" class="form-control"
+                    <input type="url" id="id_facebook" onblur="checkURL(this)" name="facebook" class="form-control"
                            value="{{ form.facebook.value }}">
                     {% if form.facebook.errors %}
                         <span class="help-block">
@@ -128,7 +128,7 @@
                     <div class="form-group">
                 {% endif %}
                     <label for="id_twitter" class="control-label">Twitter</label>
-                    <input type="url" id="id_twitter" name="twitter" class="form-control"
+                    <input type="url" id="id_twitter" onblur="checkURL(this)" name="twitter" class="form-control"
                            value="{{ form.twitter.value }}">
                     {% if form.twitter.errors %}
                         <span class="help-block">
@@ -144,7 +144,9 @@
                         <label for="{{ type.id }}" class="control-label">{{ type.label }}</label>
                         <select class="form-control" id="{{ type.id }}" name="{{ type.name }}">
                             {% for value, label in type_choices %}
-                                <option value="{{ value }}" {% if value == type.value %}selected{% endif %}>{{ label }}</option>
+                                <option value="{{ value }}" {% if value == type.value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
