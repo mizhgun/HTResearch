@@ -324,7 +324,7 @@ class OrganizationDAO(DAO):
         return existing_dto
 
 
-class  PublicationDAO(DAO):
+class PublicationDAO(DAO):
     """
     A DAO for the Publication document
     """
@@ -336,45 +336,13 @@ class  PublicationDAO(DAO):
         # Injected dependencies
         self.contact_dao = ContactDAO
 
-    def _add_pub_ref_to_children(self, pub_dto):
-        for i in range(len(pub_dto.authors)):
-            c = pub_dto.authors[i]
-            if c.publications is None:
-                c.publications = []
-            if pub_dto not in c.publications:
-                c.publications.append(pub_dto)
-                pub_dto.authors[i] = self.contact_dao().create_update(c, False)
-
-        if pub_dto.publisher is not None:
-            if pub_dto.publisher.publications is None:
-                pub_dto.publisher.publications = []
-            if pub_dto not in pub_dto.publisher.publications:
-                pub_dto.publisher.publications.append(pub_dto)
-                pub_dto.publisher = self.contact_dao().create_update(pub_dto.publisher, False)
-
-        return pub_dto
-
     def create_update(self, pub_dto, cascade_add=True):
         no_id = pub_dto.id is None
         with self.conn():
-            if cascade_add:
-                for i in range(len(pub_dto.authors)):
-                    c = pub_dto.authors[i]
-                    if pub_dto in c.publications and no_id:
-                        c.publications.remove(pub_dto)
-                    pub_dto.authors[i] = self.contact_dao().create_update(c, False)
-
-                if pub_dto.publisher is not None:
-                    if pub_dto in pub_dto.publisher.publications and no_id:
-                        pub_dto.publisher.publications.remove(pub_dto)
-                    pub_dto.publisher = self.contact_dao().create_update(pub_dto.publisher, False)
-
             if no_id:
                 existing_dto = self.dto.objects(title=pub_dto.title).first()
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, pub_dto)
-                    if cascade_add:
-                        saved_dto = self._add_pub_ref_to_children(saved_dto)
                     return saved_dto
 
             if pub_dto.publisher is not None:
