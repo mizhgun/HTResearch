@@ -381,6 +381,16 @@ function showSearchResults() {
                 linkClass: 'contact-link',
                 linkText: function(item) { return (item.first_name || '') + ' ' + (item.last_name || '') },
                 onclick: showContactModal
+            },
+            {
+                name: 'Publication',
+                url: '/search-publications',
+                toggleSelector: '#publication-toggle',
+                collapseSelector: '#collapse-publications',
+                listSelector: '#publication-search-list',
+                linkClass: 'publication-link',
+                linkText: function(item) { return item.name; },
+                onclick: function() {} // TODO: Bee is going to make showPublicationModal()
             }
         ];
 
