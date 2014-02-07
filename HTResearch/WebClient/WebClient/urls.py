@@ -40,6 +40,10 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
                         url(r'^contact/(\w+)', 'contact_profile', name='con-prof'),
 )
 
+urlpatterns += patterns('HTResearch.WebClient.WebClient.views.publication_views',
+                        url(r'^search-publications/$', 'search_publications', name='search-publications'),
+)
+
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
                         url(r'^login/$', 'login', name='login'),
                         url(r'^logout/$', 'logout', name='logout'),
