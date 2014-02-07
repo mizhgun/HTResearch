@@ -115,7 +115,7 @@ class PublicationScraper():
         pass
 
     def parse(self, response):
-        #Must scrap several pubs at a time
+        #Must scrape several pubs at a time
         #Each page will have roughly 10 publications
         publications = []
 
@@ -131,6 +131,7 @@ class PublicationScraper():
 
         next_urls = []
         for key in keys:
+            #All ajax calls use this format
             next_urls.append('scholar.google.com/scholar?q=info:' + key + ':scholar.google.com/&output=cite&scirp=0&hl=en')
 
         #TODO Use new urls to create new responses
@@ -138,6 +139,7 @@ class PublicationScraper():
         titles = []
 
         #Create individual pubs
+        #Pseudocoded model
         for resp in new_responses:
                 pub = ''
                 pub.title = title_scraper.parse(resp)
