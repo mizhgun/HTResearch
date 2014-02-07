@@ -60,7 +60,8 @@ class DatabaseInteractionTest(unittest.TestCase):
                                                 ]
         )
         self.publication = Publication(title="The Book of Yee",
-                                       authors=[self.contact])
+                                       authors="Sam Adams, {0} {1}".format(self.contact.first_name, self.contact.last_name),
+                                       publisher="{0} {1}".format(self.contact.first_name, self.contact.last_name))
         self.urlmetadata = URLMetadata(url="http://google.com")
         self.user = User(first_name="Bee", last_name="Yee",
                          email="beeyee@yee.com", password="iambeeyee",
@@ -87,6 +88,20 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_contact.first_name, contact_dto.first_name)
         self.assertEqual(assert_contact.last_name, contact_dto.last_name)
         self.assertEqual(assert_contact.email, contact_dto.email)
+
+        print 'Testing contact text search ...'
+
+        assert_contacts = contact_dao.findmany(search='jordan degner',
+                                               num_elements=10)
+        self.assertEqual(len(assert_contacts), 1)
+        self.assertEqual(assert_contacts[0].first_name, contact_dto.first_name)
+
+        assert_contacts = contact_dao.findmany(search='bee yee', num_elements=10)
+        self.assertEqual(len(assert_contacts), 0)
+
+        assert_contacts = contact_dao.findmany(search='@gmail', search_fields=['email', ], num_elements=10)
+        self.assertEqual(len(assert_contacts), 1)
+        self.assertEqual(assert_contacts[0].first_name, contact_dto.first_name)
 
         print 'Testing contact editing ...'
         contact_dto.first_name = "Djordan"
@@ -182,6 +197,21 @@ class DatabaseInteractionTest(unittest.TestCase):
                                   title=pub_dto.title)
         self.assertEqual(assert_pub.title, pub_dto.title)
         self.assertEqual(assert_pub.authors, pub_dto.authors)
+        self.assertEqual(assert_pub.publisher, pub_dto.publisher)
+
+        print 'Testing publication text search ...'
+
+        assert_pubs = pub_dao.findmany(search='book of yee bee ADAMS',
+                                       num_elements=10)
+        self.assertEqual(len(assert_pubs), 1)
+        self.assertEqual(assert_pubs[0].title, pub_dto.title)
+
+        assert_pubs = pub_dao.findmany(search='nosuchpublication', num_elements=10)
+        self.assertEqual(len(assert_pubs), 0)
+
+        assert_pubs = pub_dao.findmany(search='sam adams', search_fields=['authors', ], num_elements=10)
+        self.assertEqual(len(assert_pubs), 1)
+        self.assertEqual(assert_pubs[0].title, pub_dto.title)
 
         print 'Testing publication editing ...'
         pub_dto.title = "The Book of Mee"

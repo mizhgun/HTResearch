@@ -181,9 +181,6 @@ class ContactDAO(DAO):
     def _default_search_fields(self):
         return ['first_name', 'last_name', 'position', ]
 
-    def _valid_query(self):
-        return Q(valid=True)
-
 
 class OrganizationDAO(DAO):
     """
@@ -266,7 +263,7 @@ class OrganizationDAO(DAO):
 
     # Query getting valid organizations: must be valid and have a valid name
     def _valid_query(self):
-        return Q(name__ne=None) & Q(name__ne='') & Q(valid=True)
+        return Q(name__ne=None) & Q(name__ne='')
 
     # Query searching for organizations by a single term
     def _term_query(self, term, field_name):
