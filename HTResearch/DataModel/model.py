@@ -29,7 +29,7 @@ class Organization(object):
                  organization_url=None,
                  partners=[], facebook=None, twitter=None,
                  keywords=None, valid=True, updated_by=None,
-                 references=None):
+                 page_rank_info=None):
         self.name = name
         self.address = address
         self.types = types
@@ -45,7 +45,7 @@ class Organization(object):
         self.valid = valid
         self.last_updated = datetime.utcnow()
         self.updated_by = updated_by
-        self.references = None
+        self.page_rank_info = page_rank_info
 
 
 class PageRankInfo(object):
@@ -61,9 +61,9 @@ class PageRankInfo(object):
 class PageRankVector(object):
     """A Model class for counting referenced organizations"""
 
-    def __init__(self, organization=None, count=0,
+    def __init__(self, org_domain=None, count=0,
                  pages=[]):
-        self.organization = organization
+        self.org_domain = org_domain
         self.count = count
         self.pages = pages
 

@@ -39,7 +39,7 @@ class OrganizationDTO(mongo.Document):
     valid = mongo.BooleanField(db_field='v', default=True)
     last_updated = mongo.DateTimeField(db_field='lu')
     updated_by = mongo.ObjectIdField(db_field='ub')
-    references = mongo.EmbeddedDocumentField(document_type=PageRankInfoDTO, db_field='r')
+    page_rank_info = mongo.EmbeddedDocumentField(document_type=PageRankInfoDTO, db_field='r')
 
 
 class PublicationDTO(mongo.Document):
