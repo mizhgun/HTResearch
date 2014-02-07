@@ -345,10 +345,6 @@ class PublicationDAO(DAO):
                     saved_dto = self.merge_documents(existing_dto, pub_dto)
                     return saved_dto
 
-            if pub_dto.publisher is not None:
-                p = pub_dto.publisher
-                pub_dto.publisher = self.contact_dao().create_update(p)
-
             pub_dto.last_updated = datetime.utcnow()
             pub_dto.save()
         return pub_dto
