@@ -488,7 +488,15 @@ function showContactModal() {
     var $modal = $('.modal').modal({
         show: false
     });
-    createBootstrapModal($modal, '#bs-contact-modal-template', contactData);
+    createBootstrapModal($modal, '#contact-modal-template', contactData);
+}
+
+function showPublicationModal(){
+    pubData = $(this).data();
+    var $modal = $('modal').modal({
+        show: false
+    })
+    createBootstrapModal($modal, '#publication-modal-template', pubData)
 }
 
 // Show organization location on map
