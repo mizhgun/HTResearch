@@ -178,6 +178,9 @@ class ContactDAO(DAO):
             contact_dto.save()
         return contact_dto
 
+    def _default_search_fields(self):
+        return ['first_name', 'last_name', 'position', ]
+
     def _valid_query(self):
         return Q(valid=True)
 
@@ -281,7 +284,7 @@ class OrganizationDAO(DAO):
 
     # Default fields for organization text searching
     def _default_search_fields(self):
-        return ['name', 'keywords', 'address', 'types', 'email_key', 'organization_url', ]
+        return ['name', 'keywords', 'address', 'types', ]
 
     def _smart_search_orgs(self, org_dto):
         # organizations have unique phone numbers
@@ -324,7 +327,7 @@ class OrganizationDAO(DAO):
         return existing_dto
 
 
-class PublicationDAO(DAO):
+class  PublicationDAO(DAO):
     """
     A DAO for the Publication document
     """
@@ -384,6 +387,9 @@ class PublicationDAO(DAO):
             pub_dto.last_updated = datetime.utcnow()
             pub_dto.save()
         return pub_dto
+
+    def _default_search_fields(self):
+        return ['title', 'authors', ]
 
 
 class URLMetadataDAO(DAO):
