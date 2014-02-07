@@ -281,7 +281,7 @@ class OrganizationDAO(DAO):
 
     # Default fields for organization text searching
     def _default_search_fields(self):
-        return ['name', 'keywords', 'address', 'types', 'email_key', 'organization_url', ]
+        return ['name', 'keywords', 'address', 'types', ]
 
     def _smart_search_orgs(self, org_dto):
         # organizations have unique phone numbers
