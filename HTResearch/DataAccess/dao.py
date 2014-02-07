@@ -96,6 +96,7 @@ class DAO(object):
         # Search default fields if none given
         if fields is None:
             fields = self._default_search_fields()
+        print fields
         entry_query = self._get_query(text, fields)
         found_entries = self.dto.objects(entry_query & self._valid_query())
         return found_entries
@@ -177,6 +178,9 @@ class ContactDAO(DAO):
             contact_dto.last_updated = datetime.utcnow()
             contact_dto.save()
         return contact_dto
+
+    def _default_search_fields(self):
+        return ['first_name', 'last_name', 'position', ]
 
     def _valid_query(self):
         return Q(valid=True)
