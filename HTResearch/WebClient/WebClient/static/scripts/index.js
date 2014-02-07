@@ -515,7 +515,7 @@ function showContactModal() {
 
 function showPublicationModal(){
     pubData = $(this).data();
-    var $modal = $('modal').modal({
+    var $modal = $('.modal').modal({
         show: false
     })
     createBootstrapModal($modal, '#publication-modal-template', pubData)

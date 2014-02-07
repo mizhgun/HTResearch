@@ -4,22 +4,22 @@
       <div class="modal-header">
         <h4 class="modal-title" id="modal-header">
             ${ title }
-            <div class="pull-left panel info-glyph">
-                <span class="center-block glyphicon glyphicon-ok"></span>
-            </div>
             <button class="btn btn-default close" data-dismiss="modal">&#x2716;</button>
         </h4>
       </div>
       <div class="modal-body" id="modal-body">
+          <p>
+          {% templatetag openvariable %}if valid{% templatetag closevariable %}
+              <span id="valid" class="pull-left glyphicon glyphicon-ok"></span>&nbsp;Verified
+          {% templatetag openvariable %}else{% templatetag closevariable %}
+              <span id="invalid" class="pull-left glyphicon glyphicon-remove"></span>&nbsp;Not Verified
+          {% templatetag openvariable %}/if{% templatetag closevariable %}
+          </p>
           <table class="table table-condensed">
               {% templatetag openvariable %}if authors{% templatetag closevariable %}
               <tr class="modal-row">
                   <th>Authors:</th>
-                  <td>
-                    {% templatetag openvariable %}each authors{% templatetag closevariable %}
-                        ${$value}</br>
-                    {% templatetag openvariable %}/each{% templatetag closevariable %}
-                  </td>
+                  <td>${authors}</td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
               {% templatetag openvariable %}if publisher{% templatetag closevariable %}
@@ -34,7 +34,7 @@
                   <td>${publication_date}</td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
-              {% templatetag openvariable %}if url{% templatetag closevariable %}
+              {% templatetag openvariable %}if content_url{% templatetag closevariable %}
               <tr class="modal-row">
                   <th>Link:</th>
                   <td>${content_url}</td>

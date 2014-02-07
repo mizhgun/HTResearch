@@ -11,6 +11,8 @@ from HTResearch.Utilities.logutil import LoggingSection, get_logger
 
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 
+from datetime import *
+
 
 logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
@@ -28,5 +30,16 @@ def search_publications(request):
         pub_dao = ctx.get_object('PublicationDAO')
         publications = pub_dao.findmany(search=search_text, num_elements=10, sort_fields=['title'])
 
-    data = {'results': map(lambda x: x.__dict__['_data'], publications)}
-    return HttpResponse(json.dumps(data, cls=MongoJSONEncoder), content_type='application/json')
+    results = []
+    for dto in publications:
+        pub = dto.__dict__['_data']
+        # Change the datetime to make it readable in the modal
+        month = str(pub['publication_date'].strftime("%B"))
+        day = str(pub['publication_date'].day)
+        year = str(pub['publication_date'].year)
+        # pub['publication_date'] = month + ' ' + day + ', ' + year
+        pub['publication_date'] = '{0} {1}, {2}'.format(month, day, year)
+        results.append(pub)
+
+    data = {'results': results}
+    return HttpResponse(MongoJSONEncoder().encode(data), content_type='application/json')

@@ -230,6 +230,10 @@ input:focus {
     margin: 0px;
 }
 
+#modal-body {
+    padding-top: 4px;
+}
+
 #org-building-icon {
     margin: 0px;
 }
@@ -325,4 +329,12 @@ ul {
     width: 100%;
     margin-top: 8px;
     text-align: center;
+}
+
+#valid {
+    color: #00FF00;
+}
+
+#invalid {
+    color: #FF0000;
 }

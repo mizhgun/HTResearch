@@ -16,8 +16,6 @@ class DTOConverter(object):
         for key in obj._data:
             if key == 'contacts':
                 setattr(new_cls, key, [DTOConverter.from_dto(Contact, c) for c in obj._data[key]])
-            elif key == 'publisher' and obj._data[key] is not None:
-                setattr(new_cls, key, DTOConverter.from_dto(Contact, obj._data[key]))
             elif key == 'organization' and obj._data[key] is not None:
                 setattr(new_cls, key, DTOConverter.from_dto(Organization, obj._data[key]))
             elif key == 'publications':
@@ -34,8 +32,6 @@ class DTOConverter(object):
         for key, value in obj.__dict__.iteritems():
             if key == 'contacts':
                 setattr(new_dto, key, [DTOConverter.to_dto(ContactDTO, c) for c in value])
-            elif key == 'publisher' and value is not None:
-                setattr(new_dto, key, DTOConverter.to_dto(ContactDTO, value))
             elif key == 'organization' and value is not None:
                 setattr(new_dto, key, DTOConverter.to_dto(OrganizationDTO, value))
             elif key == 'partners':
@@ -58,8 +54,6 @@ class ModelConverter(object):
             if value:
                 if key == 'contacts':
                     setattr(new_model, key, [ModelConverter.to_model(Contact, c) for c in value])
-                elif key == 'publisher' and value is not None:
-                    setattr(new_model, key, ModelConverter.to_model(Contact, value))
                 elif key == 'organization':
                     setattr(new_model, key, ModelConverter.to_model(Organization, value))
                 elif key == 'partners':
