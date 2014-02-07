@@ -28,5 +28,5 @@ def search_publications(request):
         pub_dao = ctx.get_object('PublicationDAO')
         publications = pub_dao.findmany(search=search_text, num_elements=10, sort_fields=['name'])
 
-    data = {'results': publications}
+    data = {'results': list(publications)}
     return HttpResponse(json.dumps(data, cls=MongoJSONEncoder), content_type='application/json')
