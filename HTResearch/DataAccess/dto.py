@@ -44,7 +44,7 @@ class PublicationDTO(mongo.Document):
     """A DTO wrapper for Publication documents"""
 
     title = mongo.StringField(db_field='t')
-    authors = mongo.ListField(mongo.ReferenceField(ContactDTO), db_field='as')
+    authors = mongo.StringField(db_field='as')
     publisher = mongo.ReferenceField(ContactDTO, db_field='p')
     publication_date = mongo.DateTimeField(db_field='d')
     types = mongo.ListField(mongo.IntField(), db_field='ts')
