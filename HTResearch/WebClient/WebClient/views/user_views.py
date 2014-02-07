@@ -107,7 +107,7 @@ def signup(request):
             request.session['name'] = new_user.first_name
             request.session['user_id'] = ret_user.id
             request.session['last_modified'] = datetime.utcnow()
-            request.session['account_type'] = user.account_type
+            request.session['account_type'] = ret_user.account_type
             request.session.set_expiry(SESSION_TIMEOUT)
 
             return HttpResponseRedirect('/')
