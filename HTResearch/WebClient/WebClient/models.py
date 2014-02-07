@@ -72,3 +72,20 @@ class RequestOrgForm(forms.Form):
             raise ValidationError("Oops! Looks like we already have information on that organization.")
 
         return url
+
+
+class EditContactForm(forms.Form):
+    first_name = forms.CharField(max_length=25, required=False)
+    last_name = forms.CharField(max_length=25, required=False)
+    phone = forms.CharField(required=False)
+    email = forms.EmailField(max_length=40, required=False)
+    position = forms.CharField(max_length=60, required=False)
+    invalid = forms.BooleanField(required=False)
+
+    def clean_phone(self):
+        phone = str(self.cleaned_data['phone'])
+        try:
+            stripped_phone = phone.translate(None, '()-. ')
+            return stripped_phone
+        except:
+            raise ValidationError("Please enter a valid phone number.")

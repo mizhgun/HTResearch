@@ -9,6 +9,10 @@ body {
     overflow-y: hidden;
 }
 
+#edit-contact-btn {
+    margin-right: 10px;
+}
+
 #map-canvas {
     display: block;
     width: auto;
