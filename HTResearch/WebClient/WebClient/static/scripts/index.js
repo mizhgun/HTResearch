@@ -390,7 +390,7 @@ function showSearchResults() {
                 listSelector: '#publication-search-list',
                 linkClass: 'publication-link',
                 linkText: function(item) { return item.title; },
-                onclick: function() {} // TODO: Bee is going to make showPublicationModal()
+                onclick: showPublicationModal
             }
         ];
 
