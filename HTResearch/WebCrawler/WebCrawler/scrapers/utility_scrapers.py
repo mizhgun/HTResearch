@@ -761,31 +761,100 @@ class PublicationAuthorsScraper(object):
         pass
 
     def parse(self, response):
-        authors = []
         hxs = HtmlXPathSelector(response)
-        mla_format = hxs.select('//div[@id=\'gs_cit0\']')
-        return authors
+        #Each citation request will always only have one matched selection
+        #And it is returned as a unicode value, so we must convert it
+        chicago_format_html = hxs.select('//div[@id=\'gs_cit2\']').extract()[0].encode('ascii', 'ignore')
+        chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
+        chicago_format_html = str.replace(chicago_format_html, '</div>', '')
+
+        author_delim = ' <i>' if chicago_format_html.find('<i>') > chicago_format_html.find('\"') else '\"'
+        author_str = chicago_format_html.split(author_delim)[0]
+
+        return author_str
 
 
 class PublicationDateScraper(object):
     def __init__(self):
-        date = []
+        pass
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+        #Each citation request will always only have one matched selection
+        #And it is returned as a unicode value, so we must convert it
+        chicago_format_html = hxs.select('//div[@id=\'gs_cit2\']').extract()[0].encode('ascii', 'ignore')
+        chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
+        chicago_format_html = str.replace(chicago_format_html, '</div>', '')
+
+        date_regex = re.compile('\d{4}')
+        date = re.search(date_regex, chicago_format_html).group()
+        return date
 
 
 class PublicationPublisherScraper(object):
     def __init__(self):
-        publisher = []
+        pass
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+        #Each citation request will always only have one matched selection
+        #And it is returned as a unicode value, so we must convert it
+        chicago_format_html = hxs.select('//div[@id=\'gs_cit2\']').extract()[0].encode('ascii', 'ignore')
+        chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
+        chicago_format_html = str.replace(chicago_format_html, '</div>', '')
+        publisher = ''
+
+        start_delim = '</i>. ' if chicago_format_html.find('<i>') > chicago_format_html.find('\"') else '\" '
+        end_delim = ','
+        start_index = chicago_format_html.find(start_delim) + len(start_delim)
+        publisher = chicago_format_html[start_index:chicago_format_html.find(end_delim, start_index)]
+
+        return publisher
 
 
 class PublicationTitleScraper(object):
     def __init__(self):
-        titles = []
+        pass
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+        #Each citation request will always only have one matched selection
+        #And it is returned as a unicode value, so we must convert it
+        chicago_format_html = hxs.select('//div[@id=\'gs_cit2\']').extract()[0].encode('ascii', 'ignore')
+        chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
+        chicago_format_html = str.replace(chicago_format_html, '</div>', '')
+
+        title_delim = ' <i>' if chicago_format_html.find('<i>') > chicago_format_html.find('\"') else ' \"'
+        ending_title_delim = '</i>.' if title_delim == ' <i>' else "\" "
+
+        #This parses the title out of the string
+        title = chicago_format_html[chicago_format_html.find(title_delim) + len(title_delim)
+                                    :chicago_format_html.find(ending_title_delim)]
+
+        return title
 
 
-class PublicationTypeScraper(object):
+class PublicationURLScraper(object):
     def __init__(self):
-        type = []
+        #Seed titles to look for on page
+        self.titles = []
 
+    def seed_titles(self, title_names):
+        self.titles = title_names
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+        sources = hxs.select('//a').extract()
+
+        urls = []
+        start = "=\""
+        for title in self.titles:
+            for source in sources:
+                    if title in source:
+                        raw_link = source.encode('ascii', 'ignore')
+                        #urls.append(re.search(url_regex, raw_link).group())
+                        urls.append(raw_link[raw_link.find(start) + len(start):raw_link.find("\">")])
+        return urls
 
 class UrlMetadataScraper(object):
     def __init__(self):
