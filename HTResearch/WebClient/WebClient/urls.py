@@ -33,7 +33,7 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^get-org-rank-rows/$', 'get_org_rank_rows', name='get-org-rank-rows'),
                         url(r'^get-org-keywords/$', 'get_org_keywords', name='get-org-keywords'),
                         url(r'^request-organization/$', 'request_organization', name='request_organization'),
-                        )
+)
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
                         url(r'^search-contacts/$', 'search_contacts', name='search-contacts'),
@@ -49,4 +49,4 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
                         url(r'^logout/$', 'logout', name='logout'),
                         url(r'^signup/$', 'signup', name='signup'),
                         url(r'^invite/$', 'send_invite', name='invite'),
-                        )
+)
