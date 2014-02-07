@@ -96,7 +96,6 @@ class DAO(object):
         # Search default fields if none given
         if fields is None:
             fields = self._default_search_fields()
-        print fields
         entry_query = self._get_query(text, fields)
         found_entries = self.dto.objects(entry_query & self._valid_query())
         return found_entries
@@ -328,7 +327,7 @@ class OrganizationDAO(DAO):
         return existing_dto
 
 
-class PublicationDAO(DAO):
+class  PublicationDAO(DAO):
     """
     A DAO for the Publication document
     """
@@ -388,6 +387,9 @@ class PublicationDAO(DAO):
             pub_dto.last_updated = datetime.utcnow()
             pub_dto.save()
         return pub_dto
+
+    def _default_search_fields(self):
+        return ['title', 'authors', ]
 
 
 class URLMetadataDAO(DAO):

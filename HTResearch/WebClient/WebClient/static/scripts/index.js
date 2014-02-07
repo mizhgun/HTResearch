@@ -389,7 +389,7 @@ function showSearchResults() {
                 collapseSelector: '#collapse-publications',
                 listSelector: '#publication-search-list',
                 linkClass: 'publication-link',
-                linkText: function(item) { return item.name; },
+                linkText: function(item) { return item.title; },
                 onclick: function() {} // TODO: Bee is going to make showPublicationModal()
             }
         ];
