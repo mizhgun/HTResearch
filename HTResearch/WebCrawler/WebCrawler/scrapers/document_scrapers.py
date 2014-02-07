@@ -112,27 +112,48 @@ class OrganizationScraper():
 
 class PublicationScraper():
     def __init__(self):
-        publication = None
+        pass
 
     def parse(self, response):
-        organization = None
-        flag = self.check_valid_org(response)
-        if flag:
-            organization = ScrapedOrganization()
-            # Collect each field of organization model
-            for field in self._scrapers.iterkeys():
-                if field in self._multiple:
-                    # Get multiple field (e.g. phone_number)
-                    organization[field] = []
-                    for scraper in self._scrapers[field]:
-                        organization[field] += scraper().parse(response)
-                elif field == 'contacts':
-                    organization[field] = []
-                else:
-                    # Get single field (e.g. name)
-                    results = (self._scrapers[field][0])().parse(response)
-                    if results:
-                        organization[field] = results[0] if isinstance(results, type([])) else results
-                    else:
-                        organization[field] = None
-        return organization
+        #Must scrap several pubs at a time
+        #Each page will have roughly 10 publications
+        publications = []
+
+        #Scrapers
+        key_scraper = PublicationCitationSourceScraper()
+        title_scraper = PublicationTitleScraper()
+        author_scraper = PublicationAuthorsScraper()
+        date_scraper = PublicationDateScraper()
+        pub_url_scraper = PublicationURLScraper()
+
+        #Response is the main GS results page
+        keys = key_scraper.parse(response)
+
+        next_urls = []
+        for key in keys:
+            next_urls.append('scholar.google.com/scholar?q=info:' + key + ':scholar.google.com/&output=cite&scirp=0&hl=en')
+
+        #TODO Use new urls to create new responses
+        new_responses = []
+        titles = []
+
+        #Create individual pubs
+        for resp in new_responses:
+                pub = ''
+                pub.title = title_scraper.parse(resp)
+                titles.append(pub.title)
+                pub.authors = author_scraper.parse(resp)
+                pub.date = date_scraper.parse(resp)
+                publications.append(pub)
+
+        #Rescrape main page for links
+        pub_url_scraper.seed_titles(titles)
+
+        #Use original response now that we have the list of titles
+        pub_urls = pub_url_scraper.parse(response)
+
+        #Assign urls after scraping
+        for index, publication in enumerate(publications):
+            publications[index].url = pub_urls[index]
+
+        return publications
