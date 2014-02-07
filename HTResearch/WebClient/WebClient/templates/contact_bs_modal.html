@@ -14,11 +14,11 @@
       </div>
       <div class="modal-body" id="modal-body">
           <table class="table table-condensed">
-              {% templatetag openvariable %}if phone.length{% templatetag closevariable %}
+              {% templatetag openvariable %}if phones{% templatetag closevariable %}
               <tr class="modal-row">
                   <th>Tel:</th>
                   <td>
-                    {% templatetag openvariable %}each phone{% templatetag closevariable %}
+                    {% templatetag openvariable %}each phones{% templatetag closevariable %}
                     ${$value}<br />
                     {% templatetag openvariable %}/each{% templatetag closevariable %}
                   </td>

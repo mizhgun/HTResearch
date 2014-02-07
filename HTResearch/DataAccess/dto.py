@@ -9,7 +9,7 @@ class ContactDTO(mongo.Document):
 
     first_name = mongo.StringField(db_field='f')
     last_name = mongo.StringField(db_field='l')
-    phone = mongo.ListField(db_field='p')
+    phones = mongo.ListField(db_field='p')
     email = mongo.EmailField(db_field='e')
     organization = mongo.ReferenceField('OrganizationDTO', db_field='o')
     publications = mongo.ListField(mongo.ReferenceField('PublicationDTO'), db_field='ps')

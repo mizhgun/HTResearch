@@ -39,8 +39,8 @@
             <h4>Phone Number</h4>
 
             <p>
-                {% if contact.phone %}
-                    {{ contact.phone|join:",<br />" }}
+                {% if contact.phones %}
+                    {{ contact.phones|join:",<br />" }}
                 {% else %}
                     None
                 {% endif %}
