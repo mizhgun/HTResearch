@@ -9,6 +9,7 @@ from springpython.context import ApplicationContext
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.DataModel.enums import AccountType
+from HTResearch.DataModel.globals import ORG_TYPE_CHOICES
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.Utilities.converter import DTOConverter
@@ -134,33 +135,42 @@ def edit_organization(request, org_id):
             new_phone_nums = []
             new_types = []
 
-            for key, value in data:
-                if key == 'keywords':
-                    org.keywords = [k.strip() for k in value.split(',')] if value else None
-                elif key.startswith('email-'):
-                    new_emails.push(value.strip())
-                elif key.startswith('phone-'):
-                    new_phone_nums.push(value.strip())
-                elif key.startswith('type-'):
-                    new_types.push(value.strip())
-                else:
-                    setattr(org, key, value.strip()) if value else None
-
-            if new_emails:
-                org.emails = [e for e in new_emails if e]
-            if new_phone_nums:
-                org.phone_numbers = [p for p in new_phone_nums if p]
-            if new_types:
-                org.types = [t for t in new_types if t]
-
             try:
-                dao.create_update(org)
-                success = 'The organization has been updated successfully!'
-                logger.info('Org={0} updated by user={1}'.format(org_id, user_id))
+                for key, value in data.items():
+                    if key == 'keywords':
+                        org.keywords = ' '.join([k.strip() for k in value.split(', ')]) if value else None
+                    elif key.startswith('email'):
+                        new_emails.append(value.strip())
+                    elif key.startswith('phone'):
+                        new_phone_nums.append(value.strip())
+                    elif key.startswith('type'):
+                        new_types.append(value.strip())
+                    else:
+                        setattr(org, key, value.strip()) if value else setattr(org, key, None)
             except:
-                error = 'Oops! There was an error updating the organization. Please try again later.'
+                error = 'Oops! Something went wrong processing your request. Please try again later.'
+                logger.error('Error occurred while updating fields for org={0} by user={1}'.format(org_id, user_id))
+
+            if not error:
+                if new_emails:
+                    org.emails = [e for e in new_emails if e]
+                    if org.emails:
+                        org.email_key = org.emails[0]
+                if new_phone_nums:
+                    org.phone_numbers = [p for p in new_phone_nums if p]
+                if new_types:
+                    org.types = [t for t in new_types if t]
+
+                try:
+                    dao.create_update(org)
+                    success = 'The organization has been updated successfully!'
+                    logger.info('Org={0} updated by user={1}'.format(org_id, user_id))
+                except:
+                    error = 'Oops! There was an error updating the organization. Please try again later.'
+                    logger.error('Error occurred saving org={0} by user={1}'.format(org_id, user_id))
 
     return render(request, "edit_organization.html", {'form': form,
+                                                      'type_choices': ORG_TYPE_CHOICES,
                                                       'org_id': org_id,
                                                       'success': success,
                                                       'error': error})
@@ -229,7 +239,7 @@ def _create_org_dict(org):
     org_dict = {
         'name': org.name if org.name else "",
         'address': org.address if org.address else "",
-        'url': org.organization_url if org.organization_url else "",
+        'organization_url': "http://" + org.organization_url if org.organization_url else "",
         'keywords': org.keywords.replace(' ', ', ') if org.keywords else "",
         'facebook': org.facebook if org.facebook else "",
         'twitter': org.twitter if org.twitter else "",

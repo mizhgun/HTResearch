@@ -7,6 +7,7 @@ from springpython.context import ApplicationContext
 from HTResearch.DataModel.enums import AccountType
 from HTResearch.DataModel.globals import ORG_TYPE_CHOICES
 from HTResearch.Utilities.context import DAOContext
+from HTResearch.Utilities.url_tools import UrlUtility
 
 
 class InviteForm(forms.Form):
@@ -77,7 +78,7 @@ class RequestOrgForm(forms.Form):
 class EditOrganizationForm(forms.Form):
     name = forms.CharField(max_length=80, required=False)
     address = forms.CharField(required=False)
-    url = forms.URLField(required=False)
+    organization_url = forms.URLField(required=False)
     facebook = forms.URLField(required=False)
     twitter = forms.URLField(required=False)
     keywords = forms.CharField(widget=forms.Textarea, required=False)
@@ -91,54 +92,55 @@ class EditOrganizationForm(forms.Form):
         super(EditOrganizationForm, self).__init__(*args, **kwargs)
         i = 1
         for email in emails:
-            self.fields["email-{0}".format(i)] = forms.EmailField(required=False,
+            self.fields["email_{0}".format(i)] = forms.EmailField(required=False,
                                                                   initial=email,
-                                                                  max_length=40,
                                                                   label="Email {0}".format(i))
 
         i = 1
         for num in phone_numbers:
-            self.fields["phone-{0}".format(i)] = forms.CharField(required=False,
+            self.fields["phone_{0}".format(i)] = forms.CharField(required=False,
                                                                  initial=num,
                                                                  label="Phone {0}".format(i))
 
         i = 1
         for org_type in types:
-            self.fields["type-{0}".format(i)] = forms.ChoiceField(required=False,
+            self.fields["type_{0}".format(i)] = forms.ChoiceField(required=False,
                                                                   choices=ORG_TYPE_CHOICES,
                                                                   initial=org_type,
                                                                   label="Type {0}".format(i))
 
+    def clean_organization_url(self):
+        url = self.cleaned_data['organization_url']
+        if url:
+            try:
+                return UrlUtility.get_domain(url)
+            except:
+                raise ValidationError("Oops! We couldn't recognize that URL's domain.")
+        else:
+            return None
 
     def emails(self):
-        if hasattr(self, 'cleaned_data'):
-            for key, value in self.cleaned_data.items():
-                if key.startswith('email-'):
-                    field = self.fields[key]
-                    yield {'id': 'id_' + key, 'label': field.label, 'value': value}
-        else:
-            for name, field in self.fields.items():
-                if name.startswith('email-'):
-                    yield {'id': 'id_' + name, 'label': field.label, 'value': field.initial}
+        return self._get_dynamic_attrs('email')
 
     def phone_numbers(self):
-        if hasattr(self, 'cleaned_data'):
-            for key, value in self.cleaned_data.items():
-                if key.startswith('phone-'):
-                    field = self.fields[key]
-                    yield {'id': 'id_' + key, 'label': field.label, 'value': value}
-        else:
-            for name, field in self.fields.items():
-                if name.startswith('phone-'):
-                    yield {'id': 'id_' + name, 'label': field.label, 'value': field.initial}
+        return self._get_dynamic_attrs('phone')
 
     def types(self):
+        return self._get_dynamic_attrs('type')
+
+    def _get_dynamic_attrs(self, key):
         if hasattr(self, 'cleaned_data'):
             for key, value in self.cleaned_data.items():
-                if key.startswith('type-'):
+                if key.startswith(key):
                     field = self.fields[key]
-                    yield {'id': 'id_' + key, 'label': field.label, 'value': value}
+                    yield {'id': 'id_' + key,
+                           'label': field.label,
+                           'name': key,
+                           'value': value}
         else:
             for name, field in self.fields.items():
-                if name.startswith('type-'):
-                    yield {'id': 'id_' + name, 'label': field.label, 'value': field.initial}
+                if name.startswith(key):
+                    yield {'id': 'id_' + name,
+                           'label': field.label,
+                           'name': name,
+                           'value': field.initial}
