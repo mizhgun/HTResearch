@@ -290,6 +290,14 @@ function plotMarker(data) {
             content: html.html()
         });
 
+        $(document).bind("mousedown", function(e){
+            //TODO: Find a not janky way - Marcus
+            $('#map-modal').parents().eq(2).attr('id', 'map-modal-parent');
+            if((!$(e.target).parents('#map-modal-parent').size() || e.target.id == "map-modal-parent")) {
+                closeAllInfowindows();
+            }
+        });
+
         google.maps.event.addListener(new_marker, 'click', function () {
             var thisMarker = findMarker(new_marker);
             if (!thisMarker) {
@@ -358,8 +366,8 @@ function showSearchResults() {
     lastSearchedText = searchText;
     var searchResultsDiv = $('#search-results-div');
 
+    removeAllMarkers();
     if (searchText) {
-        removeAllMarkers();
         // Put items to search for here.
         var searchItems = [
             {
@@ -369,7 +377,7 @@ function showSearchResults() {
                 collapseSelector: '#collapse-organizations',
                 listSelector: '#organization-search-list',
                 linkClass: 'org-link',
-                linkText: function(item) { return item.name },
+                linkText: function(item) { return item.name || item.organization_url || ''; },
                 onclick: showOrganizationModal
             },
             {
@@ -379,7 +387,7 @@ function showSearchResults() {
                 collapseSelector: '#collapse-contacts',
                 listSelector: '#contact-search-list',
                 linkClass: 'contact-link',
-                linkText: function(item) { return item.first_name + ' ' + item.last_name },
+                linkText: function(item) { return (item.first_name || '') + ' ' + (item.last_name || '') },
                 onclick: showContactModal
             }
         ];
@@ -398,6 +406,7 @@ function showSearchResults() {
             }).done(function(data) {
                 data = JSON.parse(data);
                 $(searchItem.listSelector).html('');
+                $(searchItem.toggleSelector).parent().next('.count').text(data.results.length + ' results');
                 _.each(data.results, function(item) {
                     $('<a>' + searchItem.linkText(item) + '</a>')
                         .addClass(searchItem.linkClass)

@@ -23,7 +23,7 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views.shared_views',
                        url(r'^coming-soon/$', 'unimplemented', name='unimplemented'),
                        url(r'^welcome/$', 'welcome', name='welcome'),
                        url(r'^get-started/$', 'get_started', name='get-started'),
-)
+                       )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^search-organizations/$', 'search_organizations', name='search-organizations'),
@@ -39,7 +39,8 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
                         url(r'^search-contacts/$', 'search_contacts', name='search-contacts'),
                         url(r'^contact/(\w+)', 'contact_profile', name='con-prof'),
-)
+                        url(r'^edit-contact/(\w+)', 'edit_contact', name='edit-contact'),
+                        )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
                         url(r'^login/$', 'login', name='login'),
