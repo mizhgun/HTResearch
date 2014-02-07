@@ -1,5 +1,6 @@
 facebook.com
 youtube.com
+youtu.be
 twitter.com
 linkedin.com
 pinterest.com
@@ -18,3 +19,8 @@ mylife.com
 tumblr.com
 go.com
 wordpress.com
+good.is
+snyxius.com
+studiopress.com
+wordpress.org
+yahoo.com

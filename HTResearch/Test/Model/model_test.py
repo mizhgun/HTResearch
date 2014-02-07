@@ -22,7 +22,7 @@ class ModelTest(unittest.TestCase):
     def test_dto_converter(self):
         my_contact = Contact(first_name="Jordan",
                              last_name="Degner",
-                             phone=4029813230,
+                             phone=['4029813230'],
                              email="jdegner0129@gmail.com",
                              position="Software Engineer",
                              )
