@@ -290,6 +290,14 @@ function plotMarker(data) {
             content: html.html()
         });
 
+        $(document).bind("mousedown", function(e){
+            //TODO: Find a not janky way - Marcus
+            $('#map-modal').parents().eq(2).attr('id', 'map-modal-parent');
+            if((!$(e.target).parents('#map-modal-parent').size() || e.target.id == "map-modal-parent")) {
+                closeAllInfowindows();
+            }
+        });
+
         google.maps.event.addListener(new_marker, 'click', function () {
             var thisMarker = findMarker(new_marker);
             if (!thisMarker) {

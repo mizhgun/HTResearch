@@ -27,6 +27,8 @@ logger = get_logger(LoggingSection.CLIENT, __name__)
 def login(request):
     # if we're logged in, redirect to the index
     if 'user_id' in request.session:
+        user_id = request.session['user_id']
+        logger.error('Bad request for login made by user={0}'.format(user_id))
         return HttpResponseRedirect('/')
 
     error = ''
@@ -40,10 +42,11 @@ def login(request):
             user = dao.find(email=email)
 
             if user and check_password(password, user.password):
-                logger.info('User=%s successfully logged in' % user.id)
+                logger.info('User={0} successfully logged in'.format(user.id))
                 request.session['user_id'] = user.id
                 request.session['last_modified'] = datetime.utcnow()
                 request.session['name'] = user.first_name
+                request.session['account_type'] = user.account_type
                 request.session.set_expiry(SESSION_TIMEOUT)
                 return HttpResponseRedirect('/')
 
@@ -54,8 +57,12 @@ def login(request):
 
 
 def logout(request):
+    if 'user_id' not in request.session:
+        logger.error('Bad request made for logout without login')
+        return HttpResponseRedirect('/')
+
     user_id = request.session['user_id']
-    logger.info('Logging out user=%s' % user_id)
+    logger.info('Logging out user={0}'.format(user_id))
     request.session.flush()
 
     return HttpResponseRedirect('/')
@@ -63,7 +70,9 @@ def logout(request):
 
 def signup(request):
     if 'user_id' in request.session:
-        HttpResponseRedirect('/')
+        user_id = request.session['user_id']
+        logger.error('Bad request for signup made by user={0}'.format(user_id))
+        return HttpResponseRedirect('/')
 
     error = ''
     form = SignupForm(request.POST or None)
@@ -100,22 +109,30 @@ def signup(request):
                         new_org.types.append(OrgTypesEnum.UNKNOWN)
                     new_user.organization = org_dao.create_update(new_org)
 
-            user_dto = DTOConverter.to_dto(UserDTO, new_user)
-            ret_user = user_dao.create_update(user_dto)
+            try:
+                user_dto = DTOConverter.to_dto(UserDTO, new_user)
+                ret_user = user_dao.create_update(user_dto)
 
-            request.session['name'] = new_user.first_name
-            request.session['user_id'] = ret_user.id
-            request.session['last_modified'] = datetime.utcnow()
-            request.session.set_expiry(SESSION_TIMEOUT)
+                request.session['name'] = new_user.first_name
+                request.session['user_id'] = ret_user.id
+                request.session['last_modified'] = datetime.utcnow()
+                request.session['account_type'] = ret_user.account_type
+                request.session.set_expiry(SESSION_TIMEOUT)
 
-            return HttpResponseRedirect('/')
+                return HttpResponseRedirect('/')
+            except:
+                logger.error('Error occurred during signup')
+                error = 'Oops! We had a little trouble signing you up. Please try again later.'
 
     return render(request, 'signup.html', {'form': form, 'error': error})
 
 
 def send_invite(request):
     if 'user_id' not in request.session:
-        HttpResponseRedirect('/login')
+        logger.error('Request made for send_invite without login')
+        return HttpResponseRedirect('/login')
+    else:
+        user_id = request.session['user_id']
 
     form = InviteForm(request.POST or None)
     error = ''
@@ -126,7 +143,7 @@ def send_invite(request):
             to = form.cleaned_data['email']
 
             logger.info('Request made to invite email={0} by user={1}'.format(
-                to, request.session['user_id']
+                to, user_id
             ))
 
             if 'message' in form.cleaned_data:
@@ -136,7 +153,7 @@ def send_invite(request):
                 .format(request.session['name'])
 
             if message:
-                invitation += " They've included a message below:\n\n%s" % message
+                invitation += " They've included a message below:\n\n{0}".format(message)
 
             mail = MIMEText(invitation)
             mail['Subject'] = 'Come Join UNL HT Research!'
@@ -156,9 +173,12 @@ def send_invite(request):
                 s.sendmail('jdegner0129@gmail.com', [to], mail.as_string())
                 s.quit()
                 success = 'Your invite has been sent successfully!'
+                logger.info('Invite sent to email={0} by user={1}'.format(
+                    to, user_id
+                ))
             except:
                 logger.error('Invite request by user={0} to email={1} failed.'.format(
-                    request.session['user_id'], to
+                    user_id, to
                 ))
                 error = 'Oops! It looks like something went wrong. Please try again later.'
 
