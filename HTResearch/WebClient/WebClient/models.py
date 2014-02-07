@@ -129,12 +129,12 @@ class EditOrganizationForm(forms.Form):
 
     def _get_dynamic_attrs(self, key):
         if hasattr(self, 'cleaned_data'):
-            for key, value in self.cleaned_data.items():
-                if key.startswith(key):
-                    field = self.fields[key]
-                    yield {'id': 'id_' + key,
+            for name, value in self.cleaned_data.items():
+                if name.startswith(key):
+                    field = self.fields[name]
+                    yield {'id': 'id_' + name,
                            'label': field.label,
-                           'name': key,
+                           'name': name,
                            'value': value}
         else:
             for name, field in self.fields.items():
