@@ -313,6 +313,7 @@ class OrgContactsScraper(object):
     def __init__(self):
         self._name_scraper = ContactNameScraper()
         self._number_scraper = IndianPhoneNumberScraper()
+        self._us_number_scraper = USPhoneNumberScraper()
         self._email_scraper = EmailScraper()
         self._position_scraper = ContactPositionScraper()
         self._org_name_scraper = OrgNameScraper()
@@ -336,9 +337,17 @@ class OrgContactsScraper(object):
             self._contacts[names[i].get('name')]['position'] = [self._position_scraper.parse(cr)
                                                           if self._position_scraper.parse(cr)
                                                           else None][0]
-            self._contacts[names[i].get('name')]['number'] = [self._number_scraper.parse(cr)[0]
-                                                        if self._number_scraper.parse(cr)
-                                                        else None][0]
+            numbers = []
+            india_num = self._number_scraper.parse(cr)[0] if self._number_scraper.parse(cr) else None
+            if india_num:
+                numbers = [india_num]
+            else:
+                us_num = self._us_number_scraper.parse(cr)[0] if self._us_number_scraper.parse(cr) else None
+                if us_num:
+                    numbers = [us_num]
+                else:
+                    numbers = []
+            self._contacts[names[i].get('name')]['number'] = numbers
             self._contacts[names[i].get('name')]['email'] = [self.compare_emails(cr, names[i].get('name'))
                                                        if self.compare_emails(cr, names[i].get('name'))
                                                        else None][0]
