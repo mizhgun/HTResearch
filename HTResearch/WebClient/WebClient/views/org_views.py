@@ -31,7 +31,7 @@ def search_organizations(request):
 
     if request.method == 'GET':
         search_text = request.GET['search_text']
-        logger.info('Search request made with search_text={0} by user={1}'.format(search_text, user_id))
+        logger.info('Search request made for organizations with search_text={0} by user={1}'.format(search_text, user_id))
     else:
         search_text = ''
 
@@ -39,7 +39,11 @@ def search_organizations(request):
 
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
-        organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['name'])
+        try:
+            organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['valid', 'name'])
+        except:
+            logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
+            return get_http_404_page(request)
 
     results = []
     for dto in organizations:
