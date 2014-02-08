@@ -33,8 +33,9 @@
 
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" id="id_invalid" name="invalid" {% if form.invalid.value %}checked{% endif %}>
-                         Invalid?
+                        <input type="checkbox" id="id_invalid" name="invalid"
+                               {% if form.invalid.value %}checked{% endif %}>
+                        Invalid?
                     </label>
                 </div>
 
@@ -43,17 +44,17 @@
                 {% else %}
                     <div class="form-group">
                 {% endif %}
-                    <label for="id_first_name" class="control-label">First name</label>
-                    <input type="text" id="id_first_name" class="form-control" name="first_name"
-                           value="{{ form.first_name.value }}">
+                <label for="id_first_name" class="control-label">First name</label>
+                <input type="text" id="id_first_name" class="form-control" name="first_name"
+                       value="{{ form.first_name.value }}">
 
-                    {% if form.first_name.errors %}
-                        <span class="help-block">
+                {% if form.first_name.errors %}
+                    <span class="help-block">
                             {% for error in form.first_name.errors %}
                                 {{ error|escape }}<br/>
                             {% endfor %}
                         </span>
-                    {% endif %}
+                {% endif %}
                 </div>
 
                 {% if form.last_name.errors %}
@@ -61,52 +62,42 @@
                 {% else %}
                     <div class="form-group">
                 {% endif %}
-                    <label for="id_last_name" class="control-label">Last name</label>
-                    <input type="text" id="id_last_name" class="form-control" name="last_name"
-                           value="{{ form.last_name.value }}">
+                <label for="id_last_name" class="control-label">Last name</label>
+                <input type="text" id="id_last_name" class="form-control" name="last_name"
+                       value="{{ form.last_name.value }}">
 
-                    {% if form.last_name.errors %}
-                        <span class="help-block">
+                {% if form.last_name.errors %}
+                    <span class="help-block">
                             {% for error in form.last_name.errors %}
                                 {{ error|escape }}<br/>
                             {% endfor %}
                         </span>
-                    {% endif %}
-                </div>
-
-                {% if form.phone.errors %}
-                    <div class="form-group has-error">
-                {% else %}
-                    <div class="form-group">
                 {% endif %}
-                    <label for="id_phone" class="control-label">Phone</label>
-                    <input type="text" id="id_phone" class="form-control" name="phone"
-                           value="{{ form.phone.value }}">
-
-                    {% if form.phone.errors %}
-                        <span class="help-block">
-                            {% for error in form.phone.errors %}
-                                {{ error|escape }}<br/>
-                            {% endfor %}
-                        </span>
-                    {% endif %}
                 </div>
+
+                {% for phone in form.phones %}
+                    <div class="form-group">
+                        <label for="{{ phone.id }}" class="control-label">{{ phone.label }}</label>
+                        <input type="text" id="{{ phone.id }}" name="{{ phone.name }}"
+                               class="form-control" value="{{ phone.value }}">
+                    </div>
+                {% endfor %}
 
                 {% if form.email.errors %}
                     <div class="form-group has-error">
                 {% else %}
                     <div class="form-group">
                 {% endif %}
-                    <label for="id_email" class="control-label">Email</label>
-                    <input type="text" id="id_email" class="form-control" name="email" value="{{ form.email.value }}">
+                <label for="id_email" class="control-label">Email</label>
+                <input type="text" id="id_email" class="form-control" name="email" value="{{ form.email.value }}">
 
-                    {% if form.email.errors %}
-                        <span class="help-block">
+                {% if form.email.errors %}
+                    <span class="help-block">
                             {% for error in form.email.errors %}
                                 {{ error|escape }}<br/>
                             {% endfor %}
                         </span>
-                    {% endif %}
+                {% endif %}
                 </div>
 
                 {% if form.position.errors %}
@@ -114,17 +105,17 @@
                 {% else %}
                     <div class="form-group">
                 {% endif %}
-                    <label for="id_position" class="control-label">Position</label>
-                    <input type="text" id="id_position" class="form-control" name="position"
-                           value="{{ form.position.value }}">
+                <label for="id_position" class="control-label">Position</label>
+                <input type="text" id="id_position" class="form-control" name="position"
+                       value="{{ form.position.value }}">
 
-                    {% if form.position.errors %}
-                        <span class="help-block">
+                {% if form.position.errors %}
+                    <span class="help-block">
                             {% for error in form.position.errors %}
                                 {{ error|escape }}<br/>
                             {% endfor %}
                         </span>
-                    {% endif %}
+                {% endif %}
                 </div>
 
                 <button type="submit" class="btn btn-primary">Submit</button>

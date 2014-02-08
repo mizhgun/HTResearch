@@ -148,7 +148,6 @@ class EditOrganizationForm(forms.Form):
 class EditContactForm(forms.Form):
     first_name = forms.CharField(max_length=25, required=False)
     last_name = forms.CharField(max_length=25, required=False)
-    phone = forms.CharField(required=False)
     email = forms.EmailField(max_length=40, required=False)
     position = forms.CharField(max_length=60, required=False)
     invalid = forms.BooleanField(required=False)
@@ -161,3 +160,32 @@ class EditContactForm(forms.Form):
         except:
             raise ValidationError("Please enter a valid phone number.")
 
+    def __init__(self, *args, **kwargs):
+        phones = kwargs.pop('phones') if 'phones' in kwargs else []
+
+        super(EditContactForm, self).__init__(*args, **kwargs)
+        i = 1
+        for num in phones:
+            self.fields["phone_{0}".format(i)] = forms.CharField(required=False,
+                                                                 initial=num,
+                                                                 label="Phone {0}".format(i))
+
+    def phones(self):
+        return self._get_dynamic_attrs('phone')
+
+    def _get_dynamic_attrs(self, key):
+        if hasattr(self, 'cleaned_data'):
+            for clean_key, value in self.cleaned_data.items():
+                if clean_key.startswith(key):
+                    field = self.fields[clean_key]
+                    yield {'id': 'id_' + clean_key,
+                           'label': field.label,
+                           'name': clean_key,
+                           'value': value}
+        else:
+            for name, field in self.fields.items():
+                if name.startswith(key):
+                    yield {'id': 'id_' + name,
+                           'label': field.label,
+                           'name': name,
+                           'value': field.initial}
