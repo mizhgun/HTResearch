@@ -12,8 +12,9 @@ from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.url_tools import UrlUtility
+from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.encoder import MongoJSONEncoder
-from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
+from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
 from HTResearch.WebClient.WebClient.models import RequestOrgForm
 
 from HTResearch.Utilities.encoder import MongoJSONEncoder
@@ -24,9 +25,11 @@ ctx = ApplicationContext(DAOContext())
 
 
 def search_organizations(request):
+    user_id = request.session['user_id'] if 'user_id' in request.session else None
+
     if request.method == 'GET':
         search_text = request.GET['search_text']
-        logger.info('Search request made with search_text=%s' % search_text)
+        logger.info('Search request made with search_text={0} by user={1}'.format(search_text, user_id))
     else:
         search_text = ''
 
@@ -34,26 +37,28 @@ def search_organizations(request):
 
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
-
-        organizations = org_dao.text_search(text=search_text, fields=['name', 'keywords', ], num_elements=10, sort_fields=['name'])
+        organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['name'])
 
     results = []
     for dto in organizations:
         org = dto.__dict__['_data']
-        org['keywords'] = org['keywords'].split(' ')
+        # Split organization keyword string into list of words
+        org['keywords'] = (org['keywords'] or '').split()
         results.append(org)
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
 
 
 def organization_profile(request, org_id):
-    logger.info('Request made for profile of org_id=%s' % org_id)
+    user_id = request.session['user_id'] if 'user_id' in request.session else None
+
+    logger.info('Request made for profile of org={0} by user={1}'.format(org_id, user_id))
     org_dao = ctx.get_object('OrganizationDAO')
 
     try:
         org = org_dao.find(id=org_id)
     except Exception as e:
-        logger.error('Exception encountered on organization lookup for org_id=%s' % org_id)
+        logger.error('Exception encountered on organization lookup for org={0} by user={1}'.format(org_id, user_id))
         print e.message
         return get_http_404_page(request)
 
@@ -61,15 +66,24 @@ def organization_profile(request, org_id):
     if org.organization_url is not None:
         scheme = urlparse(org.organization_url).scheme
 
+    type_nums = org['types']
+    org_types = []
+    for org_type in type_nums:
+        org_types.append(OrgTypesEnum.reverse_mapping[org_type].title())
+
     params = {"organization": org,
-              "scheme": scheme
-    }
+              "scheme": scheme,
+              "types": org_types,
+              }
     return render(request, 'organization_profile.html', params)
 
 
 def request_organization(request):
     if 'user_id' not in request.session:
+        logger.error('Bad request made for organization seed without login')
         HttpResponseRedirect('/login')
+    else:
+        user_id = request.session['user_id']
 
     form = RequestOrgForm(request.POST or None)
     error = ''
@@ -85,13 +99,14 @@ def request_organization(request):
             except ValueError:
                 error = "Oops! We don't recognize that domain. Please try another."
 
-            try:
-                dto = DTOConverter.to_dto(URLMetadataDTO, metadata)
-                dao.create_update(dto)
-            except:
-                error = 'Something went wrong with your request. Please try again later.'
-
-            success = 'Your request has been sent successfully!'
+            if not error:
+                try:
+                    dto = DTOConverter.to_dto(URLMetadataDTO, metadata)
+                    dao.create_update(dto)
+                    logger.info('Org seed with url={0} requested by user={1}'.format(url, user_id))
+                    success = 'Your request has been sent successfully!'
+                except:
+                    error = 'Something went wrong with your request. Please try again later.'
 
     return render(request, 'request_organization.html', {'form': form, 'success': success, 'error': error})
 
@@ -133,7 +148,7 @@ def get_org_rank_rows(request):
         sort = ()
 
     org_dao = ctx.get_object('OrganizationDAO')
-    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=sort, search=search))
+    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=[sort], search=search))
     records = org_dao.count(search)
 
     # add netloc to urls if needed

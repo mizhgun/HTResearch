@@ -152,17 +152,17 @@ class URLFrontier:
 
             self._proc_counts[cs] -= 1
             if self._proc_counts[cs] <= 0:
-                if self._cache_procs[cs].is_alive():
+                if self._cache_procs.has_key(cs) and self._cache_procs[cs].is_alive():
                     with self._logger_lock:
                         logger.info('Stopping the cache process for rule %s' % cs)
                     self._cache_procs[cs].terminate()
-                del self._cache_procs[cs]
-                del self._url_queues[cs]
-                del self._job_queues[cs]
-                del self._next_url_locks[cs]
-                del self._fill_conds[cs]
-                del self._empty_conds[cs]
-                del self._job_conds[cs]
+                    del self._cache_procs[cs]
+                    del self._url_queues[cs]
+                    del self._job_queues[cs]
+                    del self._next_url_locks[cs]
+                    del self._fill_conds[cs]
+                    del self._empty_conds[cs]
+                    del self._job_conds[cs]
 
     def next_url(self, rules=URLFrontierRules()):
         cs = rules.checksum
@@ -196,11 +196,17 @@ class URLFrontier:
     def empty_cache(self, rules=URLFrontierRules()):
         cs = rules.checksum
         with self._mid_empty_conds[cs]:
-            with self._job_conds[cs]:
-                self._job_queues[cs].put(CacheJobs.Empty)
-                self._job_conds[cs].notify()
             with self._empty_conds[cs]:
-                timeout = 10
-                while not self._url_queues[cs].empty() and timeout:
-                    self._empty_conds[cs].wait()
-                    timeout -= 1
+                repeat = True
+                while repeat:
+                    with self._job_conds[cs]:
+                        self._job_queues[cs].put(CacheJobs.Empty)
+                        self._job_conds[cs].notify()
+                    try:
+                        timeout = 10
+                        while not self._url_queues[cs].empty() and timeout:
+                            self._empty_conds[cs].wait(1)
+                            timeout -= 1
+                        self._url_queues.get(block=False)
+                    except Exception as e:
+                        repeat = False

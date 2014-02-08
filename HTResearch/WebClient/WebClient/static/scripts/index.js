@@ -102,25 +102,8 @@ function initialize() {
 
     // Legend
     var three_ps_legend = document.createElement('div');
-    var prevention = document.createElement('span');
-    var prosecution = document.createElement('span');
-    var protection = document.createElement('span');
-    $(prevention).text("Prevention");
-    $(prosecution).text("Prosecution");
-    $(protection).text("Protection");
-    $(prevention).addClass('label');
-    $(prosecution).addClass('label');
-    $(protection).addClass('label');
-    $(prevention).css('background-color', '#4ECDC4');
-    $(prosecution).css('background-color', '#C7F464');
-    $(protection).css('background-color', '#FF6B6B');
-    $(prevention).css('color', 'black');
-    $(prosecution).css('color', 'black');
-    $(protection).css('color', 'black');
     $(three_ps_legend).css('margin-bottom', '5px');
-    three_ps_legend.appendChild(prevention);
-    three_ps_legend.appendChild(prosecution);
-    three_ps_legend.appendChild(protection);
+    $(three_ps_legend).html($("#map-legend").html());
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(three_ps_legend);
 }
 
@@ -290,6 +273,14 @@ function plotMarker(data) {
             content: html.html()
         });
 
+        $(document).bind("mousedown", function(e){
+            //TODO: Find a not janky way - Marcus
+            $('#map-modal').parents().eq(2).attr('id', 'map-modal-parent');
+            if((!$(e.target).parents('#map-modal-parent').size() || e.target.id == "map-modal-parent")) {
+                closeAllInfowindows();
+            }
+        });
+
         google.maps.event.addListener(new_marker, 'click', function () {
             var thisMarker = findMarker(new_marker);
             if (!thisMarker) {
@@ -358,8 +349,8 @@ function showSearchResults() {
     lastSearchedText = searchText;
     var searchResultsDiv = $('#search-results-div');
 
+    removeAllMarkers();
     if (searchText) {
-        removeAllMarkers();
         // Put items to search for here.
         var searchItems = [
             {
@@ -369,7 +360,7 @@ function showSearchResults() {
                 collapseSelector: '#collapse-organizations',
                 listSelector: '#organization-search-list',
                 linkClass: 'org-link',
-                linkText: function(item) { return item.name },
+                linkText: function(item) { return item.name || item.organization_url || ''; },
                 onclick: showOrganizationModal
             },
             {
@@ -379,7 +370,7 @@ function showSearchResults() {
                 collapseSelector: '#collapse-contacts',
                 listSelector: '#contact-search-list',
                 linkClass: 'contact-link',
-                linkText: function(item) { return item.first_name + ' ' + item.last_name },
+                linkText: function(item) { return (item.first_name || '') + ' ' + (item.last_name || '') },
                 onclick: showContactModal
             }
         ];
@@ -398,6 +389,7 @@ function showSearchResults() {
             }).done(function(data) {
                 data = JSON.parse(data);
                 $(searchItem.listSelector).html('');
+                $(searchItem.toggleSelector).parent().next('.count').text(data.results.length + ' results');
                 _.each(data.results, function(item) {
                     $('<a>' + searchItem.linkText(item) + '</a>')
                         .addClass(searchItem.linkClass)
