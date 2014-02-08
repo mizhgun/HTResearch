@@ -98,6 +98,9 @@ class DAO(object):
             fields = self._default_search_fields()
         entry_query = self._get_query(text, fields)
         found_entries = self.dto.objects(entry_query & self._valid_query())
+
+        ob = self.dto.objects()[0]
+
         return found_entries
 
     # Create search term list from search string

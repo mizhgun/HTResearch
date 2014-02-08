@@ -201,7 +201,7 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Testing publication text search ...'
 
-        assert_pubs = pub_dao.findmany(search='book of yee bee ADAMS',
+        assert_pubs = pub_dao.findmany(search='book of yee degner ADAMS',
                                        num_elements=10)
         self.assertEqual(len(assert_pubs), 1)
         self.assertEqual(assert_pubs[0].title, pub_dto.title)
