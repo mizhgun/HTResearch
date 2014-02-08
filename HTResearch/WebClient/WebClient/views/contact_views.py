@@ -71,31 +71,40 @@ def edit_contact(request, contact_id):
         logger.error('Exception encountered on contact lookup for contact={0} by user={1}'.format(contact_id, user_id))
         return get_http_404_page(request)
 
-    form = EditContactForm(request.POST or None, initial=_create_contact_dict(contact))
+    phones = contact.phones if contact.phones else []
+
+    form = EditContactForm(request.POST or None,
+                           initial=_create_contact_dict(contact),
+                           phones=phones)
 
     if request.method == 'POST':
         if form.is_valid():
             data = form.cleaned_data
+            new_phones = []
 
-            if 'first_name' in data:
-                contact.first_name = data['first_name'] or None
-            if 'last_name' in data:
-                contact.last_name = data['last_name'] or None
-            if 'email' in data:
-                contact.email = data['email'] or None
-            if 'phone' in data:
-                contact.phone = data['phone'] or None
-            if 'position' in data:
-                contact.position = data['position'] or None
             if 'invalid' in data:
                 contact.valid = not data['invalid']
 
             try:
-                contact_dao.create_update(contact)
-                success = 'The contact has been updated successfully!'
-                logger.info('Contact={0} updated by user={1}'.format(contact_id, user_id))
+                for key, value in data.items():
+                    if key.startswith('phone'):
+                        new_phones.append(value.strip())
+                    else:
+                        setattr(contact, key, value.strip()) if value else setattr(contact, key, None)
             except:
-                error = 'Oops! There was an error updating the contact. Please try again soon.'
+                error = 'Oops! Something went wrong processing your request. Please try again later.'
+                logger.error('Error occurred while updating fields for contact={0} by user={1}'.format(contact_id, user_id))
+
+            if not error:
+                if new_phones:
+                    contact.phones = [p for p in new_phones if p]
+
+                try:
+                    contact_dao.create_update(contact)
+                    success = 'The contact has been updated successfully!'
+                    logger.info('Contact={0} updated by user={1}'.format(contact_id, user_id))
+                except:
+                    error = 'Oops! There was an error updating the contact. Please try again soon.'
 
     return render(request, 'edit_contact.html', {'form': form, 'contact_id': contact_id,
                                                  'success': success, 'error': error})
@@ -105,6 +114,5 @@ def _create_contact_dict(contact):
     contact_dict = {'first_name': contact.first_name if contact.first_name else "",
                     'last_name': contact.last_name if contact.last_name else "",
                     'email': contact.email if contact.email else "",
-                    'phone': str(contact.phone) if contact.phone else "",
                     'position': contact.position if contact.position else "", 'invalid': not contact.valid}
     return contact_dict
