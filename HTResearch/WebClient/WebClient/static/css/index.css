@@ -342,3 +342,7 @@ ul {
 #invalid {
     color: #FF0000;
 }
+
+#map-validity {
+    margin-top: -10px;
+}
