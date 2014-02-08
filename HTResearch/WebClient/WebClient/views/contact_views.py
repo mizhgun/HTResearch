@@ -34,8 +34,11 @@ def contact_profile(request, contact_id):
 
 
 def search_contacts(request):
+    user_id = request.session['user_id'] if 'user_id' in request.session else None
+
     if request.method == 'GET':
         search_text = request.GET['search_text']
+        logger.info('Search request made for contacts with search_text={0} by user {1}'.format(search_text, user_id))
     else:
         search_text = ''
 
@@ -43,10 +46,13 @@ def search_contacts(request):
 
     if search_text:
         contact_dao = ctx.get_object('ContactDAO')
-
-        contacts = contact_dao.findmany(search=search_text,
-                                        num_elements=10,
-                                        sort_fields=['valid', 'last_name', 'first_name'])
+        try:
+            contacts = contact_dao.findmany(search=search_text,
+                                            num_elements=10,
+                                            sort_fields=['valid', 'last_name', 'first_name'])
+        except Exception:
+            logger.error('Exception encountered on contact search with search_text={0}'.format(search_text))
+            return get_http_404_page(request)
 
     data = {'results': map(lambda x: x.__dict__['_data'], contacts)}
     return HttpResponse(MongoJSONEncoder().encode(data), 'application/json')
