@@ -178,7 +178,6 @@ class PublicationSpider(BaseSpider):
     def __init__(self, *args, **kwargs):
         self.saved_path = os.getcwd()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
         super(PublicationSpider, self).__init__(*args, **kwargs)
         self.scraper = PublicationScraper()
         self.first = True
@@ -193,7 +192,7 @@ class PublicationSpider(BaseSpider):
         # if first time through...
         if self.first:
             self.first = False
-            self.keys = self.scraper.parse_main_page(response)
+            self.citation_urls = self.scraper.parse_main_page(response)
             #Return citation requests
             for url in self.citation_urls:
                 yield Request(url)
