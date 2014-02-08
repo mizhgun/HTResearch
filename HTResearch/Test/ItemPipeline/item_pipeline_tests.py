@@ -52,7 +52,7 @@ class ItemPipelineTest(unittest.TestCase):
         self.contact = ScrapedContact(
             first_name="Djordan",
             last_name="Jdegner",
-            phone=5555555555,
+            phones=['5555555555'],
             email='djordan@jdegner.com',
             organization={'name': 'Yoyodyne'},
             position='Software Jdeveloper'

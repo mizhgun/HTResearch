@@ -9,7 +9,7 @@ body {
     overflow-y: hidden;
 }
 
-#edit-contact-btn {
+#edit-org-btn, #edit-contact-btn {
     margin-right: 10px;
 }
 

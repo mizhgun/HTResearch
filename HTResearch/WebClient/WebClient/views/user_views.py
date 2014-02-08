@@ -112,17 +112,16 @@ def signup(request):
             try:
                 user_dto = DTOConverter.to_dto(UserDTO, new_user)
                 ret_user = user_dao.create_update(user_dto)
-
-                request.session['name'] = new_user.first_name
-                request.session['user_id'] = ret_user.id
-                request.session['last_modified'] = datetime.utcnow()
-                request.session['account_type'] = ret_user.account_type
-                request.session.set_expiry(SESSION_TIMEOUT)
-
                 return HttpResponseRedirect('/')
             except:
                 logger.error('Error occurred during signup')
                 error = 'Oops! We had a little trouble signing you up. Please try again later.'
+
+            request.session['name'] = new_user.first_name
+            request.session['user_id'] = ret_user.id
+            request.session['last_modified'] = datetime.utcnow()
+            request.session['account_type'] = ret_user.account_type
+            request.session.set_expiry(SESSION_TIMEOUT)
 
     return render(request, 'signup.html', {'form': form, 'error': error})
 
