@@ -25,7 +25,7 @@ class DAO(object):
             for key in attributes:
                 if attributes[key] is not None:
                     cur_attr = getattr(dto, key)
-                    if cur_attr is None:
+                    if cur_attr is None or (isinstance(cur_attr, type([])) and len(cur_attr) == 0):
                         setattr(dto, key, attributes[key])
                     else:
                         # TODO: Maybe we should merge all reference documents, as well?

@@ -23,7 +23,7 @@ class ContactScraper():
             n = len(name_split)
             contact['first_name'] = ' '.join(name_split[0:n-1])
             contact['last_name'] = name_split[n-1]
-            contact['phone'] = contact_dicts[name]['number']
+            contact['phones'] = contact_dicts[name]['number']
             contact['email'] = contact_dicts[name]['email']
             contact['position'] = contact_dicts[name]['position']
             organization = ScrapedOrganization()

@@ -266,13 +266,13 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Creating a duplicate and attempting an insert ...'
         new_contact = Contact(email="jdegner0129@gmail.com",
-                              phone=4029813230)
+                              phones=['4029813230'])
         new_contact_dto = DTOConverter.to_dto(ContactDTO, new_contact)
         contact_dao.create_update(new_contact_dto)
 
         print 'Asserting that the old contact was updated'
         assert_contact = contact_dao.find(id=contact_dto.id)
-        self.assertEqual(assert_contact.phone, new_contact_dto.phone)
+        self.assertEqual(assert_contact.phones, new_contact_dto.phones)
 
         print 'Merge records tests passed'
 
