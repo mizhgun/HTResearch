@@ -112,6 +112,8 @@ MIDDLEWARE_CLASSES = (
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
+SESSION_SAVE_EVERY_REQUEST = True
+
 ROOT_URLCONF = 'WebClient.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
