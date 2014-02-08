@@ -125,12 +125,12 @@ class PublicationScraper():
 
     #Second
     def parse_citation_page(self, response):
-        pub = ScrapedPublication
+        pub = ScrapedPublication()
         pub['title'] = self.title_scraper.parse(response)
         self.titles.append(pub['title'])
         pub['authors'] = self.author_scraper.parse(response)
         pub['publication_date'] = self.date_scraper.parse(response)
-        pub['publisher'] = self.publisher_scraper(response)
+        pub['publisher'] = self.publisher_scraper.parse(response)
         self.publications.append(pub)
 
     #Third

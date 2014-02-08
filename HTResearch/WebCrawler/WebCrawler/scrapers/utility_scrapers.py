@@ -768,7 +768,7 @@ class PublicationAuthorsScraper(object):
         chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
         chicago_format_html = str.replace(chicago_format_html, '</div>', '')
 
-        author_delim = ' <i>' if chicago_format_html.find('<i>') > chicago_format_html.find('\"') else '\"'
+        author_delim = ' <i>' if chicago_format_html.find('<i>') < chicago_format_html.find('\"') else '\"'
         author_str = chicago_format_html.split(author_delim)[0]
 
         return author_str
@@ -824,8 +824,8 @@ class PublicationTitleScraper(object):
         chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
         chicago_format_html = str.replace(chicago_format_html, '</div>', '')
 
-        title_delim = ' <i>' if chicago_format_html.find('<i>') > chicago_format_html.find('\"') else ' \"'
-        ending_title_delim = '</i>.' if title_delim == ' <i>' else "\" "
+        title_delim = ' <i>' if chicago_format_html.find('<i>') < chicago_format_html.find('\"') else ' \"'
+        ending_title_delim = '</i>' if title_delim == ' <i>' else "\" "
 
         #This parses the title out of the string
         title = chicago_format_html[chicago_format_html.find(title_delim) + len(title_delim)
@@ -840,7 +840,7 @@ class PublicationURLScraper(object):
         self.titles = []
 
     def seed_titles(self, title_names):
-        self.titles = title_names
+        self.titles = self.titles + title_names
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)

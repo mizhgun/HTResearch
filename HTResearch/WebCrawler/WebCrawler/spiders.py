@@ -171,7 +171,7 @@ class StopTraffickingSpider(BaseSpider):
 
 
 class PublicationSpider(BaseSpider):
-    name = "stop_trafficking"
+    name = "publication_spider"
     allowed_domains = ['scholar.google.com']
     start_urls = ['http://scholar.google.com/scholar?q=rochelle+dalla&hl=en']
 
@@ -182,6 +182,7 @@ class PublicationSpider(BaseSpider):
         self.scraper = PublicationScraper()
         self.first = True
         self.citation_urls = []
+        self.main_page = None
 
     def __del__(self):
         os.chdir(self.saved_path)
@@ -193,17 +194,19 @@ class PublicationSpider(BaseSpider):
         if self.first:
             self.first = False
             self.citation_urls = self.scraper.parse_main_page(response)
+            self.main_page = response
             #Return citation requests
             for url in self.citation_urls:
-                yield Request(url)
+                yield Request('http://'+url, dont_filter=True)
 
         else:
-            if len(self.scraper.publications) != len(self.citation_urls):
-                #Publications will be stored in the scraper until all information
-                #is populated
-                self.scraper.parse_citation_page(response)
-            else:
+            #Publications will be stored in the scraper until all information
+            #is populated
+            self.scraper.parse_citation_page(response)
+
+            if len(self.scraper.publications) == len(self.citation_urls):
                 #Finish process by adding publication urls
-                self.scraper.parse_pub_urls(response)
-                yield self.scraper.publications
+                self.scraper.parse_pub_urls(self.main_page)
+                for pub in self.scraper.publications:
+                    yield pub
 
