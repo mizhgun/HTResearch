@@ -9,6 +9,7 @@
             src="https://maps.googleapis.com/maps/api/js?&sensor=false&libraries=visualization"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <link href="static/css/index.css" rel="stylesheet">
+    <link href="static/css/legend.css" rel="stylesheet">
     <script src="static/scripts/index.js" type="text/javascript"></script>
     <script src="static/scripts/heatmap.js" type="text/javascript"></script>
 {% endblock %}
@@ -17,7 +18,9 @@
 {% block content %}
     {% include "org_modal.html" %}
     {% include "org_bs_modal.html" %}
-    {% include "contact_bs_modal.html" %}
+    {% include "contact_modal.html" %}
+    {% include "publication_modal.html" %}}
+    {% include "map_legend.html" %}
     <div id="wrapper">
         <div class="row">
             <div class="col-md-2 search-div">
@@ -51,6 +54,18 @@
                             </div>
                             <div id="collapse-contacts" class="panel-collapse collapse">
                                 <ul id="contact-search-list"></ul>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2 id="publication-list-header" class="panel-title">
+                                    <a id="publication-toggle" class="disabled" data-toggle="collapse"
+                                       href="#collapse-publications">Publications</a>
+                                </h2>
+                                <span class="count"></span>
+                            </div>
+                            <div id="collapse-publications" class="panel-collapse collapse">
+                                <ul id="publication-search-list"></ul>
                             </div>
                         </div>
                     </div>

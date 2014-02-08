@@ -14,7 +14,7 @@ from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.encoder import MongoJSONEncoder
-from HTResearch.WebClient.WebClient.views.shared_views import encode_dto, get_http_404_page
+from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
 from HTResearch.WebClient.WebClient.models import RequestOrgForm
 
 from HTResearch.Utilities.encoder import MongoJSONEncoder
@@ -25,9 +25,11 @@ ctx = ApplicationContext(DAOContext())
 
 
 def search_organizations(request):
+    user_id = request.session['user_id'] if 'user_id' in request.session else None
+
     if request.method == 'GET':
         search_text = request.GET['search_text']
-        logger.info('Search request made with search_text=%s' % search_text)
+        logger.info('Search request made with search_text={0} by user={1}'.format(search_text, user_id))
     else:
         search_text = ''
 
@@ -35,7 +37,7 @@ def search_organizations(request):
 
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
-        organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['name'])
+        organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['valid', 'name'])
 
     results = []
     for dto in organizations:
@@ -48,13 +50,15 @@ def search_organizations(request):
 
 
 def organization_profile(request, org_id):
-    logger.info('Request made for profile of org_id=%s' % org_id)
+    user_id = request.session['user_id'] if 'user_id' in request.session else None
+
+    logger.info('Request made for profile of org={0} by user={1}'.format(org_id, user_id))
     org_dao = ctx.get_object('OrganizationDAO')
 
     try:
         org = org_dao.find(id=org_id)
     except Exception as e:
-        logger.error('Exception encountered on organization lookup for org_id=%s' % org_id)
+        logger.error('Exception encountered on organization lookup for org={0} by user={1}'.format(org_id, user_id))
         print e.message
         return get_http_404_page(request)
 
@@ -76,7 +80,10 @@ def organization_profile(request, org_id):
 
 def request_organization(request):
     if 'user_id' not in request.session:
+        logger.error('Bad request made for organization seed without login')
         HttpResponseRedirect('/login')
+    else:
+        user_id = request.session['user_id']
 
     form = RequestOrgForm(request.POST or None)
     error = ''
@@ -92,13 +99,14 @@ def request_organization(request):
             except ValueError:
                 error = "Oops! We don't recognize that domain. Please try another."
 
-            try:
-                dto = DTOConverter.to_dto(URLMetadataDTO, metadata)
-                dao.create_update(dto)
-            except:
-                error = 'Something went wrong with your request. Please try again later.'
-
-            success = 'Your request has been sent successfully!'
+            if not error:
+                try:
+                    dto = DTOConverter.to_dto(URLMetadataDTO, metadata)
+                    dao.create_update(dto)
+                    logger.info('Org seed with url={0} requested by user={1}'.format(url, user_id))
+                    success = 'Your request has been sent successfully!'
+                except:
+                    error = 'Something went wrong with your request. Please try again later.'
 
     return render(request, 'request_organization.html', {'form': form, 'success': success, 'error': error})
 
