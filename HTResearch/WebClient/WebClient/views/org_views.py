@@ -8,6 +8,8 @@ from springpython.context import ApplicationContext
 
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
+from HTResearch.DataModel.enums import AccountType
+from HTResearch.DataModel.globals import ORG_TYPE_CHOICES
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.Utilities.converter import DTOConverter
@@ -15,7 +17,7 @@ from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
-from HTResearch.WebClient.WebClient.models import RequestOrgForm
+from HTResearch.WebClient.WebClient.models import RequestOrgForm, EditOrganizationForm
 
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 
@@ -29,7 +31,7 @@ def search_organizations(request):
 
     if request.method == 'GET':
         search_text = request.GET['search_text']
-        logger.info('Search request made with search_text={0} by user={1}'.format(search_text, user_id))
+        logger.info('Search request made for organizations with search_text={0} by user={1}'.format(search_text, user_id))
     else:
         search_text = ''
 
@@ -37,7 +39,11 @@ def search_organizations(request):
 
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
-        organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['name'])
+        try:
+            organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['valid', 'name'])
+        except:
+            logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
+            return get_http_404_page(request)
 
     results = []
     for dto in organizations:
@@ -111,6 +117,82 @@ def request_organization(request):
     return render(request, 'request_organization.html', {'form': form, 'success': success, 'error': error})
 
 
+def edit_organization(request, org_id):
+    if 'user_id' not in request.session:
+        logger.error('Bad request made to edit org={0} without login'.format(org_id))
+        return HttpResponseRedirect('/login')
+    elif 'account_type' not in request.session or request.session['account_type'] != AccountType.CONTRIBUTOR:
+        user_id = request.session['user_id']
+        logger.error('Bad request made to edit org={0} by user={1}: Not a contributor account'.format(org_id, user_id))
+        return HttpResponseRedirect('/')
+    else:
+        user_id = request.session['user_id']
+
+    try:
+        dao = ctx.get_object('OrganizationDAO')
+        org = dao.find(id=org_id)
+    except:
+        logger.error('Exception encountered on organization lookup for org={0} by user={1}'.format(org_id, user_id))
+        return get_http_404_page()
+
+    emails = org.emails if org.emails else []
+    phone_numbers = org.phone_numbers if org.phone_numbers else []
+    types = org.types if org.types else []
+
+    form = EditOrganizationForm(request.POST or None,
+                                initial=_create_org_dict(org),
+                                emails=emails,
+                                phone_numbers=phone_numbers,
+                                types=types,)
+    error = ''
+    success = ''
+
+    if request.method == 'POST':
+        if form.is_valid():
+            data = form.cleaned_data
+            new_emails = []
+            new_phone_nums = []
+            new_types = []
+
+            try:
+                for key, value in data.items():
+                    if key.startswith('email'):
+                        new_emails.append(value.strip())
+                    elif key.startswith('phone'):
+                        new_phone_nums.append(value.strip())
+                    elif key.startswith('type'):
+                        new_types.append(value.strip())
+                    else:
+                        setattr(org, key, value.strip()) if value else setattr(org, key, None)
+            except:
+                error = 'Oops! Something went wrong processing your request. Please try again later.'
+                logger.error('Error occurred while updating fields for org={0} by user={1}'.format(org_id, user_id))
+
+            if not error:
+                if new_emails:
+                    org.emails = [e for e in new_emails if e]
+                    if org.emails:
+                        org.email_key = org.emails[0]
+                if new_phone_nums:
+                    org.phone_numbers = [p for p in new_phone_nums if p]
+                if new_types:
+                    org.types = [t for t in new_types if t]
+
+                try:
+                    dao.create_update(org)
+                    success = 'The organization has been updated successfully!'
+                    logger.info('Org={0} updated by user={1}'.format(org_id, user_id))
+                except:
+                    error = 'Oops! There was an error updating the organization. Please try again later.'
+                    logger.error('Error occurred saving org={0} by user={1}'.format(org_id, user_id))
+
+    return render(request, "edit_organization.html", {'form': form,
+                                                      'type_choices': ORG_TYPE_CHOICES,
+                                                      'org_id': org_id,
+                                                      'success': success,
+                                                      'error': error})
+
+
 def get_org_keywords(request):
     if request.method == 'GET':
         org_id = request.GET['org_id']
@@ -168,3 +250,16 @@ def get_org_rank_rows(request):
 
 def org_rank(request, sort_method=''):
     return render(request, 'org_rank.html')
+
+
+def _create_org_dict(org):
+    org_dict = {
+        'name': org.name if org.name else "",
+        'address': org.address if org.address else "",
+        'organization_url': "http://" + org.organization_url if org.organization_url else "",
+        'keywords': org.keywords.replace(' ', ', ') if org.keywords else "",
+        'facebook': org.facebook if org.facebook else "",
+        'twitter': org.twitter if org.twitter else "",
+        'invalid': not org.valid
+    }
+    return org_dict
