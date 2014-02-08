@@ -39,10 +39,7 @@ body {
 
 .search-div {
     position: absolute;
-}
-
-#search-box-div .count {
-    font-size: 0.714em;
+    min-width: 20em;
 }
 #search-box-div .panel-heading {
     line-height: 1.1;
@@ -52,14 +49,14 @@ body {
 }
 
 .header {
-    height: 50px;
+    height: 42px;
 }
 
 #wrapper {
     display: table;
     width: 100%;
-    margin-top: -50px;
-    padding-top: 50px;
+    margin-top: -42px;
+    padding-top: 42px;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
@@ -172,14 +169,24 @@ input:focus {
 }
 
 #search-results-div {
-    position: absolute;
     overflow-y: auto;
-    width: 90%;
+    width: 100%;
     max-height: 75%;
     opacity: 0.5;
     filter: alpha(opacity=50); /* For IE8 and earlier */
     transition: opacity 1s;
     -webkit-transition: opaicty 1s;
+    line-height: 1.5em;
+}
+#search-results-div .count {
+    margin: 0;
+}
+#search-results-div li{
+    margin-bottom: 4px;
+}
+
+#search-results-div .panel-heading {
+    line-height: 2;
 }
 
 #search-box-div:hover #search-results-div {
@@ -191,9 +198,14 @@ input:focus {
     opacity: 1.0 !important;
 }
 
+#search-box {
+    line-height: 2;
+}
+
 #organization-list-header,
 #contact-list-header,
-#publication-list-header {
+#publication-list-header,
+#search-box{
     font-size: x-large;
 }
 
