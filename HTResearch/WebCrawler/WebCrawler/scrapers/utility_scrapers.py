@@ -825,7 +825,7 @@ class PublicationTitleScraper(object):
         chicago_format_html = str.replace(chicago_format_html, '</div>', '')
 
         title_delim = ' <i>' if chicago_format_html.find('<i>') < chicago_format_html.find('\"') else ' \"'
-        ending_title_delim = '</i>' if title_delim == ' <i>' else "\" "
+        ending_title_delim = '</i>' if title_delim == ' <i>' else ".\" "
 
         #This parses the title out of the string
         title = chicago_format_html[chicago_format_html.find(title_delim) + len(title_delim)
@@ -847,13 +847,17 @@ class PublicationURLScraper(object):
         sources = hxs.select('//a').extract()
 
         urls = []
+        for i in range(0, len(self.titles)):
+            urls.append(None)
+
         start = "=\""
+        index = 0
         for title in self.titles:
             for source in sources:
                     if title in source:
                         raw_link = source.encode('ascii', 'ignore')
-                        #urls.append(re.search(url_regex, raw_link).group())
-                        urls.append(raw_link[raw_link.find(start) + len(start):raw_link.find("\">")])
+                        urls[index] = raw_link[raw_link.find(start) + len(start):raw_link.find("\">")]
+            index += 1
         return urls
 
 class UrlMetadataScraper(object):
