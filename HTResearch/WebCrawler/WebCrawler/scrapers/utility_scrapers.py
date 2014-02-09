@@ -1,6 +1,5 @@
 import itertools
 import os
-import pdb
 import re
 from urlparse import urlparse, urljoin
 import string
