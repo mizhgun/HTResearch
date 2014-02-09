@@ -26,8 +26,11 @@ if __name__ == '__main__':
 
     logger = get_logger(LoggingSection.CRAWLER, 'app.py')
     logger.info("Starting a web crawl")
+    ctx = ApplicationContext(URLFrontierContext())
+    frontier = ctx.get_object("URLFrontier")
+    frontier.start_cache_process()
 
-    spider = PublicationSpider()
+    spider = OrgSpider()
     settings = get_project_settings()
     crawler = Crawler(settings)
     crawler.configure()
