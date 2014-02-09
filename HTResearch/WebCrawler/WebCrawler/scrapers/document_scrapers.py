@@ -121,7 +121,6 @@ class PublicationScraper():
         self.pub_url_scraper = PublicationURLScraper()
         self.titles = []
         self.publications = []
-        pass
 
     #Second
     def parse_citation_page(self, response):
