@@ -769,6 +769,10 @@ class PublicationAuthorsScraper(object):
         chicago_format_html = str.replace(chicago_format_html, '</div>', '')
 
         author_delim = ' <i>' if chicago_format_html.find('<i>') < chicago_format_html.find('\"') else '\"'
+
+        if not author_delim in chicago_format_html:
+            author_delim = ' <i>'
+
         author_str = chicago_format_html.split(author_delim)[0]
 
         return author_str
@@ -802,11 +806,15 @@ class PublicationPublisherScraper(object):
         chicago_format_html = hxs.select('//div[@id=\'gs_cit2\']').extract()[0].encode('ascii', 'ignore')
         chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
         chicago_format_html = str.replace(chicago_format_html, '</div>', '')
-        publisher = ''
 
-        start_delim = '</i>. ' if chicago_format_html.find('<i>') > chicago_format_html.find('\"') else '\" '
-        end_delim = ','
+        start_delim = '</i> ' if chicago_format_html.find('<i>') < chicago_format_html.find('\"') else '.\" <i>'
+        end_delim = ',' if start_delim == '</i> ' else '</i>'
         start_index = chicago_format_html.find(start_delim) + len(start_delim)
+
+        if not start_delim in chicago_format_html:
+            start_delim = '</i> '
+            end_delim = ','
+
         publisher = chicago_format_html[start_index:chicago_format_html.find(end_delim, start_index)]
 
         return publisher
@@ -826,6 +834,10 @@ class PublicationTitleScraper(object):
 
         title_delim = ' <i>' if chicago_format_html.find('<i>') < chicago_format_html.find('\"') else ' \"'
         ending_title_delim = '</i>' if title_delim == ' <i>' else ".\" "
+
+        if not title_delim in chicago_format_html:
+            title_delim = ' <i>'
+            ending_title_delim = '</i>'
 
         #This parses the title out of the string
         title = chicago_format_html[chicago_format_html.find(title_delim) + len(title_delim)
