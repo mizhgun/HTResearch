@@ -738,19 +738,18 @@ class OrgUrlScraper(object):
 
 class PublicationCitationSourceScraper(object):
     def __init__(self):
-        pass
+        self.hash_regex = re.compile('\w{12}')
 
     def parse(self, response):
         #All hashes are fetched by gs_ocit calls
         source_string_regex = re.compile("return gs_ocit\(event,'\w{12}'")
-        hash_regex = re.compile('\w{12}')
         keys = []
         hxs = HtmlXPathSelector(response)
         #Currently, Google Scholar has it so we only need to parse 'a' elements
         #for the ajax source keys
         sources = hxs.select('//a').re(source_string_regex)
         for source in sources:
-            keys.append(re.search(hash_regex, source).group())
+            keys.append(re.search(self.hash_regex, source).group())
 
         return keys
 
@@ -779,7 +778,7 @@ class PublicationAuthorsScraper(object):
 
 class PublicationDateScraper(object):
     def __init__(self):
-        pass
+        self.date_regex = re.compile('\d{4}')
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -789,8 +788,7 @@ class PublicationDateScraper(object):
         chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
         chicago_format_html = str.replace(chicago_format_html, '</div>', '')
 
-        date_regex = re.compile('\d{4}')
-        date = re.search(date_regex, chicago_format_html).group()
+        date = re.search(self.date_regex, chicago_format_html).group()
         return date
 
 
