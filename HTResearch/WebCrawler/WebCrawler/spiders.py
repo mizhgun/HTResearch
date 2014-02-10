@@ -173,7 +173,10 @@ class StopTraffickingSpider(BaseSpider):
 class PublicationSpider(BaseSpider):
     name = "publication_spider"
     allowed_domains = ['scholar.google.com']
-    start_urls = ['http://scholar.google.com/scholar?q=rochelle+dalla&hl=en']
+    
+    #This will be changed in Release 5
+    query = 'rochelle+dalla'
+    start_urls = ['http://scholar.google.com/scholar?q=' + query + '&hl=en']
 
     def __init__(self, *args, **kwargs):
         self.saved_path = os.getcwd()
@@ -183,12 +186,13 @@ class PublicationSpider(BaseSpider):
         self.first = True
         self.citation_urls = []
         self.main_page = None
+        #Currently breaking, but this is how we'll grab tons of results
+        #PublicationSpider.start_urls = self.create_start_urls(self, 'rochelle dalla')
 
     def __del__(self):
         os.chdir(self.saved_path)
 
     def parse(self, response):
-        """Parse this super specific page"""
 
         # if first time through...
         if self.first:
@@ -210,3 +214,12 @@ class PublicationSpider(BaseSpider):
                 for pub in self.scraper.publications:
                     yield pub
 
+    @staticmethod
+    def create_start_urls(self, query):
+        query = query.replace(' ', '+')
+        new_urls = ['http://scholar.google.com/scholar?q=' + query + '&hl=en']
+    
+        for i in range(1, 10):
+            new_urls.append('http://scholar.google.com/scholar?start='+str(i*10)+'&q=' + query + '&hl=en')
+    
+        return new_urls
