@@ -2,16 +2,13 @@
 from springpython.config import *
 
 # project imports
-from HTResearch.DataAccess.dao import *
-from HTResearch.URLFrontier.urlfrontier import URLFrontier
-from HTResearch.Utilities.geocoder import geocode
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import UrlMetadataScraper
 from HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches import ItemSwitch
+from HTResearch.Utilities.converter import ModelConverter
 
 
 class DAOContext(PythonConfig):
-
     # Contextual instances of the classes defined in this module
     @Object()
     def ContactDAO(self):
@@ -165,7 +162,6 @@ class UtilityScraperContext(PythonConfig):
 
 
 class UrlMetadataScraperContext(PythonConfig):
-
     @Object()
     def UrlMetadataScraper(self):
         scraper = UrlMetadataScraper()
@@ -178,7 +174,6 @@ class UrlMetadataScraperContext(PythonConfig):
 
 
 class URLFrontierContext(PythonConfig):
-
     @Object()
     def URLFrontier(self):
         frontier = URLFrontier()
@@ -191,13 +186,24 @@ class URLFrontierContext(PythonConfig):
 
 
 class ItemPipelineContext(DAOContext, URLFrontierContext):
-
     @Object()
     def ItemSwitch(self):
         switch = ItemSwitch()
         switch.frontier = self.URLFrontier()
-        switch.contact_dao = self.ContactDAO()
-        switch.org_dao = self.OrganizationDAO()
-        switch.pub_dao = self.PublicationDAO()
-        switch.url_dao = self.URLMetadataDAO()
+        switch.contact_dao = self.RegisteredContactDAO()()
+        switch.org_dao = self.RegisteredOrganizationDAO()()
+        switch.pub_dao = self.RegisteredPublicationDAO()()
+        switch.url_dao = self.RegisteredURLMetadataDAO()()
         return switch
+
+class ConverterContext(PythonConfig):
+
+    @Object
+    def ModelConverter(self):
+        converter = ModelConverter()
+        converter.dao = self.OrganizationDAO()
+        return converter
+
+    @Object
+    def OrganizationDAO(self):
+        return OrganizationDAO()

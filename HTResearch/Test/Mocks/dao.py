@@ -1,6 +1,7 @@
 from mongoengine import Q
 from HTResearch.DataAccess.dto import *
 from connection import MockDBConnection
+from HTResearch.DataModel.enums import OrgTypesEnum
 
 
 class MockDAO(object):
@@ -8,6 +9,7 @@ class MockDAO(object):
     A generic DAO class that may be subclassed by DAOs for operations on
     specific documents.
     """
+
     def __init__(self):
         self.conn = MockDBConnection
 
@@ -43,10 +45,11 @@ class MockDAO(object):
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
-    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[], **constraints):
+    def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=[],
+                 **constraints):
         with self.conn():
             if len(sort_fields) > 0:
-                ret = self.dto.objects(**constraints).order_by(sort_fields)
+                ret = self.dto.objects(**constraints).order_by(*sort_fields)
             else:
                 ret = self.dto.objects(**constraints)
             if num_elements is not None:
@@ -61,7 +64,7 @@ class MockDAO(object):
                 if end is None:
                     return ret[start:]
                 else:
-                    return ret[start:end+1]
+                    return ret[start:end + 1]
 
             return ret
 
@@ -81,93 +84,226 @@ class MockDAO(object):
             else:
                 return URLMetadataDTO.objects(req_query & blk_query)[:num_elements]
 
+
 class MockContactDAO(MockDAO):
     """
     A DAO for the Contact document
     """
+
     def __init__(self):
         super(MockContactDAO, self).__init__()
         self.dto = ContactDTO
         self.org_dao = MockOrganizationDAO
         self.pub_dao = MockPublicationDAO
 
-    def create_update(self, contact_dto):
-        with self.conn():
-            o = contact_dto.organization
-            if o:
-                contact_dto.organization = self.org_dao().create_update(o)
+    def _add_contact_ref_to_children(self, contact_dto):
+        if contact_dto.organization is not None and contact_dto not in contact_dto.organization.contacts:
+            contact_dto.organization.contacts.append(contact_dto)
+            contact_dto.organization = self.org_dao().create_update(contact_dto.organization, False)
+        if contact_dto.publications is not None:
             for i in range(len(contact_dto.publications)):
                 p = contact_dto.publications[i]
-                contact_dto.publications[i] = self.pub_dao().create_update(p)
+                if contact_dto not in p.authors:
+                    p.authors.append(contact_dto)
+                    contact_dto.publications[i] = self.pub_dao.create_update(p, False)
+        return contact_dto
 
-            if contact_dto.id is None:
+    def create_update(self, contact_dto, cascade_add=True):
+        no_id = contact_dto.id is None
+        with self.conn():
+            if cascade_add:
+                o = contact_dto.organization
+                if o:
+                    if contact_dto in o.contacts and no_id:
+                        o.contacts.remove(contact_dto)
+                    contact_dto.organization = self.org_dao().create_update(o, False)
+                for i in range(len(contact_dto.publications)):
+                    p = contact_dto.publications[i]
+                    if contact_dto in p.authors and no_id:
+                        p.authors.remove(contact_dto)
+                    contact_dto.publications[i] = self.pub_dao().create_update(p, False)
+
+            if no_id:
                 existing_dto = self.dto.objects(email=contact_dto.email).first()
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, contact_dto)
+                    if cascade_add:
+                        saved_dto = self._add_contact_ref_to_children(saved_dto)
                     return saved_dto
-
             contact_dto.save()
-        return contact_dto
 
+            # Now that contact_dto is guaranteed in data
+            if cascade_add:
+                contact_dto = self._add_contact_ref_to_children(contact_dto)
+
+        return contact_dto
 
 class MockOrganizationDAO(MockDAO):
     """
     A DAO for the Organization document
     """
+
     def __init__(self):
         super(MockOrganizationDAO, self).__init__()
         self.dto = OrganizationDTO
         self.contact_dao = MockContactDAO
         self.geocode = lambda x: [0, 0]
 
-    def create_update(self, org_dto):
+    def merge_documents(self, existing_org_dto, new_org_dto):
         with self.conn():
-            for i in range(len(org_dto.contacts)):
-                c = org_dto.contacts[i]
-                org_dto.contacts[i] = self.contact_dao().create_update(c)
+            attributes = new_org_dto._data
+            for key in attributes:
+                if attributes[key]:
+                    cur_attr = getattr(existing_org_dto, key)
+                    if not cur_attr:
+                        setattr(existing_org_dto, key, attributes[key])
+                    elif type(cur_attr) is list:
+                        merged_list = list(set(cur_attr + attributes[key]))
+                        # if this is org types and we have more than one org type, make sure unknown isn't a type :P
+                        if key == "types" and len(merged_list) > 1 and OrgTypesEnum.UNKNOWN in merged_list:
+                            merged_list.remove(OrgTypesEnum.UNKNOWN)
+                        setattr(existing_org_dto, key, attributes[key])
+            existing_org_dto.save()
+            return existing_org_dto
 
-            if org_dto.id is None:
-                existing_dto = self.dto.objects(email_key__in=org_dto.emails).first()
+    def _add_org_ref_to_children(self, org_dto):
+        for i in range(len(org_dto.contacts)):
+            c = org_dto.contacts[i]
+            if c.organization is None:
+                c.organization = org_dto
+                org_dto.contacts[i] = self.contact_dao().create_update(c, False)
+        for i in range(len(org_dto.partners)):
+            p = org_dto.partners[i]
+            if org_dto not in p.partners:
+                p.partners.append(org_dto)
+                org_dto.partners[i] = self.create_update(p, False)
+        return org_dto
+
+    def create_update(self, org_dto, cascade_add=True):
+        no_id = org_dto.id is None
+        with self.conn():
+            if cascade_add:
+                for i in range(len(org_dto.contacts)):
+                    c = org_dto.contacts[i]
+                    if c.organization is not None and c.organization == org_dto:
+                        c.organization = None
+                    org_dto.contacts[i] = self.contact_dao().create_update(c, False)
+
+                for i in range(len(org_dto.partners)):
+                    p = org_dto.partners[i]
+                    if org_dto in p.partners:
+                        p.partners.remove(org_dto)
+                    org_dto.partners[i] = self.create_update(p, False)
+
+            if no_id:
+                existing_dto = self._smart_search_orgs(org_dto)
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, org_dto)
+                    if cascade_add:
+                        saved_dto = self._add_org_ref_to_children(saved_dto)
                     return saved_dto
 
             org_dto.save()
+            if cascade_add:
+                org_dto = self._add_org_ref_to_children(org_dto)
         return org_dto
+
+    def _smart_search_orgs(self, org_dto):
+        # organizations have unique phone numbers
+        if org_dto.phone_numbers:
+            same_phone = Q(phone_numbers__in=org_dto.phone_numbers)
+        else:
+            same_phone = Q()
+
+        # organizations have unique emails
+        if org_dto.emails:
+            same_email = Q(emails__in=org_dto.emails)
+        else:
+            same_email = Q()
+
+        # organizations have unique URLs
+        if org_dto.organization_url:
+            same_url = Q(organization_url=org_dto.organization_url)
+        else:
+            same_url = Q()
+
+        # organizations have unique Facebooks
+        if org_dto.facebook:
+            same_fb = Q(facebook=org_dto.facebook)
+        else:
+            same_fb = Q()
+
+        # organizations have unique Twitters
+        if org_dto.twitter:
+            same_twitter = Q(twitter=org_dto.twitter)
+        else:
+            same_twitter = Q()
+
+        existing_dto = self.dto.objects(same_phone | same_email | same_url | same_fb | same_twitter).first()
+        return existing_dto
 
 
 class MockPublicationDAO(MockDAO):
     """
     A DAO for the Publication document
     """
+
     def __init__(self):
         super(MockPublicationDAO, self).__init__()
         self.dto = PublicationDTO
         self.contact_dao = MockContactDAO
 
-    def create_update(self, pub_dto):
-        with self.conn():
-            for i in range(len(pub_dto.authors)):
-                c = pub_dto.authors[i]
-                pub_dto.authors[i] = self.contact_dao().create_update(c)
+    def _add_pub_ref_to_children(self, pub_dto):
+        for i in range(len(pub_dto.authors)):
+            c = pub_dto.authors[i]
+            if c.publications is None:
+                c.publications = []
+            if pub_dto not in c.publications:
+                c.publications.append(pub_dto)
+                pub_dto.authors[i] = self.contact_dao().create_update(c, False)
 
-            if pub_dto.id is None:
+        if pub_dto.publisher is not None:
+            if pub_dto.publisher.publications is None:
+                pub_dto.publisher.publications = []
+            if pub_dto not in pub_dto.publisher.publications:
+                pub_dto.publisher.publications.append(pub_dto)
+                pub_dto.publisher = self.contact_dao().create_update(pub_dto.publisher, False)
+
+        return pub_dto
+
+    def create_update(self, pub_dto, cascade_add=True):
+        no_id = pub_dto.id is None
+        with self.conn():
+            if cascade_add:
+                for i in range(len(pub_dto.authors)):
+                    c = pub_dto.authors[i]
+                    if pub_dto in c.publications and no_id:
+                        c.publications.remove(pub_dto)
+                    pub_dto.authors[i] = self.contact_dao().create_update(c, False)
+
+                if pub_dto.publisher is not None:
+                    if pub_dto in pub_dto.publisher.publications and no_id:
+                        pub_dto.publisher.publications.remove(pub_dto)
+                    pub_dto.publisher = self.contact_dao().create_update(pub_dto.publisher, False)
+
+            if no_id:
                 existing_dto = self.dto.objects(title=pub_dto.title).first()
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, pub_dto)
+                    if cascade_add:
+                        saved_dto = self._add_pub_ref_to_children(saved_dto)
                     return saved_dto
 
-            if pub_dto.publisher is not None:
-                self.contact_dao().create_update(pub_dto.publisher)
-
             pub_dto.save()
+            if cascade_add:
+                pub_dto = self._add_pub_ref_to_children(pub_dto)
         return pub_dto
-
 
 class MockURLMetadataDAO(MockDAO):
     """
     A DAO for the URLMetadata document
     """
+
     def __init__(self):
         super(MockURLMetadataDAO, self).__init__()
         self.dto = URLMetadataDTO
@@ -185,7 +321,6 @@ class MockURLMetadataDAO(MockDAO):
 
 
 class MockUserDAO(MockDAO):
-
     def __init__(self):
         super(MockUserDAO, self).__init__()
         self.dto = UserDTO

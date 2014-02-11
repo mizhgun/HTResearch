@@ -10,7 +10,6 @@ _middleware_logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class UrlQueueMiddleware(object):
-
     def process_exception(self, request, exception, spider):
         """
         An exception occurred while trying to get a response from the requested URL,

@@ -27,50 +27,50 @@ var MARKER_VALUES = {
 google.load('feeds', '1');
 
 function initialize() {
-    var visited=getCookie("htresearchv2");
-    if(!visited) {
+    var visited = getCookie("htresearchv2");
+    if (!visited) {
         window.location = '/welcome';
     }
 
-	var mapOptions = {
-	  center: initialLatLng,
-	  zoom: 5,
-	  mapTypeId: google.maps.MapTypeId.HYBRID,
-	  panControl: false,
-	  zoomControl: false,
-	  scaleControl: false,
-      streetViewControl: false
-	};
+    var mapOptions = {
+        center: initialLatLng,
+        zoom: 5,
+        mapTypeId: google.maps.MapTypeId.HYBRID,
+        panControl: false,
+        zoomControl: false,
+        scaleControl: false,
+        streetViewControl: false
+    };
 
-	map = new google.maps.Map($('#map-canvas')[0],mapOptions);
+    map = new google.maps.Map($('#map-canvas')[0], mapOptions);
 
-	$('#signup-btn').click(function(e) {
-		$('#signup-div').easyModal({
-			autoOpen: true,
-			overlayOpacity: 0.3,
-			overlayColor: "#333",
-			overlayClose: false,
-			closeButtonClass: ".btn-link"
-		});
+    $('#signup-btn').click(function (e) {
+        $('#signup-div').easyModal({
+            autoOpen: true,
+            overlayOpacity: 0.3,
+            overlayColor: "#333",
+            overlayClose: false,
+            closeButtonClass: ".btn-link"
+        });
 
-	});
+    });
 
-	$('#login-btn').click(function(e) {
-		$('#login-div').easyModal({
-			autoOpen: true,
-			overlayOpacity: 0.3,
-			overlayColor: "#333",
-			overlayClose: false,
-			closeButtonClass: ".btn-link"
-		});
+    $('#login-btn').click(function (e) {
+        $('#login-div').easyModal({
+            autoOpen: true,
+            overlayOpacity: 0.3,
+            overlayColor: "#333",
+            overlayClose: false,
+            closeButtonClass: ".btn-link"
+        });
 
-	});
+    });
 
     // update search when changing text input
     $('#search-box').bind("keyup change", _.debounce(showSearchResults, 300));
 
     // prevent form submit on enter
-    $('#search-box').bind('keyup keypress', function(e) {
+    $('#search-box').bind('keyup keypress', function (e) {
         var code = e.keyCode || e.which;
         if (code === 13) {
             e.preventDefault();
@@ -79,22 +79,22 @@ function initialize() {
     });
 
     // Retrieve news whenever ready
-    google.maps.event.addListener(map, 'idle', function() {
+    google.maps.event.addListener(map, 'idle', function () {
         var scope = $('input[name=news-scope]:checked').val();
-        if(scope === 'regional') {
+        if (scope === 'regional') {
             updateNewsLocation(scope);
         }
     });
 
     // Make news scope switch work
-    $('input[name=news-scope]').change(function(e) {
+    $('input[name=news-scope]').change(function (e) {
         $('#news-results').scrollTop(0);
         updateNewsLocation(e.target.value);
     });
 
     // Infinite scrolling for news
-    $('#news-results').scroll(function() {
-        if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+    $('#news-results').scroll(function () {
+        if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
             loadMoreNews();
         }
     });
@@ -102,25 +102,8 @@ function initialize() {
 
     // Legend
     var three_ps_legend = document.createElement('div');
-    var prevention = document.createElement('span');
-    var prosecution = document.createElement('span');
-    var protection = document.createElement('span');
-    $(prevention).text("Prevention");
-    $(prosecution).text("Prosecution");
-    $(protection).text("Protection");
-    $(prevention).addClass('label');
-    $(prosecution).addClass('label');
-    $(protection).addClass('label');
-    $(prevention).css('background-color', '#4ECDC4');
-    $(prosecution).css('background-color', '#C7F464');
-    $(protection).css('background-color', '#FF6B6B');
-    $(prevention).css('color', 'black');
-    $(prosecution).css('color', 'black');
-    $(protection).css('color', 'black');
-    $(three_ps_legend).css('margin-bottom','5px');
-    three_ps_legend.appendChild(prevention);
-    three_ps_legend.appendChild(prosecution);
-    three_ps_legend.appendChild(protection);
+    $(three_ps_legend).css('margin-bottom', '5px');
+    $(three_ps_legend).html($("#map-legend").html());
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(three_ps_legend);
 }
 
@@ -130,18 +113,18 @@ function getCookie(name) {
     var cookieLength = document.cookie.length;
     var i = 0;
     while (i < cookieLength) {
-      var j = i + argLength;
-      if (document.cookie.substring(i,j) === arg)
-        return "here";
-      i = document.cookie.indexOf(" ", i) + 1;
-      if (i === 0) break;
+        var j = i + argLength;
+        if (document.cookie.substring(i, j) === arg)
+            return "here";
+        i = document.cookie.indexOf(" ", i) + 1;
+        if (i === 0) break;
     }
-    return null; 
+    return null;
 }
 
 function updateNewsLocation(scope) {
     moreNews = true;
-    var loadNewsFromLocation = function(locationQuery) {
+    var loadNewsFromLocation = function (locationQuery) {
         var query = baseQuery + ' ' + locationQuery;
         var feedParam = newsUrl + query.split(/,?\s/).join('+');
         newsFeed = new google.feeds.Feed(feedParam);
@@ -149,19 +132,19 @@ function updateNewsLocation(scope) {
         loadMoreNews();
     };
 
-    if(scope === 'general') {
+    if (scope === 'general') {
         loadNewsFromLocation(generalLocation);
-    } else if(scope === 'regional') {
+    } else if (scope === 'regional') {
         geocoder.geocode({
             'latLng': map.getCenter(),
             'bounds': map.getBounds()
-        }, function(results, status) {
-            if(status === google.maps.GeocoderStatus.OK && results[0]) {
+        }, function (results, status) {
+            if (status === google.maps.GeocoderStatus.OK && results[0]) {
                 loadNewsFromLocation(results[0].formatted_address);
             }
         });
-    } else if(scope === 'organization') {
-        if(orgData) {
+    } else if (scope === 'organization') {
+        if (orgData) {
             loadNewsFromLocation(orgData.name);
         } else {
             $('#news-results').html('<div class="no-results">Please select an organization.</div>');
@@ -170,12 +153,12 @@ function updateNewsLocation(scope) {
 }
 
 function loadMoreNews() {
-    if(moreNews && newsFeed) {
+    if (moreNews && newsFeed) {
         newsCount += newsStepSize;
         newsFeed.includeHistoricalEntries();
         newsFeed.setNumEntries(newsCount);
-        newsFeed.load(function(result) {
-            if(!result.error) {
+        newsFeed.load(function (result) {
+            if (!result.error) {
                 var articles = result.feed.entries;
 
                 // See if there might be more news to load after this
@@ -186,15 +169,15 @@ function loadMoreNews() {
                 // Construct html from news articles
                 $.template('newsTemplate', $('#news-template').html());
                 var newsDiv = $('<div></div>');
-                $.each(articles, function(index) {
+                $.each(articles, function (index) {
                     var newsArticle = $.tmpl('newsTemplate', this);
                     // Do some HTML processing to make the articles look better
-                    $(newsArticle).find('tr').each(function() {
+                    $(newsArticle).find('tr').each(function () {
                         $(this).find('td:last').prepend($(this).find('td:first').html());
                     });
                     $(newsArticle).find('br, '
-                                      + 'tr td:first, '
-                                      + 'tr td:last div:first').remove();
+                        + 'tr td:first, '
+                        + 'tr td:last div:first').remove();
                     $(newsArticle).find('*').css('padding', '0');
                     $(newsArticle).find('a').attr('target', '_blank');
                     $(newsArticle).find('a, font').css({'display': 'block', 'margin-right': '5px'});
@@ -211,10 +194,10 @@ function loadMoreNews() {
                     $(newsArticle).find('td div a:first').css('font-size', '14px');
                     $(newsDiv).append(newsArticle);
                 });
-                if(!$(newsDiv).html()) {
+                if (!$(newsDiv).html()) {
                     $(newsDiv).append('<div class="no-results">No results found.</div>');
                 } else {
-                    if(moreNews) {
+                    if (moreNews) {
                         $(newsDiv).append('<div class="news-footer ajax-loader"></div>');
                     } else {
                         $(newsDiv).append('<div class="news-footer"><i class="glyphicon glyphicon-stop"></i></div>');
@@ -222,7 +205,7 @@ function loadMoreNews() {
                 }
                 var newsResultsDiv = $('#news-results');
                 newsResultsDiv.html($(newsDiv).html());
-                if(moreNews && newsResultsDiv.scrollTop() + newsResultsDiv.innerHeight() >= newsResultsDiv[0].scrollHeight) {
+                if (moreNews && newsResultsDiv.scrollTop() + newsResultsDiv.innerHeight() >= newsResultsDiv[0].scrollHeight) {
                     loadMoreNews();
                 }
             }
@@ -231,13 +214,13 @@ function loadMoreNews() {
 }
 
 function plotMarker(data) {
-     if (data.latlng && data.latlng.length > 0 && data.latlng[0] && data.latlng[1]) {
+    if (data.latlng && data.latlng.length > 0 && data.latlng[0] && data.latlng[1]) {
         var coord = new google.maps.LatLng(data.latlng[0], data.latlng[1]);
 
         var marker_url = "";
-        var is_prev = $.inArray(5 ,data.types) > -1; // Value for prevention enum
-        var is_prot = $.inArray(6 ,data.types) > -1; // Value for protection enum
-        var is_pros = $.inArray(7 ,data.types) > -1; // Value for prosecution enum
+        var is_prev = $.inArray(5, data.types) > -1; // Value for prevention enum
+        var is_prot = $.inArray(6, data.types) > -1; // Value for protection enum
+        var is_pros = $.inArray(7, data.types) > -1; // Value for prosecution enum
         var marker_switch = 0;
         if (is_prev)
             marker_switch |= MARKER_VALUES.PREVENTION;
@@ -245,7 +228,7 @@ function plotMarker(data) {
             marker_switch |= MARKER_VALUES.PROTECTION;
         if (is_pros)
             marker_switch |= MARKER_VALUES.PROSECUTION;
-        switch(marker_switch) {
+        switch (marker_switch) {
             case MARKER_VALUES.PREVENTION: //Prevention only
                 marker_url = "/static/images/prevention_pin_small.png"
                 break;
@@ -277,9 +260,9 @@ function plotMarker(data) {
             position: coord,
             icon: {
                 url: marker_url,
-                size: new google.maps.Size(39,32),
-                origin: new google.maps.Point(0,0),
-                anchor: new google.maps.Point(9,32)
+                size: new google.maps.Size(39, 32),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(9, 32)
             }
         });
 
@@ -287,10 +270,18 @@ function plotMarker(data) {
         var html = $("#modal-template").tmpl(data);
 
         var new_infowindow = new google.maps.InfoWindow({
-		      content : html.html()
-		});
+            content: html.html()
+        });
 
-        google.maps.event.addListener(new_marker, 'click', function() {
+        $(document).bind("mousedown", function(e){
+            //TODO: Find a not janky way - Marcus
+            $('#map-modal').parents().eq(2).attr('id', 'map-modal-parent');
+            if((!$(e.target).parents('#map-modal-parent').size() || e.target.id == "map-modal-parent")) {
+                closeAllInfowindows();
+            }
+        });
+
+        google.maps.event.addListener(new_marker, 'click', function () {
             var thisMarker = findMarker(new_marker);
             if (!thisMarker) {
                 new_infowindow.open(map, new_marker);
@@ -301,10 +292,10 @@ function plotMarker(data) {
                 thisMarker.open = false;
             } else {
                 closeAllInfowindows();
-                thisMarker.infowindow.open(map,new_marker);
+                thisMarker.infowindow.open(map, new_marker);
                 thisMarker.open = true;
             }
-		});
+        });
 
         markers.push({
             id: data.id,
@@ -312,18 +303,18 @@ function plotMarker(data) {
             infowindow: new_infowindow,
             open: false
         });
-     }
+    }
 }
 
 function removeAllMarkers() {
-    $.each(markers, function(index,value){
+    $.each(markers, function (index, value) {
         value.marker.setMap(null);
     });
     markers = [];
 }
 
 function closeAllInfowindows() {
-    $.each(markers, function(index, value){
+    $.each(markers, function (index, value) {
         value.infowindow.close();
         value.open = false;
     });
@@ -331,8 +322,8 @@ function closeAllInfowindows() {
 
 function findMarker(marker) {
     var retMarker;
-    for(var i = 0; i < markers.length; i++) {
-        if(marker === markers[i].marker){
+    for (var i = 0; i < markers.length; i++) {
+        if (marker === markers[i].marker) {
             retMarker = markers[i];
             break;
         }
@@ -342,8 +333,8 @@ function findMarker(marker) {
 
 function findMarkerById(id) {
     var marker;
-    for(var i = 0; i < markers.length; i++) {
-        if(id === markers[i].id){
+    for (var i = 0; i < markers.length; i++) {
+        if (id === markers[i].id) {
             marker = markers[i];
             break;
         }
@@ -358,64 +349,98 @@ function showSearchResults() {
     lastSearchedText = searchText;
     var searchResultsDiv = $('#search-results-div');
 
-    if(searchText) {
-        removeAllMarkers();
+    removeAllMarkers();
+    if (searchText) {
         // Put items to search for here.
         var searchItems = [
             {
                 name: 'Organization',
-                url: '/search_organizations/',
+                url: '/search-organizations/',
                 toggleSelector: '#organization-toggle',
                 collapseSelector: '#collapse-organizations',
                 listSelector: '#organization-search-list',
-                linkSelector: '.org-link',
-                linkCallback: showOrganizationModal
+                linkClass: 'org-link',
+                linkText: function(item) { return item.name || item.organization_url || ''; },
+                onclick: showOrganizationModal
             },
             {
                 name: 'Contact',
-                url: '/search_contacts/',
+                url: '/search-contacts/',
                 toggleSelector: '#contact-toggle',
                 collapseSelector: '#collapse-contacts',
                 listSelector: '#contact-search-list',
-                linkSelector: '.contact-link',
-                linkCallback: showContactModal
+                linkClass: 'contact-link',
+                linkText: function(item) { return (item.first_name || '') + ' ' + (item.last_name || '') },
+                onclick: showContactModal
+            },
+            {
+                name: 'Publication',
+                url: '/search-publications',
+                toggleSelector: '#publication-toggle',
+                collapseSelector: '#collapse-publications',
+                listSelector: '#publication-search-list',
+                linkClass: 'publication-link',
+                linkText: function(item) { return item.title; },
+                onclick: showPublicationModal
             }
         ];
 
         // Perform each search
-        _.each(searchItems, function(item) {
+        _.each(searchItems, function(searchItem) {
             startAjaxSearch();
             $.ajax({
                 type: 'GET',
-                url: item.url,
+                url: searchItem.url,
                 data: {
                     'search_text': $('#search-box').val(),
                     'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
                 },
                 dataType: 'html'
             }).done(function(data) {
-                data = data.trim();
-                if (data) {
-                    $(item.toggleSelector).attr('data-toggle', 'collapse');
-                    $(item.toggleSelector).removeClass('disabled');
-                    $(item.collapseSelector).collapse('show');
+                data = JSON.parse(data);
+                $(searchItem.listSelector).html('');
+                // Show number of results
+                var resultCount = data.results.length;
+                var resultsString = (resultCount >= 10 ? '10+' : resultCount) + ' results';
+                $(searchItem.toggleSelector).parent().next('.count').text(resultsString);
+                // Hide or show panel based on availability of results
+                if(resultCount) {
+                    // Show panel
+                    $(searchItem.toggleSelector).closest('.panel').show();
+                    // Display results
+                    _.each(data.results, function(item) {
+                        $('<a>' + searchItem.linkText(item) + '</a>')
+                            .addClass(searchItem.linkClass)
+                            .attr('href', 'javascript:void(0)')
+                            .data(item)
+                            .wrap('<li></li>')
+                            .parent()
+                            .appendTo(searchItem.listSelector);
+                    });
+                    if (data) {
+                        $(searchItem.toggleSelector).closest('.panel').show();
+                        $(searchItem.toggleSelector).attr('data-toggle', 'collapse');
+                        $(searchItem.toggleSelector).removeClass('disabled');
+                        $(searchItem.collapseSelector).collapse('show');
+                    } else {
+                        $(searchItem.toggleSelector).closest('.panel').hide();
+                    }
+                    $(searchItem.toggleSelector).click(function (e) {
+                        e.preventDefault();
+                    });
+                    $('.modal').modal({ show: false });
+                    $('.' + searchItem.linkClass)
+                        .click(searchItem.onclick)
+                        .each(function (index, value) {
+                            plotMarker($(value).data());
+                        });
                 } else {
-                    $(item.toggleSelector).attr('data-toggle', '');
-                    $(item.toggleSelector).addClass('disabled');
-                    $(item.collapseSelector).collapse('hide');
+                    // Hide panel
+                    $(searchItem.toggleSelector).closest('.panel').hide();
                 }
-                $(item.toggleSelector).click(function(e) {
-                    e.preventDefault();
-                });
-                $(item.listSelector).html(data);
-                $('.modal').modal({ show: false });
-                $(item.linkSelector).click(item.linkCallback);
-                $(item.linkSelector).each(function(index, value) {
-                    plotMarker($(value).data());
-                });
-            }).fail(function() {
-                console.log(item.name, 'search failed');
-            }).always(function() {
+            }).fail(function(data) {
+                console.log(searchItem.name, 'search failed');
+            }).always(function () {
                 endAjaxSearch();
             });
         });
@@ -425,13 +450,13 @@ function showSearchResults() {
 
             searchResultsVisible = true;
         }
-	} else {
-	    if (searchResultsVisible) {
-	        searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
+    } else {
+        if (searchResultsVisible) {
+            searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
 
-	        searchResultsVisible = false;
-	    }
-	}
+            searchResultsVisible = false;
+        }
+    }
 }
 
 var searchesPending = 0;
@@ -454,7 +479,7 @@ function showOrganizationModal() {
 
     // Search for news based on the selected organization
     var scope = $('input[name=news-scope]:checked').val();
-    if(scope === 'organization') {
+    if (scope === 'organization') {
         updateNewsLocation(scope);
     }
 
@@ -463,11 +488,11 @@ function showOrganizationModal() {
         searchedLatLng = new google.maps.LatLng(orgData.latlng[0], orgData.latlng[1]);
         plotOrganization(orgData);
     }
-    else{
+    else {
         closeAllInfowindows();
 
         var $modal = $('.modal').modal();
-        createBootstrapModal($modal, '#bs-org-modal-template',orgData);
+        createBootstrapModal($modal, '#bs-org-modal-template', orgData);
     }
 }
 
@@ -476,7 +501,15 @@ function showContactModal() {
     var $modal = $('.modal').modal({
         show: false
     });
-    createBootstrapModal($modal, '#bs-contact-modal-template', contactData);
+    createBootstrapModal($modal, '#contact-modal-template', contactData);
+}
+
+function showPublicationModal(){
+    pubData = $(this).data();
+    var $modal = $('.modal').modal({
+        show: false
+    })
+    createBootstrapModal($modal, '#publication-modal-template', pubData)
 }
 
 // Show organization location on map
@@ -489,7 +522,7 @@ function plotOrganization(data) {
 
         var marker = findMarkerById(data.id);
 
-        marker.infowindow.open(map,marker.marker);
+        marker.infowindow.open(map, marker.marker);
         marker.open = true;
     } else {
         var $modal = $('.modal').modal();
@@ -497,7 +530,7 @@ function plotOrganization(data) {
     }
 }
 
-function createBootstrapModal(m, modal_template, data){
+function createBootstrapModal(m, modal_template, data) {
     // Do a bootstrap modal
     var html = $(modal_template).tmpl(data);
 
@@ -506,6 +539,6 @@ function createBootstrapModal(m, modal_template, data){
     m.modal('show');
 }
 
-$(function(){
+$(function () {
     initialize();
 });
