@@ -25,7 +25,7 @@ class DAO(object):
             for key in attributes:
                 if attributes[key] is not None:
                     cur_attr = getattr(dto, key)
-                    if cur_attr is None:
+                    if cur_attr is None or (isinstance(cur_attr, type([])) and len(cur_attr) == 0):
                         setattr(dto, key, attributes[key])
                     else:
                         # TODO: Maybe we should merge all reference documents, as well?
@@ -98,6 +98,9 @@ class DAO(object):
             fields = self._default_search_fields()
         entry_query = self._get_query(text, fields)
         found_entries = self.dto.objects(entry_query & self._valid_query())
+
+        ob = self.dto.objects()[0]
+
         return found_entries
 
     # Create search term list from search string
@@ -178,8 +181,8 @@ class ContactDAO(DAO):
             contact_dto.save()
         return contact_dto
 
-    def _valid_query(self):
-        return Q(valid=True)
+    def _default_search_fields(self):
+        return ['first_name', 'last_name', 'position', ]
 
 
 class OrganizationDAO(DAO):
@@ -263,7 +266,7 @@ class OrganizationDAO(DAO):
 
     # Query getting valid organizations: must be valid and have a valid name
     def _valid_query(self):
-        return Q(name__ne=None) & Q(name__ne='') & Q(valid=True)
+        return Q(name__ne=None) & Q(name__ne='')
 
     # Query searching for organizations by a single term
     def _term_query(self, term, field_name):
@@ -281,7 +284,7 @@ class OrganizationDAO(DAO):
 
     # Default fields for organization text searching
     def _default_search_fields(self):
-        return ['name', 'keywords', 'address', 'types', 'email_key', 'organization_url', ]
+        return ['name', 'keywords', 'address', 'types', ]
 
     def _smart_search_orgs(self, org_dto):
         # organizations have unique phone numbers
@@ -336,54 +339,21 @@ class PublicationDAO(DAO):
         # Injected dependencies
         self.contact_dao = ContactDAO
 
-    def _add_pub_ref_to_children(self, pub_dto):
-        for i in range(len(pub_dto.authors)):
-            c = pub_dto.authors[i]
-            if c.publications is None:
-                c.publications = []
-            if pub_dto not in c.publications:
-                c.publications.append(pub_dto)
-                pub_dto.authors[i] = self.contact_dao().create_update(c, False)
-
-        if pub_dto.publisher is not None:
-            if pub_dto.publisher.publications is None:
-                pub_dto.publisher.publications = []
-            if pub_dto not in pub_dto.publisher.publications:
-                pub_dto.publisher.publications.append(pub_dto)
-                pub_dto.publisher = self.contact_dao().create_update(pub_dto.publisher, False)
-
-        return pub_dto
-
     def create_update(self, pub_dto, cascade_add=True):
         no_id = pub_dto.id is None
         with self.conn():
-            if cascade_add:
-                for i in range(len(pub_dto.authors)):
-                    c = pub_dto.authors[i]
-                    if pub_dto in c.publications and no_id:
-                        c.publications.remove(pub_dto)
-                    pub_dto.authors[i] = self.contact_dao().create_update(c, False)
-
-                if pub_dto.publisher is not None:
-                    if pub_dto in pub_dto.publisher.publications and no_id:
-                        pub_dto.publisher.publications.remove(pub_dto)
-                    pub_dto.publisher = self.contact_dao().create_update(pub_dto.publisher, False)
-
             if no_id:
                 existing_dto = self.dto.objects(title=pub_dto.title).first()
                 if existing_dto is not None:
                     saved_dto = self.merge_documents(existing_dto, pub_dto)
-                    if cascade_add:
-                        saved_dto = self._add_pub_ref_to_children(saved_dto)
                     return saved_dto
-
-            if pub_dto.publisher is not None:
-                p = pub_dto.publisher
-                pub_dto.publisher = self.contact_dao().create_update(p)
 
             pub_dto.last_updated = datetime.utcnow()
             pub_dto.save()
         return pub_dto
+
+    def _default_search_fields(self):
+        return ['title', 'authors', ]
 
 
 class URLMetadataDAO(DAO):

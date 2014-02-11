@@ -313,6 +313,7 @@ class OrgContactsScraper(object):
     def __init__(self):
         self._name_scraper = ContactNameScraper()
         self._number_scraper = IndianPhoneNumberScraper()
+        self._us_number_scraper = USPhoneNumberScraper()
         self._email_scraper = EmailScraper()
         self._position_scraper = ContactPositionScraper()
         self._org_name_scraper = OrgNameScraper()
@@ -336,9 +337,17 @@ class OrgContactsScraper(object):
             self._contacts[names[i].get('name')]['position'] = [self._position_scraper.parse(cr)
                                                           if self._position_scraper.parse(cr)
                                                           else None][0]
-            self._contacts[names[i].get('name')]['number'] = [self._number_scraper.parse(cr)[0]
-                                                        if self._number_scraper.parse(cr)
-                                                        else None][0]
+            numbers = []
+            india_num = self._number_scraper.parse(cr)[0] if self._number_scraper.parse(cr) else None
+            if india_num:
+                numbers = [india_num]
+            else:
+                us_num = self._us_number_scraper.parse(cr)[0] if self._us_number_scraper.parse(cr) else None
+                if us_num:
+                    numbers = [us_num]
+                else:
+                    numbers = []
+            self._contacts[names[i].get('name')]['number'] = numbers
             self._contacts[names[i].get('name')]['email'] = [self.compare_emails(cr, names[i].get('name'))
                                                        if self.compare_emails(cr, names[i].get('name'))
                                                        else None][0]
@@ -727,30 +736,138 @@ class OrgUrlScraper(object):
         return url
 
 
+class PublicationCitationSourceScraper(object):
+    def __init__(self):
+        self.hash_regex = re.compile('\w{12}')
+
+    def parse(self, response):
+        #All hashes are fetched by gs_ocit calls
+        source_string_regex = re.compile("return gs_ocit\(event,'\w{12}'")
+        keys = []
+        hxs = HtmlXPathSelector(response)
+        #Currently, Google Scholar has it so we only need to parse 'a' elements
+        #for the ajax source keys
+        sources = hxs.select('//a').re(source_string_regex)
+        for source in sources:
+            keys.append(re.search(self.hash_regex, source).group())
+
+        return keys
+
+
 class PublicationAuthorsScraper(object):
     def __init__(self):
-        authors = []
+        pass
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+        #Each citation request will always only have one matched selection
+        #And it is returned as a unicode value, so we must convert it
+        chicago_format_html = hxs.select('//div[@id=\'gs_cit2\']').extract()[0].encode('ascii', 'ignore')
+        chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
+        chicago_format_html = str.replace(chicago_format_html, '</div>', '')
+
+        author_delim = ' <i>' if chicago_format_html.find('<i>') < chicago_format_html.find('\"') else '\"'
+
+        if not author_delim in chicago_format_html:
+            author_delim = ' <i>'
+
+        author_str = chicago_format_html.split(author_delim)[0]
+
+        return author_str
 
 
 class PublicationDateScraper(object):
     def __init__(self):
-        partners = []
+        self.date_regex = re.compile('\d{4}')
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+        #Each citation request will always only have one matched selection
+        #And it is returned as a unicode value, so we must convert it
+        chicago_format_html = hxs.select('//div[@id=\'gs_cit2\']').extract()[0].encode('ascii', 'ignore')
+        chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
+        chicago_format_html = str.replace(chicago_format_html, '</div>', '')
+
+        date = re.search(self.date_regex, chicago_format_html).group()
+        return date
 
 
 class PublicationPublisherScraper(object):
     def __init__(self):
-        publisher = []
+        pass
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+        #Each citation request will always only have one matched selection
+        #And it is returned as a unicode value, so we must convert it
+        chicago_format_html = hxs.select('//div[@id=\'gs_cit2\']').extract()[0].encode('ascii', 'ignore')
+        chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
+        chicago_format_html = str.replace(chicago_format_html, '</div>', '')
+
+        start_delim = '</i> ' if chicago_format_html.find('<i>') < chicago_format_html.find('\"') else '.\" <i>'
+        end_delim = ',' if start_delim == '</i> ' else '</i>'
+        start_index = chicago_format_html.find(start_delim) + len(start_delim)
+
+        if not start_delim in chicago_format_html:
+            start_delim = '</i> '
+            end_delim = ','
+
+        publisher = chicago_format_html[start_index:chicago_format_html.find(end_delim, start_index)]
+
+        return publisher
 
 
 class PublicationTitleScraper(object):
     def __init__(self):
-        titles = []
+        pass
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+        #Each citation request will always only have one matched selection
+        #And it is returned as a unicode value, so we must convert it
+        chicago_format_html = hxs.select('//div[@id=\'gs_cit2\']').extract()[0].encode('ascii', 'ignore')
+        chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
+        chicago_format_html = str.replace(chicago_format_html, '</div>', '')
+
+        title_delim = ' <i>' if chicago_format_html.find('<i>') < chicago_format_html.find('\"') else ' \"'
+        ending_title_delim = '</i>' if title_delim == ' <i>' else ".\" "
+
+        if not title_delim in chicago_format_html:
+            title_delim = ' <i>'
+            ending_title_delim = '</i>'
+
+        #This parses the title out of the string
+        title = chicago_format_html[chicago_format_html.find(title_delim) + len(title_delim)
+                                    :chicago_format_html.find(ending_title_delim)]
+
+        return title
 
 
-class PublicationTypeScraper(object):
+class PublicationURLScraper(object):
     def __init__(self):
-        type = []
+        #Seed titles to look for on page
+        self.titles = []
 
+    def seed_titles(self, title_names):
+        self.titles = self.titles + title_names
+
+    def parse(self, response):
+        hxs = HtmlXPathSelector(response)
+        sources = hxs.select('//a').extract()
+
+        urls = []
+        for i in range(0, len(self.titles)):
+            urls.append(None)
+
+        start = "=\""
+        index = 0
+        for title in self.titles:
+            for source in sources:
+                    if title in source:
+                        raw_link = source.encode('ascii', 'ignore')
+                        urls[index] = raw_link[raw_link.find(start) + len(start):raw_link.find("\">")]
+            index += 1
+        return urls
 
 class UrlMetadataScraper(object):
     def __init__(self):

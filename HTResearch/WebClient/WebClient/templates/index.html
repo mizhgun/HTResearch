@@ -9,6 +9,7 @@
             src="https://maps.googleapis.com/maps/api/js?&sensor=false&libraries=visualization"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <link href="static/css/index.css" rel="stylesheet">
+    <link href="static/css/legend.css" rel="stylesheet">
     <script src="static/scripts/index.js" type="text/javascript"></script>
     <script src="static/scripts/heatmap.js" type="text/javascript"></script>
 {% endblock %}
@@ -17,46 +18,61 @@
 {% block content %}
     {% include "org_modal.html" %}
     {% include "org_bs_modal.html" %}
-    {% include "contact_bs_modal.html" %}
+    {% include "contact_modal.html" %}
+    {% include "publication_modal.html" %}
+    {% include "map_legend.html" %}
     <div id="wrapper">
         <div class="row">
-            <div class="col-md-2 search-div">
-                <div id="search-box-div" class="jumbotron">
-                    <form id="custom-search-form" class="form-search form-horizontal">
-                        <div class="input-append span12">
-                            {% csrf_token %}
-                            <input type="text" id="search-box" class="search-query" placeholder=" Search...">
+
+            <div class="col-md-9">
+                <div class="col-md-3 search-div">
+                    <div id="search-box-div" class="">
+                        <form id="custom-search-form" class="form-search form-horizontal">
+                            <div class="input-append span12">
+                                {% csrf_token %}
+                                <input type="text" id="search-box" class="search-query" placeholder=" Search...">
+                            </div>
+                            <div id="search-ajax-loader" class="ajax-loader hidden"></div>
+                        </form>
+                        <div id="search-results-div" class="panel-group" style="display: none">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h2 id="organization-list-header" class="panel-title">
+                                        <a id="organization-toggle" data-toggle="collapse" href="#collapse-organizations">Organizations</a>
+                                    </h2>
+                                    <p class="count"></p>
+                                </div>
+                                <div id="collapse-organizations" class="panel-collapse collapse">
+                                    <ul id="organization-search-list"></ul>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h2 id="contact-list-header" class="panel-title">
+                                        <a id="contact-toggle" class="disabled" data-toggle="collapse"
+                                           href="#collapse-contacts">People</a>
+                                    </h2>
+                                    <p class="count"></p>
+                                </div>
+                                <div id="collapse-contacts" class="panel-collapse collapse">
+                                    <ul id="contact-search-list"></ul>
+                                </div>
+                            </div>
                         </div>
-                        <div id="search-ajax-loader" class="ajax-loader hidden"></div>
-                    </form>
-                    <div id="search-results-div" class="panel-group" style="display: none">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h2 id="organization-list-header" class="panel-title">
-                                    <a id="organization-toggle" data-toggle="collapse" href="#collapse-organizations">Organizations</a>
+                                <h2 id="publication-list-header" class="panel-title">
+                                    <a id="publication-toggle" class="disabled" data-toggle="collapse"
+                                       href="#collapse-publications">Publications</a>
                                 </h2>
                                 <span class="count"></span>
                             </div>
-                            <div id="collapse-organizations" class="panel-collapse collapse">
-                                <ul id="organization-search-list"></ul>
-                            </div>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h2 id="contact-list-header" class="panel-title">
-                                    <a id="contact-toggle" class="disabled" data-toggle="collapse"
-                                       href="#collapse-contacts">People</a>
-                                </h2>
-                                <span class="count"></span>
-                            </div>
-                            <div id="collapse-contacts" class="panel-collapse collapse">
-                                <ul id="contact-search-list"></ul>
+                            <div id="collapse-publications" class="panel-collapse collapse">
+                                <ul id="publication-search-list"></ul>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-9">
                 <div id="map-canvas"></div>
             </div>
             <div class="col-md-3">

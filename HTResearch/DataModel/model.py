@@ -5,12 +5,12 @@ class Contact(object):
     """A Model class for an anti-trafficking contact."""
 
     def __init__(self, first_name=None, last_name=None,
-                 phone=None, email=None, organization=None,
+                 phones=[], email=None, organization=None,
                  publications=[], position=None, valid=True,
                  updated_by=None):
         self.first_name = first_name
         self.last_name = last_name
-        self.phone = phone
+        self.phones = phones
         self.email = email
         self.organization = organization
         self.publications = publications
@@ -49,7 +49,7 @@ class Organization(object):
 class Publication(object):
     """A Model class for an anti-trafficking research publication."""
 
-    def __init__(self, title=None, authors=[],
+    def __init__(self, title=None, authors=None,
                  publisher=None, publication_date=datetime.utcnow(),
                  types=[], content_url=None, valid=True,
                  updated_by=None):

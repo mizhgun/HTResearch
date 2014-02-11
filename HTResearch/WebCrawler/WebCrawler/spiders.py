@@ -168,3 +168,58 @@ class StopTraffickingSpider(BaseSpider):
         url_item['last_visited'] = datetime(1, 1, 1)
 
         return url_item
+
+
+class PublicationSpider(BaseSpider):
+    name = "publication_spider"
+    allowed_domains = ['scholar.google.com']
+    
+    #This will be changed in Release 5
+    query = 'rochelle+dalla'
+    start_urls = ['http://scholar.google.com/scholar?q=' + query + '&hl=en']
+
+    def __init__(self, *args, **kwargs):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+        super(PublicationSpider, self).__init__(*args, **kwargs)
+        self.scraper = PublicationScraper()
+        self.first = True
+        self.citation_urls = []
+        self.main_page = None
+        #Currently breaking, but this is how we'll grab tons of results
+        #PublicationSpider.start_urls = self.create_start_urls(self, 'rochelle dalla')
+
+    def __del__(self):
+        os.chdir(self.saved_path)
+
+    def parse(self, response):
+
+        # if first time through...
+        if self.first:
+            self.first = False
+            self.citation_urls = self.scraper.parse_main_page(response)
+            self.main_page = response
+            #Return citation requests
+            for url in self.citation_urls:
+                yield Request('http://'+url, dont_filter=True)
+
+        else:
+            #Publications will be stored in the scraper until all information
+            #is populated
+            self.scraper.parse_citation_page(response)
+
+            if len(self.scraper.publications) == len(self.citation_urls):
+                #Finish process by adding publication urls
+                self.scraper.parse_pub_urls(self.main_page)
+                for pub in self.scraper.publications:
+                    yield pub
+
+    @staticmethod
+    def create_start_urls(self, query):
+        query = query.replace(' ', '+')
+        new_urls = ['http://scholar.google.com/scholar?q=' + query + '&hl=en']
+    
+        for i in range(1, 10):
+            new_urls.append('http://scholar.google.com/scholar?start='+str(i*10)+'&q=' + query + '&hl=en')
+    
+        return new_urls

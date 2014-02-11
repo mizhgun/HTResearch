@@ -60,7 +60,8 @@ class DatabaseInteractionTest(unittest.TestCase):
                                                 ]
         )
         self.publication = Publication(title="The Book of Yee",
-                                       authors=[self.contact])
+                                       authors="Sam Adams, {0} {1}".format(self.contact.first_name, self.contact.last_name),
+                                       publisher="{0} {1}".format(self.contact.first_name, self.contact.last_name))
         self.urlmetadata = URLMetadata(url="http://google.com")
         self.user = User(first_name="Bee", last_name="Yee",
                          email="beeyee@yee.com", password="iambeeyee",
@@ -87,6 +88,20 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_contact.first_name, contact_dto.first_name)
         self.assertEqual(assert_contact.last_name, contact_dto.last_name)
         self.assertEqual(assert_contact.email, contact_dto.email)
+
+        print 'Testing contact text search ...'
+
+        assert_contacts = contact_dao.findmany(search='jordan degner',
+                                               num_elements=10)
+        self.assertEqual(len(assert_contacts), 1)
+        self.assertEqual(assert_contacts[0].first_name, contact_dto.first_name)
+
+        assert_contacts = contact_dao.findmany(search='bee yee', num_elements=10)
+        self.assertEqual(len(assert_contacts), 0)
+
+        assert_contacts = contact_dao.findmany(search='@gmail', search_fields=['email', ], num_elements=10)
+        self.assertEqual(len(assert_contacts), 1)
+        self.assertEqual(assert_contacts[0].first_name, contact_dto.first_name)
 
         print 'Testing contact editing ...'
         contact_dto.first_name = "Djordan"
@@ -133,7 +148,7 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Testing organization text search ...'
 
-        assert_orgs = org_dao.findmany(search='bEe YeE university ers Religious govern secUTION ISFP Yeesy',
+        assert_orgs = org_dao.findmany(search='YeE university ers Religious govern secUTION ISFP Yeesy',
                                        num_elements=10)
         self.assertEqual(len(assert_orgs), 1)
         self.assertEqual(assert_orgs[0].name, org_dto.name)
@@ -182,6 +197,21 @@ class DatabaseInteractionTest(unittest.TestCase):
                                   title=pub_dto.title)
         self.assertEqual(assert_pub.title, pub_dto.title)
         self.assertEqual(assert_pub.authors, pub_dto.authors)
+        self.assertEqual(assert_pub.publisher, pub_dto.publisher)
+
+        print 'Testing publication text search ...'
+
+        assert_pubs = pub_dao.findmany(search='book of yee degner ADAMS',
+                                       num_elements=10)
+        self.assertEqual(len(assert_pubs), 1)
+        self.assertEqual(assert_pubs[0].title, pub_dto.title)
+
+        assert_pubs = pub_dao.findmany(search='nosuchpublication', num_elements=10)
+        self.assertEqual(len(assert_pubs), 0)
+
+        assert_pubs = pub_dao.findmany(search='sam adams', search_fields=['authors', ], num_elements=10)
+        self.assertEqual(len(assert_pubs), 1)
+        self.assertEqual(assert_pubs[0].title, pub_dto.title)
 
         print 'Testing publication editing ...'
         pub_dto.title = "The Book of Mee"
@@ -266,13 +296,13 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Creating a duplicate and attempting an insert ...'
         new_contact = Contact(email="jdegner0129@gmail.com",
-                              phone=4029813230)
+                              phones=['4029813230'])
         new_contact_dto = DTOConverter.to_dto(ContactDTO, new_contact)
         contact_dao.create_update(new_contact_dto)
 
         print 'Asserting that the old contact was updated'
         assert_contact = contact_dao.find(id=contact_dto.id)
-        self.assertEqual(assert_contact.phone, new_contact_dto.phone)
+        self.assertEqual(assert_contact.phones, new_contact_dto.phones)
 
         print 'Merge records tests passed'
 

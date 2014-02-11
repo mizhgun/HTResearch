@@ -9,7 +9,7 @@ class ContactDTO(mongo.Document):
 
     first_name = mongo.StringField(db_field='f')
     last_name = mongo.StringField(db_field='l')
-    phone = mongo.IntField(db_field='p1')
+    phones = mongo.ListField(db_field='p')
     email = mongo.EmailField(db_field='e')
     organization = mongo.ReferenceField('OrganizationDTO', db_field='o')
     publications = mongo.ListField(mongo.ReferenceField('PublicationDTO'), db_field='ps')
@@ -44,8 +44,8 @@ class PublicationDTO(mongo.Document):
     """A DTO wrapper for Publication documents"""
 
     title = mongo.StringField(db_field='t')
-    authors = mongo.ListField(mongo.ReferenceField(ContactDTO), db_field='as')
-    publisher = mongo.ReferenceField(ContactDTO, db_field='p')
+    authors = mongo.StringField(db_field='as')
+    publisher = mongo.StringField(db_field='p')
     publication_date = mongo.DateTimeField(db_field='d')
     types = mongo.ListField(mongo.IntField(), db_field='ts')
     content_url = mongo.URLField(db_field='u')
