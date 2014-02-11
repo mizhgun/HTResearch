@@ -44,7 +44,7 @@ body {
 #search-box-div .panel-heading {
     line-height: 1.1;
 }
-#contact-search-list, #organization-search-list {
+#contact-search-list, #organization-search-list, #publication-search-list {
     list-style-position: outside;
 }
 
