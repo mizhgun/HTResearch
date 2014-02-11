@@ -112,4 +112,50 @@ class OrganizationScraper():
 
 class PublicationScraper():
     def __init__(self):
-        publication = None
+        #Scrapers
+        self.key_scraper = PublicationCitationSourceScraper()
+        self.title_scraper = PublicationTitleScraper()
+        self.author_scraper = PublicationAuthorsScraper()
+        self.date_scraper = PublicationDateScraper()
+        self.publisher_scraper = PublicationPublisherScraper()
+        self.pub_url_scraper = PublicationURLScraper()
+        self.titles = []
+        self.publications = []
+
+    #Second
+    def parse_citation_page(self, response):
+        pub = ScrapedPublication()
+        pub['title'] = self.title_scraper.parse(response)
+        self.titles.append(pub['title'])
+        pub['authors'] = self.author_scraper.parse(response)
+        pub['publication_date'] = self.date_scraper.parse(response)
+        pub['publisher'] = self.publisher_scraper.parse(response)
+        self.publications.append(pub)
+
+    #Third
+    def parse_pub_urls(self, response):
+        #Rescrape main page for links
+        self.pub_url_scraper.seed_titles(self.titles)
+
+        #Use original response now that we have the list of titles
+        pub_urls = self.pub_url_scraper.parse(response)
+
+        #Assign urls after scraping
+        for index, publication in enumerate(self.publications):
+            self.publications[index]['content_url'] = pub_urls[index]
+
+    #First
+    def parse_main_page(self, response):
+        #Must scrape several pubs at a time
+        #Each page will have roughly 10 publications
+        publications = []
+
+        #Response is the main GS results page
+        keys = self.key_scraper.parse(response)
+
+        next_urls = []
+        for key in keys:
+            #All ajax calls use this format
+            next_urls.append('scholar.google.com/scholar?q=info:' + key + ':scholar.google.com/&output=cite&scirp=0&hl=en')
+
+        return next_urls

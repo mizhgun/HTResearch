@@ -664,6 +664,158 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertIn(test, scraped_urls, 'Invalid URL Metadata Didn\'t Find: %s' % str(test))
 
+    def test_publication_citation_source_scraper(self):
+        test_files = [
+            "httpscholargooglecomscholarhlenqpaulbtnGassdt12C28",
+        ]
+
+        pub_scraper = PublicationCitationSourceScraper()
+        sources = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = pub_scraper.parse(response)
+                if isinstance(ret, list):
+                    sources = sources + ret
+                else:
+                    sources.append(ret)
+
+        assert_list = [
+            'FD5U1mFUAe8J', 'GouvW1uXQv4J', 'A_punTK0il4J', '09vlKiKyzVMJ', '1MI5x95WVlIJ', '5RnnsNt0VwwJ', 'HZXqLOywHBMJ', '_mfiSSkjBDMJ', 'hjmy2wt_cq8J', 'qoyC2e35yt4J'
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, sources, "Publication source (" + test + ") not found")
+
+
+    def test_publication_author_scraper(self):
+        test_files = [
+            "httpscholargooglecomscholarqinfoGouvW1uXQv4Jscholargooglecomoutputcitescirp0hlen",
+        ]
+
+        pub_scraper = PublicationAuthorsScraper()
+        pubs = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = pub_scraper.parse(response)
+                print ret
+                if isinstance(ret, list):
+                    pubs = pubs + ret
+                else:
+                    pubs.append(ret)
+
+        assert_list = [
+            'Willis, Paul E.'
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, pubs, "Author set: (" + test + ") not found")
+
+
+    def test_publication_date_scraper(self):
+        test_files = [
+            "httpscholargooglecomscholarqinfoGouvW1uXQv4Jscholargooglecomoutputcitescirp0hlen",
+        ]
+
+        pub_scraper = PublicationDateScraper()
+        pubs = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = pub_scraper.parse(response)
+                print ret
+                if isinstance(ret, list):
+                    pubs = pubs + ret
+                else:
+                    pubs.append(ret)
+
+        assert_list = [
+            '1977'
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, pubs, "Date (" + test + ") not found")
+
+
+    def test_publication_title_scraper(self):
+        test_files = [
+            "httpscholargooglecomscholarqinfoGouvW1uXQv4Jscholargooglecomoutputcitescirp0hlen",
+        ]
+
+        pub_scraper = PublicationTitleScraper()
+        pubs = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = pub_scraper.parse(response)
+                print ret
+                if isinstance(ret, list):
+                    pubs = pubs + ret
+                else:
+                    pubs.append(ret)
+
+        assert_list = [
+            'Learning to labour: How working class kids get working class jobs'
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, pubs, "Title (" + test + ") not found")
+
+    def test_publication_publisher_scraper(self):
+        test_files = [
+            "httpscholargooglecomscholarqinfoGouvW1uXQv4Jscholargooglecomoutputcitescirp0hlen",
+        ]
+
+        pub_scraper = PublicationPublisherScraper()
+        pubs = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = pub_scraper.parse(response)
+                print ret
+                if isinstance(ret, list):
+                    pubs = pubs + ret
+                else:
+                    pubs.append(ret)
+
+        assert_list = [
+            'Columbia University Press'
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, pubs, "Publisher (" + test + ") not found")
+
+    def test_publication_url_scraper(self):
+        test_files = [
+            "httpscholargooglecomscholarhlenqpaulbtnGassdt12C28",
+        ]
+
+        pub_scraper = PublicationURLScraper()
+        pubs = []
+        pub_scraper.seed_titles(['Learning to labour: How working class kids get working class jobs'])
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = pub_scraper.parse(response)
+                print ret
+                if isinstance(ret, list):
+                    pubs = pubs + ret
+                else:
+                    pubs.append(ret)
+
+        assert_list = [
+            'http://books.google.com/books?hl=en&amp;lr=&amp;id=3zmVaLrGIDEC&amp;oi=fnd&amp;pg=PR7&amp;dq=paul&amp;ots=7gy4pwXnwR&amp;sig=l5JsyyhbmZ7izyW7fNiYeBBDd1s'
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, pubs, "URL (" + test + ") not found")
 
 if __name__ == '__main__':
     try:
