@@ -1,8 +1,6 @@
 import json
-from mongoengine.fields import ObjectId, StringField, URLField
-from HTResearch.DataModel.model import *
-from HTResearch.DataAccess.dto import *
-from UserString import MutableString
+from datetime import datetime
+from mongoengine.fields import ObjectId
 
 
 class MongoJSONEncoder(json.JSONEncoder):
@@ -12,6 +10,9 @@ class MongoJSONEncoder(json.JSONEncoder):
         # If ObjectId, cast to string
         if isinstance(o, ObjectId):
             return str(o)
+        # Dat Datetime
+        elif isinstance(o, datetime):
+            return o.isoformat()
         # If a list of any items that are custom objects, encode them ourselves
         elif isinstance(o, list) and len(o) > 0 and any(not self._check_if_encodable(x) for x in o):
             new_list = []
@@ -21,7 +22,7 @@ class MongoJSONEncoder(json.JSONEncoder):
         # If a custom object, encode ourselves
         elif not self._check_if_encodable(o):
             return self._encode_ref(o)
-        # Otherwise, return
+            # Otherwise, return
         return json.JSONEncoder.default(self, o)
 
     def encode(self, o):

@@ -24,7 +24,7 @@ PROJECT_DIR = os.path.dirname(__file__)
 
 
 def run(command, exit_on_error=True):
-    print('\nRunning command: '+command)
+    print('\nRunning command: ' + command)
     status = os.system(command)
     if status != 0:
         sys.exit(status)
@@ -42,7 +42,7 @@ def main():
 
     # create virtual environment
     if not os.path.exists(VIRTUALENV_NAME):
-        run(VIRTUALENV_EXE+' '+VIRTUALENV_NAME)
+        run(VIRTUALENV_EXE + ' ' + VIRTUALENV_NAME)
 
     # install requirements to local folder
     run('pip install --requirement=requirements.txt')
@@ -60,5 +60,5 @@ def main():
     print "Bye!"
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()

@@ -9,11 +9,14 @@ class ContactDTO(mongo.Document):
 
     first_name = mongo.StringField(db_field='f')
     last_name = mongo.StringField(db_field='l')
-    phone = mongo.IntField(db_field='p1')
+    phones = mongo.ListField(db_field='p')
     email = mongo.EmailField(db_field='e')
     organization = mongo.ReferenceField('OrganizationDTO', db_field='o')
     publications = mongo.ListField(mongo.ReferenceField('PublicationDTO'), db_field='ps')
     position = mongo.StringField(db_field='pn')
+    valid = mongo.BooleanField(db_field='v', default=True)
+    last_updated = mongo.DateTimeField(db_field='lu')
+    updated_by = mongo.ObjectIdField(db_field='ub')
 
 
 class OrganizationDTO(mongo.Document):
@@ -31,18 +34,24 @@ class OrganizationDTO(mongo.Document):
     partners = mongo.ListField(mongo.ReferenceField('self'), db_field='ps')
     facebook = mongo.URLField(db_field='f')
     twitter = mongo.URLField(db_field='t')
-    keywords = mongo.MapField(mongo.FloatField(), db_field='ks')
+    keywords = mongo.StringField(db_field='ks')
+    valid = mongo.BooleanField(db_field='v', default=True)
+    last_updated = mongo.DateTimeField(db_field='lu')
+    updated_by = mongo.ObjectIdField(db_field='ub')
 
 
 class PublicationDTO(mongo.Document):
     """A DTO wrapper for Publication documents"""
 
     title = mongo.StringField(db_field='t')
-    authors = mongo.ListField(mongo.ReferenceField(ContactDTO), db_field='as')
-    publisher = mongo.ReferenceField(ContactDTO, db_field='p')
+    authors = mongo.StringField(db_field='as')
+    publisher = mongo.StringField(db_field='p')
     publication_date = mongo.DateTimeField(db_field='d')
     types = mongo.ListField(mongo.IntField(), db_field='ts')
     content_url = mongo.URLField(db_field='u')
+    valid = mongo.BooleanField(db_field='v', default=True)
+    last_updated = mongo.DateTimeField(db_field='lu')
+    updated_by = mongo.ObjectIdField(db_field='ub')
 
 
 class URLMetadataDTO(mongo.Document):
@@ -54,6 +63,7 @@ class URLMetadataDTO(mongo.Document):
     score = mongo.IntField(db_field='s')
     update_freq = mongo.IntField(db_field='f')
     checksum = mongo.BinaryField(db_field='c')
+    last_updated = mongo.DateTimeField(db_field='lu')
 
 
 class UserDTO(mongo.Document):
@@ -68,3 +78,4 @@ class UserDTO(mongo.Document):
                                   choices=(AccountType.COLLABORATOR, AccountType.CONTRIBUTOR))
     org_type = mongo.IntField(db_field='ot', choices=ORG_TYPE_CHOICES)
     organization = mongo.ReferenceField(OrganizationDTO, db_field='o')
+    last_updated = mongo.DateTimeField(db_field='lu')

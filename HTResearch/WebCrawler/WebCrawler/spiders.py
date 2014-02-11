@@ -1,16 +1,16 @@
-from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
-from HTResearch.Utilities.context import URLFrontierContext
-from HTResearch.Utilities.logutil import LoggingSection, get_logger
-from HTResearch.Utilities.url_tools import UrlUtility
+import os
 
 from springpython.context import ApplicationContext
-from scrapers.document_scrapers import *
-from scrapers.utility_scrapers import OrgUrlScraper
-from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy.spider import BaseSpider
 from scrapy.http import Request
 from scrapy import log
-import os
+
+from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
+
+from HTResearch.Utilities.context import URLFrontierContext
+
+from scrapers.document_scrapers import *
+from scrapers.site_specific import StopTraffickingDotInScraper
 
 # Since this logger can be shared by the whole module, we can instantiate it here
 logger = get_logger(LoggingSection.CRAWLER, __name__)
@@ -31,6 +31,8 @@ class OrgSpider(BaseSpider):
         self.scrapers = []
         self.org_scraper = OrganizationScraper()
         self.meta_data_scraper = UrlMetadataScraper()
+        self.scrapers.append(OrganizationScraper())
+        self.scrapers.append(ContactScraper())
         self.scrapers.append(LinkScraper())
         self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
         self.ctx = ApplicationContext(URLFrontierContext())
@@ -74,19 +76,22 @@ class OrgSpider(BaseSpider):
         yield request
 
     def parse(self, response):
-        ret = self.meta_data_scraper.parse(response)
-        if ret is not None:
-            yield ret
-        ret = self.org_scraper.parse(response)
-        if ret is not None:
-            yield ret
-            for scraper in self.scrapers:
-                ret = scraper.parse(response)
-                if isinstance(ret, type([])):
-                    for item in ret:
-                        yield item
-                else:
-                    yield ret
+        try:
+            ret = self.meta_data_scraper.parse(response)
+            if ret is not None:
+                yield ret
+            ret = self.org_scraper.parse(response)
+            if ret is not None:
+                yield ret
+                for scraper in self.scrapers:
+                    ret = scraper.parse(response)
+                    if isinstance(ret, type([])):
+                        for item in ret:
+                            yield item
+                    else:
+                        yield ret
+        except Exception as e:
+            logger.error(e.message)
 
         next_url = self.url_frontier.next_url(self.url_frontier_rules)
         timeout = 0
@@ -152,8 +157,8 @@ class StopTraffickingSpider(BaseSpider):
         yield url_item
 
     def _get_url_metadata(self, item):
-        if not isinstance(item, ScrapedOrganization)\
-                or item['organization_url'] is None or item['organization_url'] == "":
+        if not isinstance(item, ScrapedOrganization) \
+            or item['organization_url'] is None or item['organization_url'] == "":
             return None
 
         url_item = ScrapedUrl()
@@ -163,3 +168,58 @@ class StopTraffickingSpider(BaseSpider):
         url_item['last_visited'] = datetime(1, 1, 1)
 
         return url_item
+
+
+class PublicationSpider(BaseSpider):
+    name = "publication_spider"
+    allowed_domains = ['scholar.google.com']
+    
+    #This will be changed in Release 5
+    query = 'rochelle+dalla'
+    start_urls = ['http://scholar.google.com/scholar?q=' + query + '&hl=en']
+
+    def __init__(self, *args, **kwargs):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+        super(PublicationSpider, self).__init__(*args, **kwargs)
+        self.scraper = PublicationScraper()
+        self.first = True
+        self.citation_urls = []
+        self.main_page = None
+        #Currently breaking, but this is how we'll grab tons of results
+        #PublicationSpider.start_urls = self.create_start_urls(self, 'rochelle dalla')
+
+    def __del__(self):
+        os.chdir(self.saved_path)
+
+    def parse(self, response):
+
+        # if first time through...
+        if self.first:
+            self.first = False
+            self.citation_urls = self.scraper.parse_main_page(response)
+            self.main_page = response
+            #Return citation requests
+            for url in self.citation_urls:
+                yield Request('http://'+url, dont_filter=True)
+
+        else:
+            #Publications will be stored in the scraper until all information
+            #is populated
+            self.scraper.parse_citation_page(response)
+
+            if len(self.scraper.publications) == len(self.citation_urls):
+                #Finish process by adding publication urls
+                self.scraper.parse_pub_urls(self.main_page)
+                for pub in self.scraper.publications:
+                    yield pub
+
+    @staticmethod
+    def create_start_urls(self, query):
+        query = query.replace(' ', '+')
+        new_urls = ['http://scholar.google.com/scholar?q=' + query + '&hl=en']
+    
+        for i in range(1, 10):
+            new_urls.append('http://scholar.google.com/scholar?start='+str(i*10)+'&q=' + query + '&hl=en')
+    
+        return new_urls

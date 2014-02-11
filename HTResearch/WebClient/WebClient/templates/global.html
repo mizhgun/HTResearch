@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html>
-    <head>
-		<script src="/static/lib/jquery-2.0.3.min.js" type="text/javascript"></script>
-		<script type="text/javascript" src="/static/lib/underscore-min.js"></script>
-		<script type="text/javascript" src="/static/lib/jquery-ui-1.10.3.custom.min.js"></script>
-	    <script src="/static/lib/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-	   	<link href="/static/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-	    <link href="/static/css/navbar.css" rel="stylesheet">
-	    <link href="/static/css/global.css" rel="stylesheet">
-	    {% block imports %}
-	    {% endblock %}
-    </head>
+<head>
+    <script src="/static/lib/jquery-2.0.3.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/static/lib/underscore-min.js"></script>
+    <script type="text/javascript" src="/static/lib/jquery-ui-1.10.3.custom.min.js"></script>
+    {% block bootstrap %}
+        <script src="/static/lib/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    {% endblock %}
+    {% load compress %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/less" media="all" href="/static/lib/bootstrap/less/swatchmaker.less"/>
+    {% endcompress %}
+    <link href="/static/css/global.css" rel="stylesheet"/>
+    {% block imports %}
+    {% endblock %}
+</head>
 
-    <body>
-	    <div id="header">{% include "navbar.html" %}</div>
+<body>
+<div id="header">{% include "navbar.html" %}</div>
 
-	    {% block content %}
-	    {% endblock %}
+{% block content %}
+{% endblock %}
 
-	    <div id="footer">
-            <center id="footer-text" class="text-muted credit">
-                UNL Human Trafficking Research, 2013
-            </center>
-        </div>
-    </body>
+<div id="footer">
+    <center id="footer-text" class="text-muted credit">
+        UNL Human Trafficking Research, 2013
+    </center>
+</div>
+</body>
 
 </html>

@@ -8,10 +8,17 @@
         </h4>
       </div>
       <div class="modal-body" id="modal-body">
-          <table class="table-condensed">
+          <p>
+          {% templatetag openvariable %}if valid{% templatetag closevariable %}
+              <span id="valid" class="pull-left glyphicon glyphicon-ok"></span>&nbsp;Verified
+          {% templatetag openvariable %}else{% templatetag closevariable %}
+              <span id="invalid" class="pull-left glyphicon glyphicon-remove"></span>&nbsp;Not Verified
+          {% templatetag openvariable %}/if{% templatetag closevariable %}
+          </p>
+          <table class="table table-condensed">
               {% templatetag openvariable %}if phone_numbers.length{% templatetag closevariable %}
               <tr class="modal-row">
-                  <td>Tel:</td>
+                  <th>Tel:</th>
                   <td>
                     {% templatetag openvariable %}each phone_numbers{% templatetag closevariable %}
                     ${$value}</br>
@@ -19,9 +26,9 @@
                   </td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
-              {% templatetag openvariable %}if emails.length{% templatetag closevariable %}
+    {% templatetag openvariable %}if emails.length{% templatetag closevariable %}
               <tr class="modal-row">
-                  <td>Email:</td>
+                  <th>Email:</th>
                   <td>
                     {% templatetag openvariable %}each emails{% templatetag closevariable %}
                     ${$value}</br>
@@ -29,15 +36,19 @@
                   </td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
-              {% templatetag openvariable %}if address{% templatetag closevariable %}
+    {% templatetag openvariable %}if address{% templatetag closevariable %}
               <tr class="modal-row">
-                  <td>Address:</td>
+                  <th>Address:</th>
                   <td>${address}</td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
           </table>
-          <a id="more-info-bs" href="/organization/${id}">More Info</a>
+      </div>
+      <div class="modal-footer">
+          <a href="/organization/${id}" class="btn btn-primary pull-right">More Info</a>
+          <a id="edit-org-btn" href="/edit-organization/${id}" class="btn btn-primary pull-right">Edit</a>
       </div>
     </div>
   </div>
+
 </script>

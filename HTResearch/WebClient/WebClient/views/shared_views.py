@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 from django.core.cache import cache
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponseRedirect
 from django.template.loader import get_template
 from django.template import Context
 from django.core.context_processors import csrf
 from django.shortcuts import render
+
 from mongoengine.fields import StringField, URLField, EmailField
 from springpython.context import ApplicationContext
 from HTResearch.Utilities.encoder import MongoJSONEncoder
@@ -19,7 +20,7 @@ def index(request):
     logger.info('Request made for index')
     args = {}
     args.update(csrf(request))
-    return render(request, 'index_template.html', args)
+    return render(request, 'index.html', args)
 
 
 # Encodes a DTO's non-string fields to JSON
@@ -30,6 +31,7 @@ def encode_dto(dto):
     json_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) not in string_types]
     for field in json_fields:
         dto[field] = MongoJSONEncoder().encode(dto[field])
+    return dto
 
 
 def heatmap_coordinates(request):
@@ -57,6 +59,11 @@ def heatmap_coordinates(request):
 
 def welcome(request):
     return render(request, 'welcome.html')
+
+
+def get_started(request):
+    return render(request, 'get_started.html')
+
 
 def get_http_404_page(request):
     template = get_template('404.html')
