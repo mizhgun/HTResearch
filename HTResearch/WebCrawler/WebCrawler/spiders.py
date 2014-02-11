@@ -1,32 +1,108 @@
-from urlparse import urljoin
-
-from scrapers.site_specific import StopTraffickingDotInScraper
-from scrapy.spider import BaseSpider
-from scrapy.selector import HtmlXPathSelector
-from scrapy.http import Request, TextResponse
 import os
-import pdb
+
+from springpython.context import ApplicationContext
+from scrapy.spider import BaseSpider
+from scrapy.http import Request
+from scrapy import log
+
+from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
+
+from HTResearch.Utilities.context import URLFrontierContext
+
+from scrapers.document_scrapers import *
+from scrapers.site_specific import StopTraffickingDotInScraper
+
+# Since this logger can be shared by the whole module, we can instantiate it here
+logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
-class BasicCrawlSpider(BaseSpider):
-    name = 'ht_research'
-    allowed_domains = ['shaktivahini.org']
-    start_urls = ['http://www.shaktivahini.org/']
+class OrgSpider(BaseSpider):
+    name = 'org_spider'
+    # empty start_urls, we're setting our own
+    start_urls = []
+    default_seed = "https://bombayteenchallenge.org/"
+    # don't block on error codes
+    handle_httpstatus_list = list(xrange(1, 999))
+
+    def __init__(self, *args, **kwargs):
+        super(OrgSpider, self).__init__(*args, **kwargs)
+
+        # Define our Scrapers
+        self.scrapers = []
+        self.org_scraper = OrganizationScraper()
+        self.meta_data_scraper = UrlMetadataScraper()
+        self.scrapers.append(OrganizationScraper())
+        self.scrapers.append(ContactScraper())
+        self.scrapers.append(LinkScraper())
+        self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
+        self.ctx = ApplicationContext(URLFrontierContext())
+        self.url_frontier = self.ctx.get_object("URLFrontier")
+        self.next_url_timeout = 10
+
+
+    @staticmethod
+    def _get_blocked_domains():
+        blocked_domains = []
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Resources/blocked_org_domains.txt')) as f:
+            for line in f:
+                blocked_domains.append(line.rstrip())
+        return blocked_domains
+
+    def start_requests(self):
+        """
+        This method is called once by Scrapy to kick things off.
+        We will get the first url to crawl from this.
+        """
+
+        logger.info('Starting requests to the Organization crawler')
+
+        # first URL to begin crawling
+        # Returns a URLMetadata model, so we have to pull the url field
+        start_url_obj = self.url_frontier.next_url(self.url_frontier_rules)
+
+        start_url = None
+        if start_url_obj is None:
+            start_url = OrgSpider.default_seed
+        else:
+            start_url = start_url_obj.url
+
+        if __debug__:
+            log.msg('START_REQUESTS : start_url = %s' % start_url)
+            logger.debug('START_REQUESTS : start_url = %s' % start_url)
+
+        request = Request(start_url, dont_filter=True)
+
+        # Scrapy is expecting a list of Item/Requests, so use yield
+        yield request
 
     def parse(self, response):
-        if isinstance(response, TextResponse):
-            hxs = HtmlXPathSelector(response)
-            links = hxs.select('//a')
-            urls = []
-            # Get unique urls from links
-            for link in links:
-                hrefs = link.select('@href').extract()
-                for href in hrefs:
-                    url = urljoin(response.url, href)
-                    if url not in urls:
-                        urls.append(url)
+        try:
+            ret = self.meta_data_scraper.parse(response)
+            if ret is not None:
+                yield ret
+            ret = self.org_scraper.parse(response)
+            if ret is not None:
+                yield ret
+                for scraper in self.scrapers:
+                    ret = scraper.parse(response)
+                    if isinstance(ret, type([])):
+                        for item in ret:
+                            yield item
+                    else:
+                        yield ret
+        except Exception as e:
+            logger.error(e.message)
 
-            return [ Request(url) for url in urls ]
+        next_url = self.url_frontier.next_url(self.url_frontier_rules)
+        timeout = 0
+        while next_url is None and timeout < self.next_url_timeout:
+            timeout += 1
+            next_url = self.url_frontier.next_url(self.url_frontier_rules)
+        if next_url is not None:
+            yield Request(next_url.url, dont_filter=True)
+        else:
+            self.url_frontier.empty_cache(self.url_frontier_rules)
+            yield Request(self.default_seed, dont_filter=True)
 
 
 class StopTraffickingSpider(BaseSpider):
@@ -64,7 +140,8 @@ class StopTraffickingSpider(BaseSpider):
             # grab directory entries
             self.directory_results = results
             #return Requests for each Popup page
-            return [Request(result.popup_url) for result in results]
+            for result in results:
+                yield Request(result.popup_url)
 
         # grab corresponding table entry 
         table_entry = next(entry for entry in self.directory_results if entry.popup_url == response.url)
@@ -74,8 +151,75 @@ class StopTraffickingSpider(BaseSpider):
             self.directory_results.remove(table_entry)
 
         items = self.scraper.parse_popup(response, table_entry)
+        url_item = self._get_url_metadata(items)
 
-        with open("Output/specific_page_scraper_output.txt", 'a') as f:
-            f.write(str(items) + "\n\n")
+        yield items
+        yield url_item
 
-        return items
+    def _get_url_metadata(self, item):
+        if not isinstance(item, ScrapedOrganization) \
+            or item['organization_url'] is None or item['organization_url'] == "":
+            return None
+
+        url_item = ScrapedUrl()
+        # Add http://'s since we removed them
+        url_item['url'] = 'http://' + item['organization_url']
+        url_item['domain'] = UrlUtility.get_domain(item['organization_url'])
+        url_item['last_visited'] = datetime(1, 1, 1)
+
+        return url_item
+
+
+class PublicationSpider(BaseSpider):
+    name = "publication_spider"
+    allowed_domains = ['scholar.google.com']
+    
+    #This will be changed in Release 5
+    query = 'rochelle+dalla'
+    start_urls = ['http://scholar.google.com/scholar?q=' + query + '&hl=en']
+
+    def __init__(self, *args, **kwargs):
+        self.saved_path = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+        super(PublicationSpider, self).__init__(*args, **kwargs)
+        self.scraper = PublicationScraper()
+        self.first = True
+        self.citation_urls = []
+        self.main_page = None
+        #Currently breaking, but this is how we'll grab tons of results
+        #PublicationSpider.start_urls = self.create_start_urls(self, 'rochelle dalla')
+
+    def __del__(self):
+        os.chdir(self.saved_path)
+
+    def parse(self, response):
+
+        # if first time through...
+        if self.first:
+            self.first = False
+            self.citation_urls = self.scraper.parse_main_page(response)
+            self.main_page = response
+            #Return citation requests
+            for url in self.citation_urls:
+                yield Request('http://'+url, dont_filter=True)
+
+        else:
+            #Publications will be stored in the scraper until all information
+            #is populated
+            self.scraper.parse_citation_page(response)
+
+            if len(self.scraper.publications) == len(self.citation_urls):
+                #Finish process by adding publication urls
+                self.scraper.parse_pub_urls(self.main_page)
+                for pub in self.scraper.publications:
+                    yield pub
+
+    @staticmethod
+    def create_start_urls(self, query):
+        query = query.replace(' ', '+')
+        new_urls = ['http://scholar.google.com/scholar?q=' + query + '&hl=en']
+    
+        for i in range(1, 10):
+            new_urls.append('http://scholar.google.com/scholar?start='+str(i*10)+'&q=' + query + '&hl=en')
+    
+        return new_urls

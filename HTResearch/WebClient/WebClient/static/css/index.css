@@ -1,0 +1,360 @@
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+}
+
+#edit-org-btn, #edit-contact-btn {
+    margin-right: 10px;
+}
+
+#map-canvas {
+    display: block;
+    width: auto;
+    height: inherit;
+    position: fixed;
+}
+
+#wrapper {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#search-box-div {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border-right: 2px solid transparent;
+    padding: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.search-div {
+    position: absolute;
+    min-width: 20em;
+}
+#search-box-div .panel-heading {
+    line-height: 1.1;
+}
+#contact-search-list, #organization-search-list, #publication-search-list {
+    list-style-position: outside;
+}
+
+.header {
+    height: 42px;
+}
+
+#wrapper {
+    display: table;
+    width: 100%;
+    margin-top: -42px;
+    padding-top: 42px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#wrapper .row {
+    height: 100%;
+    display: table-row;
+}
+
+#wrapper .col-md-1,
+#wrapper .col-md-2,
+#wrapper .col-md-3,
+#wrapper .col-md-4,
+#wrapper .col-md-5,
+#wrapper .col-md-6,
+#wrapper .col-md-7,
+#wrapper .col-md-8,
+#wrapper .col-md-9,
+#wrapper .col-md-10,
+#wrapper .col-md-11,
+#wrapper .col-md-12 {
+    height: 100%;
+    display: table-cell;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#custom-search-form .search-query {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    width: 100%;
+    transition: opacity 0.2s;
+    -webkit-transition: opacity 0.2s;
+}
+
+input:focus {
+    opacity: 50.0;
+}
+
+#custom-search-form button {
+    border: 0;
+    /** belows styles are working good */
+    padding: 2px 5px;
+    margin-top: 2px;
+    position: relative;
+    height: 20%;
+    /* IE7-8 doesn't have border-radius, so don't indent the padding */
+    margin-bottom: 0;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.search-query:focus + button {
+    z-index: 3;
+}
+
+#signup-div {
+    position: absolute;
+    z-index: 1;
+    height: 400px;
+    width: 400px;
+}
+
+#login-div {
+    position: absolute;
+    z-index: 1;
+    height: 300px;
+    width: 400px;
+}
+
+#create-an-account {
+    position: absolute;
+    font-size: xx-large;
+    left: 20%;
+    top: 5%;
+}
+
+#login-header {
+    position: absolute;
+    font-size: xx-large;
+    left: 25%;
+    top: 3%;
+}
+
+#username-field {
+    position: relative;
+    top: 40px;
+    margin-bottom: 10px;
+}
+
+#email-field {
+    position: relative;
+    top: 50px;
+    margin-bottom: 10px;
+}
+
+#password-field {
+    position: relative;
+    top: 60px;
+    margin-bottom: 10px;
+}
+
+#create-account-btn {
+    position: relative;
+    top: 50px;
+    margin-top: 50px;
+    margin-bottom: 10px;
+}
+
+#search-results-div {
+    overflow-y: auto;
+    width: 100%;
+    max-height: 75%;
+    opacity: 0.5;
+    filter: alpha(opacity=50); /* For IE8 and earlier */
+    transition: opacity 1s;
+    -webkit-transition: opaicty 1s;
+    line-height: 1.5em;
+}
+#search-results-div .count {
+    margin: 0;
+}
+#search-results-div li{
+    margin-bottom: 4px;
+}
+
+#search-results-div .panel-heading {
+    line-height: 2;
+}
+
+#search-box-div:hover #search-results-div {
+    opacity: 1.0;
+    filter: alpha(opacity=100); /* For IE8 and earlier */
+}
+
+.search-query:focus {
+    opacity: 1.0 !important;
+}
+
+#search-box {
+    line-height: 2;
+}
+
+#organization-list-header,
+#contact-list-header,
+#publication-list-header,
+#search-box{
+    font-size: x-large;
+}
+
+#organization-search-list,
+#contact-search-list,
+#publication-search-list {
+    font-size: small;
+}
+
+#modal-cancel {
+    position: absolute;
+    margin-top: 5px;
+    bottom: 1px;
+    left: 165px;
+}
+
+#addr-cell {
+    vertical-align: top;
+}
+
+#more-info-bs {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+}
+
+/*Navbar override*/
+.navbar {
+    margin-bottom: 0px;
+}
+
+.modal-row {
+    vertical-align: top;
+}
+
+#map-modal {
+    padding: 0px;
+    margin: 0px;
+}
+
+#modal-body {
+    padding-top: 4px;
+}
+
+#org-building-icon {
+    margin: 0px;
+}
+
+ul {
+    list-style-position: inside;
+}
+
+#organization-results,
+#contact-results,
+#publication-results {
+}
+
+.ajax-loader {
+    background-image: url(../../static/images/ajax-loader.gif);
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+}
+
+#search-ajax-loader {
+    position: absolute;
+    height: 51px;
+    right: 20px;
+    top: 10px;
+    z-index: 10;
+}
+
+#news-results {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 32px 10px 10px 10px;
+    background-color: #eee;
+}
+
+.article {
+    margin-top: 10px;
+    padding: 5px;
+    font-size: 12px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, .3);
+    background-color: #fff;
+    border-radius: 8px;
+}
+
+.article .article-title {
+    font-weight: bold;
+    margin-bottom: 3px;
+    display: none;
+}
+
+.article .article-date {
+    font-size: 80%;
+    margin-bottom: 3px;
+    display: none;
+}
+
+.article .article-content-snippet {
+    display: none;
+}
+
+.article .article-content {
+}
+
+.no-results {
+    text-align: center;
+    padding: 24px 0;
+}
+
+.news-ctrls {
+    width: 100%;
+    height: 36px;
+    text-align: center;
+    padding-top: 4px;
+}
+
+.news-ctrls .btn-group {
+    z-index: 1;
+}
+
+.news-footer {
+    width: 100%;
+    height: 36px;
+    color: #888;
+}
+
+.news-footer .glyphicon {
+    width: 100%;
+    margin-top: 8px;
+    text-align: center;
+}
+
+#valid {
+    color: #00FF00;
+}
+
+#invalid {
+    color: #FF0000;
+}
+
+#map-validity {
+    margin-top: -10px;
+}

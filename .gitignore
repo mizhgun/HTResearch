@@ -12,6 +12,12 @@ local_settings.py
 *.v12.suo
 obj/
 
+# Ignore config files
+*.cfg
+
+# Ignore the logging directory
+logs/
+
 # =========================
 # Windows detritus
 # =========================
@@ -32,3 +38,6 @@ $RECYCLE.BIN/
 # Webcrawler crap
 HTResearch/env/
 *_scraper_output.txt
+
+# Ignore Compiled CSS
+**/bootstrap/css
