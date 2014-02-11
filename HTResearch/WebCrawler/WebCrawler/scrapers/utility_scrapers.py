@@ -804,15 +804,15 @@ class PublicationPublisherScraper(object):
         chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
         chicago_format_html = str.replace(chicago_format_html, '</div>', '')
 
-        start_delim = '</i> ' if chicago_format_html.find('<i>') < chicago_format_html.find('\"') else '.\" <i>'
-        end_delim = ',' if start_delim == '</i> ' else '</i>'
-        start_index = chicago_format_html.find(start_delim) + len(start_delim)
-
+        start_delim = '</i>. ' if chicago_format_html.find('<i>') < chicago_format_html.find('\"') else '.\" <i>'
+        end_delim = ',' if start_delim == '</i>. ' else '</i>'
         if not start_delim in chicago_format_html:
-            start_delim = '</i> '
+            start_delim = '</i>. '
             end_delim = ','
 
-        publisher = chicago_format_html[start_index:chicago_format_html.find(end_delim, start_index)]
+        start_index = chicago_format_html.find(start_delim) + len(start_delim)
+
+        publisher = chicago_format_html[start_index:chicago_format_html.rfind(end_delim)]
 
         return publisher
 
