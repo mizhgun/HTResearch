@@ -1,0 +1,159 @@
+{% extends "global.html" %}
+
+{% block imports %}
+    <title>Edit {{ form.name.value }}</title>
+    <script src="/static/lib/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="/static/scripts/validators.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-wrapper center-block">
+            <div class="page-header">
+                <h1>Edit</h1>
+                <small>Save new contact information for {{ form.name.value }}</small>
+            </div>
+            {% if error %}
+                <div class="alert alert-error">
+                    <p>
+                        {{ error }}
+                    </p>
+                </div>
+            {% endif %}
+
+            {% if success %}
+                <div class="alert alert-success">
+                    <p>
+                        {{ success }}
+                    </p>
+                </div>
+            {% endif %}
+
+            <form id="edit-organization-form" role="form" method="post" action="/edit-organization/{{ org_id }}/">
+                {% csrf_token %}
+
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="id_invalid" {% if form.invalid.value %}checked{% endif %}>
+                         Invalid?
+                    </label>
+                </div>
+
+                {% if form.name.errors %}
+                    <div class="form-group has-error">
+                {% else %}
+                    <div class="form-group">
+                {% endif %}
+                    <label for="id_name" class="control-label">Name</label>
+                    <input type="text" id="id_name" name="name" class="form-control" value="{{ form.name.value }}">
+                    {% if form.name.errors %}
+                        <span class="help-block">
+                            {% for error in form.name.errors %}
+                            {{ error|escape }}<br/>
+                            {% endfor %}
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% if form.organization_url.errors %}
+                    <div class="form-group has-error">
+                {% else %}
+                    <div class="form-group">
+                {% endif %}
+                    <label for="id_organization_url" class="control-label">URL</label>
+                    <input type="url" onblur="checkURL(this)" id="id_organization_url" name="organization_url" class="form-control"
+                           value="{{ form.organization_url.value }}">
+                    {% if form.organization_url.errors %}
+                        <span class="help-block">
+                            {% for error in form.organization_url.errors %}
+                            {{ error|escape }}<br/>
+                            {% endfor %}
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% for email in form.emails %}
+                    <div class="form-group">
+                        <label for="{{ email.id }}" class="control-label">{{ email.label }}</label>
+                        <input type="email" id="{{ email.id }}" name="{{ email.name }}"
+                               class="form-control" value="{{ email.value }}">
+                    </div>
+                {% endfor %}
+
+                {% for phone in form.phone_numbers %}
+                    <div class="form-group">
+                        <label for="{{ phone.id }}" class="control-label">{{ phone.label }}</label>
+                        <input type="text" id="{{ phone.id }}" name="{{ phone.name }}"
+                               class="form-control" value="{{ phone.value }}">
+                    </div>
+                {% endfor %}
+
+                {% if form.address.errors %}
+                    <div class="form-group has-error">
+                {% else %}
+                    <div class="form-group">
+                {% endif %}
+                    <label for="id_address" class="control-label">Address</label>
+                    <input type="text" id="id_address" name="address" class="form-control"
+                           value="{{ form.address.value }}">
+                    {% if form.address.errors %}
+                        <span class="help-block">
+                            {% for error in form.address.errors %}
+                            {{ error|escape }}<br/>
+                            {% endfor %}
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% if form.facebook.errors %}
+                    <div class="form-group has-error">
+                {% else %}
+                    <div class="form-group">
+                {% endif %}
+                    <label for="id_facebook" class="control-label">Facebook</label>
+                    <input type="url" id="id_facebook" onblur="checkURL(this)" name="facebook" class="form-control"
+                           value="{{ form.facebook.value }}">
+                    {% if form.facebook.errors %}
+                        <span class="help-block">
+                            {% for error in form.facebook.errors %}
+                            {{ error|escape }}<br/>
+                            {% endfor %}
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% if form.twitter.errors %}
+                    <div class="form-group has-error">
+                {% else %}
+                    <div class="form-group">
+                {% endif %}
+                    <label for="id_twitter" class="control-label">Twitter</label>
+                    <input type="url" id="id_twitter" onblur="checkURL(this)" name="twitter" class="form-control"
+                           value="{{ form.twitter.value }}">
+                    {% if form.twitter.errors %}
+                        <span class="help-block">
+                            {% for error in form.twitter.errors %}
+                            {{ error|escape }}<br/>
+                            {% endfor %}
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% for type in form.types %}
+                    <div class="form-group">
+                        <label for="{{ type.id }}" class="control-label">{{ type.label }}</label>
+                        <select class="form-control" id="{{ type.id }}" name="{{ type.name }}">
+                            {% for value, label in type_choices %}
+                                <option value="{{ value }}" {% if value == type.value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

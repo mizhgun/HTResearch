@@ -1,63 +1,311 @@
-import sys
+# stdlib imports
 import unittest
-[sys.path.remove(p) for p in sys.path if 'DataAccess' in p]
-sys.path.append('../DataAccess/')
-from mongoengine.connection import connect, disconnect, get_connection
-from dto import ContactDTO, OrganizationDTO, PublicationDTO
-from dao import ContactDAO, OrganizationDAO, PublicationDAO
-from factory import DAOFactory
+from springpython.context import ApplicationContext
+from springpython.config import Object
+
+# project imports
+from HTResearch.DataModel.model import *
+from HTResearch.Utilities.converter import DTOConverter
+from HTResearch.Utilities.context import DAOContext
+from HTResearch.Test.Mocks.dao import *
+from HTResearch.DataModel.enums import AccountType
+
+
+class TestableDAOContext(DAOContext):
+    @Object()
+    def RegisteredDBConnection(self):
+        return MockDBConnection
+
+    @Object()
+    def RegisteredContactDAO(self):
+        return MockContactDAO
+
+    @Object()
+    def RegisteredOrganizationDAO(self):
+        return MockOrganizationDAO
+
+    @Object()
+    def RegisteredPublicationDAO(self):
+        return MockPublicationDAO
+
+    @Object()
+    def RegisteredURLMetadataDAO(self):
+        return MockURLMetadataDAO
+
+    @Object()
+    def RegisteredGeocode(self):
+        return lambda x: [0.0, 0.0]
+
 
 class DatabaseInteractionTest(unittest.TestCase):
-
-    mongodb_name = 'db_test'
-
     def setUp(self):
         print "New DatabaseInteractionTest running"
-        disconnect()
-        connect(self.mongodb_name)
-        print 'Creating mongo test-database: ' + self.mongodb_name
+
+        self.contact = Contact(first_name="Jordan",
+                               last_name="Degner",
+                               email="jdegner0129@gmail.com")
+        self.organization = Organization(name="Yee University",
+                                         organization_url="http://com.bee.yee",
+                                         contacts=[self.contact],
+                                         email_key="bee@yee.com",
+                                         emails=["info@yee.com", "stuff@yee.com"],
+                                         phone_numbers=[5555555555, "(555)555-5555"],
+                                         facebook="http://www.facebook.com/yee",
+                                         twitter="http://www.twitter.com/yee",
+                                         address="5124 Yeesy Street Omaha, NE 68024",
+                                         keywords="intj enfp entp isfp enfj istj",
+                                         types=[OrgTypesEnum.RELIGIOUS,
+                                                OrgTypesEnum.GOVERNMENT,
+                                                OrgTypesEnum.PROSECUTION,
+                                                ]
+        )
+        self.publication = Publication(title="The Book of Yee",
+                                       authors="Sam Adams, {0} {1}".format(self.contact.first_name, self.contact.last_name),
+                                       publisher="{0} {1}".format(self.contact.first_name, self.contact.last_name))
+        self.urlmetadata = URLMetadata(url="http://google.com")
+        self.user = User(first_name="Bee", last_name="Yee",
+                         email="beeyee@yee.com", password="iambeeyee",
+                         background="I love bees and yees",
+                         account_type=AccountType.COLLABORATOR)
+
+        self.ctx = ApplicationContext(TestableDAOContext())
 
     def tearDown(self):
-        connection = get_connection()
-        connection.drop_database(self.mongodb_name)
-        print 'Dropping mongo test-database: ' + self.mongodb_name
-        disconnect()
+        with MockDBConnection() as db:
+            db.dropall()
 
-    def test_dao(self):
-        my_contact = ContactDTO()
-        my_contact.first_name = "Jordan"
-        my_contact.last_name = "Degner"
-        my_contact.email = "jdegner0129@gmail.com"
-        DAOFactory.GetInstance(ContactDAO).Create(my_contact)
-        assert_contact=DAOFactory.GetInstance(ContactDAO).Find(my_contact.id)
-        self.assertTrue(assert_contact.first_name == "Jordan")
-        self.assertTrue(assert_contact.last_name == "Degner")
-        self.assertTrue(assert_contact.email == "jdegner0129@gmail.com")
+    def test_contact_dao(self):
+        contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)
+        contact_dao = self.ctx.get_object("ContactDAO")
+
+        print 'Testing contact creation ...'
+        contact_dao.create_update(contact_dto)
+
+        assert_contact = contact_dao.find(id=contact_dto.id,
+                                          first_name=contact_dto.first_name,
+                                          last_name=contact_dto.last_name,
+                                          email=contact_dto.email)
+        self.assertEqual(assert_contact.first_name, contact_dto.first_name)
+        self.assertEqual(assert_contact.last_name, contact_dto.last_name)
+        self.assertEqual(assert_contact.email, contact_dto.email)
+
+        print 'Testing contact text search ...'
+
+        assert_contacts = contact_dao.findmany(search='jordan degner',
+                                               num_elements=10)
+        self.assertEqual(len(assert_contacts), 1)
+        self.assertEqual(assert_contacts[0].first_name, contact_dto.first_name)
+
+        assert_contacts = contact_dao.findmany(search='bee yee', num_elements=10)
+        self.assertEqual(len(assert_contacts), 0)
+
+        assert_contacts = contact_dao.findmany(search='@gmail', search_fields=['email', ], num_elements=10)
+        self.assertEqual(len(assert_contacts), 1)
+        self.assertEqual(assert_contacts[0].first_name, contact_dto.first_name)
+
+        print 'Testing contact editing ...'
+        contact_dto.first_name = "Djordan"
+        contact_dao.create_update(contact_dto)
+
+        assert_contact = contact_dao.find(id=contact_dto.id,
+                                          first_name=contact_dto.first_name)
+        self.assertEqual(assert_contact.first_name, contact_dto.first_name)
+
+        print 'Testing contact deletion ...'
+        contact_dao.delete(contact_dto)
+
+        assert_contact = contact_dao.find(id=contact_dto.id)
+        self.assertTrue(assert_contact is None)
+
         print 'ContactDAO tests passed'
 
-        my_organization = OrganizationDTO()
-        my_organization.name = "Yee University"
-        my_organization.organization_url = "http://com.bee.yee"
-        contacts = []
-        contacts.append(my_contact)
-        contacts.append(assert_contact)
-        my_organization.contacts = contacts
-        DAOFactory.GetInstance(OrganizationDAO).Create(my_organization)
-        assert_organization=DAOFactory.GetInstance(OrganizationDAO).Find(my_organization.id)
-        self.assertTrue(assert_organization.contacts == contacts)
-        self.assertTrue(assert_organization.name == my_organization.name)
-        self.assertTrue(assert_organization.organization_url == my_organization.organization_url)
+    def test_organization_dao(self):
+        org_dto = DTOConverter.to_dto(OrganizationDTO, self.organization)
+        org_dao = self.ctx.get_object("OrganizationDAO")
+
+        print 'Testing organization creation ...'
+        org_dao.create_update(org_dto)
+
+        assert_org = org_dao.find(id=org_dto.id,
+                                  name=org_dto.name,
+                                  organization_url=org_dto.organization_url,
+                                  email_key=org_dto.email_key,
+                                  emails=org_dto.emails,
+                                  phone_numbers=org_dto.phone_numbers,
+                                  facebook=org_dto.facebook,
+                                  twitter=org_dto.twitter,
+                                  address=org_dto.address,
+                                  keywords=org_dto.keywords,
+                                  types=org_dto.types[0])
+        self.assertEqual(assert_org.name, org_dto.name)
+        self.assertEqual(assert_org.organization_url, org_dto.organization_url)
+        self.assertEqual(assert_org.contacts, org_dto.contacts)
+        self.assertEqual(assert_org.email_key, org_dto.email_key)
+        self.assertEqual(assert_org.emails, org_dto.emails)
+        self.assertEqual(assert_org.phone_numbers, org_dto.phone_numbers)
+        self.assertEqual(assert_org.facebook, org_dto.facebook)
+        self.assertEqual(assert_org.twitter, org_dto.twitter)
+
+        print 'Testing organization text search ...'
+
+        assert_orgs = org_dao.findmany(search='YeE university ers Religious govern secUTION ISFP Yeesy',
+                                       num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
+        self.assertEqual(assert_orgs[0].name, org_dto.name)
+
+        assert_orgs = org_dao.findmany(search='prevention advocacy', num_elements=10)
+        self.assertEqual(len(assert_orgs), 0)
+
+        assert_orgs = org_dao.findmany(search='religious', search_fields=['types', ], num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
+        self.assertEqual(assert_orgs[0].name, org_dto.name)
+
+        assert_orgs = org_dao.findmany(search='ISFP', search_fields=['keywords', ], num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
+
+        assert_orgs = org_dao.findmany(search='omaha', search_fields=['address', ], num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
+        self.assertEqual(assert_orgs[0].name, org_dto.name)
+
+        print 'Testing organization editing ...'
+        org_dto.name = "Yee Universityee"
+        org_dto.contacts = []
+        org_dao.create_update(org_dto)
+
+        assert_org = org_dao.find(id=org_dto.id,
+                                  name=u'Yee Universityee')
+        self.assertEqual(assert_org.name, org_dto.name)
+        self.assertEqual(assert_org.organization_url, org_dto.organization_url)
+        self.assertEqual(assert_org.contacts, org_dto.contacts)
+
+        print 'Testing organization deletion ...'
+        org_dao.delete(org_dto)
+
+        assert_org = org_dao.find(id=org_dto.id)
+        self.assertTrue(assert_org is None)
+
         print 'OrganizationDAO tests passed'
 
-        my_publication = PublicationDTO()
-        my_publication.title = "The Book of Yee"
-        my_publication.authors = contacts
-        my_publication.publication_date = '2006-10-25 14:30:59'
-        DAOFactory.GetInstance(PublicationDAO).Create(my_publication)
-        assert_publication=DAOFactory.GetInstance(PublicationDAO).Find(my_publication.id)
-        self.assertTrue(assert_publication.title == my_publication.title)
-        self.assertTrue(assert_publication.authors == my_publication.authors)
+    def test_publication_dao(self):
+        pub_dto = DTOConverter.to_dto(PublicationDTO, self.publication)
+        pub_dao = self.ctx.get_object("PublicationDAO")
+
+        print 'Testing publication creation ...'
+        pub_dao.create_update(pub_dto)
+
+        assert_pub = pub_dao.find(id=pub_dto.id,
+                                  title=pub_dto.title)
+        self.assertEqual(assert_pub.title, pub_dto.title)
+        self.assertEqual(assert_pub.authors, pub_dto.authors)
+        self.assertEqual(assert_pub.publisher, pub_dto.publisher)
+
+        print 'Testing publication text search ...'
+
+        assert_pubs = pub_dao.findmany(search='book of yee degner ADAMS',
+                                       num_elements=10)
+        self.assertEqual(len(assert_pubs), 1)
+        self.assertEqual(assert_pubs[0].title, pub_dto.title)
+
+        assert_pubs = pub_dao.findmany(search='nosuchpublication', num_elements=10)
+        self.assertEqual(len(assert_pubs), 0)
+
+        assert_pubs = pub_dao.findmany(search='sam adams', search_fields=['authors', ], num_elements=10)
+        self.assertEqual(len(assert_pubs), 1)
+        self.assertEqual(assert_pubs[0].title, pub_dto.title)
+
+        print 'Testing publication editing ...'
+        pub_dto.title = "The Book of Mee"
+        pub_dao.create_update(pub_dto)
+
+        assert_pub = pub_dao.find(id=pub_dto.id,
+                                  title=pub_dto.title)
+        self.assertEqual(assert_pub.title, pub_dto.title)
+
+        print 'Testing publication deletion ...'
+        pub_dao.delete(pub_dto)
+
+        assert_pub = pub_dao.find(id=pub_dto.id)
+        self.assertTrue(assert_pub is None)
+
         print 'PublicationDAO tests passed'
+
+    def test_urlmetadata_dao(self):
+        url_dto = DTOConverter.to_dto(URLMetadataDTO, self.urlmetadata)
+        url_dao = self.ctx.get_object("URLMetadataDAO")
+
+        print 'Testing URL creation ...'
+        url_dao.create_update(url_dto)
+
+        assert_url = url_dao.find(id=url_dto.id,
+                                  url=url_dto.url)
+        self.assertEqual(assert_url.url, url_dto.url)
+
+        print 'Testing URL editing ...'
+        url_dto.url = "http://facebook.com"
+        url_dao.create_update(url_dto)
+
+        assert_url = url_dao.find(id=url_dto.id,
+                                  url=url_dto.url)
+        self.assertEqual(assert_url.url, url_dto.url)
+
+        print 'Testing URL deletion ...'
+        url_dao.delete(url_dto)
+
+        assert_url = url_dao.find(id=url_dto.id)
+        self.assertTrue(assert_url is None)
+
+        print 'URLMetadataDAO tests passed'
+
+    def test_user_dao(self):
+        user_dto = DTOConverter.to_dto(UserDTO, self.user)
+        user_dao = self.ctx.get_object("UserDAO")
+
+        print 'Testing user creation ...'
+        user_dao.create_update(user_dto)
+
+        assert_user = user_dao.find(id=user_dto.id)
+
+        self.assertEqual(assert_user.id, user_dto.id)
+
+        print 'Testing user editing ...'
+        user_dto.first = "Byee"
+        user_dto.last = "Ybee"
+
+        user_dao.create_update(user_dto)
+
+        assert_user = user_dao.find(id=user_dto.id)
+
+        self.assertEqual(assert_user.id, user_dto.id)
+        self.assertEqual(assert_user.first_name, user_dto.first_name)
+        self.assertEqual(assert_user.last_name, user_dto.last_name)
+
+        print 'Testing user deletion ...'
+        user_dao.delete(user_dto)
+
+        assert_user = user_dao.find(id=user_dto.id)
+        self.assertTrue(assert_user is None)
+
+        print 'UserDAO tests passed'
+
+    def test_merge_records(self):
+        contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)
+        contact_dao = self.ctx.get_object("ContactDAO")
+
+        print 'Saving initial record ...'
+        contact_dao.create_update(contact_dto)
+
+        print 'Creating a duplicate and attempting an insert ...'
+        new_contact = Contact(email="jdegner0129@gmail.com",
+                              phones=['4029813230'])
+        new_contact_dto = DTOConverter.to_dto(ContactDTO, new_contact)
+        contact_dao.create_update(new_contact_dto)
+
+        print 'Asserting that the old contact was updated'
+        assert_contact = contact_dao.find(id=contact_dto.id)
+        self.assertEqual(assert_contact.phones, new_contact_dto.phones)
+
+        print 'Merge records tests passed'
+
 
 if __name__ == '__main__':
     try:
@@ -65,4 +313,3 @@ if __name__ == '__main__':
     except SystemExit as inst:
         if inst.args[0]:
             raise
-    print 'DB interaction test complete'

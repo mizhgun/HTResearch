@@ -1,0 +1,28 @@
+h2 {
+    text-align: center;
+}
+
+#experience-input {
+    position: relative;
+    width: 100%;
+}
+
+#experience-submit-btn {
+    position: relative;
+    top: 5px;
+    left: 40%;
+}
+
+#sidebar {
+    width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#no-keywords {
+    display: none;
+}
+
+#word-cloud {
+    text-align: center;
+}
