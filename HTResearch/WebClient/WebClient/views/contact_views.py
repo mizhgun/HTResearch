@@ -59,9 +59,7 @@ def search_contacts(request):
         c = dto.__dict__['_data']
         org_dao = ctx.get_object('OrganizationDAO')
         try:
-            print c['organization']
             if c['organization']:
-                print dir(c['organization'])
                 org = org_dao.find(id=c['organization'].id)
                 c['organization'] = org.__dict__['_data']
         except Exception:
