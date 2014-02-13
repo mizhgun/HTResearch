@@ -7,6 +7,7 @@ from dto import *
 from connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.geocoder import geocode
+from HTResearch.Utilities.url_tools import UrlUtility
 import re
 
 
@@ -202,9 +203,10 @@ class OrganizationDAO(DAO):
         with self.conn():
             attributes = new_org_dto._data
             for key in attributes:
-                if key == 'references' and attributes[key]:
-                    self._merge_page_rank_info(attributes[key], getattr(existing_org_dto, key),
-                                         getattr(existing_org_dto, 'last_updated'), getattr(existing_org_dto, 'id'))
+                if key == 'page_rank_info' and attributes[key]:
+                    new_val = self._merge_page_rank_info(attributes[key], getattr(existing_org_dto, key),
+                                         attributes['organization_url'])
+                    setattr(existing_org_dto, key, new_val)
                 elif attributes[key] or key == 'latlng':
                     cur_attr = getattr(existing_org_dto, key)
                     if not cur_attr:
@@ -221,8 +223,48 @@ class OrganizationDAO(DAO):
             existing_org_dto.save()
             return existing_org_dto
 
-    def _merge_page_rank_info(self, new_references, existing_references, last_updated, id):
-        pass
+    def _merge_page_rank_info(self, new_references, existing_references, organization_url):
+        org_domain = UrlUtility().get_domain(organization_url)
+        for ref in new_references.references:
+            ref_exists = False
+            # Search for existing references from one organization to another
+            for exist_ref in existing_references.references:
+                if ref.org_domain == exist_ref.org_domain:
+                    # We found existing data for references from Org A to Org B
+                    ref_exists = True
+                    for page in ref.pages:
+                        page_exists = False
+                        # Search if we have data from this specific URL to this specific organization
+                        for exist_page in exist_ref.pages:
+                            if page.url == exist_page.url:
+                                # We found existing data for references from URL A to Org B
+                                page_exists = True
+                                count_diff = page.count - exist_page.count
+                                if count_diff != 0:
+                                    # This page must have changed b/c the number of references is different
+                                    # update everything
+                                    exist_page.count = page.count
+                                    exist_ref.count += count_diff
+                                    existing_references.total_with_self += count_diff
+                                    if exist_ref.org_domain != org_domain:
+                                        # This value only updated if Organization A and B are different
+                                        existing_references.total += count_diff
+                                break;
+                        if not page_exists:
+                            # We have recorded other references to this organization, but none from this url
+                            exist_ref.pages.append(page)
+                            exist_ref.count += page.count
+                            existing_references.total_with_self += page.count
+                            if exist_ref.org_domain != org_domain:
+                                existing_references.total += page.count
+                    break;
+            # If this organization has not yet referenced the specified outside org, add it
+            if not ref_exists:
+                existing_references.references.append(ref)
+                existing_references.total_with_self += ref.count
+                if ref.org_domain != org_domain:
+                    existing_references.total += ref.count
+        return existing_references
 
     def _add_org_ref_to_children(self, org_dto):
         for i in range(len(org_dto.contacts)):
