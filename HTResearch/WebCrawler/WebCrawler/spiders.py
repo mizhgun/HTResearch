@@ -187,7 +187,7 @@ class PublicationSpider(BaseSpider):
         self.citation_urls = []
         self.main_page = None
         #Currently breaking, but this is how we'll grab tons of results
-        #PublicationSpider.start_urls = self.create_start_urls(self, 'rochelle dalla')
+        PublicationSpider.start_urls = self.create_start_urls(self, 'hawking')
 
     def __del__(self):
         os.chdir(self.saved_path)
@@ -213,6 +213,7 @@ class PublicationSpider(BaseSpider):
                 self.scraper.parse_pub_urls(self.main_page)
                 for pub in self.scraper.publications:
                     yield pub
+                self.first = False
 
     @staticmethod
     def create_start_urls(self, query):
