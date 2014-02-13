@@ -25,7 +25,7 @@
         <div class="row">
 
             <div class="col-md-9">
-                <div class="col-md-3 search-div">
+                <div class="search-div">
                     <div id="search-box-div" class="">
                         <form id="custom-search-form" class="form-search form-horizontal">
                             <div class="input-append span12">
@@ -75,11 +75,11 @@
                             </div>
                         </div>
                     </div>
+                    <div class="news-panel">
+                        {% include "news.html" %}
+                    </div>
                 </div>
                 <div id="map-canvas"></div>
-            </div>
-            <div class="col-md-3">
-                {% include "news.html" %}
             </div>
         </div>
     </div>
