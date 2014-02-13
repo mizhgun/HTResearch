@@ -825,8 +825,7 @@ class PublicationTitleScraper(object):
         hxs = HtmlXPathSelector(response)
         #Each citation request will always only have one matched selection
         #And it is returned as a unicode value, so we must convert it
-        extraction = hxs.select('//div[@id=\'gs_cit2\']').extract()
-        chicago_format_html = extraction[0].encode('ascii', 'ignore')
+        chicago_format_html = hxs.select('//div[@id=\'gs_cit2\']').extract()[0].encode('ascii', 'ignore')
         chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
         chicago_format_html = str.replace(chicago_format_html, '</div>', '')
 
