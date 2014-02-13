@@ -30,6 +30,7 @@ body {
 .search-div {
     position: absolute;
     right: 0;
+    width: 25%;
     min-width: 22em;
     height: 100%;
     overflow: hidden;
