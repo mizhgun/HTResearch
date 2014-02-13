@@ -36,6 +36,9 @@ function initialize() {
         center: initialLatLng,
         zoom: 5,
         mapTypeId: google.maps.MapTypeId.HYBRID,
+        mapTypeControlOptions: {
+            position: google.maps.ControlPosition.TOP_LEFT
+        },
         panControl: false,
         zoomControl: false,
         scaleControl: false,
@@ -104,7 +107,7 @@ function initialize() {
     var three_ps_legend = document.createElement('div');
     $(three_ps_legend).css('margin-bottom', '5px');
     $(three_ps_legend).html($("#map-legend").html());
-    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(three_ps_legend);
+    map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(three_ps_legend);
 }
 
 function getCookie(name) {
