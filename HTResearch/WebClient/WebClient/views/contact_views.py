@@ -68,7 +68,6 @@ def search_contacts(request):
         results.append(c)
 
     data = {'results': results}
-    # data = {'results': map(lambda x: x.__dict__['_data'], contacts)}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
 
 
