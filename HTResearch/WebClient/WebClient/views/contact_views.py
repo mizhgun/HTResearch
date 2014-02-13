@@ -54,8 +54,21 @@ def search_contacts(request):
             logger.error('Exception encountered on contact search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
 
-    data = {'results': map(lambda x: x.__dict__['_data'], contacts)}
-    return HttpResponse(MongoJSONEncoder().encode(data), 'application/json')
+    results = []
+    for dto in contacts:
+        c = dto.__dict__['_data']
+        org_dao = ctx.get_object('OrganizationDAO')
+        try:
+            if c['organization']:
+                org = org_dao.find(id=c['organization'].id)
+                c['organization'] = org.__dict__['_data']
+        except Exception:
+            logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
+            return get_http_404_page(request)
+        results.append(c)
+
+    data = {'results': results}
+    return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
 
 
 def edit_contact(request, contact_id):
