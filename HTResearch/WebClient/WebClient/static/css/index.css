@@ -182,6 +182,7 @@ input:focus {
     transition: opacity 1s;
     -webkit-transition: opaicty 1s;
     line-height: 1.5em;
+    border-radius: 5px;
 }
 #search-results-div .count {
     margin: 0;
