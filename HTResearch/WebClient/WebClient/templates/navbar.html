@@ -1,28 +1,5 @@
 <head>
-    <meta property="og:image" content="/static/images/welcome_blur.jpg" />
-    <meta property="og:title" content="Anti-Human Trafficking Map" />
-    <meta property="og:image" content="/static/images/welcome_blur.jpg" />
-    <link href="/static/lib/font-awesome-4.0.3/css/font-awesome.min.css" rel="stylesheet"/>
-    <script>(window.onload = function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s);
-      js.id = id;
-      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=1423865534497451";
-      fjs.parentNode.insertBefore(js, fjs);
-{#      d.getElementById('fb-share').innerHTML = "Facebook";#}
-    }(document, 'script', 'facebook-jssdk'));
-    </script>
-    <script>!function(d,s,id){
-        var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
-        if(!d.getElementById(id)){js=d.createElement(s);
-            js.id=id;
-            js.src=p+'://platform.twitter.com/widgets.js';
-            fjs.parentNode.insertBefore(js,fjs);
-        }}(document, 'script', 'twitter-wjs');
-    </script>
-    <script src="https://apis.google.com/js/plusone.js"></script>
-
+    <script src="/static/scripts/media-sharing.js" type="text/javascript"></script>
 </head>
 <div class="navbar navbar-inverse navbar-static-top">
     <div class="container">
@@ -45,26 +22,10 @@
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="facebook share" title="send to Facebook" href="http://www.facebook.com/sharer.php?s=100&p[title]=
-                        Anti-Human%20Trafficking%20Map&p[summary]=A%20map%20of%20anti-human%20trafficking%20efforts&p[url]
-                        =unlhtprod.cloudapp.net" onclick="window.open(this.href,'_blank', 'height=570,width=520');return false">
-                                <img src="../../static/images/facebook.png" title="Share on Facebook" alt="Share on Facebook"/>
-                                    Facebook
-                            </a>
-                        </li>
-                        <li><a class="twitter share" href="https://twitter.com/share"
-                               onclick="window.open(this.href,'_blank', 'height=570,width=520');return false">
-                            <img src="../../static/images/twitter.png" title="Share on LinkedIn" alt="Share on LinkedIn"/>
-                            Twitter</a>
-                        </li>
-                        <li><a class="gplus share" href="https://plus.google.com/share?url=unlhtprod.cloudapp.net"
-                               onclick="window.open(this.href,'_blank', 'height=570,width=520');return false">
-                            <img src="../../static/images/gplus.png" alt="Share on Google+" title="Share on Google+"/>&nbsp;Google+</a>
-                        </li>
-                        <li><a class="linkedin share" href="http://www.linkedin.com/shareArticle?mini=true&url=unlhtprod.cloudapp.net&title=Anti-Human%20Trafficking%20Map"
-                               onclick="window.open(this.href,'_blank', 'height=570,width=520');
-                               return false"> <img src="../../static/images/linkedin.png"
-                         title="Share on LinkedIn" alt="Share on LinkedIn"/>&nbsp;LinkedIn</a></li>
+                        <li><a id="facebook" class="share"></a></li>
+                        <li><a id="twitter" class="share"></a></li>
+                        <li><a id="gplus" class="share"></a></li>
+                        <li><a id="linkedin" class="share"></a></li>
                     </ul>
                 </li>
             </ul>
