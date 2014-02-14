@@ -46,7 +46,47 @@ class ItemPipelineTest(unittest.TestCase):
                 {'organization_url': 'http://www.prajwalaindia.com/'},
                 {'organization_url': 'http://www.mencanstoprape.org/'},
                 {'organization_url': 'http://novofoundation.org/'},
-            ]
+            ],
+            page_rank_info={
+                "total_with_self": 10,
+                "total": 10,
+                "references": [
+                    {
+                        "org_domain": 'yoyodyne.com',
+                        "count": 2,
+                        "pages": [
+                            {
+                                "url": 'http://www.yoyodyne.com/',
+                                "count": 2
+                            }
+                        ]
+                    },
+                    {
+                        "org_domain": 'trystero.org',
+                        "count": 4,
+                        "pages": [
+                            {
+                                "url": 'http://www.yoyodyne.com/',
+                                "count": 3
+                            },
+                            {
+                                "url": 'http://www.yoyodyne.com/contacts.php',
+                                "count": 1
+                            }
+                        ]
+                    },
+                    {
+                        "org_domain": 'thurnandtaxis.info',
+                        "count": 4,
+                        "pages": [
+                            {
+                                "url": 'http://www.yoyodyne.com/',
+                                "count": 4
+                            }
+                        ]
+                    }
+                ]
+            }
         )
 
         self.contact = ScrapedContact(
@@ -96,6 +136,7 @@ class ItemPipelineTest(unittest.TestCase):
             self.assertIn(partner, self.org['partners'])
 
         print "Item Switch Test Passed"
+
 
 if __name__ == '__main__':
     try:

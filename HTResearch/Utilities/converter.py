@@ -82,11 +82,11 @@ class ModelConverter(object):
                 elif key == 'publications':
                     setattr(new_model, key, [ModelConverter.to_model(Publication, p) for p in value])
                 elif key == 'page_rank_info':
-                    setattr(new_model, key, ModelConverter.to_model(PageRankInfo, obj._data[key]))
+                    setattr(new_model, key, ModelConverter.to_model(PageRankInfo, value))
                 elif key == 'references':
-                    setattr(new_model, key, [ModelConverter.to_model(PageRankVector, v) for v in obj._data[key]])
+                    setattr(new_model, key, [ModelConverter.to_model(PageRankVector, v) for v in value])
                 elif key == 'pages':
-                    setattr(new_model, key, [ModelConverter.to_model(UrlCountPair, ucp) for ucp in obj._data[key]])
+                    setattr(new_model, key, [ModelConverter.to_model(UrlCountPair, ucp) for ucp in value])
                 else:
                     setattr(new_model, key, value)
         return new_model
