@@ -30,9 +30,36 @@
                         <form id="custom-search-form" class="form-search form-horizontal">
                             <div class="input-append span12">
                                 {% csrf_token %}
-                                <input type="text" id="search-box" class="search-query" placeholder=" Search...">
+                                <div class="input-group input-group-btn">
+                                    <input type="text" id="search-box" class="search-query" placeholder=" Search...">
+                                    <ul id="search-settings-dropdown" role="menu" class="dropdown-menu dropdown-menu-form pull-right" aria-labelledby="search-settings-btn">
+                                        <li role="presentation">
+                                            <label class="checkbox">
+                                                <input type="checkbox" class="pull-right" checked>People
+                                            </label>
+                                        </li>
+                                        <li role="presentation">
+                                            <label class="checkbox">
+                                                <input type="checkbox" class="pull-right" checked>Organizations
+                                            </label>
+                                        </li>
+                                        <li role="presentation">
+                                            <label class="checkbox">
+                                                <input type="checkbox" class="pull-right" checked>Publications
+                                            </label>
+                                        </li>
+                                        <li role="presentation">
+                                            <label class="checkbox">
+                                                <input type="checkbox" class="pull-right" checked>News
+                                            </label>
+                                        </li>
+                                    </ul>
+                                    <div id="search-settings-btn" class="btn btn-primary dropdown-toggle input-group-addon" data-toggle="dropdown">
+                                        <span class="caret"></span>
+                                    </div>
+                                </div>
+                                <div id="search-ajax-loader" class="ajax-loader hidden"></div>
                             </div>
-                            <div id="search-ajax-loader" class="ajax-loader hidden"></div>
                         </form>
                         <div id="search-results-div" class="panel-group" style="display: none">
                             <div class="panel panel-default">

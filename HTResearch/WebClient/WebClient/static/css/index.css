@@ -89,13 +89,21 @@ body {
     padding-right: 0;
 }
 
-#custom-search-form .search-query {
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    width: 100%;
-    transition: opacity 0.2s;
-    -webkit-transition: opacity 0.2s;
+#search-settings-btn {
+    width: 54px;
+    height: 54px;
+}
+
+#search-settings-dropdown {
+    float: right;
+    padding: 0px 10px 10px;
+    font-size: large;
+}
+
+.checkbox {
+    cursor: pointer;
+    font-weight: 200;
+    padding-left: 0 !important;
 }
 
 input:focus {
@@ -206,6 +214,13 @@ input:focus {
 
 #search-box {
     line-height: 2;
+    float: left;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-top-left-radius: 5px;
+    -moz-border-bottom-left-radius: 5px;
 }
 
 #organization-list-header,
@@ -280,7 +295,7 @@ ul {
 #search-ajax-loader {
     position: absolute;
     height: 51px;
-    right: 20px;
+    right: 74px;
     top: 10px;
     z-index: 10;
 }

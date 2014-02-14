@@ -81,6 +81,13 @@ function initialize() {
         }
     });
 
+    // News dropdown
+    $('.dropdown-menu').on('click', function(e) {
+        if($(this).hasClass('dropdown-menu-form')) {
+            e.stopPropagation();
+        }
+    });
+
     // Retrieve news whenever ready
     google.maps.event.addListener(map, 'idle', function () {
         var scope = $('input[name=news-scope]:checked').val();
