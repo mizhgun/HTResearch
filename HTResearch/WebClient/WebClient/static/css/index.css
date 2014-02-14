@@ -223,16 +223,12 @@ input:focus {
     -moz-border-bottom-left-radius: 5px;
 }
 
-#organization-list-header,
-#contact-list-header,
-#publication-list-header,
+.search-results-panel h2,
 #search-box{
     font-size: x-large;
 }
 
-#organization-search-list,
-#contact-search-list,
-#publication-search-list {
+.search-results-panel ul {
     font-size: small;
 }
 
@@ -277,11 +273,6 @@ input:focus {
 
 ul {
     list-style-position: inside;
-}
-
-#organization-results,
-#contact-results,
-#publication-results {
 }
 
 .ajax-loader {

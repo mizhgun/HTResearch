@@ -23,7 +23,6 @@
     {% include "map_legend.html" %}
     <div id="wrapper">
         <div class="row">
-
             <div class="col-md-12">
                 <div class="search-div">
                     <div id="search-box-div" class="">
@@ -62,7 +61,7 @@
                             </div>
                         </form>
                         <div id="search-results-div" class="panel-group" style="display: none">
-                            <div data-search="organization" class="panel panel-default">
+                            <div data-search="organization" class="panel panel-default search-results-panel">
                                 <div class="panel-heading">
                                     <h2 id="organization-list-header" class="panel-title">
                                         <a id="organization-toggle" data-toggle="collapse"
@@ -75,20 +74,19 @@
                                     <ul id="organization-search-list"></ul>
                                 </div>
                             </div>
-                            <div data-search="contact" class="panel panel-default">
+                            <div data-search="contact" class="panel panel-default search-results-panel">
                                 <div class="panel-heading">
                                     <h2 id="contact-list-header" class="panel-title">
                                         <a id="contact-toggle" class="disabled" data-toggle="collapse"
                                            href="#collapse-contacts">People</a>
                                     </h2>
-
                                     <p class="count"></p>
                                 </div>
                                 <div id="collapse-contacts" class="panel-collapse collapse">
                                     <ul id="contact-search-list"></ul>
                                 </div>
                             </div>
-                            <div data-search="publication" class="panel panel-default">
+                            <div data-search="publication" class="panel panel-default search-results-panel">
                                 <div class="panel-heading">
                                     <h2 id="publication-list-header" class="panel-title">
                                         <a id="publication-toggle" class="disabled" data-toggle="collapse"
@@ -98,6 +96,18 @@
                                 </div>
                                 <div id="collapse-publications" class="panel-collapse collapse">
                                     <ul id="publication-search-list"></ul>
+                                </div>
+                            </div>
+                            <div data-search="news" class="panel panel-default search-results-panel">
+                                <div class="panel-heading">
+                                    <h2 id="news-list-header" class="panel-title">
+                                        <a id="news-toggle" class="disabled" data-toggle="collapse"
+                                           href="#collapse-news">News</a>
+                                    </h2>
+                                    <span class="count"></span>
+                                </div>
+                                <div id="collapse-news" class="panel-collapse collapse">
+                                    <ul id="news-search-list"></ul>
                                 </div>
                             </div>
                         </div>
