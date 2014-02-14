@@ -35,22 +35,22 @@
                                     <ul id="search-settings-dropdown" role="menu" class="dropdown-menu dropdown-menu-form pull-right" aria-labelledby="search-settings-btn">
                                         <li role="presentation">
                                             <label class="checkbox">
-                                                <input type="checkbox" class="pull-right" checked>People
+                                                <input type="checkbox" data-search="organization" class="pull-right" checked>Organizations
                                             </label>
                                         </li>
                                         <li role="presentation">
                                             <label class="checkbox">
-                                                <input type="checkbox" class="pull-right" checked>Organizations
+                                                <input type="checkbox" data-search="contact" class="pull-right" checked>People
                                             </label>
                                         </li>
                                         <li role="presentation">
                                             <label class="checkbox">
-                                                <input type="checkbox" class="pull-right" checked>Publications
+                                                <input type="checkbox" data-search="publication" class="pull-right" checked>Publications
                                             </label>
                                         </li>
                                         <li role="presentation">
                                             <label class="checkbox">
-                                                <input type="checkbox" class="pull-right" checked>News
+                                                <input type="checkbox" data-search="news" class="pull-right" checked>News
                                             </label>
                                         </li>
                                     </ul>
@@ -62,7 +62,7 @@
                             </div>
                         </form>
                         <div id="search-results-div" class="panel-group" style="display: none">
-                            <div class="panel panel-default">
+                            <div data-search="organization" class="panel panel-default">
                                 <div class="panel-heading">
                                     <h2 id="organization-list-header" class="panel-title">
                                         <a id="organization-toggle" data-toggle="collapse"
@@ -75,7 +75,7 @@
                                     <ul id="organization-search-list"></ul>
                                 </div>
                             </div>
-                            <div class="panel panel-default">
+                            <div data-search="contact" class="panel panel-default">
                                 <div class="panel-heading">
                                     <h2 id="contact-list-header" class="panel-title">
                                         <a id="contact-toggle" class="disabled" data-toggle="collapse"
@@ -88,7 +88,7 @@
                                     <ul id="contact-search-list"></ul>
                                 </div>
                             </div>
-                            <div class="panel panel-default">
+                            <div data-search="publication" class="panel panel-default">
                                 <div class="panel-heading">
                                     <h2 id="publication-list-header" class="panel-title">
                                         <a id="publication-toggle" class="disabled" data-toggle="collapse"
