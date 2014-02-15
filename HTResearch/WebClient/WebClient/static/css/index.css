@@ -49,9 +49,6 @@ body {
 #search-box-div .panel-heading {
     line-height: 1.1;
 }
-#contact-search-list, #organization-search-list, #publication-search-list {
-    list-style-position: outside;
-}
 
 .header {
     height: 42px;
@@ -230,6 +227,7 @@ input:focus {
 
 .search-results-panel ul {
     font-size: small;
+    list-style-position: outside;
 }
 
 #modal-cancel {

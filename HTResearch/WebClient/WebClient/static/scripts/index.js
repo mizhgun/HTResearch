@@ -93,7 +93,7 @@ function initialize() {
         var show = $(this).is(':checked');
         var resultsToShow = $('.panel[data-search=' + searchItem + ']');
         if(show) {
-            resultsToShow.slideDown();
+            showSearchResults(true);
         } else {
             resultsToShow.slideUp();
         }
@@ -178,7 +178,7 @@ function loadMoreNews() {
         newsCount += newsStepSize;
         newsFeed.includeHistoricalEntries();
         newsFeed.setNumEntries(newsCount);
-        newsFeed.load(function (result) {
+        newsFeed.load(function(result) {
             if (!result.error) {
                 var articles = result.feed.entries;
 
@@ -190,7 +190,7 @@ function loadMoreNews() {
                 // Construct html from news articles
                 $.template('newsTemplate', $('#news-template').html());
                 var newsDiv = $('<div></div>');
-                $.each(articles, function (index) {
+                $.each(articles, function(index) {
                     var newsArticle = $.tmpl('newsTemplate', this);
                     // Do some HTML processing to make the articles look better
                     $(newsArticle).find('tr').each(function () {
@@ -363,9 +363,9 @@ function findMarkerById(id) {
     return marker;
 }
 
-function showSearchResults() {
+function showSearchResults(reload) {
     var searchText = $('#search-box').val().trim();
-    if (lastSearchedText === searchText)
+    if (!reload && lastSearchedText === searchText)
         return;
     lastSearchedText = searchText;
     var searchResultsDiv = $('#search-results-div');
@@ -403,6 +403,17 @@ function showSearchResults() {
                 linkClass: 'publication-link',
                 linkText: function(item) { return item.title; },
                 onclick: showPublicationModal
+            },
+            {
+                name: 'news',
+                url: '...',
+                toggleSelector: '#news-toggle',
+                collapseSelector: '#collapse-news',
+                listSelector: '#news-search-list',
+                linkClass: 'news-link',
+                linkText: function(item) { return item.title; },
+                onclick: function(item) { window.open(item.link, '_blank'); },
+                news: true
             }
         ];
 
@@ -412,61 +423,35 @@ function showSearchResults() {
             var shouldSearch = $(':checkbox:checked[data-search=' + searchItem.name + ']').length > 0;
             if(shouldSearch) {
                 startAjaxSearch();
-                $.ajax({
-                    type: 'GET',
-                    url: searchItem.url,
-                    data: {
-                        'search_text': $('#search-box').val(),
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
-                    },
-                    dataType: 'html'
-                }).done(function(data) {
-                    data = JSON.parse(data);
-                    $(searchItem.listSelector).html('');
-                    // Show number of results
-                    var resultCount = data.results.length;
-                    var resultsString = (resultCount >= 10 ? '10+' : resultCount) + ' results';
-                    $(searchItem.toggleSelector).parent().next('.count').text(resultsString);
-                    // Hide or show panel based on availability of results
-                    if(resultCount) {
-                        // Show panel
-                        $(searchItem.toggleSelector).closest('.panel').show();
-                        // Display results
-                        _.each(data.results, function(item) {
-                            $('<a>' + searchItem.linkText(item) + '</a>')
-                                .addClass(searchItem.linkClass)
-                                .attr('href', 'javascript:void(0)')
-                                .data(item)
-                                .wrap('<li></li>')
-                                .parent()
-                                .appendTo(searchItem.listSelector);
-                        });
-                        if (data) {
-                            $(searchItem.toggleSelector).closest('.panel').show();
-                            $(searchItem.toggleSelector).attr('data-toggle', 'collapse');
-                            $(searchItem.toggleSelector).removeClass('disabled');
-                            $(searchItem.collapseSelector).collapse('show');
-                        } else {
-                            $(searchItem.toggleSelector).closest('.panel').hide();
+                if(!searchItem.news) {
+                    $.ajax({
+                        type: 'GET',
+                        url: searchItem.url,
+                        data: {
+                            'search_text': $('#search-box').val(),
+                            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        dataType: 'html'
+                    }).done(function(data) {
+                        data = JSON.parse(data);
+                        displaySearchResults(searchItem, data.results);
+                    }).fail(function(data) {
+                        console.log(searchItem.name, 'search failed');
+                    }).always(function () {
+                        endAjaxSearch();
+                    });
+                } else {
+                    var query = baseQuery + ' ' + $('#search-box').val();
+                    var feedParam = newsUrl + query.split(/,?\s/).join('+');
+                    newsFeed = new google.feeds.Feed(feedParam);
+                    newsFeed.setNumEntries(10);
+                    newsFeed.load(function(result) {
+                        if (!result.error) {
+                            displaySearchResults(searchItem, result.feed.entries);
                         }
-                        $(searchItem.toggleSelector).click(function (e) {
-                            e.preventDefault();
-                        });
-                        $('.modal').modal({ show: false });
-                        $('.' + searchItem.linkClass)
-                            .click(searchItem.onclick)
-                            .each(function (index, value) {
-                                plotMarker($(value).data());
-                            });
-                    } else {
-                        // Hide panel
-                        $(searchItem.toggleSelector).closest('.panel').hide();
-                    }
-                }).fail(function(data) {
-                    console.log(searchItem.name, 'search failed');
-                }).always(function () {
-                    endAjaxSearch();
-                });
+                        endAjaxSearch();
+                    });
+                }
             } else {
                 // Hide panel
                 $(searchItem.toggleSelector).closest('.panel').hide();
@@ -484,6 +469,54 @@ function showSearchResults() {
 
             searchResultsVisible = false;
         }
+    }
+}
+
+function displaySearchResults(searchItem, results) {
+    // Clear previous results
+    $(searchItem.listSelector).html('');
+    // Show number of results
+    var resultCount = results.length;
+    var resultsString = (resultCount >= 10 ? '10+' : resultCount) + ' results';
+    $(searchItem.toggleSelector).parent().next('.count').text(resultsString);
+    // Hide or show panel based on availability of results
+    if(resultCount) {
+        // Show panel
+        $(searchItem.toggleSelector).closest('.panel').show();
+        // Display results
+        _.each(results, function(item) {
+            $('<a>' + searchItem.linkText(item) + '</a>')
+                .addClass(searchItem.linkClass)
+                .attr('href', 'javascript:void(0)')
+                .click(function() {
+                    if(searchItem.onclick) {
+                        searchItem.onclick(item);
+                    }
+                })
+                .data(item)
+                .wrap('<li></li>')
+                .parent()
+                .appendTo(searchItem.listSelector);
+        });
+        if (results.length) {
+            $(searchItem.toggleSelector).closest('.panel').show();
+            $(searchItem.toggleSelector).attr('data-toggle', 'collapse');
+            $(searchItem.toggleSelector).removeClass('disabled');
+            $(searchItem.collapseSelector).collapse('show');
+        } else {
+            $(searchItem.toggleSelector).closest('.panel').hide();
+        }
+        $(searchItem.toggleSelector).click(function (e) {
+            e.preventDefault();
+        });
+        $('.modal').modal({ show: false });
+        $('.' + searchItem.linkClass)
+            .each(function (index, value) {
+                plotMarker($(value).data());
+            });
+    } else {
+        // Hide panel
+        $(searchItem.toggleSelector).closest('.panel').hide();
     }
 }
 
