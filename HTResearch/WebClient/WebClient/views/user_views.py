@@ -15,7 +15,7 @@ from HTResearch.Utilities.config import get_config_value
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
-from HTResearch.WebClient.WebClient.models import LoginForm, SignupForm, InviteForm
+from HTResearch.WebClient.WebClient.models import LoginForm, SignupForm, InviteForm, ManageForm
 
 #region Globals
 ctx = ApplicationContext(DAOContext())
@@ -126,6 +126,28 @@ def signup(request):
     return render(request, 'signup.html', {'form': form, 'error': error})
 
 
+def manage_account(request):
+
+    if 'user_id' not in request.session:
+        logger.error('Request made for account-preferences without login')
+        return HttpResponseRedirect('/login')
+
+    user_id = request.session['user_id']
+
+    user_dao = ctx.get_object('UserDAO')
+    user = user_dao.find(id=user_id)
+    form = ManageForm(request.POST or None,
+                      initial=_create_user_dict(user),
+                      )
+    error = ''
+    print user
+    print _create_user_dict(user)
+    if request.method == 'POST':
+        if form.is_valid:
+            error = 'jk no errors'
+    return render(request, 'manage.html', {'form': form, 'error': error})
+
+
 def send_invite(request):
     if 'user_id' not in request.session:
         logger.error('Request made for send_invite without login')
@@ -182,3 +204,11 @@ def send_invite(request):
                 error = 'Oops! It looks like something went wrong. Please try again later.'
 
     return render(request, 'send_invite.html', {'form': form, 'error': error, 'success': success})
+
+
+def _create_user_dict(user):
+    user_dict = {'first_name': user.first_name if user.first_name else "",
+                    'last_name': user.last_name if user.last_name else "",
+                    'email': user.email if user.email else "",
+                    'org_type': user.org_type if user.org_type else ""}
+    return user_dict
