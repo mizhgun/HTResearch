@@ -1,4 +1,4 @@
-<script id="contact-modal-template" type="text/x-jquery-html">
+<script id="user-modal-template" type="text/x-jquery-html">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -21,26 +21,10 @@
           {% templatetag openvariable %}/if{% templatetag closevariable %}
           </p>
           <table class="table table-condensed">
-              {% templatetag openvariable %}if phones{% templatetag closevariable %}
-              <tr class="modal-row">
-                  <th>Tel:</th>
-                  <td>
-                    {% templatetag openvariable %}each phones{% templatetag closevariable %}
-                    ${$value}<br />
-                    {% templatetag openvariable %}/each{% templatetag closevariable %}
-                  </td>
-              </tr>
-              {% templatetag openvariable %}/if{% templatetag closevariable %}
               {% templatetag openvariable %}if email{% templatetag closevariable %}
               <tr class="modal-row">
                   <th>Email:</th>
                   <td>${email}</td>
-              </tr>
-              {% templatetag openvariable %}/if{% templatetag closevariable %}
-              {% templatetag openvariable %}if position != "None"{% templatetag closevariable %}
-              <tr class="modal-row">
-                  <th>Position:</th>
-                  <td>${position}</td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
               {% templatetag openvariable %}if organization{% templatetag closevariable %}
@@ -49,14 +33,10 @@
                   <td><a href="/organization/${organization.id}">${organization.name}</a></td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
-              {% templatetag openvariable %}if publications{% templatetag closevariable %}
+              {% templatetag openvariable %}if background{% templatetag closevariable %}
               <tr class="modal-row">
-                  <th>Publications:</th>
-                  <td>
-                  {% templatetag openvariable %}each publications{% templatetag closevariable %}
-                  ${$value}
-                  {% templatetag openvariable %}/each{% templatetag closevariable %}
-                  </td>
+                  <th>Background:</th>
+                  <td>${background}</td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
           </table>

@@ -43,13 +43,18 @@ def search_contacts(request):
         search_text = ''
 
     contacts = []
+    users = []
 
     if search_text:
         contact_dao = ctx.get_object('ContactDAO')
+        user_dao = ctx.get_object('UserDAO')
         try:
             contacts = contact_dao.findmany(search=search_text,
                                             num_elements=10,
                                             sort_fields=['valid', 'last_name', 'first_name'])
+            users = user_dao.findmany(search=search_text,
+                                      num_elements=10,
+                                      sort_fields=['valid', 'last_name', 'first_name'])
         except Exception:
             logger.error('Exception encountered on contact search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
@@ -65,7 +70,21 @@ def search_contacts(request):
         except Exception:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
+        c['type'] = 'contact'
         results.append(c)
+
+    for dto in users:
+        u = dto.__dict__['_data']
+        org_dao = ctx.get_object('OrganizationDAO')
+        try:
+            if u['organization']:
+                org = org_dao.find(id=u['organization'].id)
+                u['organization'] = org.__dict__['_data']
+        except Exception:
+            logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
+            return get_http_404_page(request)
+        u['type'] = 'user'
+        results.append(u)
 
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")

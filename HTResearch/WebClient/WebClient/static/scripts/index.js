@@ -498,10 +498,14 @@ function showOrganizationModal() {
 
 function showContactModal() {
     contactData = $(this).data();
-    var $modal = $('.modal').modal({
-        show: false
-    });
-    createBootstrapModal($modal, '#contact-modal-template', contactData);
+    var $modal = $('.modal').modal();
+    if (contactData['type'] === 'contact'){
+        createBootstrapModal($modal, '#contact-modal-template', contactData);
+    }
+    else {
+        createBootstrapModal($modal, '#user-modal-template', contactData);
+    }
+
 }
 
 function showPublicationModal(){
@@ -535,7 +539,7 @@ function createBootstrapModal(m, modal_template, data) {
     var html = $(modal_template).tmpl(data);
 
     $('#bs-modal').html(html);
-
+    console.log(data);
     m.modal('show');
 }
 
