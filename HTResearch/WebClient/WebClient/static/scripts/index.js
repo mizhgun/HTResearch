@@ -1,4 +1,3 @@
-var searchResultsVisible = false;
 var map;
 var initialLatLng = new google.maps.LatLng(21, 78);
 var searchedLatLng;
@@ -372,7 +371,23 @@ function showSearchResults(reload) {
 
     removeAllMarkers();
     if (searchText) {
-        // Put items to search for here.
+        /**
+         * Put items to search for here.
+         * Properties are as follows:
+         *     name: Name of the item searched for, should match data-search attribute for search results panels and
+         *         filter control.
+         *     url: URL of ajax call to get the data.
+         *     search: Function to get the data, can be used instead of url.
+         *         function(query, ready) { ... }
+         *             where query is the search query, and
+         *             ready is the function to which the results should be passed.
+         *     toggleSelector: Search results panel toggle selector.
+         *     collapseSelector: Collapsible region selector.
+         *     listSelector: Search results list selector.
+         *     linkClass: Class that will be on each link in search results.
+         *     linkText: Function to determine what text will be displayed on links.
+         *     onclick: Handler for clicking link.
+         */
         var searchItems = [
             {
                 name: 'organization',
@@ -406,69 +421,72 @@ function showSearchResults(reload) {
             },
             {
                 name: 'news',
-                url: '...',
+                search: function(searchQuery, ready) {
+                    query = baseQuery + ' ' + searchQuery;
+                    var feedParam = newsUrl + query.split(/,?\s/).join('+');
+                    newsFeed = new google.feeds.Feed(feedParam);
+                    newsFeed.setNumEntries(10);
+                    newsFeed.load(function(result) {
+                        if (!result.error) {
+                            ready(result.feed.entries);
+                        }
+                    });
+                },
                 toggleSelector: '#news-toggle',
                 collapseSelector: '#collapse-news',
                 listSelector: '#news-search-list',
                 linkClass: 'news-link',
                 linkText: function(item) { return item.title; },
-                onclick: function(item) { window.open(item.link, '_blank'); },
-                news: true
+                onclick: function(item) { window.open(item.link, '_blank'); }
             }
         ];
+
+        // Default ajax search function
+        var ajaxSearch = function(searchQuery, ready, searchItem) {
+            // Do an ajax call with the given url
+            $.ajax({
+                type: 'GET',
+                url: searchItem.url,
+                data: {
+                    'search_text': searchQuery,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                dataType: 'html'
+            }).done(function(data) {
+                var results = JSON.parse(data).results;
+                ready(results);
+            }).fail(function(data) {
+                console.log(searchItem.name, 'search failed');
+                ready([]);
+            });
+        }
 
         // Perform each search
         _.each(searchItems, function(searchItem) {
             // See if we want to search for this item
             var shouldSearch = $(':checkbox:checked[data-search=' + searchItem.name + ']').length > 0;
             if(shouldSearch) {
+                var searchQuery = $('#search-box').val();
+                // Search begin
                 startAjaxSearch();
-                if(!searchItem.news) {
-                    $.ajax({
-                        type: 'GET',
-                        url: searchItem.url,
-                        data: {
-                            'search_text': $('#search-box').val(),
-                            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
-                        },
-                        dataType: 'html'
-                    }).done(function(data) {
-                        data = JSON.parse(data);
-                        displaySearchResults(searchItem, data.results);
-                    }).fail(function(data) {
-                        console.log(searchItem.name, 'search failed');
-                    }).always(function () {
-                        endAjaxSearch();
-                    });
-                } else {
-                    var query = baseQuery + ' ' + $('#search-box').val();
-                    var feedParam = newsUrl + query.split(/,?\s/).join('+');
-                    newsFeed = new google.feeds.Feed(feedParam);
-                    newsFeed.setNumEntries(10);
-                    newsFeed.load(function(result) {
-                        if (!result.error) {
-                            displaySearchResults(searchItem, result.feed.entries);
-                        }
-                        endAjaxSearch();
-                    });
-                }
+                // See if we should do a custom search or just an ajax call
+                var search = searchItem.search || ajaxSearch;
+                // Retrieve search results
+                search(searchQuery, function(results) {
+                    // Show search results for this item
+                    displaySearchResults(searchItem, results);
+                    // Search end
+                    endAjaxSearch();
+                }, searchItem);
             } else {
                 // Hide panel
                 $(searchItem.toggleSelector).closest('.panel').hide();
             }
         });
 
-        if (!searchResultsVisible) {
-            searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
-
-            searchResultsVisible = true;
-        }
+        searchResultsDiv.slideDown();
     } else {
-        if (searchResultsVisible) {
-            searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
-
-            searchResultsVisible = false;
-        }
+        searchResultsDiv.slideUp();
     }
 }
 
