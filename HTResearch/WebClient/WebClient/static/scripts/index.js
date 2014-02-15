@@ -495,8 +495,10 @@ function displaySearchResults(searchItem, results) {
     $(searchItem.listSelector).html('');
     // Show number of results
     var resultCount = results.length;
-    var resultsString = (resultCount >= 10 ? '10+' : resultCount) + ' results';
-    $(searchItem.toggleSelector).parent().next('.count').text(resultsString);
+    var resultsString = (resultCount >= 10 ? '10+' : resultCount)
+        + ' result'
+        + (resultCount == 1 ? '' : 's');
+    $(searchItem.toggleSelector).find('.count').text(resultsString);
     // Hide or show panel based on availability of results
     if(resultCount) {
         // Show panel

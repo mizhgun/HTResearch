@@ -185,13 +185,23 @@ input:focus {
     opacity: 0.5;
     filter: alpha(opacity=50); /* For IE8 and earlier */
     transition: opacity 1s;
-    -webkit-transition: opaicty 1s;
+    -webkit-transition: opacity 1s;
     line-height: 1.5em;
     border-radius: 5px;
 }
+
+#search-results-div h2 a {
+    display: inline-block;
+    width: 100%;
+}
+
 #search-results-div .count {
     margin: 0;
+    font-size: smaller;
+    color: #999999;
+    display: inline-block;
 }
+
 #search-results-div li{
     margin-bottom: 4px;
 }
