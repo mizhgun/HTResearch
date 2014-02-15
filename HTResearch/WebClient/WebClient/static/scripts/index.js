@@ -515,6 +515,8 @@ function displaySearchResults(searchItem, results) {
                 .wrap('<li></li>')
                 .parent()
                 .appendTo(searchItem.listSelector);
+
+            plotMarker(item);
         });
         if (results.length) {
             $(searchItem.toggleSelector).closest('.panel').show();
@@ -528,10 +530,6 @@ function displaySearchResults(searchItem, results) {
             e.preventDefault();
         });
         $('.modal').modal({ show: false });
-        $('.' + searchItem.linkClass)
-            .each(function (index, value) {
-                plotMarker($(value).data());
-            });
     } else {
         // Hide panel
         $(searchItem.toggleSelector).closest('.panel').hide();
@@ -553,8 +551,8 @@ function endAjaxSearch() {
 }
 
 // Show modals
-function showOrganizationModal() {
-    orgData = $(this).data();
+function showOrganizationModal(link) {
+    orgData = link;
 
     // Search for news based on the selected organization
     var scope = $('input[name=news-scope]:checked').val();
