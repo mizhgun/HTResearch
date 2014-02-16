@@ -1,28 +1,44 @@
 {% block content %}
     <script id="news-template" type="text/x-jquery-tmpl">
-        <div class="article">
-            <div class="article-title"><a href="${link}" target="_blank">${title}</a></div>
+        <div></div>
+        <div class="carousel-caption">
+            <h3 class="article-title"><a href="${link}" target="_blank">${title}</a></h3>
             <div class="article-author">${author}</div>
             <div class="article-date">${publishedDate}</div>
             <div class="article-content-snippet">${contentSnippet}</div>
             <div class="article-content">{% templatetag openbrace %}{% templatetag openbrace %}html content{% templatetag closebrace %}{% templatetag closebrace %}</div>
         </div>
     </script>
-    <div class="news-ctrls">
-        <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-primary">
-                <input type="radio" name="news-scope" value="general"/>
-                <i class="glyphicon glyphicon-globe"></i> General
-            </label>
-            <label class="btn btn-primary active">
-                <input type="radio" name="news-scope" value="regional" checked/>
-                <i class="glyphicon glyphicon-screenshot"></i> Region
-            </label>
-            <label class="btn btn-primary">
-                <input type="radio" name="news-scope" value="organization"/>
-                <i class="glyphicon glyphicon-tower"></i> Organization
-            </label>
+    <div id="news-carousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner" id="news-results">
+            <div class="item active"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
         </div>
+        <a class="right carousel-control" href="#news-carousel" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+        </a>
+        <a class="left carousel-control" href="#news-carousel" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+        </a>
+        <ol class="carousel-indicators">
+            <li data-target="#news-carousel" data-slide-to="0" class="active"></li>
+            <li data-target="#news-carousel" data-slide-to="1" class=""></li>
+            <li data-target="#news-carousel" data-slide-to="2" class=""></li>
+            <li data-target="#news-carousel" data-slide-to="3" class=""></li>
+            <li data-target="#news-carousel" data-slide-to="4" class=""></li>
+            <li data-target="#news-carousel" data-slide-to="5" class=""></li>
+            <li data-target="#news-carousel" data-slide-to="6" class=""></li>
+            <li data-target="#news-carousel" data-slide-to="7" class=""></li>
+            <li data-target="#news-carousel" data-slide-to="8" class=""></li>
+            <li data-target="#news-carousel" data-slide-to="9" class=""></li>
+        </ol>
     </div>
-    <div id="news-results"></div>
 {% endblock %}
