@@ -12,4 +12,8 @@ require.config({
     }
 });
 
-require(['index/index']);
+require(['index/index'], function(Index) {
+    'use strict';
+
+    Index.initialize();
+});
