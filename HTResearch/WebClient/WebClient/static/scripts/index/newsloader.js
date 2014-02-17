@@ -1,4 +1,7 @@
-define(['jquery', 'jquery.tmpl', 'async!https://maps.googleapis.com/maps/api/js?&sensor=false'], function($) {
+define(['jquery',
+        'jquery.tmpl',
+        'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization',
+        'goog!feeds,1'], function($) {
    'use strict';
 
     var MAX_NEWS_COUNT = 100;

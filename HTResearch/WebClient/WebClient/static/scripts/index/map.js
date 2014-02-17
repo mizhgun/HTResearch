@@ -1,4 +1,6 @@
-define(['jquery', 'jquery.tmpl', 'async!https://maps.googleapis.com/maps/api/js?&sensor=false'], function($) {
+define(['jquery',
+        'jquery.tmpl',
+        'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'], function($) {
    'use strict';
 
     var MARKER_VALUES = {

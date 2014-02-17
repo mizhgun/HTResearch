@@ -1,5 +1,13 @@
-define(['index/modal', 'index/map', 'index/newsloader', 'underscore', 'jquery', 'jquery.tmpl', 'bootstrap', 'async!https://maps.googleapis.com/maps/api/js?&sensor=false', 'goog!feeds,1'],
-    function(Modal, Map, NewsLoader, _, $) {
+define(['index/modal',
+        'index/map',
+        'index/newsloader',
+        'index/heatmap',
+        'underscore',
+        'jquery',
+        'jquery.tmpl',
+        'bootstrap',
+        'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
+    function(Modal, Map, NewsLoader, HeatMap, _, $) {
     'use strict';
 
     var searchResultsVisible = false;
@@ -17,6 +25,7 @@ define(['index/modal', 'index/map', 'index/newsloader', 'underscore', 'jquery', 
 
         map = new Map($('#map-canvas')[0]);
         newsLoader = new NewsLoader();
+        HeatMap.initialize(map.getMap());
 
         // update search when changing text input
         $('#search-box').bind("keyup change", _.debounce(showSearchResults, 300));
@@ -223,23 +232,20 @@ define(['index/modal', 'index/map', 'index/newsloader', 'underscore', 'jquery', 
         else {
             map.closeAllInfowindows();
 
-            var modal = new Modal(orgData);
-            modal.createModal('#bs-modal', '#bs-org-modal-template');
+            Modal.createModal(orgData, '#bs-modal', '#bs-org-modal-template');
         }
     }
 
     function showContactModal() {
-        var contactData = $(this).data();
-        var modal = new Modal(contactData);
+        var data = $(this).data();
 
-        modal.createModal('#bs-modal', '#contact-modal-template');
+        Modal.createModal(data, '#bs-modal', '#contact-modal-template');
     }
 
     function showPublicationModal(){
-        var pubData = $(this).data();
-        var modal = new Modal(pubData);
+        var data = $(this).data();
 
-        modal.createModal('#bs-modal', '#publication-modal-template');
+        Modal.createModal(data, '#bs-modal', '#publication-modal-template');
     }
 
     $(function () {
