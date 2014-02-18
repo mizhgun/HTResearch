@@ -46,7 +46,7 @@
     {% templatetag openvariable %}if organization{% templatetag closevariable %}
               <tr class="modal-row">
                   <th>Organizations affiliated with:</th>
-                  <td>${organization}</td>
+                  <td><a href="/organization/${organization.id}">${organization.name}</a></td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
     {% templatetag openvariable %}if publications.length{% templatetag closevariable %}

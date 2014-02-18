@@ -416,8 +416,53 @@ function showSearchResults(reload) {
                 },
                 dataType: 'html'
             }).done(function(data) {
+<<<<<<< HEAD
                 var results = JSON.parse(data).results;
                 ready(results);
+=======
+                data = JSON.parse(data);
+                $(searchItem.listSelector).html('');
+                // Show number of results
+                var resultCount = data.results.length;
+                var resultsString = (resultCount >= 10 ? '10+' : resultCount) + ' results';
+                $(searchItem.toggleSelector).parent().next('.count').text(resultsString);
+                // Hide or show panel based on availability of results
+                if(resultCount) {
+                    // Show panel
+                    $(searchItem.toggleSelector).closest('.panel').show();
+                    // Display results
+                    _.each(data.results, function(item) {
+                        $('<a>' + searchItem.linkText(item) + '</a>')
+                            .addClass(searchItem.linkClass)
+                            .attr('href', 'javascript:void(0)')
+                            .attr('title', searchItem.linkText(item))
+                            .data(item)
+                            .wrap('<li></li>')
+                            .parent()
+                            .appendTo(searchItem.listSelector);
+                    });
+                    if (data) {
+                        $(searchItem.toggleSelector).closest('.panel').show();
+                        $(searchItem.toggleSelector).attr('data-toggle', 'collapse');
+                        $(searchItem.toggleSelector).removeClass('disabled');
+                        $(searchItem.collapseSelector).collapse('show');
+                    } else {
+                        $(searchItem.toggleSelector).closest('.panel').hide();
+                    }
+                    $(searchItem.toggleSelector).click(function (e) {
+                        e.preventDefault();
+                    });
+                    $('.modal').modal({ show: false });
+                    $('.' + searchItem.linkClass)
+                        .click(searchItem.onclick)
+                        .each(function (index, value) {
+                            plotMarker($(value).data());
+                        });
+                } else {
+                    // Hide panel
+                    $(searchItem.toggleSelector).closest('.panel').hide();
+                }
+>>>>>>> R5_NationalTreasure
             }).fail(function(data) {
                 console.log(searchItem.name, 'search failed');
                 ready([]);
