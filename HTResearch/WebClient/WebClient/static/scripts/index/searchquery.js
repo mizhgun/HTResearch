@@ -41,6 +41,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                             $('<a>' + searchItem.linkText(item) + '</a>')
                                 .addClass(searchItem.linkClass)
                                 .attr('href', 'javascript:void(0)')
+                                .attr('title', searchItem.linkText(item))
                                 .data(item)
                                 .wrap('<li></li>')
                                 .parent()
