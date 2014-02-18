@@ -30,5 +30,5 @@ $(document).ready(function() {
   $(ele).click(function(event) {
     window.open(this.href, '_blank', 'status=1,height=570,width=520');
     return false;
-  })
+  });
 });
