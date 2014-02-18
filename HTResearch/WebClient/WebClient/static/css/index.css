@@ -358,3 +358,12 @@ ul {
 #map-validity {
     margin-top: -10px;
 }
+
+.publication-link {
+    white-space: nowrap;
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+}

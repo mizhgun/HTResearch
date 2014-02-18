@@ -1,15 +1,13 @@
 {% extends "global.html" %}
 
 {% block imports %}
+    {% include "norequire.html" %}
     <title>All Organizations</title>
     <script src="/static/scripts/org-datasource.js" type="text/javascript"></script>
     <script src="/static/scripts/org-rank.js" type="text/javascript"></script>
     <link href="http://www.fuelcdn.com/fuelux-imh/2.4.0/css/fuelux.css" rel="stylesheet"/>
-{% endblock %}
-{% block bootstrap %}
     <script src="http://www.fuelcdn.com/fuelux-imh/2.4.0/loader.min.js" type="text/javascript"></script>
 {% endblock %}
-
 
 {% block content %}
     <div class="fuelux" style="padding: 10px;">
