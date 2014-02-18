@@ -77,5 +77,5 @@ $(function () {
         var id = $(this).find('.org-data-row-id').html();
         if (id)
             window.location.href = '/organization/' + id;
-    })
+    });
 });
