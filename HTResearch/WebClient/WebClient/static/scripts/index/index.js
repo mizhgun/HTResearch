@@ -13,7 +13,6 @@ define(['index/modal',
     'use strict';
 
     var map;
-    var mediaSharing;
     var orgData;
     var newsLoader;
 
