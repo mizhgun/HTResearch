@@ -86,6 +86,7 @@ def search_contacts(request):
         u['type'] = 'user'
         results.append(u)
 
+    results = results.order_by(['valid', 'last_name', 'first_name'])
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
 

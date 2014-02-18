@@ -142,7 +142,12 @@ define(['index/modal',
     function showContactModal() {
         var data = $(this).data();
 
-        Modal.createModal(data, '#bs-modal', '#contact-modal-template');
+        if (data['type'] === 'contact'){
+            Modal.createModal(data, '#bs-modal', '#contact-modal-template');
+        }
+        else {
+            Modal.createModal(data, '#bs-modal', '#user-modal-template');
+        }
     }
 
     function showPublicationModal(){
