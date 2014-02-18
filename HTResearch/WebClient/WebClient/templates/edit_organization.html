@@ -1,6 +1,7 @@
 {% extends "global.html" %}
 
 {% block imports %}
+    {% include "norequire.html" %}
     <title>Edit {{ form.name.value }}</title>
     <script src="/static/lib/jquery.validate.min.js" type="text/javascript"></script>
     <script src="/static/scripts/validators.js" type="text/javascript"></script>
