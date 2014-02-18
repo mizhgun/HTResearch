@@ -30,14 +30,14 @@
               {% templatetag openvariable %}/if{% templatetag closevariable %}
               {% templatetag openvariable %}if publication_date{% templatetag closevariable %}
               <tr class="modal-row">
-                  <th>Publication Date:</th>
+                  <th>Publication Year:</th>
                   <td>${publication_date}</td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
               {% templatetag openvariable %}if content_url{% templatetag closevariable %}
               <tr class="modal-row">
                   <th>Link:</th>
-                  <td>${content_url}</td>
+                  <td><a target="_blank" href="${content_url}">${content_url}</a></td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
           </table>
