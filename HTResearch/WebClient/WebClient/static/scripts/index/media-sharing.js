@@ -1,39 +1,37 @@
-define(['jquery'], function($) {
+define(['jquery', 'underscore'], function($, _) {
     var SITE_URL = 'unlhtprod.cloudapp.net';
 
     function initialize() {
-        var ele = document.getElementsByClassName('share');
-          var ids = [];
+        var elements = $('.share');
 
-          for (var i = 0; i < ele.length; i++) {
-            ids.push(ele[i].id);
-          }
-
-          for (var i = 0; i < ele.length; i++){
+        _.each(elements, function(ele){
             // Add href
-            switch (ids[i]){
+            switch (ele.id){
                 case "facebook":
-                    ele[i].href = 'http://www.facebook.com/sharer.php?s=100&p[title]=Anti-Human%20Trafficking%20Map&p[summary]=' +
+                    ele.href = 'http://www.facebook.com/sharer.php?s=100&p[title]=Anti-Human%20Trafficking%20Map&p[summary]=' +
                         'A%20map%20of%20anti-human%20trafficking%20efforts&p[url]=' + SITE_URL;
                     break;
                 case "twitter":
-                    ele[i].href = 'https://twitter.com/share';
+                    ele.href = 'https://twitter.com/share';
                     break;
                 case "gplus":
-                    ele[i].href = 'https://plus.google.com/share?url=' + SITE_URL;
+                    ele.href = 'https://plus.google.com/share?url=' + SITE_URL;
                     break;
                 case "linkedin":
-                    ele[i].href = 'http://www.linkedin.com/shareArticle?mini=true&url=' + SITE_URL + '&title=' +
+                    ele.href = 'http://www.linkedin.com/shareArticle?mini=true&url=' + SITE_URL + '&title=' +
                         'Anti-Human%20Trafficking%20Map';
                     break;
             }
-          }
 
-          // Set click event to open new window
-          $(ele).click(function(event) {
+
+        });
+
+        // Set click event to open new window
+        elements.click(function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             window.open(this.href, '_blank', 'status=1,height=570,width=520');
-            return false;
-          });
+        });
     }
 
     return { initialize: initialize };
