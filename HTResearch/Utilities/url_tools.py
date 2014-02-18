@@ -17,7 +17,7 @@ class UrlUtility:
     def _populate_tlds():
         with open(
                 os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources/effective_tld_names.dat.txt')) as f:
-            UrlUtility.tlds = [line.strip() for line in f if line[0] not in "/\n"]
+            UrlUtility.tlds = [line.strip().decode('utf-8') for line in f if line[0] not in "/\n"]
 
     @staticmethod
     def get_domain(url, no_exception=True):
@@ -25,7 +25,10 @@ class UrlUtility:
         if not UrlUtility.tlds:
             UrlUtility._populate_tlds()
 
-        url_elements = urlparse(url)[1].split('.')
+        elements = urlparse(url)
+        if elements[1] is None or len(elements[1]) == 0:
+            elements = urlparse('//' + url)
+        url_elements = elements[1].split('.')
         # url_elements = ["domain", "co", "uk"]
 
         for i in range(-len(url_elements), 0):
