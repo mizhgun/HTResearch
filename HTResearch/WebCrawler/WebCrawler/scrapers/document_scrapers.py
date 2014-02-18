@@ -1,6 +1,7 @@
 import string
 import re
 
+from link_scraper import PageRankScraper
 from utility_scrapers import *
 
 from HTResearch.Utilities.url_tools import UrlUtility
@@ -47,6 +48,7 @@ class OrganizationScraper():
             'facebook': [OrgFacebookScraper],
             'twitter': [OrgTwitterScraper],
             'keywords': [KeywordScraper],
+            'page_rank_info': [PageRankScraper]
         }
         self._multiple = ['types', 'phone_numbers', 'emails', 'partners', 'contacts']
         self._required_words = ['prostitution', 'sex trafficking', 'child labor', 'child labour', 'slavery',

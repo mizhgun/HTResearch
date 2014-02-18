@@ -28,7 +28,8 @@ class Organization(object):
                  emails=[], contacts=[],
                  organization_url=None,
                  partners=[], facebook=None, twitter=None,
-                 keywords=None, valid=True, updated_by=None):
+                 keywords=None, valid=True, updated_by=None,
+                 page_rank_info=None):
         self.name = name
         self.address = address
         self.types = types
@@ -44,6 +45,27 @@ class Organization(object):
         self.valid = valid
         self.last_updated = datetime.utcnow()
         self.updated_by = updated_by
+        self.page_rank_info = page_rank_info
+
+
+class PageRankInfo(object):
+    """A Model class for Information related to PageRank """
+
+    def __init__(self, total_with_self=0, total=0,
+                 references=[]):
+        self.total_with_self = total_with_self
+        self.total = total
+        self.references = references
+
+
+class PageRankVector(object):
+    """A Model class for counting referenced organizations"""
+
+    def __init__(self, org_domain=None, count=0,
+                 pages=[]):
+        self.org_domain = org_domain
+        self.count = count
+        self.pages = pages
 
 
 class Publication(object):
@@ -62,6 +84,14 @@ class Publication(object):
         self.valid = valid
         self.last_updated = datetime.utcnow()
         self.updated_by = updated_by
+
+
+class UrlCountPair(object):
+    """A Model class for pairing Source URLs and the Number of References to some Page"""
+
+    def __init__(self, url=None, count=0):
+        self.url = url
+        self.count = count
 
 
 class URLMetadata(object):
