@@ -160,7 +160,7 @@ function updateNewsLocation(scope) {
 }
 
 function loadNews(context) {
-    var query = baseQuery + ' ' + context || '';
+    var query = baseQuery + (context ? (' ' + context) : '');
     var feedParam = newsUrl + query.split(/,?\s/).join('+');
     newsFeed = new google.feeds.Feed(feedParam);
     newsFeed.setNumEntries(newsCount);
@@ -170,7 +170,8 @@ function loadNews(context) {
             articles = $.map(articles, function(article) {
                 var result = {
                     title: $(article.content).find('td:last div:last a:first b:first').text(),
-                    contentSnippet: $(article.content).find('td:last div:last font').eq(2).text()
+                    contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
+                    link: article.link
                 };
                 return result;
             });
