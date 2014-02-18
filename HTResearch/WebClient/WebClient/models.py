@@ -69,6 +69,11 @@ class RequestOrgForm(forms.Form):
         ctx = ApplicationContext(DAOContext())
         dao = ctx.get_object('OrganizationDAO')
 
+        try:
+            url = UrlUtility().get_domain(url)
+        except:
+            raise ValidationError("Oops! We couldn't find information on that domain.")
+
         if dao.find(organization_url=url):
             raise ValidationError("Oops! Looks like we already have information on that organization.")
 
