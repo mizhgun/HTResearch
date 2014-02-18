@@ -203,10 +203,10 @@ class OrganizationDAO(DAO):
         with self.conn():
             attributes = new_org_dto._data
             for key in attributes:
-                if key == 'page_rank_info' and attributes[key]:
-                    new_val = self._merge_page_rank_info(attributes[key], getattr(existing_org_dto, key),
+                if key == 'page_rank_info' and attributes['page_rank_info']:
+                    new_val = self._merge_page_rank_info(attributes['page_rank_info'], existing_org_dto.page_rank_info,
                                          attributes['organization_url'])
-                    setattr(existing_org_dto, key, new_val)
+                    existing_org_dto.page_rank_info = new_val
                 elif attributes[key] or key == 'latlng':
                     cur_attr = getattr(existing_org_dto, key)
                     if not cur_attr:
