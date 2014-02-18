@@ -93,8 +93,8 @@ class ModelTest(unittest.TestCase):
                                  "{0} attribute not equal".format(attr))
 
     def _compare_page_rank_info(self, org_model, org_dto):
-        page_rank_info_model = getattr(org_model, 'page_rank_info')
-        page_rank_info_dto = getattr(org_dto, 'page_rank_info')
+        page_rank_info_model = org_model.page_rank_info
+        page_rank_info_dto = org_dto.page_rank_info
         self.assertEqual(page_rank_info_model.total_with_self, page_rank_info_dto.total_with_self)
         self.assertEqual(page_rank_info_model.total, page_rank_info_dto.total)
         self.assertEqual(len(page_rank_info_dto.references), len(page_rank_info_model.references))

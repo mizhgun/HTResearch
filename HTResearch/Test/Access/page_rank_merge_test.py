@@ -238,8 +238,8 @@ class PageRankMergeTest(unittest.TestCase):
         print 'OrganizationDAO tests passed'
 
     def _compare_page_rank_info(self, org1, org2):
-        page_rank_info1 = getattr(org1, 'page_rank_info')
-        page_rank_info2 = getattr(org2, 'page_rank_info')
+        page_rank_info1 = org1.page_rank_info
+        page_rank_info2 = org2.page_rank_info
         self.assertEqual(page_rank_info1.total_with_self, page_rank_info2.total_with_self)
         self.assertEqual(page_rank_info1.total, page_rank_info2.total)
         self.assertEqual(len(page_rank_info2.references), len(page_rank_info1.references))
