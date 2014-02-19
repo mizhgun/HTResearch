@@ -33,4 +33,5 @@ body {
 ----------------------------------------------------- */
 .form-wrapper {
     max-width: 600px;
+    padding-bottom: 3em;
 }

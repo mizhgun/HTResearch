@@ -132,18 +132,19 @@ def manage_account(request):
         return HttpResponseRedirect('/login')
 
     user_id = request.session['user_id']
-
     user_dao = ctx.get_object('UserDAO')
     user = user_dao.find(id=user_id)
+    user_dict = _create_user_dict(user)
+    user_dict['user_id'] = str(user_id)
     form = ManageForm(
         request.POST or None,
-        initial=_create_user_dict(user)
+        initial=user_dict
     )
     error = ''
-    print user
-    print _create_user_dict(user)
+    print user_dict
+    print user_id
     if request.method == 'POST':
-        if form.is_valid:
+        if form.is_valid():
             error = 'jk no errors'
     return render(request, 'manage.html', {'form': form, 'error': error})
 

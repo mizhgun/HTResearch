@@ -2,9 +2,6 @@
 
 {% block imports %}
     <title>Human Trafficking Research</title>
-    <link href="/static/css/signup.css" rel="stylesheet">
-    <script src="/static/lib/jquery.validate.min.js" type="text/javascript"></script>
-    <script src="/static/scripts/signup.js" type="text/javascript"></script>
 {% endblock %}
 
 {% block content %}
@@ -22,9 +19,9 @@
         </div>
     {% endif %}
 
-    <form id="manage-form" role="form" method="post" action="/update-account/">
+    <form id="manage-form" role="form" method="post" action="/account-settings/">
         {% csrf_token %}
-
+        <input type="hidden" id="id_user_id" name="user_id" value="{{ form.user_id.value }}"/>
         {% if form.first_name.errors %}
             <div class="form-group has-error">
         {% else %}

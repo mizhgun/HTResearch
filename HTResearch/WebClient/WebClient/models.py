@@ -62,6 +62,7 @@ class SignupForm(forms.Form):
 
 
 class ManageForm(forms.Form):
+    user_id = forms.CharField(widget=forms.HiddenInput())
     first_name = forms.CharField(max_length=25)
     last_name = forms.CharField(max_length=25)
     email = forms.EmailField(max_length=40)
@@ -70,18 +71,21 @@ class ManageForm(forms.Form):
     org_type = forms.ChoiceField(choices=ORG_TYPE_CHOICES, required=False)
     organization = forms.CharField(max_length=60, required=False)
     background = forms.CharField(widget=forms.Textarea, max_length=120)
-    password = forms.CharField(widget=forms.PasswordInput, min_length=8, max_length=40)
-    confirm_password = forms.CharField(widget=forms.PasswordInput, min_length=8, max_length=40)
+    password = forms.CharField(widget=forms.PasswordInput, min_length=8, max_length=40, required=False)
+    confirm_password = forms.CharField(widget=forms.PasswordInput, min_length=8, max_length=40, required=False)
 
     def __init__(self, *args, **kwargs):
         super(ManageForm, self).__init__(*args, **kwargs)
 
     def clean_email(self):
         email = self.cleaned_data['email']
+        user_id = self.cleaned_data['user_id']
         ctx = ApplicationContext(DAOContext())
         dao = ctx.get_object('UserDAO')
 
-        if dao.find(email=email):
+        user = dao.find(email=email)
+        cur_user = dao.find(id=user_id)
+        if user and user.email != cur_user.email:
             raise ValidationError('An account with that email already exists.')
 
         return email
