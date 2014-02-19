@@ -83,9 +83,8 @@ class ManageForm(forms.Form):
         ctx = ApplicationContext(DAOContext())
         dao = ctx.get_object('UserDAO')
 
-        user = dao.find(email=email)
-        cur_user = dao.find(id=user_id)
-        if user and user.email != cur_user.email:
+        user = dao.find(email=email, id__ne=user_id)
+        if user:
             raise ValidationError('An account with that email already exists.')
 
         return email
