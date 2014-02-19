@@ -127,7 +127,6 @@ def signup(request):
 
 
 def manage_account(request):
-
     if 'user_id' not in request.session:
         logger.error('Request made for account-preferences without login')
         return HttpResponseRedirect('/login')
@@ -136,9 +135,10 @@ def manage_account(request):
 
     user_dao = ctx.get_object('UserDAO')
     user = user_dao.find(id=user_id)
-    form = ManageForm(request.POST or None,
-                      initial=_create_user_dict(user),
-                      )
+    form = ManageForm(
+        request.POST or None,
+        initial=_create_user_dict(user)
+    )
     error = ''
     print user
     print _create_user_dict(user)
@@ -207,8 +207,12 @@ def send_invite(request):
 
 
 def _create_user_dict(user):
-    user_dict = {'first_name': user.first_name if user.first_name else "",
-                    'last_name': user.last_name if user.last_name else "",
-                    'email': user.email if user.email else "",
-                    'org_type': user.org_type if user.org_type else ""}
+    user_dict = {
+        'first_name': user.first_name if user.first_name else "",
+        'last_name': user.last_name if user.last_name else "",
+        'email': user.email if user.email else "",
+        'org_type': user.org_type if user.org_type else "",
+        'organization': user.organization.name if user.organization else "",
+        'background': user.background if user.background else ""
+    }
     return user_dict

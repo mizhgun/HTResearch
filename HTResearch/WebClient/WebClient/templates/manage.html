@@ -163,7 +163,7 @@
         {% endif %}
         <label for="id_organization" class="control-label">Organization</label>
         <input type="text" class="form-control" id="id_organization" name="organization" placeholder="Organization"
-                value="{% if form.organization.value %} {{ form.organization.value }} {% endif %}">
+                value="{% if form.organization.value %}{{ form.organization.value }}{% endif %}">
         {% if form.organization.errors %}
             <span class="help-block">
                                 {% for error in form.organization.errors %}
@@ -179,9 +179,7 @@
             <div class="form-group">
         {% endif %}
         <label for="id_background" class="control-label">Background*</label>
-        <textarea class="form-control" form="manage-form" id="id_background" name="background">
-            {{ form.background.value }}
-        </textarea>
+        <textarea class="form-control" form="manage-form" id="id_background" name="background">{{ form.background.value }}</textarea>
         {% if form.background.errors %}
             <span class="help-block">
                                 {% for error in form.background.errors %}
