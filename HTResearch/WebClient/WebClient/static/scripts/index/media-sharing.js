@@ -1,5 +1,5 @@
 define(['jquery', 'underscore'], function($, _) {
-    var SITE_URL = 'unlhtprod.cloudapp.net';
+    var SITE_URL = 'http://unlhtprod.cloudapp.net';
 
     function initialize() {
         var elements = $('.share');
@@ -12,7 +12,7 @@ define(['jquery', 'underscore'], function($, _) {
                         'A%20map%20of%20anti-human%20trafficking%20efforts&p[url]=' + SITE_URL;
                     break;
                 case "twitter":
-                    ele.href = 'https://twitter.com/share';
+                    ele.href = 'https://twitter.com/intent/tweet?url=' + SITE_URL;
                     break;
                 case "gplus":
                     ele.href = 'https://plus.google.com/share?url=' + SITE_URL;
@@ -22,8 +22,6 @@ define(['jquery', 'underscore'], function($, _) {
                         'Anti-Human%20Trafficking%20Map';
                     break;
             }
-
-
         });
 
         // Set click event to open new window
