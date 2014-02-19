@@ -48,6 +48,8 @@ if __name__ == '__main__':
         logger = get_logger(LoggingSection.CRAWLER, 'publication_app.py')
         logger.info("Starting a web crawl")
         spider = PublicationSpider()
+        spider.start_urls = []
+        spider.start_urls.append(url)
         settings = get_project_settings()
         crawler = Crawler(settings)
         crawler.configure()

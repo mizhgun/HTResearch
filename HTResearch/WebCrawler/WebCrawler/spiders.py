@@ -4,7 +4,6 @@ from springpython.context import ApplicationContext
 from scrapy.spider import BaseSpider
 from scrapy.http import Request
 from scrapy import log
-
 from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
 
 from HTResearch.Utilities.context import URLFrontierContext
@@ -173,10 +172,7 @@ class StopTraffickingSpider(BaseSpider):
 class PublicationSpider(BaseSpider):
     name = "publication_spider"
     allowed_domains = ['scholar.google.com']
-    
-    #This will be changed in Release 5
-    query = 'rochelle+dalla'
-    start_urls = ['http://scholar.google.com/scholar?q=' + query + '&hl=en']
+    start_urls = []
 
     def __init__(self, *args, **kwargs):
         self.saved_path = os.getcwd()
