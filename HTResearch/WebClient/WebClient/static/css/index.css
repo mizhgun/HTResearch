@@ -362,3 +362,11 @@ ul {
 #footer-text {
     text-align: center;
 }
+.publication-link {
+    white-space: nowrap;
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+}

@@ -42,11 +42,7 @@ def search_publications(request):
     for dto in publications:
         pub = dto.__dict__['_data']
         # Change the datetime to make it readable in the modal
-        month = str(pub['publication_date'].strftime("%B"))
-        day = str(pub['publication_date'].day)
-        year = str(pub['publication_date'].year)
-        # pub['publication_date'] = month + ' ' + day + ', ' + year
-        pub['publication_date'] = '{0} {1}, {2}'.format(month, day, year)
+        pub['publication_date'] = str(pub['publication_date'].year)
         results.append(pub)
 
     data = {'results': results}
