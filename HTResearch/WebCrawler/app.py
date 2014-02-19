@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     spider = PublicationSpider()
     query = 'human trafficking'
-    spider.start_urls = ['http://scholar.google.com/scholar?q=' + query + '&hl=en']
+    #spider.start_urls = ['http://scholar.google.com/scholar?q=' + query + '&hl=en']
     settings = get_project_settings()
     crawler = Crawler(settings)
     crawler.configure()
