@@ -172,12 +172,12 @@ class StopTraffickingSpider(BaseSpider):
 class PublicationSpider(BaseSpider):
     name = "publication_spider"
     allowed_domains = ['scholar.google.com']
-    start_urls = []
 
     def __init__(self, *args, **kwargs):
         self.saved_path = os.getcwd()
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
         super(PublicationSpider, self).__init__(*args, **kwargs)
+        self.start_urls = [kwargs.get('start_url')] 
         self.scraper = PublicationScraper()
         self.first = True
         self.citation_urls = []
