@@ -3,6 +3,7 @@ from springpython.context import ApplicationContext
 from django.http import HttpResponse, HttpResponseRedirect
 
 from HTResearch.DataModel.enums import AccountType
+from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
@@ -86,7 +87,17 @@ def search_contacts(request):
         u['type'] = 'user'
         results.append(u)
 
-    results = results.order_by(['valid', 'last_name', 'first_name'])
+    results = sorted(results[:10], key=lambda k: k['first_name'])
+
+    # Add the org types to show
+    # for index, contact in enumerate(results):
+    #     if contact['organization'] and contact['organization']['types']:
+    #         type_nums = contact['organization']['types']
+    #         org_types = []
+    #         for org_type in type_nums:
+    #             org_types.append(OrgTypesEnum.reverse_mapping[org_type].title())
+    #         results[index]['organization']['types'] = org_types
+
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
 

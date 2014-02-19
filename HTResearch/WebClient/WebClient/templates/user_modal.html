@@ -22,9 +22,20 @@
               {% templatetag openvariable %}/if{% templatetag closevariable %}
               {% templatetag openvariable %}if organization{% templatetag closevariable %}
               <tr class="modal-row">
-                  <th>Organizations affiliated with:</th>
+                  <th>Organization affiliated with:</th>
                   <td><a href="/organization/${organization.id}">${organization.name}</a></td>
               </tr>
+                  {# Just in case we did ever want Org types to show on a User's modal #}
+                  {# {% templatetag openvariable %}if organization.types{% templatetag closevariable %} #}
+                  {# <tr class="modal-row"> #}
+                      {# <th>Organization type:</th> #}
+                      {# <td> #}
+                      {# {% templatetag openvariable %}each organization.types{% templatetag closevariable %} #}
+                        {# ${$value} #}
+                      {# {% templatetag openvariable %}/each{% templatetag closevariable %} #}
+                      {# </td> #}
+                  {# </tr> #}
+                  {# {% templatetag openvariable %}/if{% templatetag closevariable %} #}
               {% templatetag openvariable %}/if{% templatetag closevariable %}
               {% templatetag openvariable %}if background{% templatetag closevariable %}
               <tr class="modal-row">
@@ -33,10 +44,6 @@
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
           </table>
-          <div class="modal-footer">
-              <a href="/contact/${id}" class="btn btn-primary pull-right">More Info</a>
-              <a id="edit-contact-btn" href="/edit-contact/${id}" class="btn btn-primary pull-right">Edit</a>
-          </div>
       </div>
     </div>
   </div>

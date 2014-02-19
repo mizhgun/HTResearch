@@ -141,6 +141,7 @@ define(['index/modal',
 
     function showContactModal() {
         var data = $(this).data();
+        console.log(data);
 
         if (data['type'] === 'contact'){
             Modal.createModal(data, '#bs-modal', '#contact-modal-template');
