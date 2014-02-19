@@ -358,10 +358,6 @@ ul {
 #map-validity {
     margin-top: -10px;
 }
-
-#footer-text {
-    text-align: center;
-}
 .publication-link {
     white-space: nowrap;
     width: 100%;
@@ -369,4 +365,8 @@ ul {
     overflow: hidden;
     display: inline-block;
     vertical-align: middle;
+}
+
+#footer {
+    display: none;
 }
