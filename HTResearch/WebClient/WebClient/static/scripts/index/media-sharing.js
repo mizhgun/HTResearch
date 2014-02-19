@@ -28,7 +28,7 @@ define(['jquery', 'underscore'], function($, _) {
         elements.click(function(e) {
             e.preventDefault();
             e.stopPropagation();
-            window.open(this.href, '_blank', 'status=1,height=570,width=520');
+            window.open(this.href, '_blank', 'status=1,height=550,width=420');
         });
     }
 
