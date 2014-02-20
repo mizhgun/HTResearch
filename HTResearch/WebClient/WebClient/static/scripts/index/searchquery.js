@@ -12,8 +12,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         var searchResultsDiv = $('#search-results-div');
 
         if (searchText) {
-
-
             // Perform each search
             _.each(searchItems, function(searchItem) {
                 startAjaxSearch();

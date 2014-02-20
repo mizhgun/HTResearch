@@ -59,7 +59,8 @@ define(['jquery',
                         var result = {
                             title: $(article.content).find('td:last div:last a:first b:first').text(),
                             contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
-                            link: article.link
+                            link: article.link,
+                            image: $(article.content).find('')
                         };
                         return result;
                     });

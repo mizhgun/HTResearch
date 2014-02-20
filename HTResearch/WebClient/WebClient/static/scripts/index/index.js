@@ -101,7 +101,7 @@ define(['index/modal',
         var three_ps_legend = document.createElement('div');
         $(three_ps_legend).css('margin-bottom', '5px');
         $(three_ps_legend).html($("#map-legend").html());
-        map.pushControl(google.maps.ControlPosition.RIGHT_BOTTOM, three_ps_legend);
+        map.pushControl(google.maps.ControlPosition.LEFT_BOTTOM, three_ps_legend);
 
         // Load news
         newsLoader.loadNews();
