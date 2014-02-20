@@ -1,7 +1,7 @@
 {% block content %}
     <script id="news-template" type="text/x-jquery-tmpl">
         {% verbatim %}
-        <div class="carousel-caption {{if image}}with-image{{/if}}">
+        <div class="carousel-caption {{if image}}with-image{{/if}} {{if source}}with-source{{/if}}">
             {{if image}}
                 <a href="${link}" target="_blank">
                     <img src="${image}" />
@@ -11,9 +11,9 @@
                 <a href="${link}" target="_blank">${title}</a>
             </h3>
             <div class="article-author">${author}</div>
+            {{if source}}<div class="article-source">${source}</div>{{/if}}
             <div class="article-date">${publishedDate}</div>
             <div class="article-content-snippet">${contentSnippet}</div>
-            <div class="article-content">{{ html content }}</div>
         </div>
         {% endverbatim %}
     </script>

@@ -77,6 +77,8 @@ define(['jquery',
                         }
                         return {
                             title: $(article.content).find('td:last div:last a:first b:first').text(),
+                            date: article.publishedDate,
+                            source: $(article.content).find('td:first a:first font').text().trim(),
                             contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
                             link: article.link,
                             image: imageUrl
