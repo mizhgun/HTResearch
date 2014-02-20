@@ -1,10 +1,8 @@
 define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     var lastSearchedText;
-    var searchResultsVisible = false;
 
-
-    function showSearchResults(searchText, searchItems, map) {
-        if (lastSearchedText === searchText)
+    function search(searchText, searchItems, map, reload) {
+        if (!reload && lastSearchedText === searchText)
             return;
         lastSearchedText = searchText;
 
@@ -12,78 +10,100 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         var searchResultsDiv = $('#search-results-div');
 
         if (searchText) {
-            // Perform each search
+            // Perform each search// Perform each search
             _.each(searchItems, function(searchItem) {
-                startAjaxSearch();
-                $.ajax({
-                    type: 'GET',
-                    url: searchItem.url,
-                    data: {
-                        'search_text': $('#search-box').val(),
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
-                    },
-                    dataType: 'html'
-                }).done(function(data) {
-                    data = JSON.parse(data);
-                    $(searchItem.listSelector).html('');
-                    // Show number of results
-                    var resultCount = data.results.length;
-                    var resultsString = (resultCount >= 10 ? '10+' : resultCount) + ' results';
-                    $(searchItem.toggleSelector).parent().next('.count').text(resultsString);
-                    // Hide or show panel based on availability of results
-                    if(resultCount) {
-                        // Show panel
-                        $(searchItem.toggleSelector).closest('.panel').show();
-                        // Display results
-                        _.each(data.results, function(item) {
-                            $('<a>' + searchItem.linkText(item) + '</a>')
-                                .addClass(searchItem.linkClass)
-                                .attr('href', 'javascript:void(0)')
-                                .attr('title', searchItem.linkText(item))
-                                .data(item)
-                                .wrap('<li></li>')
-                                .parent()
-                                .appendTo(searchItem.listSelector);
-                        });
-                        if (data) {
-                            $(searchItem.toggleSelector).closest('.panel').show();
-                            $(searchItem.toggleSelector).attr('data-toggle', 'collapse');
-                            $(searchItem.toggleSelector).removeClass('disabled');
-                            $(searchItem.collapseSelector).collapse('show');
-                        } else {
-                            $(searchItem.toggleSelector).closest('.panel').hide();
-                        }
-                        $(searchItem.toggleSelector).click(function (e) {
-                            e.preventDefault();
-                        });
-                        $('.modal').modal({ show: false });
-                        $('.' + searchItem.linkClass)
-                            .click(searchItem.onclick)
-                            .each(function (index, value) {
-                                map.plotMarker($(value).data());
-                            });
-                    } else {
-                        // Hide panel
-                        $(searchItem.toggleSelector).closest('.panel').hide();
-                    }
-                }).fail(function() {
-                    console.log(searchItem.name, 'search failed');
-                }).always(function () {
-                    endAjaxSearch();
-                });
+                // See if we want to search for this item
+                var shouldSearch = $(':checkbox:checked[data-search=' + searchItem.name + ']').length > 0;
+                if(shouldSearch) {
+                    var searchQuery = $('#search-box').val();
+                    // Search begin
+                    startAjaxSearch();
+                    // See if we should do a custom search or just an ajax call
+                    var search = searchItem.search || ajaxSearch;
+                    // Retrieve search results
+                    search(searchQuery, function(results) {
+                        // Show search results for this item
+                        displaySearchResults(searchItem, results, map);
+                        // Search end
+                        endAjaxSearch();
+                    }, searchItem);
+                } else {
+                    // Hide panel
+                    $(searchItem.toggleSelector).closest('.panel').hide();
+                }
             });
-
-            if (!searchResultsVisible) {
-                searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
-
-                searchResultsVisible = true;
-            }
+            searchResultsDiv.slideDown();
         } else {
-            if (searchResultsVisible) {
-                searchResultsDiv.toggle('slide', { direction: 'up' }, 500);
+            searchResultsDiv.slideUp();
+        }
+    }
 
-                searchResultsVisible = false;
+    // Default ajax search function
+    function ajaxSearch(searchQuery, ready, searchItem) {
+        // Do an ajax call with the given url
+        $.ajax({
+            type: 'GET',
+            url: searchItem.url,
+            data: {
+                'search_text': searchQuery,
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+            },
+            dataType: 'html'
+        }).done(function(data) {
+            var results = JSON.parse(data).results;
+            ready(results);
+        }).fail(function(data) {
+            console.log(searchItem.name, 'search failed');
+            ready([]);
+        });
+    }
+
+    // Display search results for a specific type of item
+    function displaySearchResults(searchItem, results, map) {
+        // Clear previous results
+        $(searchItem.listSelector).html('');
+        // Show number of results
+        var resultCount = results.length;
+        var resultsString = (resultCount >= 10 ? '10+' : resultCount)
+            + ' result'
+            + (resultCount == 1 ? '' : 's');
+        $(searchItem.toggleSelector).find('.count').text(resultsString);
+        // Hide or show panel based on availability of results
+        if(resultCount) {
+            // Show panel
+            $(searchItem.toggleSelector).closest('.panel').show();
+            // Display results
+            _.each(results, function(item) {
+                $('<a>' + searchItem.linkText(item) + '</a>')
+                    .addClass(searchItem.linkClass)
+                    .attr('href', 'javascript:void(0)')
+                    .click(function() {
+                        if(searchItem.onclick) {
+                            searchItem.onclick(item);
+                        }
+                    })
+                    .data(item)
+                    .wrap('<li></li>')
+                    .parent()
+                    .appendTo(searchItem.listSelector);
+
+                map.plotMarker(item);
+            });
+            if (results.length) {
+                $(searchItem.toggleSelector).closest('.panel').show();
+                $(searchItem.toggleSelector).attr('data-toggle', 'collapse');
+                $(searchItem.toggleSelector).removeClass('disabled');
+                $(searchItem.collapseSelector).collapse('show');
+            } else {
+                $(searchItem.toggleSelector).closest('.panel').hide();
             }
+            $(searchItem.toggleSelector).click(function (e) {
+                e.preventDefault();
+            });
+            $('.modal').modal({ show: false });
+        } else {
+            // Hide panel
+            $(searchItem.toggleSelector).closest('.panel').hide();
         }
     }
 
@@ -101,5 +121,5 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         }
     }
 
-    return { showResults: showSearchResults };
+    return { search: search };
 });

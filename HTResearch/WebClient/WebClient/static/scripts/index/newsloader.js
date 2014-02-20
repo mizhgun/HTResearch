@@ -9,9 +9,12 @@ define(['jquery',
     var BASE_QUERY = 'prostitution OR "sex trafficking" OR "human trafficking" OR brothel OR "child trafficking" OR "anti trafficking"';
     var GENERAL_LOCATION = 'india';
 
+    var self;
+
     var NewsLoader = function() {
         this.newsFeed = null;
         this.geocoder = new google.maps.Geocoder();
+        self = this;
     };
 
     NewsLoader.prototype = {
@@ -46,12 +49,23 @@ define(['jquery',
                 }
             }
         },*/
+        search: function(searchQuery, ready) {
+            var query = BASE_QUERY + ' ' + searchQuery;
+            var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
+            self.newsFeed = new google.feeds.Feed(feedParam);
+            self.newsFeed.setNumEntries(10);
+            self.newsFeed.load(function(result) {
+                if (!result.error) {
+                    ready(result.feed.entries);
+                }
+            });
+        },
         loadNews: function(context) {
             var query = BASE_QUERY + (context ? (' ' + context) : '');
             var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
-            this.newsFeed = new google.feeds.Feed(feedParam);
-            this.newsFeed.setNumEntries(NEWS_COUNT);
-            this.newsFeed.load(function (result) {
+            self.newsFeed = new google.feeds.Feed(feedParam);
+            self.newsFeed.setNumEntries(NEWS_COUNT);
+            self.newsFeed.load(function (result) {
                 if (!result.error) {
                     var articles = result.feed.entries;
                     // Pull the relevant information out of each article

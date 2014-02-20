@@ -29,10 +29,26 @@ define(['index/modal',
         $('#search-box').bind("keyup change", _.debounce(function() {
             var searchText = $('#search-box').val().trim();
 
-            // Put items to search for here.
+            /**
+             * Put items to search for here.
+             * Properties are as follows:
+             *     name: Name of the item searched for, should match data-search attribute for search results panels and
+             *         filter control.
+             *     url: URL of ajax call to get the data.
+             *     search: Function to get the data, can be used instead of url.
+             *         function(query, ready) { ... }
+             *             where query is the search query, and
+             *             ready is the function to which the results should be passed.
+             *     toggleSelector: Search results panel toggle selector.
+             *     collapseSelector: Collapsible region selector.
+             *     listSelector: Search results list selector.
+             *     linkClass: Class that will be on each link in search results.
+             *     linkText: Function to determine what text will be displayed on links.
+             *     onclick: Handler for clicking link.
+             */
             var searchItems = [
                 {
-                    name: 'Organization',
+                    name: 'organization',
                     url: '/search-organizations/',
                     toggleSelector: '#organization-toggle',
                     collapseSelector: '#collapse-organizations',
@@ -42,7 +58,7 @@ define(['index/modal',
                     onclick: showOrganizationModal
                 },
                 {
-                    name: 'Contact',
+                    name: 'contact',
                     url: '/search-contacts/',
                     toggleSelector: '#contact-toggle',
                     collapseSelector: '#collapse-contacts',
@@ -52,7 +68,7 @@ define(['index/modal',
                     onclick: showContactModal
                 },
                 {
-                    name: 'Publication',
+                    name: 'publication',
                     url: '/search-publications',
                     toggleSelector: '#publication-toggle',
                     collapseSelector: '#collapse-publications',
@@ -60,11 +76,33 @@ define(['index/modal',
                     linkClass: 'publication-link',
                     linkText: function(item) { return item.title; },
                     onclick: showPublicationModal
+                },
+                {
+                    name: 'news',
+                    search: newsLoader.search,
+                    toggleSelector: '#news-toggle',
+                    collapseSelector: '#collapse-news',
+                    listSelector: '#news-search-list',
+                    linkClass: 'news-link',
+                    linkText: function(item) { return item.title; },
+                    onclick: function(item) { window.open(item.link, '_blank'); }
                 }
             ];
 
-            SearchQuery.showResults(searchText, searchItems, map);
+            SearchQuery.search(searchText, searchItems, map);
         }, 300));
+
+        // Repeat search when setting items to visible
+        $('#search-settings-dropdown :checkbox').change(function() {
+            var searchItem = $(this).attr('data-search');
+            var show = $(this).is(':checked');
+            var resultsToShow = $('.panel[data-search=' + searchItem + ']');
+            if(show) {
+                showSearchResults(true);
+            } else {
+                resultsToShow.slideUp();
+            }
+        });
 
         // Prevent search form submit on enter
         $('#search-box').bind('keyup keypress', function (e) {
