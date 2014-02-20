@@ -70,13 +70,17 @@ define(['jquery',
                     var articles = result.feed.entries;
                     // Pull the relevant information out of each article
                     articles = $.map(articles, function(article) {
-                        var result = {
+                        var imageUrl = '';
+                        var foundImage = $(article.content).find('img[src]');
+                        if(foundImage.length) {
+                            imageUrl = foundImage.attr('src');
+                        }
+                        return {
                             title: $(article.content).find('td:last div:last a:first b:first').text(),
                             contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
                             link: article.link,
-                            image: $(article.content).find('')
+                            image: imageUrl
                         };
-                        return result;
                     });
 
                     var newsCarousel = $('#news-carousel');

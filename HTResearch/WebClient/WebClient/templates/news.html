@@ -1,13 +1,21 @@
 {% block content %}
     <script id="news-template" type="text/x-jquery-tmpl">
-        <div></div>
-        <div class="carousel-caption">
-            <h3 class="article-title"><a href="${link}" target="_blank">${title}</a></h3>
+        {% verbatim %}
+        <div class="carousel-caption {{if image}}with-image{{/if}}">
+            {{if image}}
+                <a href="${link}" target="_blank">
+                    <img src="${image}" />
+                </a>
+            {{/if}}
+            <h3 class="article-title">
+                <a href="${link}" target="_blank">${title}</a>
+            </h3>
             <div class="article-author">${author}</div>
             <div class="article-date">${publishedDate}</div>
             <div class="article-content-snippet">${contentSnippet}</div>
-            <div class="article-content">{% templatetag openbrace %}{% templatetag openbrace %}html content{% templatetag closebrace %}{% templatetag closebrace %}</div>
+            <div class="article-content">{{ html content }}</div>
         </div>
+        {% endverbatim %}
     </script>
     <div class="news-context">
         <h2>News</h2> for Mumbai
