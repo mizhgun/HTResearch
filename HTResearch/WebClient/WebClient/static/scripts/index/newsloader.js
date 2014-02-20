@@ -49,6 +49,7 @@ define(['jquery',
                 }
             }
         },*/
+        // Search for news
         search: function(searchQuery, ready) {
             var query = BASE_QUERY + ' ' + searchQuery;
             var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
@@ -60,47 +61,41 @@ define(['jquery',
                 }
             });
         },
+        // Load news into ticker
         loadNews: function(context) {
-            var query = BASE_QUERY + (context ? (' ' + context) : '');
-            var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
-            self.newsFeed = new google.feeds.Feed(feedParam);
-            self.newsFeed.setNumEntries(NEWS_COUNT);
-            self.newsFeed.load(function (result) {
-                if (!result.error) {
-                    var articles = result.feed.entries;
-                    // Pull the relevant information out of each article
-                    articles = $.map(articles, function(article) {
-                        var imageUrl = '';
-                        var foundImage = $(article.content).find('img[src]');
-                        if(foundImage.length) {
-                            imageUrl = foundImage.attr('src');
-                        }
-                        return {
-                            title: $(article.content).find('td:last div:last a:first b:first').text(),
-                            date: article.publishedDate,
-                            source: $(article.content).find('td:first a:first font').text().trim(),
-                            contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
-                            link: article.link,
-                            image: imageUrl
-                        };
-                    });
-
-                    var newsCarousel = $('#news-carousel');
-                    var newsDiv = $('#news-results');
-                    newsDiv.find('.item').html('');
-
-                    // Construct html from news articles
-                    $.template('newsTemplate', $('#news-template').html());
-                    _.each(articles, function(article, index) {
-                        $.tmpl('newsTemplate', article).appendTo(newsDiv.find('.item').eq(index));
-                    });
-                    newsCarousel.carousel(0);
-
-                    if ($(newsDiv).html()) {
-                        $('.news-panel').show('slide', { direction: 'left' });
-                    } else {
-                        $('.news-panel').show('slide', { direction: 'left' });
+            self.search(context ? (' ' + context) : '', function(articles) {
+                // Pull the relevant information out of each article
+                articles = $.map(articles, function(article) {
+                    var imageUrl = '';
+                    var foundImage = $(article.content).find('img[src]');
+                    if(foundImage.length) {
+                        imageUrl = foundImage.attr('src');
                     }
+                    return {
+                        title: $(article.content).find('td:last div:last a:first b:first').text(),
+                        date: article.publishedDate,
+                        source: $(article.content).find('td:first a:first font').text().trim(),
+                        contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
+                        link: article.link,
+                        image: imageUrl
+                    };
+                });
+
+                var newsCarousel = $('#news-carousel');
+                var newsDiv = $('#news-results');
+                newsDiv.find('.item').html('');
+
+                // Construct html from news articles
+                $.template('newsTemplate', $('#news-template').html());
+                _.each(articles, function(article, index) {
+                    $.tmpl('newsTemplate', article).appendTo(newsDiv.find('.item').eq(index));
+                });
+                newsCarousel.carousel(0);
+
+                if ($(newsDiv).html()) {
+                    $('.news-panel').show('slide', { direction: 'left' });
+                } else {
+                    $('.news-panel').show('slide', { direction: 'left' });
                 }
             });
         }
