@@ -20,6 +20,10 @@ class DAO(object):
     def __init__(self):
         self.conn = DBConnection
 
+    def all(self):
+        with self.conn():
+            return self.dto.objects.all()
+
     def merge_documents(self, dto, merge_dto):
         with self.conn():
             attributes = merge_dto._data

@@ -1,5 +1,5 @@
 from helper_classes import SmallOrganization
-from HTResearch.DataModel.model import Organization
+from HTResearch.DataModel.model import Organization, PageRankInfo
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.lists import index_of
 
@@ -13,7 +13,7 @@ class PageRankPreprocessor(object):
         """ Make a db call to get all organizations and trim it down to a smaller model to conserve space"""
 
         # grab all organizations
-        tmp_org_dtos = self.org_dao().objects
+        tmp_org_dtos = self.org_dao.all()
 
         # convert the dtos to this smaller model
         small_orgs = [SmallOrganization(DTOConverter.from_dto(Organization, o), o.id) for o in tmp_org_dtos]
@@ -28,6 +28,9 @@ class PageRankPreprocessor(object):
         org_domains = [o.org_domain for o in small_orgs]
 
         for org in small_orgs:
+            if org.page_rank_info is None:
+                org.page_rank_info = PageRankInfo()
+
             org.page_rank_info.total = 0
             org.page_rank_info.total_with_self = 0
             for ref in org.page_rank_info.references:
