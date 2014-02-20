@@ -25,69 +25,69 @@ define(['index/modal',
         newsLoader = new NewsLoader();
         HeatMap.initialize(map.getMap());
 
+        /**
+         * Put items to search for here.
+         * Properties are as follows:
+         *     name: Name of the item searched for, should match data-search attribute for search results panels and
+         *         filter control.
+         *     url: URL of ajax call to get the data.
+         *     search: Function to get the data, can be used instead of url.
+         *         function(query, ready) { ... }
+         *             where query is the search query, and
+         *             ready is the function to which the results should be passed.
+         *     toggleSelector: Search results panel toggle selector.
+         *     collapseSelector: Collapsible region selector.
+         *     listSelector: Search results list selector.
+         *     linkClass: Class that will be on each link in search results.
+         *     linkText: Function to determine what text will be displayed on links.
+         *     onclick: Handler for clicking link.
+         */
+        var searchItems = [
+            {
+                name: 'organization',
+                url: '/search-organizations/',
+                toggleSelector: '#organization-toggle',
+                collapseSelector: '#collapse-organizations',
+                listSelector: '#organization-search-list',
+                linkClass: 'org-link',
+                linkText: function(item) { return item.name || item.organization_url || ''; },
+                onclick: showOrganizationModal
+            },
+            {
+                name: 'contact',
+                url: '/search-contacts/',
+                toggleSelector: '#contact-toggle',
+                collapseSelector: '#collapse-contacts',
+                listSelector: '#contact-search-list',
+                linkClass: 'contact-link',
+                linkText: function(item) { return (item.first_name || '') + ' ' + (item.last_name || '') },
+                onclick: showContactModal
+            },
+            {
+                name: 'publication',
+                url: '/search-publications',
+                toggleSelector: '#publication-toggle',
+                collapseSelector: '#collapse-publications',
+                listSelector: '#publication-search-list',
+                linkClass: 'publication-link',
+                linkText: function(item) { return item.title; },
+                onclick: showPublicationModal
+            },
+            {
+                name: 'news',
+                search: newsLoader.search,
+                toggleSelector: '#news-toggle',
+                collapseSelector: '#collapse-news',
+                listSelector: '#news-search-list',
+                linkClass: 'news-link',
+                linkText: function(item) { return item.title; },
+                onclick: function(item) { window.open(item.link, '_blank'); }
+            }
+        ];
+
         // Update search when changing text input
         $('#search-box').bind("keyup change", _.debounce(function() {
             var searchText = $('#search-box').val().trim();
-
-            /**
-             * Put items to search for here.
-             * Properties are as follows:
-             *     name: Name of the item searched for, should match data-search attribute for search results panels and
-             *         filter control.
-             *     url: URL of ajax call to get the data.
-             *     search: Function to get the data, can be used instead of url.
-             *         function(query, ready) { ... }
-             *             where query is the search query, and
-             *             ready is the function to which the results should be passed.
-             *     toggleSelector: Search results panel toggle selector.
-             *     collapseSelector: Collapsible region selector.
-             *     listSelector: Search results list selector.
-             *     linkClass: Class that will be on each link in search results.
-             *     linkText: Function to determine what text will be displayed on links.
-             *     onclick: Handler for clicking link.
-             */
-            var searchItems = [
-                {
-                    name: 'organization',
-                    url: '/search-organizations/',
-                    toggleSelector: '#organization-toggle',
-                    collapseSelector: '#collapse-organizations',
-                    listSelector: '#organization-search-list',
-                    linkClass: 'org-link',
-                    linkText: function(item) { return item.name || item.organization_url || ''; },
-                    onclick: showOrganizationModal
-                },
-                {
-                    name: 'contact',
-                    url: '/search-contacts/',
-                    toggleSelector: '#contact-toggle',
-                    collapseSelector: '#collapse-contacts',
-                    listSelector: '#contact-search-list',
-                    linkClass: 'contact-link',
-                    linkText: function(item) { return (item.first_name || '') + ' ' + (item.last_name || '') },
-                    onclick: showContactModal
-                },
-                {
-                    name: 'publication',
-                    url: '/search-publications',
-                    toggleSelector: '#publication-toggle',
-                    collapseSelector: '#collapse-publications',
-                    listSelector: '#publication-search-list',
-                    linkClass: 'publication-link',
-                    linkText: function(item) { return item.title; },
-                    onclick: showPublicationModal
-                },
-                {
-                    name: 'news',
-                    search: newsLoader.search,
-                    toggleSelector: '#news-toggle',
-                    collapseSelector: '#collapse-news',
-                    listSelector: '#news-search-list',
-                    linkClass: 'news-link',
-                    linkText: function(item) { return item.title; },
-                    onclick: function(item) { window.open(item.link, '_blank'); }
-                }
-            ];
 
             SearchQuery.search(searchText, searchItems, map);
         }, 300));
@@ -98,7 +98,8 @@ define(['index/modal',
             var show = $(this).is(':checked');
             var resultsToShow = $('.panel[data-search=' + searchItem + ']');
             if(show) {
-                showSearchResults(true);
+                var searchText = $('#search-box').val().trim();
+                SearchQuery.search(searchText, searchItems, map, true);
             } else {
                 resultsToShow.slideUp();
             }
