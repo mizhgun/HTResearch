@@ -2,6 +2,7 @@
 from springpython.config import *
 
 # project imports
+from HTResearch.PageRank.postprocessors import PageRankPostprocessor
 from HTResearch.PageRank.preprocessors import PageRankPreprocessor
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import UrlMetadataScraper
@@ -215,5 +216,11 @@ class PageRankContext(DAOContext):
     @Object()
     def PageRankPreprocessor(self):
         prp = PageRankPreprocessor()
+        prp.org_dao = self.RegisteredOrganizationDAO()()
+        return prp
+
+    @Object()
+    def PageRankPostprocessor(self):
+        prp = PageRankPostprocessor()
         prp.org_dao = self.RegisteredOrganizationDAO()()
         return prp

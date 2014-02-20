@@ -6,3 +6,5 @@ class SmallOrganization(object):
         self.id = id
         self.page_rank_info = org_model.page_rank_info
         self.org_domain = UrlUtility.get_domain(org_model.organization_url)
+        self.page_rank = None
+        self.page_rank_weight = None

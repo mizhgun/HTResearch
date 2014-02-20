@@ -4,7 +4,6 @@ from springpython.context import ApplicationContext
 from springpython.config import Object
 
 # project imports
-from HTResearch.PageRank.preprocessors import PageRankPreprocessor
 from HTResearch.PageRank.algorithms import *
 from HTResearch.Test.Mocks.dao import *
 from HTResearch.Utilities.context import PageRankContext
@@ -26,6 +25,9 @@ class PageRankTest(unittest.TestCase):
         matrix = prp.create_matrix(orgs)
         matrix = google_matrix(matrix)
         vector = left_eigenvector(matrix)
+        post = ctx.get_object('PageRankPostprocessor')
+        orgs = post.give_orgs_ranks(orgs, vector)
+        post.store_organizations(orgs)
         pass
 
 
