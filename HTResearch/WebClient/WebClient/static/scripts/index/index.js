@@ -147,32 +147,26 @@ define(['index/modal',
     }
 
     // Show modals
-    function showOrganizationModal() {
-        orgData = $(this).data();
-
+    function showOrganizationModal(org) {
         // Shows news based on the selected organization
-        newsLoader.loadNews(orgData.name + ' ' + orgData.keywords);
+        newsLoader.loadNews(org.name + ' ' + org.keywords);
 
-        if (orgData.latlng && orgData.latlng.length > 0 && orgData.latlng[0] && orgData.latlng[1]) {
-            map.showInfo(orgData);
+        if (org.latlng && org.latlng.length > 0 && org.latlng[0] && org.latlng[1]) {
+            map.showInfo(org);
         }
         else {
             map.closeAllInfowindows();
 
-            Modal.createModal(orgData, '#bs-modal', '#bs-org-modal-template');
+            Modal.createModal(org, '#bs-modal', '#bs-org-modal-template');
         }
     }
 
-    function showContactModal() {
-        var data = $(this).data();
-
-        Modal.createModal(data, '#bs-modal', '#contact-modal-template');
+    function showContactModal(contact) {
+        Modal.createModal(contact, '#bs-modal', '#contact-modal-template');
     }
 
-    function showPublicationModal(){
-        var data = $(this).data();
-
-        Modal.createModal(data, '#bs-modal', '#publication-modal-template');
+    function showPublicationModal(pub) {
+        Modal.createModal(pub, '#bs-modal', '#publication-modal-template');
     }
 
     return { initialize: initialize };

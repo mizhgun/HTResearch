@@ -181,7 +181,7 @@ input:focus {
 #search-results-div {
     overflow-y: auto;
     width: 100%;
-    height: calc(100% - 54px);
+    height: calc(100% - 80px);
     opacity: 0.5;
     filter: alpha(opacity=50); /* For IE8 and earlier */
     transition: opacity 1s;
