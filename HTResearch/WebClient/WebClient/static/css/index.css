@@ -305,7 +305,7 @@ ul {
     z-index: 10;
 }
 
-.news-panel .news-context {
+.news-panel .news-header {
     white-space: nowrap;
     height: 36px;
     color: #ccc;
@@ -315,9 +315,11 @@ ul {
     font-size: 24px;
     font-weight: normal;
     text-shadow: 0 0 6px #000;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.news-panel .news-context h2 {
+.news-panel .news-header h2 {
     display: inline;
     color: #fff;
     font-size: 24px;
@@ -344,6 +346,14 @@ ul {
 #news-carousel .carousel-indicators {
     top: 5%;
     height: 20px;
+}
+
+#news-carousel .carousel-indicators li {
+    margin: 3px;
+}
+
+#news-carousel .carousel-indicators li.active {
+    margin: 2px;
 }
 
 #news-carousel .carousel-indicators li:hover {

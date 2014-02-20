@@ -7,7 +7,7 @@ define(['jquery',
     var NEWS_COUNT = 10;
     var NEWS_URL = 'https://news.google.com/news/feeds?output=rss&num=' + NEWS_COUNT + '&q=';
     var BASE_QUERY = 'prostitution OR "sex trafficking" OR "human trafficking" OR brothel OR "child trafficking" OR "anti trafficking"';
-    var GENERAL_LOCATION = 'india';
+    var GENERAL_LOCATION = 'India';
 
     var self;
 
@@ -18,40 +18,9 @@ define(['jquery',
     };
 
     NewsLoader.prototype = {
-        /*updateNewsLocation: function(scope, center, bounds, orgData) {
-            var self = this;
-            this.moreNews = true;
-
-            var loadNewsFromLocation = function (locationQuery) {
-                var query = BASE_QUERY + ' ' + locationQuery;
-                var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
-                self.newsFeed = new google.feeds.Feed(feedParam);
-                self.newsCount = 0;
-                self.loadMoreNews();
-            };
-
-            if (scope === 'general') {
-                loadNewsFromLocation(GENERAL_LOCATION);
-            } else if (scope === 'regional') {
-                this.geocoder.geocode({
-                    'latLng': center,
-                    'bounds': bounds
-                }, function (results, status) {
-                    if (status === google.maps.GeocoderStatus.OK && results[0]) {
-                        loadNewsFromLocation(results[0].formatted_address);
-                    }
-                });
-            } else if (scope === 'organization') {
-                if (orgData) {
-                    loadNewsFromLocation(orgData.name);
-                } else {
-                    $('#news-results').html('<div class="no-results">Please select an organization.</div>');
-                }
-            }
-        },*/
         // Search for news
         search: function(searchQuery, ready) {
-            var query = BASE_QUERY + ' ' + searchQuery;
+            var query = GENERAL_LOCATION + ' ' + BASE_QUERY + (searchQuery ? ' ' + searchQuery : '');
             var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
             self.newsFeed = new google.feeds.Feed(feedParam);
             self.newsFeed.setNumEntries(10);
@@ -62,40 +31,66 @@ define(['jquery',
             });
         },
         // Load news into ticker
-        loadNews: function(context) {
-            self.search(context ? (' ' + context) : '', function(articles) {
-                // Pull the relevant information out of each article
-                articles = $.map(articles, function(article) {
-                    var imageUrl = '';
-                    var foundImage = $(article.content).find('img[src]');
-                    if(foundImage.length) {
-                        imageUrl = foundImage.attr('src');
-                    }
-                    return {
-                        title: $(article.content).find('td:last div:last a:first b:first').text(),
-                        date: article.publishedDate,
-                        source: $(article.content).find('td:first a:first font').text().trim(),
-                        contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
-                        link: article.link,
-                        image: imageUrl
-                    };
-                });
+        loadNews: function(context, altText) {
+            $('#news-context').html(altText || context || GENERAL_LOCATION);
+            self.search(context, function(articles) {
+                // See if there were any articles
+                if (articles.length) {
+                    // Pull the relevant information out of each article
+                    articles = $.map(articles, function(article) {
+                        var imageUrl = '';
+                        var foundImage = $(article.content).find('img[src]');
+                        if(foundImage.length) {
+                            imageUrl = foundImage.attr('src');
+                        }
+                        return {
+                            title: $(article.content).find('td:last div:last a:first b:first').text(),
+                            date: article.publishedDate,
+                            source: $(article.content).find('td:first a:first font').text().trim(),
+                            contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
+                            link: article.link,
+                            image: imageUrl
+                        };
+                    });
 
-                var newsCarousel = $('#news-carousel');
-                var newsDiv = $('#news-results');
-                newsDiv.find('.item').html('');
+                    // Load articles into ticker
+                    var newsCarousel = $('#news-carousel');
+                    var newsDiv = $('#news-results');
+                    newsDiv.find('.item').html('');
 
-                // Construct html from news articles
-                $.template('newsTemplate', $('#news-template').html());
-                _.each(articles, function(article, index) {
-                    $.tmpl('newsTemplate', article).appendTo(newsDiv.find('.item').eq(index));
-                });
-                newsCarousel.carousel(0);
+                    var carouselInner = newsCarousel.find('.carousel-inner');
+                    var carouselIndicator = newsCarousel.find('.carousel-indicators');
 
-                if ($(newsDiv).html()) {
-                    $('.news-panel').show('slide', { direction: 'left' });
+                    carouselInner.find('.item').remove();
+                    carouselIndicator.find('li').remove();
+
+                    $.template('newsTemplate', $('#news-template').html());
+                    _.each(articles, function(article, index) {
+                        $.tmpl('newsTemplate', article)
+                            .wrap('<div></div>')
+                            .parent()
+                            .addClass('item')
+                            .appendTo(carouselInner);
+                        $('<li></li>')
+                            .attr('data-target', '#news-carousel')
+                            .attr('data-slide-to', index)
+                            .appendTo(carouselIndicator);
+                    });
+
+                    // Move to first article
+                    carouselInner.find('.item').removeClass('active');
+                    carouselInner.find('.item').eq(0).addClass('active');
+                    carouselIndicator.find('li').removeClass('active');
+                    carouselIndicator.find('li').eq(0).addClass('active');
+
+                    // Show news panel
+                    $('.news-panel').show('slide', { direction: 'right' });
+                } else if(context) {
+                    // If there were no results with context, try again for general results
+                    self.loadNews();
                 } else {
-                    $('.news-panel').show('slide', { direction: 'left' });
+                    // Hide news panel
+                    $('.news-panel').hide('slide', { direction: 'right' });
                 }
             });
         }

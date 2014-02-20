@@ -17,39 +17,17 @@
         </div>
         {% endverbatim %}
     </script>
-    <div class="news-context">
-        <h2>News</h2> for Mumbai
+    <div class="news-header">
+        <h2>News</h2> for <span id="news-context"></span>
     </div>
     <div id="news-carousel" class="carousel slide" data-ride="carousel">
-        <div class="carousel-inner" id="news-results">
-            <div class="item active"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-        </div>
+        <div class="carousel-inner" id="news-results"></div>
         <a class="right carousel-control" href="#news-carousel" data-slide="next">
             <span class="glyphicon glyphicon-chevron-right"></span>
         </a>
         <a class="left carousel-control" href="#news-carousel" data-slide="prev">
             <span class="glyphicon glyphicon-chevron-left"></span>
         </a>
-        <ol class="carousel-indicators">
-            <li data-target="#news-carousel" data-slide-to="0" class="active"></li>
-            <li data-target="#news-carousel" data-slide-to="1" class=""></li>
-            <li data-target="#news-carousel" data-slide-to="2" class=""></li>
-            <li data-target="#news-carousel" data-slide-to="3" class=""></li>
-            <li data-target="#news-carousel" data-slide-to="4" class=""></li>
-            <li data-target="#news-carousel" data-slide-to="5" class=""></li>
-            <li data-target="#news-carousel" data-slide-to="6" class=""></li>
-            <li data-target="#news-carousel" data-slide-to="7" class=""></li>
-            <li data-target="#news-carousel" data-slide-to="8" class=""></li>
-            <li data-target="#news-carousel" data-slide-to="9" class=""></li>
-        </ol>
+        <ol class="carousel-indicators"></ol>
     </div>
 {% endblock %}

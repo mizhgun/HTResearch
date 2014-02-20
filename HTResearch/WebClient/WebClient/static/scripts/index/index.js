@@ -149,7 +149,10 @@ define(['index/modal',
     // Show modals
     function showOrganizationModal(org) {
         // Shows news based on the selected organization
-        newsLoader.loadNews(org.name + ' ' + org.keywords);
+        // Remove parentheses from organization name
+        var alteredOrgName = org.name.replace(/ *\([^)]*\) */g, '');
+        var query = '"' + alteredOrgName + '"';
+        newsLoader.loadNews(query, alteredOrgName);
 
         if (org.latlng && org.latlng.length > 0 && org.latlng[0] && org.latlng[1]) {
             map.showInfo(org);
