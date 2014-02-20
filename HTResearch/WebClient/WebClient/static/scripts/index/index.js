@@ -25,7 +25,7 @@ define(['index/modal',
         newsLoader = new NewsLoader();
         HeatMap.initialize(map.getMap());
 
-        // update search when changing text input
+        // Update search when changing text input
         $('#search-box').bind("keyup change", _.debounce(function() {
             var searchText = $('#search-box').val().trim();
 
@@ -66,7 +66,7 @@ define(['index/modal',
             SearchQuery.showResults(searchText, searchItems, map);
         }, 300));
 
-        // prevent form submit on enter
+        // Prevent search form submit on enter
         $('#search-box').bind('keyup keypress', function (e) {
             var code = e.keyCode || e.which;
             if (code === 13) {
@@ -75,27 +75,12 @@ define(['index/modal',
             }
         });
 
-        // Retrieve news whenever ready
-        map.bind('idle', function () {
-            var scope = $('input[name=news-scope]:checked').val();
-            if (scope === 'regional') {
-                newsLoader.updateNewsLocation(scope, map.getMap().getCenter(), map.getMap().getBounds(), orgData);
+        // Prevent clicks on search settings dropdown from closing the menu
+        $('.dropdown-menu').on('click', function(e) {
+            if($(this).hasClass('dropdown-menu-form')) {
+                e.stopPropagation();
             }
         });
-
-        // Make news scope switch work
-        $('input[name=news-scope]').change(function (e) {
-            $('#news-results').scrollTop(0);
-            newsLoader.updateNewsLocation(e.target.value, map.getMap().getCenter(), map.getMap().getBounds(), orgData);
-        });
-
-        // Infinite scrolling for news
-        $('#news-results').scroll(function () {
-            if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-                newsLoader.loadMoreNews();
-            }
-        });
-        // Initially trigger infinite scrolling if there's not enough to fill
 
         // Legend
         var three_ps_legend = document.createElement('div');
@@ -150,7 +135,6 @@ define(['index/modal',
 
         Modal.createModal(data, '#bs-modal', '#publication-modal-template');
     }
-
 
     return { initialize: initialize };
 });
