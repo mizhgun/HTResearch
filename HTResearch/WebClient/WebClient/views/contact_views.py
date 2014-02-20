@@ -87,7 +87,7 @@ def search_contacts(request):
         u['type'] = 'user'
         results.append(u)
 
-    results = sorted(results[:10], key=lambda k: k['first_name'])
+    results = sorted(results, key=lambda k: k['first_name'])[:10]
 
     # Add the org types to show
     # for index, contact in enumerate(results):
