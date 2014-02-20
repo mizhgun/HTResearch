@@ -18,6 +18,11 @@
             <p>{{ error }}</p>
         </div>
     {% endif %}
+    {% if success %}
+        <div class="alert alert-success">
+            <p>{{ success }}</p>
+        </div>
+    {% endif %}
 
     <form id="manage-form" role="form" method="post" action="/account-settings/">
         {% csrf_token %}
@@ -76,18 +81,18 @@
             <div class="form-group">
         {% endif %}
         <label for="id_account_type" class="control-label">Account Type*</label>
-
+        {{ form.account_type.value }}
         <div id="id_account_type">
             <div class="radio">
                 <label>
                     <input type="radio" name="account_type" value="0"
-                            checked="{% if form.account_type.value.0 %}checked{% endif %}">Basic
+                            {% ifequal form.account_type.value 0 %}checked="checked"{% endifequal %}/>Basic
                 </label>
             </div>
             <div class="radio">
                 <label>
                     <input type="radio" name="account_type" value="1"
-                            checked="{% if form.account_type.value.1 %}checked{% endif %}">Contributor
+                            {% ifequal form.account_type.value 1 %}checked="checked"{% endifequal %}/>Contributor
                 </label>
             </div>
         </div>
@@ -106,40 +111,39 @@
             <div class="form-group">
         {% endif %}
         <label for="id_org_type" class="control-label">Affiliation</label>
-
         <div id="id_org_type">
             <div class="radio">
                 <label>
                     <input type="radio" name="org_type" value="0"
-                            checked="{% if form.org_type.value.0 %}checked{% endif %}">
+                            {% ifequal form.org_type.value 0 %}checked="checked"{% endifequal %}/>
                     Government
                 </label>
             </div>
             <div class="radio">
                 <label>
                     <input type="radio" name="org_type" value="1"
-                            checked="{% if form.org_type.value.1 %}checked{% endif %}">
+                            {% ifequal form.org_type.value 1 %}checked="checked"{% endifequal %}/>
                     Ministry
                 </label>
             </div>
             <div class="radio">
                 <label>
                     <input type="radio" name="org_type" value="2"
-                            checked="{% if form.org_type.value.2 %}checked{% endif %}">
+                            {% ifequal form.org_type.value 2 %}checked="checked"{% endifequal %}/>
                     Education
                 </label>
             </div>
             <div class="radio">
                 <label>
                     <input type="radio" name="org_type" value="3"
-                            checked="{% if form.org_type.value.3 %}checked{% endif %}">
+                            {% ifequal form.org_type.value 3 %}checked="checked"{% endifequal %}/>
                     Advocacy
                 </label>
             </div>
             <div class="radio">
                 <label>
                     <input type="radio" name="org_type" value="4"
-                            checked="{% if form.org_type.value.4 %}checked{% endif %}">
+                            {% ifequal form.org_type.value 4 %}checked="checked"{% endifequal %}/>
                     Research
                 </label>
             </div>

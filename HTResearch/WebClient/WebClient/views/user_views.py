@@ -141,12 +141,42 @@ def manage_account(request):
         initial=user_dict
     )
     error = ''
+    success = ''
     print user_dict
     print user_id
     if request.method == 'POST':
         if form.is_valid():
-            error = 'jk no errors'
-    return render(request, 'manage.html', {'form': form, 'error': error})
+            data = form.cleaned_data
+            password = data['password']
+            user.first_name = data['first_name']
+            user.last_name = data['last_name']
+            user.account_type = int(data['account_type'])
+            user.background = data['background']
+            user.email = data['email']
+            if 'org_type' in data and data['org_type']:
+                user.org_type = int(data['org_type'])
+            if password:
+                user.password = make_password(password)
+            org_dao = ctx.get_object('OrganizationDAO')
+            if 'organization' in data and data['organization']:
+                existing_org = org_dao.find(name=data['organization'])
+                if existing_org:
+                    user.organization = existing_org
+                else:
+                    new_org = OrganizationDTO()
+                    new_org.name = data['organization']
+                    if user.org_type:
+                        new_org.types.append(user.org_type)
+                    else:
+                        new_org.types.append(OrgTypesEnum.UNKNOWN)
+                    user.organization = org_dao.create_update(new_org)
+            try:
+                user_dao.create_update(user)
+                success = 'Account settings changed successfully'
+            except Exception as e:
+                logger.error('Error occurred during account update')
+                error = 'Oops! We had a little trouble updating your account. Please try again later.'
+    return render(request, 'manage.html', {'form': form, 'error': error, 'success': success})
 
 
 def send_invite(request):
@@ -212,6 +242,7 @@ def _create_user_dict(user):
         'first_name': user.first_name if user.first_name else "",
         'last_name': user.last_name if user.last_name else "",
         'email': user.email if user.email else "",
+        'account_type': user.account_type if user.account_type else "",
         'org_type': user.org_type if user.org_type else "",
         'organization': user.organization.name if user.organization else "",
         'background': user.background if user.background else ""
