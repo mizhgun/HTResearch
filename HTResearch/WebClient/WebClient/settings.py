@@ -110,6 +110,12 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 SESSION_SAVE_EVERY_REQUEST = True
