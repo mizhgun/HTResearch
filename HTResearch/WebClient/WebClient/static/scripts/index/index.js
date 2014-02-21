@@ -20,8 +20,6 @@ define(['index/modal',
             window.location = '/welcome';
         }
 
-        var geocoder = new google.maps.Geocoder();
-
         map = new Map($('#map-canvas')[0]);
         newsLoader = new NewsLoader();
         HeatMap.initialize(map.getMap());
@@ -126,30 +124,30 @@ define(['index/modal',
         $(three_ps_legend).html($("#map-legend").html());
         map.pushControl(google.maps.ControlPosition.LEFT_BOTTOM, three_ps_legend);
 
-        // Load news
-        newsLoader.loadNews();
-
-        // Make news follow currently viewed region
-        map.bind('idle', function(data) {
-            geocoder.geocode({
-                latLng: map.getMap().getCenter(),
-                bounds: map.getMap().getBounds()
-            }, function(results, status) {
-                if(status == google.maps.GeocoderStatus.OK) {
-                    var result = results[0];
-                    if(result) {
-                        var address = result.formatted_address;
-                        var displayedAddress = address.split(',')[0];
-                        // Format address for querying
-                        var query = address.replace(/[0-9,]/g, '').split(/\s+/).join(' ');
-                        newsLoader.loadNews(query, displayedAddress);
-                    }
-                }
-            })
+        // Make news follow currently viewed region, if that setting is selected
+        map.bind('idle', function() {
+            var regional = $('.btn-regional').is('.active');
+            if(regional) {
+                newsLoader.loadNewsByRegion(map.getMap());
+            }
         });
 
+        // Update news when toggling regional news
+        $('.btn-regional').click(function() {
+            setTimeout(function() {
+                var regional = $('.btn-regional').is('.active');
+                if(regional) {
+                    newsLoader.loadNewsByRegion(map.getMap());
+                } else {
+                    newsLoader.loadNews();
+                }
+            }, 0);
+        });
+
+        // Initially load news
+        newsLoader.loadNews();
+
         // Make tooltips work
-        console.log($)
         $('[rel=tooltip]').tooltip();
     }
 
@@ -170,6 +168,9 @@ define(['index/modal',
 
     // Show modals
     function showOrganizationModal(org) {
+        // Turn off regional news
+        $('.btn-regional').removeClass('active');
+
         // Shows news based on the selected organization
         // Remove parentheses from organization name, get part of name before comma if necessary
         var alteredOrgName = org.name.replace(/ *\([^)]*\) */g, '');
