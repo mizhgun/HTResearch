@@ -222,6 +222,7 @@ input:focus {
 #search-box {
     line-height: 2;
     float: left;
+    width: calc(100% - 54px);
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     -webkit-border-top-left-radius: 5px;

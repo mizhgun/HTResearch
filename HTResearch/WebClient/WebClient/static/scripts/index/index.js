@@ -127,6 +127,9 @@ define(['index/modal',
 
         // Load news
         newsLoader.loadNews();
+
+        // Make news follow current region
+        
     }
 
     function getCookie(name) {
