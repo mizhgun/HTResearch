@@ -157,7 +157,7 @@ def send_invite(request):
 
             mail = MIMEText(invitation)
             mail['Subject'] = 'Come Join UNL HT Research!'
-            mail['From'] = 'UNL HT Research'
+            mail['From'] = 'UNL HT'
             mail['To'] = to
 
             username = get_config_value("MAIL", "username")
@@ -173,7 +173,7 @@ def send_invite(request):
                     server, port
                 ))
                 s.login(username, password)
-                s.sendmail('unlht@cse-mail.unl.edu', [to], mail.as_string())
+                s.sendmail('UNL.HT@cse.unl.edu', [to], mail.as_string())
                 s.quit()
                 success = 'Your invite has been sent successfully!'
                 logger.info('Invite sent to email={0} by user={1}'.format(
