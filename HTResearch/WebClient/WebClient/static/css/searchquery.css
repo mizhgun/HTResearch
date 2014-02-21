@@ -1,65 +1,27 @@
-#search-box-div {
-    width: 100%;
-    height: 100%;
-    background-color: transparent;
-    border-right: 2px solid transparent;
-    padding: 10px;
-    position: relative;
-    z-index: 1;
-}
-
-.search-div {
-    position: absolute;
-    min-width: 20em;
-}
-#search-box-div .panel-heading {
-    line-height: 1.1;
-}
-#contact-search-list, #organization-search-list, #publication-search-list {
-    list-style-position: outside;
-}
-
-#custom-search-form .search-query {
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    width: 100%;
-    transition: opacity 0.2s;
-    -webkit-transition: opacity 0.2s;
-}
-
-#custom-search-form button {
-    border: 0;
-    /** belows styles are working good */
-    padding: 2px 5px;
-    margin-top: 2px;
-    position: relative;
-    height: 20%;
-    /* IE7-8 doesn't have border-radius, so don't indent the padding */
-    margin-bottom: 0;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-}
-
-.search-query:focus + button {
-    z-index: 3;
-}
-
 #search-results-div {
     overflow-y: auto;
     width: 100%;
-    max-height: 75%;
+    height: calc(100% - 80px);
     opacity: 0.5;
     filter: alpha(opacity=50); /* For IE8 and earlier */
     transition: opacity 1s;
-    -webkit-transition: opaicty 1s;
+    -webkit-transition: opacity 1s;
     line-height: 1.5em;
+    border-radius: 5px;
+}
+
+#search-results-div h2 a {
+    display: inline-block;
+    width: 100%;
 }
 
 #search-results-div .count {
     margin: 0;
+    font-size: smaller;
+    color: #999999;
+    display: inline-block;
 }
+
 #search-results-div li{
     margin-bottom: 4px;
 }
@@ -79,17 +41,78 @@
 
 #search-box {
     line-height: 2;
+    float: left;
+    width: calc(100% - 54px);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-top-left-radius: 5px;
+    -moz-border-bottom-left-radius: 5px;
 }
 
-#organization-list-header,
-#contact-list-header,
-#publication-list-header,
+.search-results-panel h2,
 #search-box{
     font-size: x-large;
 }
 
-#organization-search-list,
-#contact-search-list,
-#publication-search-list {
+.search-results-panel ul {
     font-size: small;
+    list-style-position: outside;
+}
+
+#search-settings-btn {
+    width: 54px;
+    height: 54px;
+}
+
+#search-settings-dropdown {
+    float: right;
+    padding: 0px 10px 10px;
+    font-size: large;
+}
+
+#custom-search-form .search-query {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    width: 100%;
+    transition: opacity 0.2s;
+    -webkit-transition: opacity 0.2s;
+}
+
+#search-settings-btn {
+    width: 54px;
+    height: 54px;
+}
+
+.search-div {
+    position: absolute;
+    right: 0;
+    width: 25%;
+    min-width: 22em;
+    height: 100%;
+    overflow: hidden;
+}
+
+#search-box-div {
+    width: 100%;
+    height: calc(100% - 200px);
+    background-color: transparent;
+    border-right: 2px solid transparent;
+    padding: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+#search-box-div .panel-heading {
+    line-height: 1.1;
+}
+
+#search-ajax-loader {
+    position: absolute;
+    height: 51px;
+    right: 74px;
+    top: 10px;
+    z-index: 10;
 }
