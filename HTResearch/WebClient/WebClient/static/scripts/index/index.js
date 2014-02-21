@@ -1,5 +1,6 @@
 define(['index/modal',
         'index/map',
+        'index/media-sharing',
         'index/newsloader',
         'index/heatmap',
         'index/searchquery',
@@ -8,7 +9,7 @@ define(['index/modal',
         'jquery.tmpl',
         'bootstrap',
         'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
-    function(Modal, Map, NewsLoader, HeatMap, SearchQuery, _, $) {
+    function(Modal, Map, MediaSharing, NewsLoader, HeatMap, SearchQuery, _, $) {
     'use strict';
 
     var map;
@@ -20,11 +21,10 @@ define(['index/modal',
             window.location = '/welcome';
         }
 
-        var geocoder = new google.maps.Geocoder();
-
         map = new Map($('#map-canvas')[0]);
         newsLoader = new NewsLoader();
         HeatMap.initialize(map.getMap());
+        MediaSharing.initialize();
 
         /**
          * Put items to search for here.
@@ -126,30 +126,30 @@ define(['index/modal',
         $(three_ps_legend).html($("#map-legend").html());
         map.pushControl(google.maps.ControlPosition.LEFT_BOTTOM, three_ps_legend);
 
-        // Load news
-        newsLoader.loadNews();
-
-        // Make news follow currently viewed region
-        map.bind('idle', function(data) {
-            geocoder.geocode({
-                latLng: map.getMap().getCenter(),
-                bounds: map.getMap().getBounds()
-            }, function(results, status) {
-                if(status == google.maps.GeocoderStatus.OK) {
-                    var result = results[0];
-                    if(result) {
-                        var address = result.formatted_address;
-                        var displayedAddress = address.split(',')[0];
-                        // Format address for querying
-                        var query = address.replace(/[0-9,]/g, '').split(/\s+/).join(' ');
-                        newsLoader.loadNews(query, displayedAddress);
-                    }
-                }
-            })
+        // Make news follow currently viewed region, if that setting is selected
+        map.bind('idle', function() {
+            var regional = $('.btn-regional').is('.active');
+            if(regional) {
+                newsLoader.loadNewsByRegion(map.getMap());
+            }
         });
 
+        // Update news when toggling regional news
+        $('.btn-regional').click(function() {
+            setTimeout(function() {
+                var regional = $('.btn-regional').is('.active');
+                if(regional) {
+                    newsLoader.loadNewsByRegion(map.getMap());
+                } else {
+                    newsLoader.loadNews();
+                }
+            }, 0);
+        });
+
+        // Initially load news
+        newsLoader.loadNews();
+
         // Make tooltips work
-        console.log($)
         $('[rel=tooltip]').tooltip();
     }
 
@@ -169,30 +169,35 @@ define(['index/modal',
     }
 
     // Show modals
-    function showOrganizationModal(org) {
+    function showOrganizationModal(data) {
+        // Turn off regional news
+        $('.btn-regional').removeClass('active');
+
         // Shows news based on the selected organization
         // Remove parentheses from organization name, get part of name before comma if necessary
-        var alteredOrgName = org.name.replace(/ *\([^)]*\) */g, '');
+        var alteredOrgName = data.name.replace(/ *\([^)]*\) */g, '');
         alteredOrgName = alteredOrgName.split(',')[0];
         var query = '"' + alteredOrgName + '"';
         newsLoader.loadNews(query, alteredOrgName);
 
-        if (org.latlng && org.latlng.length > 0 && org.latlng[0] && org.latlng[1]) {
-            map.showInfo(org);
+        if (data.latlng && data.latlng.length > 0 && data.latlng[0] && data.latlng[1]) {
+            map.showInfo(data);
         }
         else {
-            map.closeAllInfowindows();
-
-            Modal.createModal(org, '#bs-modal', '#bs-org-modal-template');
+            window.location.assign('/organization/' + data.id);
         }
     }
 
-    function showContactModal(contact) {
-        Modal.createModal(contact, '#bs-modal', '#contact-modal-template');
+    function showContactModal(data) {
+        if (data['type'] === 'contact') {
+            window.location.assign('/contact/' + data.id);
+        } else {
+            Modal.createModal(data, '#bs-modal', '#' + data['type'] + '-modal-template');
+        }
     }
 
-    function showPublicationModal(pub) {
-        Modal.createModal(pub, '#bs-modal', '#publication-modal-template');
+    function showPublicationModal(data) {
+        Modal.createModal(data, '#bs-modal', '#publication-modal-template');
     }
 
     return { initialize: initialize };
