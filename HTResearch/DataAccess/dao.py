@@ -387,18 +387,20 @@ class OrganizationDAO(DAO):
 
         with self.conn():
             for i in range(0, len(org_dtos)):
-                    dto = org_dtos[i]
-                    try:
-                        if not store_info:
-                            self.dto.objects(id=dto.id).update_one(set__page_rank=dto.page_rank,
-                                                                   set__page_rank_weight=dto.page_rank_weight)
-                        else:
-                            self.dto.objects(id=dto.id).update_one(set__page_rank=dto.page_rank,
-                                                                   set__page_rank_weight=dto.page_rank_weight,
-                                                                   set_page_rank_info=dto.page_rank_info)
-                    except:
-                        # Something goofy happened but rolling back's not really an option
-                        pass
+                dto = org_dtos[i]
+                try:
+                    if not store_info:
+                        self.dto.objects(id=dto.id).update_one(set__page_rank=dto.page_rank,
+                                                               set__page_rank_weight=dto.page_rank_weight)
+                    else:
+                        self.dto.objects(id=dto.id).update_one(set__page_rank=dto.page_rank,
+                                                               set__page_rank_weight=dto.page_rank_weight,
+                                                               set_page_rank_info=dto.page_rank_info)
+                except Exception as e:
+                    # Something goofy happened but rolling back's not really an option
+                    print   "ERROR: Failed to store DTO: {" +\
+                            "\n\t id: " + str(dto.id) +\
+                        "\n} with exception: \n\n" + e.message
 
 
 class PublicationDAO(DAO):
