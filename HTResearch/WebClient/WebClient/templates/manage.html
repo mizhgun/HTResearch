@@ -2,6 +2,7 @@
 
 {% block imports %}
     <title>Human Trafficking Research</title>
+    {% include "norequire.html" %}
 {% endblock %}
 
 {% block content %}
@@ -81,7 +82,6 @@
             <div class="form-group">
         {% endif %}
         <label for="id_account_type" class="control-label">Account Type*</label>
-        {{ form.account_type.value }}
         <div id="id_account_type">
             <div class="radio">
                 <label>
