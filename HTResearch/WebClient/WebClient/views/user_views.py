@@ -117,7 +117,6 @@ def signup(request):
                 request.session['last_modified'] = datetime.utcnow()
                 request.session['account_type'] = ret_user.account_type
                 request.session.set_expiry(SESSION_TIMEOUT)
-                request.session.modified = True
                 return HttpResponseRedirect('/')
             except:
                 logger.error('Error occurred during signup')
