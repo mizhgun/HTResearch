@@ -1,5 +1,6 @@
 define(['index/modal',
         'index/map',
+        'index/media-sharing',
         'index/newsloader',
         'index/heatmap',
         'index/searchquery',
@@ -8,7 +9,7 @@ define(['index/modal',
         'jquery.tmpl',
         'bootstrap',
         'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
-    function(Modal, Map, NewsLoader, HeatMap, SearchQuery, _, $) {
+    function(Modal, Map, MediaSharing, NewsLoader, HeatMap, SearchQuery, _, $) {
     'use strict';
 
     var map;
@@ -24,6 +25,7 @@ define(['index/modal',
         map = new Map($('#map-canvas')[0]);
         newsLoader = new NewsLoader();
         HeatMap.initialize(map.getMap());
+        MediaSharing.initialize();
 
         // update search when changing text input
         $('#search-box').bind("keyup change", _.debounce(function() {
@@ -133,16 +135,18 @@ define(['index/modal',
             map.showInfo(orgData);
         }
         else {
-            map.closeAllInfowindows();
-
-            Modal.createModal(orgData, '#bs-modal', '#bs-org-modal-template');
+            window.location.assign('/organization/' + orgData.id);
         }
     }
 
     function showContactModal() {
         var data = $(this).data();
 
-        Modal.createModal(data, '#bs-modal', '#contact-modal-template');
+        if (data['type'] === 'contact') {
+            window.location.assign('/contact/' + data.id);
+        } else {
+            Modal.createModal(data, '#bs-modal', '#' + data['type'] + '-modal-template');
+        }
     }
 
     function showPublicationModal(){
