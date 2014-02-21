@@ -94,14 +94,12 @@ define(['index/modal',
 
         // Repeat search when setting items to visible
         $('#search-settings-dropdown :checkbox').change(function() {
-            var searchItem = $(this).attr('data-search');
             var show = $(this).is(':checked');
-            var resultsToShow = $('.panel[data-search=' + searchItem + ']');
             if(show) {
                 var searchText = $('#search-box').val().trim();
                 SearchQuery.search(searchText, searchItems, map, true);
             } else {
-                resultsToShow.slideUp();
+                $('.panel[data-search=' + searchItem + ']').slideUp();
             }
         });
 
