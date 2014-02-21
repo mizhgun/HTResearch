@@ -32,7 +32,6 @@ define(['jquery',
         },
         // Load news into ticker
         loadNews: function(context, altText) {
-            $('#news-context').html(altText || context || GENERAL_LOCATION);
             self.search(context, function(articles) {
                 // See if there were any articles
                 if (articles.length) {
@@ -83,8 +82,9 @@ define(['jquery',
                     carouselIndicator.find('li').removeClass('active');
                     carouselIndicator.find('li').eq(0).addClass('active');
 
-                    // Show news panel
+                    // Show news panel and set context indicator
                     $('.news-panel').show('slide', { direction: 'right' });
+                    $('#news-context').html(altText || context || GENERAL_LOCATION);
                 } else if(context) {
                     // If there were no results with context, try again for general results
                     self.loadNews();
