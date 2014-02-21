@@ -15,7 +15,7 @@ from HTResearch.Utilities.converter import DTOConverter
 RESOURCES_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
 
 
-class TestableDAOContext(PageRankContext):
+class TestablePageRankContext(PageRankContext):
     @Object()
     def RegisteredDBConnection(self):
         return MockDBConnection
@@ -26,7 +26,7 @@ class PageRankTest(unittest.TestCase):
         with MockDBConnection() as db:
             db.dropall()
 
-        self.ctx = ApplicationContext(TestableDAOContext())
+        self.ctx = ApplicationContext(TestablePageRankContext())
 
         with open(os.path.join(RESOURCES_DIRECTORY, 'organizations'), mode='r') as to_read:
             org_models = pickle.load(to_read)
