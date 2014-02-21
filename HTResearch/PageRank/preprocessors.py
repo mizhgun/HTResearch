@@ -13,7 +13,10 @@ class PageRankPreprocessor(object):
         """ Make a db call to get all organizations and trim it down to a smaller model to conserve space"""
 
         # grab all organizations
-        tmp_org_dtos = self.org_dao.all()
+        tmp_org_dtos = self.org_dao.all("id", "page_rank_info.total", "organization_url",
+                                        "page_rank_info.total_with_self", "page_rank_info.references.count",
+                                        "page_rank_info.references.org_domain", "page_rank_info.references.pages.url",
+                                        "page_rank_info.references.pages.count")
 
         # convert the dtos to this smaller model
         small_orgs = [SmallOrganization(DTOConverter.from_dto(Organization, o), o.id) for o in tmp_org_dtos if o.organization_url]
