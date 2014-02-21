@@ -1,4 +1,6 @@
 $(function() {
+    $('#invite-nav').addClass('active');
+
     $('#invite-form').validate({
         rules: {
             email: {

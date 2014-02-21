@@ -1,4 +1,6 @@
 $(function () {
+    $('#view-all-orgs-nav').addClass('active');
+
     $('#org-rank-table').datagrid({
         dataSource: new OrgDataSource({
             // Column definitions for Datagrid

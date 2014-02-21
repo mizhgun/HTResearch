@@ -1,4 +1,6 @@
 $(function () {
+    $('#sign-up-nav').addClass('active');
+
     $('#signup-form').validate({
         rules: {
             first_name: {

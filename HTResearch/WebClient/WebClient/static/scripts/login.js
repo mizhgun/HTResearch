@@ -1,4 +1,6 @@
 $(function () {
+    $('#login-nav').addClass('active');
+
     $('#login-form').validate({
         rules: {
             email: {

@@ -17,6 +17,8 @@ define(['index/modal',
     var newsLoader;
 
     function initialize() {
+        $('#home-nav').addClass('active');
+
         var visited = getCookie("htresearchv2");
         if (!visited) {
             window.location = '/welcome';
