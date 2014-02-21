@@ -1,6 +1,5 @@
 # stdlib imports
 from mongoengine.connection import connect, disconnect, get_connection
-from pymongo.son_manipulator import SON
 
 # project imports
 from HTResearch.Utilities.config import get_config_value
@@ -22,7 +21,6 @@ class DBConnection(object):
             disconnect()
             connect(db=name, host=host, port=port)
             self.conn = get_connection()
-            pass
         except:
             logger.error('Connection to MongoDB could not be established.')
 
