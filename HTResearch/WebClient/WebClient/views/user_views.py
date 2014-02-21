@@ -142,8 +142,6 @@ def manage_account(request):
     )
     error = ''
     success = ''
-    print user_dict
-    print user_id
     if request.method == 'POST':
         if form.is_valid():
             data = form.cleaned_data
