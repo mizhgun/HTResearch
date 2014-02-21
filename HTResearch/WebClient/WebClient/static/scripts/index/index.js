@@ -12,7 +12,6 @@ define(['index/modal',
     'use strict';
 
     var map;
-    var orgData;
     var newsLoader;
 
     function initialize() {
@@ -20,6 +19,8 @@ define(['index/modal',
         if (!visited) {
             window.location = '/welcome';
         }
+
+        var geocoder = new google.maps.Geocoder();
 
         map = new Map($('#map-canvas')[0]);
         newsLoader = new NewsLoader();
@@ -128,8 +129,24 @@ define(['index/modal',
         // Load news
         newsLoader.loadNews();
 
-        // Make news follow current region
-        
+        // Make news follow currently viewed region
+        map.bind('idle', function(data) {
+            geocoder.geocode({
+                latLng: map.getMap().getCenter(),
+                bounds: map.getMap().getBounds()
+            }, function(results, status) {
+                if(status == google.maps.GeocoderStatus.OK) {
+                    var result = results[0];
+                    if(result) {
+                        var address = result.formatted_address;
+                        var displayedAddress = address.split(',')[0];
+                        // Format address for querying
+                        var query = address.replace(/[0-9,]/g, '').split(/\s+/).join(' ');
+                        newsLoader.loadNews(query, displayedAddress);
+                    }
+                }
+            })
+        });
     }
 
     function getCookie(name) {

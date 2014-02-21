@@ -13,7 +13,6 @@ define(['jquery',
 
     var NewsLoader = function() {
         this.newsFeed = null;
-        this.geocoder = new google.maps.Geocoder();
         self = this;
     };
 
