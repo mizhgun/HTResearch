@@ -135,16 +135,14 @@ define(['index/modal',
             map.showInfo(orgData);
         }
         else {
-            map.closeAllInfowindows();
-
-            Modal.createModal(orgData, '#bs-modal', '#bs-org-modal-template');
+            window.location.assign('/organization/' + orgData.id);
         }
     }
 
     function showContactModal() {
         var data = $(this).data();
 
-        Modal.createModal(data, '#bs-modal', '#contact-modal-template');
+        window.location.assign('/contact/' + data.id);
     }
 
     function showPublicationModal(){
