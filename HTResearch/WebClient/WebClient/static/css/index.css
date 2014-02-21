@@ -306,6 +306,26 @@ ul {
     z-index: 10;
 }
 
+.news-panel .btn-regional {
+    font-size: 24px;
+    color: #888;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    box-shadow: none;
+    -ms-box-shadow: none;
+    -moz-box-shadow: none;
+}
+
+.news-panel .btn-regional:not(.active):hover {
+    color: #0dd;
+}
+
+.news-panel .btn-regional.active {
+    color: #f80;
+}
+
 .news-panel .news-header {
     white-space: nowrap;
     height: 36px;

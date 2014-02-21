@@ -147,6 +147,10 @@ define(['index/modal',
                 }
             })
         });
+
+        // Make tooltips work
+        console.log($)
+        $('[rel=tooltip]').tooltip();
     }
 
     function getCookie(name) {
