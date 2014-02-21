@@ -45,6 +45,7 @@ class ScrapedOrganization(Item):
     facebook = Field()
     twitter = Field()
     keywords = Field()
+    page_rank_info = Field()
 
 
 class ScrapedPhoneNumber(Item):
