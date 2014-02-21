@@ -7,7 +7,6 @@ define(['index/modal',
         'underscore',
         'jquery',
         'jquery.tmpl',
-        'jquery.validate',
         'bootstrap',
         'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
     function(Modal, Map, MediaSharing, NewsLoader, HeatMap, SearchQuery, _, $) {

@@ -162,14 +162,18 @@ def send_invite(request):
 
             username = get_config_value("MAIL", "username")
             password = get_config_value("MAIL", "password")
+            server = get_config_value("MAIL", "server")
+            port = get_config_value("MAIL", "port")
 
             try:
                 if not (username and password):
                     raise Exception
 
-                s = smtplib.SMTP_SSL('cse-mail.unl.edu:465')
+                s = smtplib.SMTP_SSL('{0}:{1}'.format(
+                    server, port
+                ))
                 s.login(username, password)
-                s.sendmail('webrelay@cse-mail.unl.edu', [to], mail.as_string())
+                s.sendmail('unlht@cse-mail.unl.edu', [to], mail.as_string())
                 s.quit()
                 success = 'Your invite has been sent successfully!'
                 logger.info('Invite sent to email={0} by user={1}'.format(
