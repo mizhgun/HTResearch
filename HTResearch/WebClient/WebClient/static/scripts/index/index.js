@@ -149,8 +149,9 @@ define(['index/modal',
     // Show modals
     function showOrganizationModal(org) {
         // Shows news based on the selected organization
-        // Remove parentheses from organization name
+        // Remove parentheses from organization name, get part of name before comma if necessary
         var alteredOrgName = org.name.replace(/ *\([^)]*\) */g, '');
+        alteredOrgName = alteredOrgName.split(',')[0];
         var query = '"' + alteredOrgName + '"';
         newsLoader.loadNews(query, alteredOrgName);
 
