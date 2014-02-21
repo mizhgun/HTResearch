@@ -216,11 +216,11 @@ class PageRankContext(DAOContext):
     @Object()
     def PageRankPreprocessor(self):
         prp = PageRankPreprocessor()
-        prp.org_dao = self.RegisteredOrganizationDAO()()
+        prp.org_dao = self.OrganizationDAO()
         return prp
 
     @Object()
     def PageRankPostprocessor(self):
         prp = PageRankPostprocessor()
-        prp.org_dao = self.RegisteredOrganizationDAO()()
+        prp.org_dao = self.OrganizationDAO()
         return prp

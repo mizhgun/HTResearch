@@ -16,7 +16,8 @@ class PageRankPreprocessor(object):
         tmp_org_dtos = self.org_dao.all()
 
         # convert the dtos to this smaller model
-        small_orgs = [SmallOrganization(DTOConverter.from_dto(Organization, o), o.id) for o in tmp_org_dtos]
+        small_orgs = [SmallOrganization(DTOConverter.from_dto(Organization, o), o.id) for o in tmp_org_dtos if o.organization_url]
+        small_orgs = [o for o in small_orgs if o.org_domain]
 
         # At this point, tmp_org_dtos gets gc'd and we're left with the minimum data needed for calculation
         return small_orgs
@@ -59,6 +60,9 @@ class PageRankPreprocessor(object):
         """Convert the cleaned small_orgs to a matrix."""
 
         org_count = len(cleaned_small_orgs)
+
+        if org_count <= 0:
+            return None
 
         default_val = 1 / float(org_count)
 
