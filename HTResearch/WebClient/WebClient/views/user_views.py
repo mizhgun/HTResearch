@@ -45,7 +45,8 @@ def login(request):
                 logger.info('User={0} successfully logged in'.format(user.id))
                 request.session['user_id'] = user.id
                 request.session['last_modified'] = datetime.utcnow()
-                request.session['name'] = user.first_name
+                request.session['first_name'] = user.first_name
+                request.session['last_name'] = user.last_name
                 request.session['account_type'] = user.account_type
                 request.session.set_expiry(SESSION_TIMEOUT)
                 return HttpResponseRedirect('/')
@@ -112,16 +113,15 @@ def signup(request):
             try:
                 user_dto = DTOConverter.to_dto(UserDTO, new_user)
                 ret_user = user_dao.create_update(user_dto)
+                request.session['name'] = new_user.first_name
+                request.session['user_id'] = ret_user.id
+                request.session['last_modified'] = datetime.utcnow()
+                request.session['account_type'] = ret_user.account_type
+                request.session.set_expiry(SESSION_TIMEOUT)
                 return HttpResponseRedirect('/')
             except:
                 logger.error('Error occurred during signup')
                 error = 'Oops! We had a little trouble signing you up. Please try again later.'
-
-            request.session['name'] = new_user.first_name
-            request.session['user_id'] = ret_user.id
-            request.session['last_modified'] = datetime.utcnow()
-            request.session['account_type'] = ret_user.account_type
-            request.session.set_expiry(SESSION_TIMEOUT)
 
     return render(request, 'signup.html', {'form': form, 'error': error})
 
@@ -202,28 +202,31 @@ def send_invite(request):
             if 'message' in form.cleaned_data:
                 message = form.cleaned_data['message']
 
-            invitation = "Hello! You've just been invited to UNL HT Research by {0}."\
-                .format(request.session['name'])
+            invitation = "Hello! You've just been invited to UNL HT Research by {0} {1}."\
+                .format(request.session['first_name'], request.session['last_name'])
 
             if message:
                 invitation += " They've included a message below:\n\n{0}".format(message)
 
             mail = MIMEText(invitation)
             mail['Subject'] = 'Come Join UNL HT Research!'
-            mail['From'] = 'jdegner0129@gmail.com'
+            mail['From'] = 'UNL HT'
             mail['To'] = to
 
             username = get_config_value("MAIL", "username")
             password = get_config_value("MAIL", "password")
+            server = get_config_value("MAIL", "server")
+            port = get_config_value("MAIL", "port")
 
             try:
                 if not (username and password):
                     raise Exception
 
-                s = smtplib.SMTP('smtp.gmail.com:587')
-                s.starttls()
+                s = smtplib.SMTP_SSL('{0}:{1}'.format(
+                    server, port
+                ))
                 s.login(username, password)
-                s.sendmail('jdegner0129@gmail.com', [to], mail.as_string())
+                s.sendmail('UNL.HT@cse.unl.edu', [to], mail.as_string())
                 s.quit()
                 success = 'Your invite has been sent successfully!'
                 logger.info('Invite sent to email={0} by user={1}'.format(

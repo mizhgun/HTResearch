@@ -4,110 +4,118 @@ define(['jquery',
         'goog!feeds,1'], function($) {
    'use strict';
 
-    var MAX_NEWS_COUNT = 100;
-    var NEWS_URL = 'https://news.google.com/news/feeds?output=rss&num=' + MAX_NEWS_COUNT + '&q=';
+    var NEWS_COUNT = 10;
+    var NEWS_URL = 'https://news.google.com/news/feeds?output=rss&num=' + NEWS_COUNT + '&q=';
     var BASE_QUERY = 'prostitution OR "sex trafficking" OR "human trafficking" OR brothel OR "child trafficking" OR "anti trafficking"';
-    var GENERAL_LOCATION = 'india';
+    var GENERAL_LOCATION = 'India';
+
+    var self;
 
     var NewsLoader = function() {
-        this.newsCount = 0;
-        this.newsStepSize = 6;
-        this.moreNews = true;
         this.newsFeed = null;
+        this.lastContext = '';
         this.geocoder = new google.maps.Geocoder();
+        self = this;
     };
 
     NewsLoader.prototype = {
-        updateNewsLocation: function(scope, center, bounds, orgData) {
-            var self = this;
-            this.moreNews = true;
+        // Search for news
+        search: function(searchQuery, ready) {
+            var query = GENERAL_LOCATION + ' ' + BASE_QUERY + (searchQuery ? ' ' + searchQuery : '');
+            var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
+            self.newsFeed = new google.feeds.Feed(feedParam);
+            self.newsFeed.setNumEntries(10);
+            self.newsFeed.load(function(result) {
+                if (!result.error) {
+                    ready(result.feed.entries);
+                }
+            });
+        },
+        // Load news into ticker by query
+        loadNews: function(context, altText) {
+            // Only reload when context changes
+            if(context !== self.lastContext) {
+                self.lastContext = context;
+                self.search(context, function(articles) {
+                    // See if there were any articles
+                    if (articles.length) {
+                        // Pull the relevant information out of each article
+                        articles = $.map(articles, function(article) {
+                            var imageUrl = '';
+                            var foundImage = $(article.content).find('img[src]');
+                            if(foundImage.length) {
+                                imageUrl = foundImage.attr('src');
+                            }
+                            return {
+                                title: $(article.content).find('td:last div:last a:first b:first').text(),
+                                date: article.publishedDate,
+                                source: $(article.content).find('td:first a:first font').text().trim(),
+                                contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
+                                link: article.link,
+                                image: imageUrl
+                            };
+                        });
 
-            var loadNewsFromLocation = function (locationQuery) {
-                var query = BASE_QUERY + ' ' + locationQuery;
-                var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
-                self.newsFeed = new google.feeds.Feed(feedParam);
-                self.newsCount = 0;
-                self.loadMoreNews();
-            };
+                        // Load articles into ticker
+                        var newsCarousel = $('#news-carousel');
+                        var newsDiv = $('#news-results');
+                        newsDiv.find('.item').html('');
 
-            if (scope === 'general') {
-                loadNewsFromLocation(GENERAL_LOCATION);
-            } else if (scope === 'regional') {
-                this.geocoder.geocode({
-                    'latLng': center,
-                    'bounds': bounds
-                }, function (results, status) {
-                    if (status === google.maps.GeocoderStatus.OK && results[0]) {
-                        loadNewsFromLocation(results[0].formatted_address);
+                        var carouselInner = newsCarousel.find('.carousel-inner');
+                        var carouselIndicator = newsCarousel.find('.carousel-indicators');
+
+                        carouselInner.find('.item').remove();
+                        carouselIndicator.find('li').remove();
+
+                        $.template('newsTemplate', $('#news-template').html());
+                        _.each(articles, function(article, index) {
+                            $.tmpl('newsTemplate', article)
+                                .wrap('<div></div>')
+                                .parent()
+                                .addClass('item')
+                                .appendTo(carouselInner);
+                            $('<li></li>')
+                                .attr('data-target', '#news-carousel')
+                                .attr('data-slide-to', index)
+                                .appendTo(carouselIndicator);
+                        });
+
+                        // Move to first article
+                        carouselInner.find('.item').removeClass('active');
+                        carouselInner.find('.item').eq(0).addClass('active');
+                        carouselIndicator.find('li').removeClass('active');
+                        carouselIndicator.find('li').eq(0).addClass('active');
+
+                        // Show news panel and set context indicator
+                        $('.news-panel').show('slide', { direction: 'right' });
+                        $('#news-context').html(altText || context || GENERAL_LOCATION);
+                    } else if(context) {
+                        // If there were no results with context, try again for general results
+                        self.loadNews();
+                    } else {
+                        // Hide news panel
+                        $('.news-panel').hide('slide', { direction: 'right' });
                     }
                 });
-            } else if (scope === 'organization') {
-                if (orgData) {
-                    loadNewsFromLocation(orgData.name);
-                } else {
-                    $('#news-results').html('<div class="no-results">Please select an organization.</div>');
-                }
             }
         },
-        loadMoreNews: function() {
-            if (this.moreNews && this.newsFeed) {
-                this.newsCount += this.newsStepSize;
-                this.newsFeed.includeHistoricalEntries();
-                this.newsFeed.setNumEntries(this.newsCount);
-                this.newsFeed.load(function (result) {
-                    if (!result.error) {
-                        var articles = result.feed.entries;
-
-                        // See if there might be more news to load after this
-                        this.moreNews = (articles.length >= this.newsCount);
-
-                        this.newsCount = articles.length;
-
-                        // Construct html from news articles
-                        $.template('newsTemplate', $('#news-template').html());
-                        var newsDiv = $('<div></div>');
-                        $.each(articles, function (index) {
-                            var newsArticle = $.tmpl('newsTemplate', this);
-                            // Do some HTML processing to make the articles look better
-                            $(newsArticle).find('tr').each(function () {
-                                $(this).find('td:last').prepend($(this).find('td:first').html());
-                            });
-                            $(newsArticle).find('br, '
-                                + 'tr td:first, '
-                                + 'tr td:last div:first').remove();
-                            $(newsArticle).find('*').css('padding', '0');
-                            $(newsArticle).find('a').attr('target', '_blank');
-                            $(newsArticle).find('a, font').css({'display': 'block', 'margin-right': '5px'});
-                            $(newsArticle).find('a:has(img)').css({
-                                'width': '80px',
-                                'float': (index % 2 === 0) ? 'left' : 'right',
-                                'text-align': 'center'
-                            });
-                            $(newsArticle).find('img').css({
-                                'width': '80px',
-                                'height': '80px',
-                                'border-radius': '5px'
-                            });
-                            $(newsArticle).find('td div a:first').css('font-size', '14px');
-                            $(newsDiv).append(newsArticle);
-                        });
-                        if (!$(newsDiv).html()) {
-                            $(newsDiv).append('<div class="no-results">No results found.</div>');
-                        } else {
-                            if (this.moreNews) {
-                                $(newsDiv).append('<div class="news-footer ajax-loader"></div>');
-                            } else {
-                                $(newsDiv).append('<div class="news-footer"><i class="glyphicon glyphicon-stop"></i></div>');
-                            }
-                        }
-                        var newsResultsDiv = $('#news-results');
-                        newsResultsDiv.html($(newsDiv).html());
-                        if (this.moreNews && newsResultsDiv.scrollTop() + newsResultsDiv.innerHeight() >= newsResultsDiv[0].scrollHeight) {
-                            this.loadMoreNews();
-                        }
+        // Load news into ticker by map region
+        loadNewsByRegion: function(map) {
+            self.geocoder.geocode({
+                latLng: map.getCenter(),
+                bounds: map.getBounds()
+            }, function(results, status) {
+                if(status == google.maps.GeocoderStatus.OK) {
+                    var result = results[0];
+                    if(result) {
+                        var address = result.formatted_address;
+                        var displayedAddress = address.split(',')[0];
+                        // Format address for querying
+                        var query = address.replace(/[0-9,]/g, '').split(/\s+/).join(' ');
+                        self.loadNews(query, displayedAddress);
                     }
-                });
-            }
+                }
+            });
         }
     };
 
