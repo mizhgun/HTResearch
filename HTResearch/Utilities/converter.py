@@ -11,6 +11,9 @@ class DTOConverter(object):
         if obj is None:
             return None
 
+        if not hasattr(obj, '_data'):
+            return None
+
         new_cls = cls()
 
         for key in obj._data:
