@@ -83,18 +83,14 @@
         {% endif %}
         <label for="id_account_type" class="control-label">Account Type*</label>
         <div id="id_account_type">
+            {% for type in form.account_type.field.choices %}
             <div class="radio">
                 <label>
-                    <input type="radio" name="account_type" value="0"
-                            {% ifequal form.account_type.value 0 %}checked="checked"{% endifequal %}/>Basic
+                    <input type="radio" name="account_type" value="{{type.0}}"
+                            {% ifequal form.account_type.value|add:"0" type.0 %}checked="checked"{% endifequal %}>{{ type.1 }}
                 </label>
             </div>
-            <div class="radio">
-                <label>
-                    <input type="radio" name="account_type" value="1"
-                            {% ifequal form.account_type.value 1 %}checked="checked"{% endifequal %}/>Contributor
-                </label>
-            </div>
+            {% endfor %}
         </div>
         {% if form.account_type.errors %}
             <span class="help-block">
@@ -112,41 +108,15 @@
         {% endif %}
         <label for="id_org_type" class="control-label">Affiliation</label>
         <div id="id_org_type">
+            {% for type in form.org_type.field.choices %}
             <div class="radio">
                 <label>
-                    <input type="radio" name="org_type" value="0"
-                            {% ifequal form.org_type.value 0 %}checked="checked"{% endifequal %}/>
-                    Government
+                    <input type="radio" name="org_type" value="{{ type.0 }}"
+                            {% ifequal form.org_type.value|add:"0" type.0 %}checked="checked"{% endifequal %}>
+                    {{ type.1 }}
                 </label>
             </div>
-            <div class="radio">
-                <label>
-                    <input type="radio" name="org_type" value="1"
-                            {% ifequal form.org_type.value 1 %}checked="checked"{% endifequal %}/>
-                    Ministry
-                </label>
-            </div>
-            <div class="radio">
-                <label>
-                    <input type="radio" name="org_type" value="2"
-                            {% ifequal form.org_type.value 2 %}checked="checked"{% endifequal %}/>
-                    Education
-                </label>
-            </div>
-            <div class="radio">
-                <label>
-                    <input type="radio" name="org_type" value="3"
-                            {% ifequal form.org_type.value 3 %}checked="checked"{% endifequal %}/>
-                    Advocacy
-                </label>
-            </div>
-            <div class="radio">
-                <label>
-                    <input type="radio" name="org_type" value="4"
-                            {% ifequal form.org_type.value 4 %}checked="checked"{% endifequal %}/>
-                    Research
-                </label>
-            </div>
+            {% endfor %}
         </div>
         {% if form.org_type.errors %}
             <span class="help-block">

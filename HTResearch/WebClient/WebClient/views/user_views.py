@@ -240,8 +240,8 @@ def _create_user_dict(user):
         'first_name': user.first_name if user.first_name else "",
         'last_name': user.last_name if user.last_name else "",
         'email': user.email if user.email else "",
-        'account_type': user.account_type if user.account_type else "",
-        'org_type': user.org_type if user.org_type else "",
+        'account_type': user.account_type if user.account_type is not None else "",
+        'org_type': user.org_type if user.org_type is not None else "",
         'organization': user.organization.name if user.organization else "",
         'background': user.background if user.background else ""
     }
