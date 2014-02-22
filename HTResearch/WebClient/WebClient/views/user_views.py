@@ -169,8 +169,11 @@ def manage_account(request):
                         new_org.types.append(OrgTypesEnum.UNKNOWN)
                     user.organization = org_dao.create_update(new_org)
             try:
-                user_dao.create_update(user)
+                ret_user = user_dao.create_update(user)
                 success = 'Account settings changed successfully'
+                request.session['name'] = ret_user.first_name
+                request.session['last_modified'] = datetime.utcnow()
+                request.session['account_type'] = ret_user.account_type
             except Exception as e:
                 logger.error('Error occurred during account update')
                 error = 'Oops! We had a little trouble updating your account. Please try again later.'
@@ -237,12 +240,12 @@ def send_invite(request):
 
 def _create_user_dict(user):
     user_dict = {
-        'first_name': user.first_name if user.first_name else "",
-        'last_name': user.last_name if user.last_name else "",
-        'email': user.email if user.email else "",
+        'first_name': user.first_name or "",
+        'last_name': user.last_name or "",
+        'email': user.email or "",
         'account_type': user.account_type if user.account_type is not None else "",
         'org_type': user.org_type if user.org_type is not None else "",
         'organization': user.organization.name if user.organization else "",
-        'background': user.background if user.background else ""
+        'background': user.background or ""
     }
     return user_dict

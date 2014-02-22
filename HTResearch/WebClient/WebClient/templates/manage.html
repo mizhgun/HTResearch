@@ -94,10 +94,10 @@
         </div>
         {% if form.account_type.errors %}
             <span class="help-block">
-                                {% for error in form.account_type.errors %}
-                                    {{ error|escape }}<br/>
-                                {% endfor %}
-                            </span>
+                {% for error in form.account_type.errors %}
+                    {{ error|escape }}<br/>
+                {% endfor %}
+            </span>
         {% endif %}
         </div>
 
