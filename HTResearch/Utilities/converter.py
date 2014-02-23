@@ -11,6 +11,9 @@ class DTOConverter(object):
         if obj is None:
             return None
 
+        if not hasattr(obj, '_data'):
+            return None
+
         new_cls = cls()
 
         for key in obj._data:
@@ -20,6 +23,12 @@ class DTOConverter(object):
                 setattr(new_cls, key, DTOConverter.from_dto(Organization, obj._data[key]))
             elif key == 'publications':
                 setattr(new_cls, key, [DTOConverter.from_dto(Publication, p) for p in obj._data[key]])
+            elif key == 'page_rank_info':
+                setattr(new_cls, key, DTOConverter.from_dto(PageRankInfo, obj._data[key]))
+            elif key == 'references':
+                setattr(new_cls, key, [DTOConverter.from_dto(PageRankVector, v) for v in obj._data[key]])
+            elif key == 'pages':
+                setattr(new_cls, key, [DTOConverter.from_dto(UrlCountPair, ucp) for ucp in obj._data[key]])
             else:
                 if key != 'id':
                     setattr(new_cls, key, obj._data[key])
@@ -38,6 +47,21 @@ class DTOConverter(object):
                 setattr(new_dto, key, [DTOConverter.to_dto(OrganizationDTO, o) for o in value])
             elif key == 'publications':
                 setattr(new_dto, key, [DTOConverter.to_dto(PublicationDTO, p) for p in value])
+            elif key == 'page_rank_info':
+                if value:
+                    setattr(new_dto, key, DTOConverter.to_dto(PageRankInfoDTO, value))
+                else:
+                    setattr(new_dto, key, value)
+            elif key == 'references':
+                if value:
+                    setattr(new_dto, key, [DTOConverter.to_dto(PageRankVectorDTO, v) for v in value])
+                else:
+                    setattr(new_dto, key, [])
+            elif key == 'pages':
+                if value:
+                    setattr(new_dto, key, [DTOConverter.to_dto(UrlCountPairDTO, ucp) for ucp in value])
+                else:
+                    setattr(new_dto, key, [])
             else:
                 setattr(new_dto, key, value)
         return new_dto
@@ -60,6 +84,12 @@ class ModelConverter(object):
                     setattr(new_model, key, [ModelConverter.to_model(Organization, o) for o in value])
                 elif key == 'publications':
                     setattr(new_model, key, [ModelConverter.to_model(Publication, p) for p in value])
+                elif key == 'page_rank_info':
+                    setattr(new_model, key, ModelConverter.to_model(PageRankInfo, value))
+                elif key == 'references':
+                    setattr(new_model, key, [ModelConverter.to_model(PageRankVector, v) for v in value])
+                elif key == 'pages':
+                    setattr(new_model, key, [ModelConverter.to_model(UrlCountPair, ucp) for ucp in value])
                 else:
                     setattr(new_model, key, value)
         return new_model

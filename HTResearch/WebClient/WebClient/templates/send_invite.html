@@ -1,7 +1,9 @@
 {% extends "global.html" %}
 
 {% block imports %}
+    {% include "norequire.html" %}
     <script type="text/javascript" src="/static/scripts/send_invite.js"></script>
+    <script type="text/javascript" src="/static/scripts/lib/jquery.validate.js"></script>
 {% endblock %}
 
 {% block content %}
