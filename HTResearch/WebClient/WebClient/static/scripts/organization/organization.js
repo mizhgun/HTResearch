@@ -1,0 +1,1 @@
+define(['d3', 'd3.layout.cloud', 'organization/word-cloud']);

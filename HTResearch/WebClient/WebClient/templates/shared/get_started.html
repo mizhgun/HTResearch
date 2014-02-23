@@ -1,0 +1,89 @@
+{% extends "shared/global.html" %}
+
+{% block imports %}
+    <link href="/static/css/get_started.css" rel="stylesheet">
+    <script src="/static/scripts/get-started.js" type="application/javascript"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container marketing">
+
+        <!-- Three columns of text below the carousel -->
+        <div id="title-text" class="row">
+            <div>
+                <h1>Website Tutorial</h1>
+            </div>
+        </div>
+        <!-- /.row -->
+
+
+        <!-- START THE FEATURETTES -->
+
+        <hr class="featurette-divider-first">
+
+        <div class="row">
+            <div class="col-md-7">
+                <h2 class="featurette-heading">Search using keywords. <span class="text-muted">Find the most effective efforts on anti-human trafficking.</span>
+                </h2>
+
+                <p class="lead">The search box has been designed to be as flexible as possible. Feel free to make your
+                    search as broad or as specific as you would like. Your search queries will be used to grab contacts,
+                    organizations, and publications. The results will be listed and direct you to appropriate pages.</p>
+            </div>
+            <!--Images must be 500x500-->
+            <div class="col-md-5">
+                <img class="img-responsive" src="/static/images/tutorial_search.jpg">
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row">
+            <div class="col-md-5">
+                <!--Images must be 500x500-->
+                <img class="img-responsive" src="/static/images/tutorial_news.jpg">
+            </div>
+            <div class="col-md-7">
+                <h2 class="featurette-heading">Get the latest news. <span class="text-muted">We'll fetch relevant anti-human trafficking news for the area you're interested in.</span>
+                </h2>
+
+                <p class="lead">News articles will be retrieved based on what you're looking at on the map. If you're
+                    looking at a certain organization, the kinds of articles will be modified to focus on that
+                    organization. You can also manually filter the news results from global to regional sources. </p>
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row">
+            <div class="col-md-7">
+                <h2 class="featurette-heading">Simple and effective. <span class="text-muted">Using the power of Google Maps, information will be displayed vibrantly and quickly.</span>
+                </h2>
+
+                <p class="lead">The map was created to help visualize data in an intuitive manner. You can easily
+                    navigate the map using your mouse. The heat map feature shows concentrations of anti-human
+                    trafficking efforts with the click of a button.</p>
+            </div>
+            <div class="col-md-5">
+                <!--Images must be 500x500-->
+                <img class="img-responsive" src="/static/images/tutorial_map.jpg">
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div id="complete-tutorial-btn">
+            <a
+            {% if username %}
+                href="/"
+            {% else %}
+                href="/signup/"
+            {% endif %}
+            class="btn btn-primary btn-lg">Finish Tutorial</a>
+        </div>
+
+        <!-- /END THE FEATURETTES -->
+    </div>
+
+
+{% endblock %}
