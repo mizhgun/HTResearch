@@ -1,4 +1,4 @@
-define(['organization/org-datasource','jquery', 'fuelux/datagrid'], function(OrgDataSource, $) {
+require(['organization/org-datasource', 'jquery', 'fuelux/all'], function(OrgDataSource, $) {
     $(function () {
         $('#view-all-orgs-nav').addClass('active');
 

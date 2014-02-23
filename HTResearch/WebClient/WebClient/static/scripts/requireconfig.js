@@ -19,3 +19,7 @@ require.config({
         'd3.layout.cloud': ['d3']
     }
 });
+
+require(['shared/media-sharing'], function(MediaSharing) {
+    MediaSharing.initialize();
+});

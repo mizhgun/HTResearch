@@ -1,4 +1,4 @@
-define(['jquery'], function($) {
+require(['jquery'], function($) {
     $('.btn').click(function () {
         var expire = new Date();
         expire = new Date(expire.getTime() + 7776000000);

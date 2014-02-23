@@ -1,4 +1,4 @@
-define([], function() {
+define(function() {
     function checkURL(field) {
         var url = field.value;
         if (!(/^https?:\/\//.test(url))) {

@@ -1,6 +1,5 @@
-define(['index/modal',
+require(['shared/modal',
         'index/map',
-        'index/media-sharing',
         'index/newsloader',
         'index/heatmap',
         'index/searchquery',
@@ -9,7 +8,7 @@ define(['index/modal',
         'jquery.tmpl',
         'bootstrap',
         'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
-    function(Modal, Map, MediaSharing, NewsLoader, HeatMap, SearchQuery, _, $) {
+    function(Modal, Map, NewsLoader, HeatMap, SearchQuery, _, $) {
     'use strict';
 
     var map;
@@ -27,7 +26,6 @@ define(['index/modal',
         map = new Map($('#map-canvas')[0]);
         newsLoader = new NewsLoader();
         HeatMap.initialize(map.getMap());
-        MediaSharing.initialize();
 
         // update search when changing text input
         $('#search-box').bind("keyup change", _.debounce(function() {
@@ -158,5 +156,7 @@ define(['index/modal',
     }
 
 
-    return { initialize: initialize };
+    $(function() {
+       initialize();
+    });
 });

@@ -1,7 +1,36 @@
 define(['jquery', 'd3', 'd3.layout.cloud'], function($) {
-    var fill = d3.scale.category20();
+    function initialize() {
+        var data = {
+            'org_id': document.URL.split("/")[4]
+        };
+
+        $.get('/get-org-keywords/', data)
+        .done(function (result) {
+            if(result) {
+                var coeff = 0.15;
+                d3.layout.cloud().size([800, 400])
+                    .words(result.map(function (d, i) {
+                        console.log(d);
+                        return {text: d, size: 10 + 100 * Math.pow(Math.E, -coeff*i)};
+                    }))
+                    .padding(5)
+                    .rotate(0)
+                    .fontSize(function(d) {
+                        return d.size;
+                    })
+                    .on("end", draw)
+                    .start();
+            } else {
+                $('#no-keywords').show();
+            }
+        }).fail(function(result) {
+            $('#no-keywords').show();
+        });
+    }
 
     function draw(words) {
+        var fill = d3.scale.category20();
+
         d3.select("#word-cloud").append("svg")
             .attr("width", 800)
             .attr("height", 400)
@@ -26,30 +55,5 @@ define(['jquery', 'd3', 'd3.layout.cloud'], function($) {
             });
     }
 
-    var data = {
-        'org_id': document.URL.split("/")[4]
-    };
-
-    $.get('/get-org-keywords/', data)
-        .done(function (result) {
-            if(result) {
-                var coeff = 0.15;
-                d3.layout.cloud().size([800, 400])
-                    .words(result.map(function (d, i) {
-                        console.log(d);
-                        return {text: d, size: 10 + 100 * Math.pow(Math.E, -coeff*i)};
-                    }))
-                    .padding(5)
-                    .rotate(0)
-                    .fontSize(function(d) {
-                        return d.size;
-                    })
-                    .on("end", draw)
-                    .start();
-            } else {
-                $('#no-keywords').show();
-            }
-        }).fail(function(result) {
-            $('#no-keywords').show();
-        });
+    return { initialize: initialize };
 });

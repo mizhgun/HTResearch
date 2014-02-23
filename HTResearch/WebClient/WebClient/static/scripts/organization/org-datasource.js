@@ -1,4 +1,4 @@
-define([], function() {
+define(['jquery'], function($) {
     var OrgDataSource = function(options) {
         this._formatter = options.formatter;
         this._columns = options.columns;
@@ -52,7 +52,7 @@ define([], function() {
 
             $.ajax(request).done(function (responseText) {
                 var response = $.parseJSON(responseText);
-                var data = new Array();
+                var data = [];
                 for (var i = 0; i < response.data.length; i++)
                     data[i] = response.data[i]._data;
                 var count = response.data.length;
