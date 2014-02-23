@@ -12,7 +12,6 @@ require(['shared/modal',
     'use strict';
 
     var map;
-    var orgData;
     var newsLoader;
 
     function initialize() {
@@ -27,48 +26,85 @@ require(['shared/modal',
         newsLoader = new NewsLoader();
         HeatMap.initialize(map.getMap());
 
-        // update search when changing text input
+        /**
+         * Put items to search for here.
+         * Properties are as follows:
+         *     name: Name of the item searched for, should match data-search attribute for search results panels and
+         *         filter control.
+         *     url: URL of ajax call to get the data.
+         *     search: Function to get the data, can be used instead of url.
+         *         function(query, ready) { ... }
+         *             where query is the search query, and
+         *             ready is the function to which the results should be passed.
+         *     toggleSelector: Search results panel toggle selector.
+         *     collapseSelector: Collapsible region selector.
+         *     listSelector: Search results list selector.
+         *     linkClass: Class that will be on each link in search results.
+         *     linkText: Function to determine what text will be displayed on links.
+         *     onclick: Handler for clicking link.
+         */
+        var searchItems = [
+            {
+                name: 'organization',
+                url: '/search-organizations/',
+                toggleSelector: '#organization-toggle',
+                collapseSelector: '#collapse-organizations',
+                listSelector: '#organization-search-list',
+                linkClass: 'org-link',
+                linkText: function(item) { return item.name || item.organization_url || ''; },
+                onclick: showOrganizationModal
+            },
+            {
+                name: 'contact',
+                url: '/search-contacts/',
+                toggleSelector: '#contact-toggle',
+                collapseSelector: '#collapse-contacts',
+                listSelector: '#contact-search-list',
+                linkClass: 'contact-link',
+                linkText: function(item) { return (item.first_name || '') + ' ' + (item.last_name || '') },
+                onclick: showContactModal
+            },
+            {
+                name: 'publication',
+                url: '/search-publications/',
+                toggleSelector: '#publication-toggle',
+                collapseSelector: '#collapse-publications',
+                listSelector: '#publication-search-list',
+                linkClass: 'publication-link',
+                linkText: function(item) { return item.title; },
+                onclick: showPublicationModal
+            },
+            {
+                name: 'news',
+                search: newsLoader.search,
+                toggleSelector: '#news-toggle',
+                collapseSelector: '#collapse-news',
+                listSelector: '#news-search-list',
+                linkClass: 'news-link',
+                linkText: function(item) { return item.title; },
+                onclick: function(item) { window.open(item.link, '_blank'); }
+            }
+        ];
+
+        // Update search when changing text input
         $('#search-box').bind("keyup change", _.debounce(function() {
             var searchText = $('#search-box').val().trim();
 
-            // Put items to search for here.
-            var searchItems = [
-                {
-                    name: 'Organization',
-                    url: '/search-organizations/',
-                    toggleSelector: '#organization-toggle',
-                    collapseSelector: '#collapse-organizations',
-                    listSelector: '#organization-search-list',
-                    linkClass: 'org-link',
-                    linkText: function(item) { return item.name || item.organization_url || ''; },
-                    onclick: showOrganizationModal
-                },
-                {
-                    name: 'Contact',
-                    url: '/search-contacts/',
-                    toggleSelector: '#contact-toggle',
-                    collapseSelector: '#collapse-contacts',
-                    listSelector: '#contact-search-list',
-                    linkClass: 'contact-link',
-                    linkText: function(item) { return (item.first_name || '') + ' ' + (item.last_name || '') },
-                    onclick: showContactModal
-                },
-                {
-                    name: 'Publication',
-                    url: '/search-publications',
-                    toggleSelector: '#publication-toggle',
-                    collapseSelector: '#collapse-publications',
-                    listSelector: '#publication-search-list',
-                    linkClass: 'publication-link',
-                    linkText: function(item) { return item.title; },
-                    onclick: showPublicationModal
-                }
-            ];
-
-            SearchQuery.showResults(searchText, searchItems, map);
+            SearchQuery.search(searchText, searchItems, map);
         }, 300));
 
-        // prevent form submit on enter
+        // Repeat search when setting items to visible
+        $('#search-settings-dropdown :checkbox').change(function() {
+            var show = $(this).is(':checked');
+            if(show) {
+                var searchText = $('#search-box').val().trim();
+                SearchQuery.search(searchText, searchItems, map, true);
+            } else {
+                $('.panel[data-search=' + searchItem + ']').slideUp();
+            }
+        });
+
+        // Prevent search form submit on enter
         $('#search-box').bind('keyup keypress', function (e) {
             var code = e.keyCode || e.which;
             if (code === 13) {
@@ -77,33 +113,44 @@ require(['shared/modal',
             }
         });
 
-        // Retrieve news whenever ready
-        map.bind('idle', function () {
-            var scope = $('input[name=news-scope]:checked').val();
-            if (scope === 'regional') {
-                newsLoader.updateNewsLocation(scope, map.getMap().getCenter(), map.getMap().getBounds(), orgData);
+        // Prevent clicks on search settings dropdown from closing the menu
+        $('.dropdown-menu').on('click', function(e) {
+            if($(this).hasClass('dropdown-menu-form')) {
+                e.stopPropagation();
             }
         });
-
-        // Make news scope switch work
-        $('input[name=news-scope]').change(function (e) {
-            $('#news-results').scrollTop(0);
-            newsLoader.updateNewsLocation(e.target.value, map.getMap().getCenter(), map.getMap().getBounds(), orgData);
-        });
-
-        // Infinite scrolling for news
-        $('#news-results').scroll(function () {
-            if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-                newsLoader.loadMoreNews();
-            }
-        });
-        // Initially trigger infinite scrolling if there's not enough to fill
 
         // Legend
         var three_ps_legend = document.createElement('div');
         $(three_ps_legend).css('margin-bottom', '5px');
         $(three_ps_legend).html($("#map-legend").html());
-        map.pushControl(google.maps.ControlPosition.RIGHT_BOTTOM, three_ps_legend);
+        map.pushControl(google.maps.ControlPosition.LEFT_BOTTOM, three_ps_legend);
+
+        // Make news follow currently viewed region, if that setting is selected
+        map.bind('idle', function() {
+            var regional = $('.btn-regional').is('.active');
+            if(regional) {
+                newsLoader.loadNewsByRegion(map.getMap());
+            }
+        });
+
+        // Update news when toggling regional news
+        $('.btn-regional').click(function() {
+            setTimeout(function() {
+                var regional = $('.btn-regional').is('.active');
+                if(regional) {
+                    newsLoader.loadNewsByRegion(map.getMap());
+                } else {
+                    newsLoader.loadNews();
+                }
+            }, 0);
+        });
+
+        // Initially load news
+        newsLoader.loadNews();
+
+        // Make tooltips work
+        $('[rel=tooltip]').tooltip();
     }
 
     function getCookie(name) {
@@ -122,26 +169,26 @@ require(['shared/modal',
     }
 
     // Show modals
-    function showOrganizationModal() {
-        orgData = $(this).data();
+    function showOrganizationModal(data) {
+        // Turn off regional news
+        $('.btn-regional').removeClass('active');
 
-        // Search for news based on the selected organization
-        var scope = $('input[name=news-scope]:checked').val();
-        if (scope === 'organization') {
-            newsLoader.updateNewsLocation(scope, map.getMap().getCenter(), map.getMap().getBounds(), orgData);
-        }
+        // Shows news based on the selected organization
+        // Remove parentheses from organization name, get part of name before comma if necessary
+        var alteredOrgName = data.name.replace(/ *\([^)]*\) */g, '');
+        alteredOrgName = alteredOrgName.split(',')[0];
+        var query = '"' + alteredOrgName + '"';
+        newsLoader.loadNews(query, alteredOrgName);
 
-        if (orgData.latlng && orgData.latlng.length > 0 && orgData.latlng[0] && orgData.latlng[1]) {
-            map.showInfo(orgData);
+        if (data.latlng && data.latlng.length > 0 && data.latlng[0] && data.latlng[1]) {
+            map.showInfo(data);
         }
         else {
-            window.location.assign('/organization/' + orgData.id);
+            window.location.assign('/organization/' + data.id);
         }
     }
 
-    function showContactModal() {
-        var data = $(this).data();
-
+    function showContactModal(data) {
         if (data['type'] === 'contact') {
             window.location.assign('/contact/' + data.id);
         } else {
@@ -149,12 +196,9 @@ require(['shared/modal',
         }
     }
 
-    function showPublicationModal(){
-        var data = $(this).data();
-
+    function showPublicationModal(data) {
         Modal.createModal(data, '#bs-modal', '#publication-modal-template');
     }
-
 
     $(function() {
        initialize();
