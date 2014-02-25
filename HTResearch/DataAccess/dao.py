@@ -20,6 +20,10 @@ class DAO(object):
     def __init__(self):
         self.conn = DBConnection
 
+    def all(self, *only):
+        with self.conn():
+            return self.dto.objects().only(*only)
+
     def merge_documents(self, dto, merge_dto):
         with self.conn():
             attributes = merge_dto._data
@@ -373,6 +377,30 @@ class OrganizationDAO(DAO):
 
         existing_dto = self.dto.objects(same_phone | same_email | same_url | same_fb | same_twitter | same_name).first()
         return existing_dto
+
+    def page_rank_store(self, org_dtos, store_info=False):
+        """
+        A method for storing a list of org_dtos' new page_rank information
+        NOTE: store_info should only be called if the spider wasn't running during calculation process,
+        otherwise we might overwrite new page_rank_info
+        """
+
+        with self.conn():
+            for i in range(0, len(org_dtos)):
+                dto = org_dtos[i]
+                try:
+                    if not store_info:
+                        self.dto.objects(id=dto.id).update_one(set__page_rank=dto.page_rank,
+                                                               set__page_rank_weight=dto.page_rank_weight)
+                    else:
+                        self.dto.objects(id=dto.id).update_one(set__page_rank=dto.page_rank,
+                                                               set__page_rank_weight=dto.page_rank_weight,
+                                                               set_page_rank_info=dto.page_rank_info)
+                except Exception as e:
+                    # Something goofy happened but rolling back's not really an option
+                    print   "ERROR: Failed to store DTO: {" +\
+                            "\n\t id: " + str(dto.id) +\
+                        "\n} with exception: \n\n" + e.message
 
 
 class PublicationDAO(DAO):

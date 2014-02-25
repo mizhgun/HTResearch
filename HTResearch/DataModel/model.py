@@ -29,7 +29,7 @@ class Organization(object):
                  organization_url=None,
                  partners=[], facebook=None, twitter=None,
                  keywords=None, valid=True, updated_by=None,
-                 page_rank_info=None):
+                 page_rank_info=None, page_rank=None, page_rank_weight=None):
         self.name = name
         self.address = address
         self.types = types
@@ -46,6 +46,8 @@ class Organization(object):
         self.last_updated = datetime.utcnow()
         self.updated_by = updated_by
         self.page_rank_info = page_rank_info
+        self.page_rank = page_rank
+        self.page_rank_weight = page_rank_weight
 
 
 class PageRankInfo(object):
