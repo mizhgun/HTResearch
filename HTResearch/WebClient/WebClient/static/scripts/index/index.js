@@ -66,7 +66,7 @@ define(['index/modal',
             },
             {
                 name: 'publication',
-                url: '/search-publications',
+                url: '/search-publications/',
                 toggleSelector: '#publication-toggle',
                 collapseSelector: '#collapse-publications',
                 listSelector: '#publication-search-list',

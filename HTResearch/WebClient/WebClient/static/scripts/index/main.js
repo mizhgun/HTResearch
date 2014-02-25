@@ -8,7 +8,9 @@ require.config({
             exports: '_'
         },
         'jquery.tmpl': ['jquery'],
-        'bootstrap': ['jquery']
+        'bootstrap': {
+            deps: ['jquery']
+        }
     }
 });
 
