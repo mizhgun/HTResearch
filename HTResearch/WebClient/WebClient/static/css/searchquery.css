@@ -116,3 +116,16 @@
     top: 10px;
     z-index: 10;
 }
+
+.ajax-loader {
+    background: url(../../static/images/ajax-loader.gif) center no-repeat;
+    width: 16px;
+    height: 16px;
+}
+
+/* This is the class for choosing what to show in the search */
+.checkbox {
+    cursor: pointer;
+    font-weight: 200;
+    padding-left: 0 !important;
+}

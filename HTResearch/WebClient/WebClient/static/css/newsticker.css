@@ -150,7 +150,7 @@
 }
 
 #news-carousel .carousel-caption.with-image .article-content-snippet {
-    left: 39%;
+    left: calc(14% + 88px);
 }
 
 #news-carousel .article-content {
