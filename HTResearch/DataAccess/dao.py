@@ -22,7 +22,7 @@ class DAO(object):
 
     def all(self, *only):
         with self.conn():
-            return self.dto.objects().only(*only)
+            return self.dto.objects(self._valid_query()).only(*only)
 
     def merge_documents(self, dto, merge_dto):
         with self.conn():
@@ -225,6 +225,9 @@ class OrganizationDAO(DAO):
             return existing_org_dto
 
     def _merge_page_rank_info(self, new_references, existing_references, organization_url):
+        if existing_references is None:
+            return new_references
+
         org_domain = UrlUtility().get_domain(organization_url)
         for ref in new_references.references:
             ref_exists = False
