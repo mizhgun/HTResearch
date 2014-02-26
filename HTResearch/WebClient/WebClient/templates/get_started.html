@@ -89,7 +89,13 @@
             {% else %}
                 href="/signup/"
             {% endif %}
-            class="btn btn-primary btn-lg">Finish Tutorial</a>
+            class="btn btn-primary btn-lg">
+                {% if username %}
+                    Let's get started
+                {% else %}
+                    Sign me up!
+                {% endif %}
+            </a>
         </div>
 
         <!-- /END THE FEATURETTES -->
