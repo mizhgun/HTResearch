@@ -147,6 +147,22 @@ class ContactDAO(DAO):
         # Injected dependencies
         self.org_dao = OrganizationDAO
         self.pub_dao = PublicationDAO
+        # Weights for search result fields
+        # The more content that is filled, the higher ranked the search
+        self._field_weights = {
+            'first_name': 0.1,
+            'last_name': 0.1,
+            'phones': 0.2,
+            'email': 0.2,
+            'organization': 0.1,
+            'publications': 0.2,
+            'position': 0.1,
+            'valid': 0.0,
+            'last_updated': 0.0,
+            'updated_by': 0.0,
+            'content_weight': 0.0,
+        }
+
 
     def _add_contact_ref_to_children(self, contact_dto):
         if contact_dto.organization is not None and contact_dto not in contact_dto.organization.contacts:
@@ -202,6 +218,32 @@ class OrganizationDAO(DAO):
         # Injected dependencies
         self.contact_dao = ContactDAO
         self.geocode = geocode
+
+        # Weights for search result fields
+        # The more content that is filled, the higher ranked the search
+        self._field_weights = {
+            'name': 0.1,
+            'address': 0.05,
+            'latlng': 0.05,
+            'types': 0.1,
+            'phone_numbers': 0.1,
+            'email_key': 0.0,
+            'emails': 0.1,
+            'contacts': 0.1,
+            'organization_url': 0.1,
+            'partners': 0.1,
+            'facebook': 0.05,
+            'twitter': 0.05,
+            'keywords': 0.1,
+            'valid': 0.0,
+            'last_updated': 0.0,
+            'updated_by': 0.0,
+            'page_rank_info': 0.0,
+            'page_rank': 0.0,
+            'page_rank_weight': 0.0,
+            'content_weight': 0.0,
+            'combined_weight': 0.0,
+        }
 
     def merge_documents(self, existing_org_dto, new_org_dto):
         with self.conn():
@@ -490,6 +532,20 @@ class UserDAO(DAO):
 
         # Injected dependencies
         self.org_dao = OrganizationDAO
+        # Weights for search result fields
+        # The more content that is filled, the higher ranked the search
+        self._field_weights = {
+            'first_name': 0.1,
+            'last_name': 0.1,
+            'email': 0.2,
+            'password': 0.0,
+            'background': 0.2,
+            'account_type': 0.1,
+            'org_type': 0.1,
+            'organization': 0.2,
+            'last_updated': 0.0,
+            'content_weight': 0.0,
+        }
 
     def create_update(self, user_dto):
         with self.conn():
