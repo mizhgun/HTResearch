@@ -175,8 +175,7 @@ def manage_account(request):
                 request.session['last_modified'] = datetime.utcnow()
                 request.session['account_type'] = ret_user.account_type
             except Exception as e:
-                logger.error('Error occurred during account update for user '
-                             + user_id + ' (' + user.first_name + ' ' + user.last_name + ')')
+                logger.error('Error occurred during account update for user={0}'.format(user_id))
                 error = 'Oops! We had a little trouble updating your account. Please try again later.'
     return render(request, 'manage.html', {'form': form, 'error': error, 'success': success})
 
