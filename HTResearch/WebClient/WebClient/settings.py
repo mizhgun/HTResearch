@@ -119,7 +119,6 @@ CACHES = {
     }
 }
 
-#SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_ENGINE = 'mongoengine.django.sessions'
 
 SESSION_SAVE_EVERY_REQUEST = True
