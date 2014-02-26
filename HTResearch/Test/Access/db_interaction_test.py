@@ -57,10 +57,51 @@ class DatabaseInteractionTest(unittest.TestCase):
                                          types=[OrgTypesEnum.RELIGIOUS,
                                                 OrgTypesEnum.GOVERNMENT,
                                                 OrgTypesEnum.PROSECUTION,
-                                                ]
+                                         ],
+                                         page_rank_info=PageRankInfoDTO(
+                                             total_with_self=10,
+                                             total=10,
+                                             references=[
+                                                 PageRankVectorDTO(
+                                                     org_domain='yoyodyne.com',
+                                                     count=2,
+                                                     pages=[
+                                                         UrlCountPairDTO(
+                                                             url='http://www.yoyodyne.com/',
+                                                             count=2
+                                                         )
+                                                     ]
+                                                 ),
+                                                 PageRankVectorDTO(
+                                                     org_domain='trystero.org',
+                                                     count=4,
+                                                     pages=[
+                                                         UrlCountPairDTO(
+                                                             url='http://www.yoyodyne.com/',
+                                                             count=3
+                                                         ),
+                                                         UrlCountPairDTO(
+                                                             url='http://www.yoyodyne.com/contacts.php',
+                                                             count=1
+                                                         )
+                                                     ]
+                                                 ),
+                                                 PageRankVectorDTO(
+                                                     org_domain='thurnandtaxis.info',
+                                                     count=4,
+                                                     pages=[
+                                                         UrlCountPairDTO(
+                                                             url='http://www.yoyodyne.com/',
+                                                             count=4
+                                                         )
+                                                     ]
+                                                 )
+                                             ]
+                                         )
         )
         self.publication = Publication(title="The Book of Yee",
-                                       authors="Sam Adams, {0} {1}".format(self.contact.first_name, self.contact.last_name),
+                                       authors="Sam Adams, {0} {1}".format(self.contact.first_name,
+                                                                           self.contact.last_name),
                                        publisher="{0} {1}".format(self.contact.first_name, self.contact.last_name))
         self.urlmetadata = URLMetadata(url="http://google.com")
         self.user = User(first_name="Bee", last_name="Yee",
@@ -136,7 +177,8 @@ class DatabaseInteractionTest(unittest.TestCase):
                                   twitter=org_dto.twitter,
                                   address=org_dto.address,
                                   keywords=org_dto.keywords,
-                                  types=org_dto.types[0])
+                                  types=org_dto.types[0],
+        )
         self.assertEqual(assert_org.name, org_dto.name)
         self.assertEqual(assert_org.organization_url, org_dto.organization_url)
         self.assertEqual(assert_org.contacts, org_dto.contacts)
@@ -145,6 +187,9 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_org.phone_numbers, org_dto.phone_numbers)
         self.assertEqual(assert_org.facebook, org_dto.facebook)
         self.assertEqual(assert_org.twitter, org_dto.twitter)
+        self._compare_page_rank_info(assert_org, org_dto)
+        
+        
 
         print 'Testing organization text search ...'
 
@@ -305,6 +350,25 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_contact.phones, new_contact_dto.phones)
 
         print 'Merge records tests passed'
+    
+    
+    def _compare_page_rank_info(self, org1, org2):
+        page_rank_info1 = org1.page_rank_info
+        page_rank_info2 = org2.page_rank_info
+        self.assertEqual(page_rank_info1.total_with_self, page_rank_info2.total_with_self)
+        self.assertEqual(page_rank_info1.total, page_rank_info2.total)
+        self.assertEqual(len(page_rank_info2.references), len(page_rank_info1.references))
+        for i in range(len(page_rank_info1.references)):
+            ref1 = page_rank_info1.references[i]
+            ref2 = page_rank_info2.references[i]
+            self.assertEqual(ref1.org_domain, ref2.org_domain)
+            self.assertEqual(ref1.count, ref2.count)
+            self.assertEqual(len(ref1.pages), len(ref2.pages))
+            for j in range(len(ref1.pages)):
+                pair1= ref1.pages[j]
+                pair2= ref2.pages[j]
+                self.assertEqual(pair1.url, pair2.url)
+                self.assertEqual(pair1.count, pair2.count)
 
 
 if __name__ == '__main__':

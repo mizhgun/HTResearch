@@ -8,13 +8,6 @@
         </h4>
       </div>
       <div class="modal-body" id="modal-body">
-          <p>
-          {% templatetag openvariable %}if valid{% templatetag closevariable %}
-              <span id="valid" class="pull-left glyphicon glyphicon-ok"></span>&nbsp;Verified
-          {% templatetag openvariable %}else{% templatetag closevariable %}
-              <span id="invalid" class="pull-left glyphicon glyphicon-remove"></span>&nbsp;Not Verified
-          {% templatetag openvariable %}/if{% templatetag closevariable %}
-          </p>
           <table class="table table-condensed">
               {% templatetag openvariable %}if authors{% templatetag closevariable %}
               <tr class="modal-row">
@@ -30,14 +23,14 @@
               {% templatetag openvariable %}/if{% templatetag closevariable %}
               {% templatetag openvariable %}if publication_date{% templatetag closevariable %}
               <tr class="modal-row">
-                  <th>Publication Date:</th>
+                  <th>Publication Year:</th>
                   <td>${publication_date}</td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
               {% templatetag openvariable %}if content_url{% templatetag closevariable %}
               <tr class="modal-row">
                   <th>Link:</th>
-                  <td>${content_url}</td>
+                  <td><a target="_blank" href="${content_url}">${content_url}</a></td>
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
           </table>
