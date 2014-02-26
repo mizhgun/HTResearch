@@ -3,8 +3,11 @@
 {% block imports %}
     <title>Human Trafficking Research</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
-    <link href="/static/css/index.css" rel="stylesheet">
-    <link href="/static/css/legend.css" rel="stylesheet">
+    <link href="static/css/index/index.css" rel="stylesheet">
+    <link href="static/css/index/newsticker.css" rel="stylesheet">
+    <link href="static/css/index/searchquery.css" rel="stylesheet">
+    <link href="static/css/shared/modal.css" rel="stylesheet">
+    <link href="static/css/index/legend.css" rel="stylesheet">
     <script src="/static/scripts/index/index.js" type="application/javascript"></script>
 {% endblock %}
 
@@ -111,7 +114,7 @@
                         </div>
                     </div>
                     <div class="news-panel">
-                        {% include "news.html" %}
+                        {% include "index/news.html" %}
                     </div>
                 </div>
                 <div id="map-canvas"></div>
