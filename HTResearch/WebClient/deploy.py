@@ -44,7 +44,7 @@ def main():
     if not os.path.exists(VIRTUALENV_NAME):
         run(VIRTUALENV_EXE + ' ' + VIRTUALENV_NAME)
 
-    # install requirements to local folder
+    # install requirements to local user
     run('pip install --requirement=requirements.txt')
 
     # run manage.py syncdb --noinput
