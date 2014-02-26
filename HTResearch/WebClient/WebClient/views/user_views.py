@@ -46,7 +46,8 @@ def login(request):
             if user and check_password(password, user.password):
                 logger.info('User={0} successfully logged in'.format(user.id))
                 request.session['user_id'] = user.id
-                request.session['last_modified'] = json.dumps(datetime.utcnow(), default=json_util.default)
+                #request.session['last_modified'] = json.dumps(datetime.utcnow(), default=json_util.default)
+                request.session['last_modified'] = 1
                 request.session['first_name'] = user.first_name
                 request.session['last_name'] = user.last_name
                 request.session['account_type'] = user.account_type
@@ -117,7 +118,8 @@ def signup(request):
                 ret_user = user_dao.create_update(user_dto)
                 request.session['name'] = new_user.first_name
                 request.session['user_id'] = ret_user.id
-                request.session['last_modified'] = json.dumps(datetime.utcnow(), default=json_util.default)
+                #request.session['last_modified'] = json.dumps(datetime.utcnow(), default=json_util.default)
+                request.session['last_modified'] = 1
                 request.session['account_type'] = ret_user.account_type
                 request.session.set_expiry(SESSION_TIMEOUT)
                 return HttpResponseRedirect('/')
