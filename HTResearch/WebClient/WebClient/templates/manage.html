@@ -87,7 +87,7 @@
             <div class="radio">
                 <label>
                     <input type="radio" name="account_type" value="{{type.0}}"
-                            {% ifequal form.account_type.value|add:"0" type.0 %}checked="checked"{% endifequal %}>{{ type.1 }}
+                            {% ifequal form.account_type.value|add:"0" type.0 %}checked{% endifequal %}>{{ type.1 }}
                 </label>
             </div>
             {% endfor %}
@@ -112,7 +112,7 @@
             <div class="radio">
                 <label>
                     <input type="radio" name="org_type" value="{{ type.0 }}"
-                            {% ifequal form.org_type.value|add:"0" type.0 %}checked="checked"{% endifequal %}>
+                            {% ifequal form.org_type.value|add:"0" type.0 %}checked{% endifequal %}>
                     {{ type.1 }}
                 </label>
             </div>
