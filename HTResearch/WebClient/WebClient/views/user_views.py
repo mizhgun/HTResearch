@@ -6,8 +6,6 @@ from django.contrib.auth.hashers import make_password, check_password
 from email.mime.text import MIMEText
 import smtplib
 from springpython.context import ApplicationContext
-from bson import json_util
-import json
 
 # project imports
 from HTResearch.DataAccess.dto import UserDTO, OrganizationDTO
