@@ -31,7 +31,7 @@ def contact_profile(request, contact_id):
     params = {"contact": contact,
               "org_url": org_url}
 
-    return render(request, 'contact_profile.html', params)
+    return render(request, 'contact/contact_profile.html', params)
 
 
 def search_contacts(request):
@@ -161,7 +161,7 @@ def edit_contact(request, contact_id):
                 except:
                     error = 'Oops! There was an error updating the contact. Please try again soon.'
 
-    return render(request, 'edit_contact.html', {'form': form, 'contact_id': contact_id,
+    return render(request, 'contact/edit_contact.html', {'form': form, 'contact_id': contact_id,
                                                  'success': success, 'error': error})
 
 
