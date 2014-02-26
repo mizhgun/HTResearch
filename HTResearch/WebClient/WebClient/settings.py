@@ -1,5 +1,6 @@
 import os.path
 import mongoengine
+from HTResearch.Utilities.config import get_config_value
 # Django settings for HTResearch.WebClient project.
 
 DEBUG = True
@@ -17,8 +18,11 @@ DATABASES = {
     }
 }
 
-#Hardcoded for proof of concept first
-mongoengine.connect(db='ht', host='localhost', port=27017)
+#Establish a db connection for session caching in Mongo
+host = get_config_value("MONGO", "host")
+port = int(get_config_value("MONGO", "port"))
+name = get_config_value("MONGO", "name")
+mongoengine.connect(db=name, host=host, port=port)
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
