@@ -118,7 +118,7 @@
 }
 
 .ajax-loader {
-    background: url(../../static/images/ajax-loader.gif) center no-repeat;
+    background: url(../../images/ajax-loader.gif) center no-repeat;
     width: 16px;
     height: 16px;
 }
