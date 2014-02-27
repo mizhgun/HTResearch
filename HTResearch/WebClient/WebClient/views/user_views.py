@@ -175,7 +175,7 @@ def manage_account(request):
             except Exception as e:
                 logger.error('Error occurred during account update for user={0}'.format(user_id))
                 error = 'Oops! We had a little trouble updating your account. Please try again later.'
-    return render(request, 'manage.html', {'form': form, 'error': error, 'success': success})
+    return render(request, 'user/manage.html', {'form': form, 'error': error, 'success': success})
 
 
 def send_invite(request):
