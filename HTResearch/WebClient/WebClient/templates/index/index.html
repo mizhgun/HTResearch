@@ -27,32 +27,34 @@
                         <form id="custom-search-form" class="form-search form-horizontal">
                             <div class="input-append span12">
                                 {% csrf_token %}
-                                <div class="input-group input-group-btn">
+                                <div class="input-group">
                                     <input type="text" id="search-box" class="search-query" placeholder=" Search...">
-                                    <ul id="search-settings-dropdown" role="menu" class="dropdown-menu dropdown-menu-form pull-right" aria-labelledby="search-settings-btn">
-                                        <li role="presentation">
-                                            <label class="checkbox">
-                                                <input type="checkbox" data-search="organization" class="pull-right" checked>Organizations
-                                            </label>
-                                        </li>
-                                        <li role="presentation">
-                                            <label class="checkbox">
-                                                <input type="checkbox" data-search="contact" class="pull-right" checked>People
-                                            </label>
-                                        </li>
-                                        <li role="presentation">
-                                            <label class="checkbox">
-                                                <input type="checkbox" data-search="publication" class="pull-right" checked>Publications
-                                            </label>
-                                        </li>
-                                        <li role="presentation">
-                                            <label class="checkbox">
-                                                <input type="checkbox" data-search="news" class="pull-right" checked>News
-                                            </label>
-                                        </li>
-                                    </ul>
-                                    <div id="search-settings-btn" class="btn btn-primary dropdown-toggle input-group-addon" data-toggle="dropdown">
-                                        <span class="caret"></span>
+                                    <div class="input-group-btn">
+                                        <button id="search-settings-btn" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul id="search-settings-dropdown" role="menu" class="dropdown-menu pull-right">
+                                            <li role="presentation">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" data-search="organization" class="pull-right" checked>Organizations
+                                                </label>
+                                            </li>
+                                            <li role="presentation">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" data-search="contact" class="pull-right" checked>People
+                                                </label>
+                                            </li>
+                                            <li role="presentation">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" data-search="publication" class="pull-right" checked>Publications
+                                                </label>
+                                            </li>
+                                            <li role="presentation">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" data-search="news" class="pull-right" checked>News
+                                                </label>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                                 <div id="search-ajax-loader" class="ajax-loader hidden"></div>
