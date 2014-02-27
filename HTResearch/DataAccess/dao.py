@@ -205,6 +205,9 @@ class ContactDAO(DAO):
         for key in contact_dto._data:
             if key == "id":
                 continue
+            if not hasattr(contact_dto, key):
+                continue
+
             val = getattr(contact_dto, key)
             if not (val is None) and not (isinstance(val, list) and len(val) == 0):
                 weight += self._field_weights[key]
@@ -376,6 +379,9 @@ class OrganizationDAO(DAO):
         for key in org_dto._data:
             if key == "id":
                 continue
+            if not hasattr(org_dto, key):
+                continue
+
             val = getattr(org_dto, key)
             if not (val is None) and not (isinstance(val, list) and len(val) == 0):
                 weight += self._field_weights[key]
@@ -596,6 +602,9 @@ class UserDAO(DAO):
         for key in user_dto._data:
             if key == "id":
                 continue
+            if not hasattr(user_dto, key):
+                continue
+
             val = getattr(user_dto, key)
             if not (val is None) and not (isinstance(val, list) and len(val) == 0):
                 weight += self._field_weights[key]
