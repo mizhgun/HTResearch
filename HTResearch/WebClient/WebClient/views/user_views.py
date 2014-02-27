@@ -43,11 +43,10 @@ def login(request):
 
             if user and check_password(password, user.password):
                 logger.info('User={0} successfully logged in'.format(user.id))
-                request.session['user_id'] = user.id
-                request.session['last_modified'] = datetime.utcnow()
-                request.session['first_name'] = user.first_name
-                request.session['last_name'] = user.last_name
-                request.session['account_type'] = user.account_type
+                request.session['user_id'] = str(user.id)
+                request.session['first_name'] = str(user.first_name)
+                request.session['last_name'] = str(user.last_name)
+                request.session['account_type'] = str(user.account_type)
                 request.session.set_expiry(SESSION_TIMEOUT)
                 return HttpResponseRedirect('/')
 
@@ -113,10 +112,9 @@ def signup(request):
             try:
                 user_dto = DTOConverter.to_dto(UserDTO, new_user)
                 ret_user = user_dao.create_update(user_dto)
-                request.session['name'] = new_user.first_name
-                request.session['user_id'] = ret_user.id
-                request.session['last_modified'] = datetime.utcnow()
-                request.session['account_type'] = ret_user.account_type
+                request.session['name'] = str(new_user.first_name)
+                request.session['user_id'] = str(ret_user.id)
+                request.session['account_type'] = str(ret_user.account_type)
                 request.session.set_expiry(SESSION_TIMEOUT)
                 return HttpResponseRedirect('/')
             except:

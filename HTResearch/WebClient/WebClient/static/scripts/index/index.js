@@ -100,12 +100,13 @@ require(['shared/modal',
                 var searchText = $('#search-box').val().trim();
                 SearchQuery.search(searchText, searchItems, map, true);
             } else {
+                var searchItem = $(this).attr('data-search');
                 $('.panel[data-search=' + searchItem + ']').slideUp();
             }
         });
 
         // Prevent search form submit on enter
-        $('#search-box').bind('keyup keypress', function (e) {
+        $('#search-box').bind('keyup keypress', function(e) {
             var code = e.keyCode || e.which;
             if (code === 13) {
                 e.preventDefault();
