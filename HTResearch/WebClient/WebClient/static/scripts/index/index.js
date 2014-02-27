@@ -62,7 +62,7 @@ require(['shared/modal',
                 listSelector: '#contact-search-list',
                 linkClass: 'contact-link',
                 linkText: function(item) { return (item.first_name || '') + ' ' + (item.last_name || '') },
-                onclick: showContactProfile
+                onclick: showContactModal
             },
             {
                 name: 'publication',
@@ -193,8 +193,11 @@ require(['shared/modal',
         }
     }
 
-    function showContactProfile(data) {
-        window.location.assign('/contact/' + data.id);
+    function showContactModal(data) {
+        if (data['type'] === 'contact')
+            Modal.createModal(data, '#bs-modal', '#contact-modal-template');
+        else
+            Modal.createModal(data, '#bs-modal', '#user-modal-template');
     }
 
     function showPublicationModal(data) {
