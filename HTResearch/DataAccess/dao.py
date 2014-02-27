@@ -209,7 +209,7 @@ class ContactDAO(DAO):
                 continue
 
             val = getattr(contact_dto, key)
-            if not (val is None) and not (isinstance(val, list) and len(val) == 0):
+            if val:
                 weight += self._field_weights[key]
 
         contact_dto.content_weight = weight
@@ -383,7 +383,7 @@ class OrganizationDAO(DAO):
                 continue
 
             val = getattr(org_dto, key)
-            if not (val is None) and not (isinstance(val, list) and len(val) == 0):
+            if val:
                 weight += self._field_weights[key]
         if org_dto.page_rank_weight is None:
             org_dto.page_rank_weight = 0.0
@@ -606,7 +606,7 @@ class UserDAO(DAO):
                 continue
 
             val = getattr(user_dto, key)
-            if not (val is None) and not (isinstance(val, list) and len(val) == 0):
+            if val:
                 weight += self._field_weights[key]
 
         user_dto.content_weight = weight
