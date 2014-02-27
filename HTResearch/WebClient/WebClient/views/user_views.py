@@ -54,7 +54,7 @@ def login(request):
             error = 'No account with the provided username and password exists.'
             logger.error('User with email={0}, password={1} not found'.format(email, password))
 
-    return render(request, 'login.html', {'form': form, 'error': error})
+    return render(request, 'user/login.html', {'form': form, 'error': error})
 
 
 def logout(request):
@@ -123,7 +123,7 @@ def signup(request):
                 logger.error('Error occurred during signup')
                 error = 'Oops! We had a little trouble signing you up. Please try again later.'
 
-    return render(request, 'signup.html', {'form': form, 'error': error})
+    return render(request, 'user/signup.html', {'form': form, 'error': error})
 
 
 def manage_account(request):
@@ -237,8 +237,7 @@ def send_invite(request):
                     user_id, to
                 ))
                 error = 'Oops! It looks like something went wrong. Please try again later.'
-
-    return render(request, 'send_invite.html', {'form': form, 'error': error, 'success': success})
+    return render(request, 'user/send_invite.html', {'form': form, 'error': error, 'success': success})
 
 
 def _create_user_dict(user):

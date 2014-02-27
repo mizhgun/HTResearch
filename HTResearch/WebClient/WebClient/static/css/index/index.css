@@ -1,0 +1,86 @@
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+}
+
+#edit-org-btn, #edit-contact-btn {
+    margin-right: 10px;
+}
+
+#map-canvas {
+    display: block;
+    width: auto;
+    height: inherit;
+    position: fixed;
+}
+
+#wrapper {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: table;
+    margin-top: -42px;
+    padding-top: 42px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.header {
+    height: 42px;
+}
+
+#wrapper .row {
+    height: 100%;
+    display: table-row;
+}
+
+#wrapper .col-md-1,
+#wrapper .col-md-2,
+#wrapper .col-md-3,
+#wrapper .col-md-4,
+#wrapper .col-md-5,
+#wrapper .col-md-6,
+#wrapper .col-md-7,
+#wrapper .col-md-8,
+#wrapper .col-md-9,
+#wrapper .col-md-10,
+#wrapper .col-md-11,
+#wrapper .col-md-12 {
+    height: 100%;
+    display: table-cell;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+input:focus {
+    opacity: 50.0;
+}
+
+/*Navbar override*/
+.navbar {
+    margin-bottom: 0px;
+}
+
+ul {
+    list-style-position: inside;
+}
+
+.publication-link {
+    white-space: nowrap;
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#footer {
+    display: none;
+}
