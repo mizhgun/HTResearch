@@ -22,7 +22,7 @@ class DAO(object):
 
     def all(self, *only):
         with self.conn():
-            return self.dto.objects().only(*only)
+            return self.dto.objects(self._valid_query()).only(*only)
 
     def merge_documents(self, dto, merge_dto):
         with self.conn():
@@ -103,9 +103,6 @@ class DAO(object):
             fields = self._default_search_fields()
         entry_query = self._get_query(text, fields)
         found_entries = self.dto.objects(entry_query & self._valid_query())
-
-        ob = self.dto.objects()[0]
-
         return found_entries
 
     # Create search term list from search string
@@ -270,6 +267,9 @@ class OrganizationDAO(DAO):
             return existing_org_dto
 
     def _merge_page_rank_info(self, new_references, existing_references, organization_url):
+        if existing_references is None:
+            return new_references
+
         org_domain = UrlUtility().get_domain(organization_url)
         for ref in new_references.references:
             ref_exists = False
