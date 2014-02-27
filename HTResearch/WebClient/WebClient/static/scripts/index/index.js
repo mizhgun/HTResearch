@@ -93,8 +93,12 @@ require(['shared/modal',
             SearchQuery.search(searchText, searchItems, map);
         }, 300));
 
+        $('#search-settings-dropdown').click(function(e) {
+            e.stopPropagation();
+        });
+
         // Repeat search when setting items to visible
-        $('#search-settings-dropdown :checkbox').change(function() {
+        $('#search-settings-dropdown .checkbox').change(function() {
             var show = $(this).is(':checked');
             if(show) {
                 var searchText = $('#search-box').val().trim();
