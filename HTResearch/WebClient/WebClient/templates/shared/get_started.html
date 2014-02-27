@@ -11,7 +11,7 @@
         <!-- Three columns of text below the carousel -->
         <div id="title-text" class="row">
             <div>
-                <h1>Website Tutorial</h1>
+                <h1>Welcome to the Anti-Trafficking Info Hub</h1>
             </div>
         </div>
         <!-- /.row -->
@@ -72,6 +72,20 @@
 
         <hr class="featurette-divider">
 
+        <div class="row">
+            <div class="col-md-5">
+                <!--Images must be 500x500-->
+                <img class="img-responsive" src="/static/images/tutorial_contribute.jpg">
+            </div>
+            <div class="col-md-7">
+                <h2 class="featurette-heading">Contribute and connect. <span class="text-muted">Edit and suggest information to help us help you.</span></h2>
+
+                <p class="lead">Is something missing from our site? Suggest an organization, invite other users, even edit current information by signing up for a “contribution” account. What’s more, you can now connect with other advocates, volunteers, and researchers, allowing for new connections and collaborations which wouldn’t otherwise be possible.</p>
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
         <div id="complete-tutorial-btn">
             <a
             {% if username %}
@@ -79,7 +93,13 @@
             {% else %}
                 href="/signup/"
             {% endif %}
-            class="btn btn-primary btn-lg">Finish Tutorial</a>
+            class="btn btn-primary btn-lg">
+                {% if username %}
+                    Let's get started!
+                {% else %}
+                    Sign me up!
+                {% endif %}
+            </a>
         </div>
 
         <!-- /END THE FEATURETTES -->
