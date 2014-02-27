@@ -30,6 +30,7 @@ def contact_profile(request, id):
         return get_http_404_page(request)
 
     if user and not user_id:
+        logger.warn('Unauthorized request made for user={0}'.format(user.id))
         return unauthorized(request)
 
     contact_dao = ctx.get_object('ContactDAO')
