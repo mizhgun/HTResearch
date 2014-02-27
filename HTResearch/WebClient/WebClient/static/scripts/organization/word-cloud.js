@@ -10,7 +10,6 @@ define(['jquery', 'd3', 'd3.layout.cloud'], function($) {
                 var coeff = 0.15;
                 d3.layout.cloud().size([800, 400])
                     .words(result.map(function (d, i) {
-                        console.log(d);
                         return {text: d, size: 10 + 100 * Math.pow(Math.E, -coeff*i)};
                     }))
                     .padding(5)
