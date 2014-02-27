@@ -1,4 +1,6 @@
 import os.path
+import mongoengine
+from HTResearch.Utilities.config import get_config_value
 # Django settings for HTResearch.WebClient project.
 
 DEBUG = True
@@ -12,14 +14,15 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '', # Or path to database file if using sqlite3.
-        'USER': '', # Not used with sqlite3.
-        'PASSWORD': '', # Not used with sqlite3.
-        'HOST': '', # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '', # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.dummy',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
     }
 }
+
+#Establish a db connection for session caching in Mongo
+host = get_config_value("MONGO", "host")
+port = int(get_config_value("MONGO", "port"))
+name = get_config_value("MONGO", "name")
+mongoengine.connect(db=name, host=host, port=port)
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -116,7 +119,7 @@ CACHES = {
     }
 }
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_ENGINE = 'mongoengine.django.sessions'
 
 SESSION_SAVE_EVERY_REQUEST = True
 
