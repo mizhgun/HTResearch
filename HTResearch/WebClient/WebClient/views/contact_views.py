@@ -49,7 +49,8 @@ def contact_profile(request, id):
         logger.error('Exception encountered on organization lookup with search_text={0}'.format(results['organization'].name))
         return get_http_404_page(request)
 
-    return render(request, 'contact_profile.html', results)
+    return render(request, 'contact/contact_profile.html', results)
+
 
 
 def search_contacts(request):
@@ -179,7 +180,7 @@ def edit_contact(request, contact_id):
                 except:
                     error = 'Oops! There was an error updating the contact. Please try again soon.'
 
-    return render(request, 'edit_contact.html', {'form': form, 'contact_id': contact_id,
+    return render(request, 'contact/edit_contact.html', {'form': form, 'contact_id': contact_id,
                                                  'success': success, 'error': error})
 
 
