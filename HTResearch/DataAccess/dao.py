@@ -196,8 +196,20 @@ class ContactDAO(DAO):
                         saved_dto = self._add_contact_ref_to_children(saved_dto)
                     return saved_dto
             contact_dto.last_updated = datetime.utcnow()
+            self._update_weights(contact_dto)
             contact_dto.save()
         return contact_dto
+
+    def _update_weights(self, contact_dto):
+        weight = 0.0
+        for key in contact_dto._data:
+            if key == "id":
+                continue
+            val = getattr(contact_dto, key)
+            if not (val is None) and not (isinstance(val, list) and len(val) == 0):
+                weight += self._field_weights[key]
+
+        contact_dto.content_weight = weight
 
     def _default_search_fields(self):
         return ['first_name', 'last_name', 'position', ]
@@ -353,10 +365,25 @@ class OrganizationDAO(DAO):
                     org_dto.latlng = self.geocode(org_dto.address)
 
             org_dto.last_updated = datetime.utcnow()
+            self._update_weights(org_dto)
             org_dto.save()
             if cascade_add:
                 org_dto = self._add_org_ref_to_children(org_dto)
         return org_dto
+
+    def _update_weights(self, org_dto):
+        weight = 0.0
+        for key in org_dto._data:
+            if key == "id":
+                continue
+            val = getattr(org_dto, key)
+            if not (val is None) and not (isinstance(val, list) and len(val) == 0):
+                weight += self._field_weights[key]
+        if org_dto.page_rank_weight is None:
+            org_dto.page_rank_weight = 0.0
+
+        org_dto.content_weight = weight
+        org_dto.combined_weight = (org_dto.page_rank_weight + org_dto.content_weight) / 2.0
 
     # Query getting valid organizations: must be valid and have a valid name
     def _valid_query(self):
@@ -432,12 +459,18 @@ class OrganizationDAO(DAO):
                 dto = org_dtos[i]
                 try:
                     if not store_info:
-                        self.dto.objects(id=dto.id).update_one(set__page_rank=dto.page_rank,
-                                                               set__page_rank_weight=dto.page_rank_weight)
+                        exist_dto = self.find(id=dto.id)
+                        exist_dto.page_rank = dto.page_rank
+                        exist_dto.page_rank_weight = dto.page_rank_weight
+                        self._update_weights(exist_dto)
+                        exist_dto.save()
                     else:
-                        self.dto.objects(id=dto.id).update_one(set__page_rank=dto.page_rank,
-                                                               set__page_rank_weight=dto.page_rank_weight,
-                                                               set_page_rank_info=dto.page_rank_info)
+                        exist_dto = self.find(id=dto.id)
+                        exist_dto.page_rank = dto.page_rank
+                        exist_dto.page_rank_weight = dto.page_rank_weight
+                        exist_dto.page_rank_info = dto.page_rank_info
+                        self._update_weights(exist_dto)
+                        exist_dto.save()
                 except Exception as e:
                     # Something goofy happened but rolling back's not really an option
                     print   "ERROR: Failed to store DTO: {" +\
@@ -554,5 +587,17 @@ class UserDAO(DAO):
                 user_dto.organization = self.org_dao().create_update(o)
 
             user_dto.last_updated = datetime.utcnow()
+            self._update_weights(user_dto)
             user_dto.save()
         return user_dto
+
+    def _update_weights(self, user_dto):
+        weight = 0.0
+        for key in user_dto._data:
+            if key == "id":
+                continue
+            val = getattr(user_dto, key)
+            if not (val is None) and not (isinstance(val, list) and len(val) == 0):
+                weight += self._field_weights[key]
+
+        user_dto.content_weight = weight
