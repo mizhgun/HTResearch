@@ -14,24 +14,42 @@ logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
 
 
-def contact_profile(request, contact_id):
+def contact_profile(request, id):
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
-    logger.info('Request made for profile of contact={0} by user={1}'.format(contact_id, user_id))
+    logger.info('Request made for profile of contact={0} by user={1}'.format(id, user_id))
+
+    user_dao = ctx.get_object('UserDAO')
+
+    try:
+        user = user_dao.find(id=id)
+    except Exception:
+        logger.error('Exception encountered on user lookup for user={0}'.format(id))
+        return get_http_404_page(request)
+
     contact_dao = ctx.get_object('ContactDAO')
 
     try:
-        contact = contact_dao.find(id=contact_id)
+        contact = contact_dao.find(id=id)
     except Exception:
-        logger.error('Exception encountered on contact lookup for contact={0}'.format(contact_id))
+        logger.error('Exception encountered on contact lookup for contact={0}'.format(id))
         return get_http_404_page(request)
 
-    org_url = '/organization/' + str(contact.organization.id) if contact.organization else ''
+    if contact:
+        results = contact.__dict__['_data']
+    elif user:
+        results = user.__dict__['_data']
 
-    params = {"contact": contact,
-              "org_url": org_url}
+    org_dao = ctx.get_object('OrganizationDAO')
+    try:
+        if results['organization']:
+            org = org_dao.find(id=results['organization'].id)
+            results['organization'] = org.__dict__['_data']
+    except Exception:
+        logger.error('Exception encountered on organization lookup with search_text={0}'.format(results['organization'].name))
+        return get_http_404_page(request)
 
-    return render(request, 'contact_profile.html', params)
+    return render(request, 'contact_profile.html', results)
 
 
 def search_contacts(request):
