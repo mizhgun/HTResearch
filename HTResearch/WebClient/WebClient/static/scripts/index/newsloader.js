@@ -15,21 +15,72 @@ define(['jquery',
         this.newsFeed = null;
         this.lastContext = '';
         this.geocoder = new google.maps.Geocoder();
+        // Clean raw news resutls, i.e. filter out irrelevant sites and extract the important info
+        this.cleanNews = function(articles) {
+            // TODO: List of domains that we don't want news from
+            var blockedDomains = [
+
+            ];
+
+            // Pull the relevant information out of each article
+            articles = $.map(articles, function(article) {
+                // Find the image URL
+                var imageUrl = '';
+                var foundImage = $(article.content).find('img[src]');
+                if(foundImage.length) {
+                    imageUrl = foundImage.attr('src');
+                }
+                // Find the original URL of the news article (not the Google Feed URL)
+                var rawUrl = article.link;
+                var cleanedUrl = '';
+                rawUrl.split('?')[1].split('&').every(function(keyValueStr) {
+                    var keyValuePair = keyValueStr.split('=');
+                    if(keyValuePair[0] === 'url') {
+                        cleanedUrl = keyValuePair[1];
+                        return false;
+                    }
+                    return true;
+                });
+                cleanedUrl = cleanedUrl || rawUrl;
+                // Extract title, date, source, content, link, and image from the raw article
+                return {
+                    title: $(article.content).find('td:last div:last a:first b:first').text(),
+                    date: article.publishedDate,
+                    source: $(article.content).find('td:first a:first font').text().trim(),
+                    contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
+                    link: cleanedUrl,
+                    image: imageUrl
+                };
+            });
+
+            // Remove articles from blocked domains
+            articles = articles.filter(function(article) {
+                var domain = article.link.split('//')[1].split('/')[0].replace(/^www\./, '');
+                return $.inArray(domain, blockedDomains) < 0;
+            });
+
+            return articles;
+        }
         self = this;
     };
 
     NewsLoader.prototype = {
+        loading: false,
         // Search for news
         search: function(searchQuery, ready) {
-            var query = GENERAL_LOCATION + ' ' + BASE_QUERY + (searchQuery ? ' ' + searchQuery : '');
-            var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
-            self.newsFeed = new google.feeds.Feed(feedParam);
-            self.newsFeed.setNumEntries(10);
-            self.newsFeed.load(function(result) {
-                if (!result.error) {
-                    ready(result.feed.entries);
-                }
-            });
+            if(!self.loading) {
+                var query = GENERAL_LOCATION + ' ' + BASE_QUERY + (searchQuery ? ' ' + searchQuery : '');
+                var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
+                self.newsFeed = new google.feeds.Feed(feedParam);
+                self.newsFeed.setNumEntries(10);
+                self.loading = true;
+                self.newsFeed.load(function(result) {
+                    if (!result.error) {
+                        ready(result.feed.entries);
+                    }
+                    self.loading = false;
+                });
+            }
         },
         // Load news into ticker by query
         loadNews: function(context, altText) {
@@ -100,55 +151,6 @@ define(['jquery',
                     }
                 }
             });
-        },
-        // Clean raw news resutls, i.e. filter out irrelevant sites and extract the important info
-        cleanNews: function(articles) {
-            // TODO: List of domains that we don't want news from
-            var blockedDomains = [
-                
-            ];
-
-            // Pull the relevant information out of each article
-            articles = $.map(articles, function(article) {
-                // Find the image URL
-                var imageUrl = '';
-                var foundImage = $(article.content).find('img[src]');
-                if(foundImage.length) {
-                    imageUrl = foundImage.attr('src');
-                }
-                // Find the original URL of the news article (not the Google Feed URL)
-                var rawUrl = article.link;
-                var cleanedUrl = '';
-                rawUrl.split('?')[1].split('&').every(function(keyValueStr) {
-                    var keyValuePair = keyValueStr.split('=');
-                    if(keyValuePair[0] === 'url') {
-                        cleanedUrl = keyValuePair[1];
-                        return false;
-                    }
-                    return true;
-                });
-                cleanedUrl = cleanedUrl || rawUrl;
-                // Extract title, date, source, content, link, and image from the raw article
-                return {
-                    title: $(article.content).find('td:last div:last a:first b:first').text(),
-                    date: article.publishedDate,
-                    source: $(article.content).find('td:first a:first font').text().trim(),
-                    contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
-                    link: cleanedUrl,
-                    image: imageUrl
-                };
-            });
-
-            // Remove articles from blocked domains
-            articles = articles.filter(function(article) {
-                var domain = article.link.split('//')[1].split('/')[0].replace(/^www\./, '');
-                if($.inArray(domain, blockedDomains) >= 0) {
-                    console.log('blocked ' + domain + ': ' + article.link);
-                }
-                return $.inArray(domain, blockedDomains) < 0;
-            });
-
-            return articles;
         }
     };
 
