@@ -144,6 +144,22 @@ class ContactDAO(DAO):
         # Injected dependencies
         self.org_dao = OrganizationDAO
         self.pub_dao = PublicationDAO
+        # Weights for search result fields
+        # The more content that is filled, the higher ranked the search
+        self._field_weights = {
+            'first_name': 0.1,
+            'last_name': 0.1,
+            'phones': 0.2,
+            'email': 0.2,
+            'organization': 0.1,
+            'publications': 0.2,
+            'position': 0.1,
+            'valid': 0.0,
+            'last_updated': 0.0,
+            'updated_by': 0.0,
+            'content_weight': 0.0,
+        }
+
 
     def _add_contact_ref_to_children(self, contact_dto):
         if contact_dto.organization is not None and contact_dto not in contact_dto.organization.contacts:
@@ -180,8 +196,23 @@ class ContactDAO(DAO):
                         saved_dto = self._add_contact_ref_to_children(saved_dto)
                     return saved_dto
             contact_dto.last_updated = datetime.utcnow()
+            self._update_weights(contact_dto)
             contact_dto.save()
         return contact_dto
+
+    def _update_weights(self, contact_dto):
+        weight = 0.0
+        for key in contact_dto._data:
+            if key == "id":
+                continue
+            if not hasattr(contact_dto, key):
+                continue
+
+            val = getattr(contact_dto, key)
+            if val:
+                weight += self._field_weights[key]
+
+        contact_dto.content_weight = weight
 
     def _default_search_fields(self):
         return ['first_name', 'last_name', 'position', ]
@@ -199,6 +230,32 @@ class OrganizationDAO(DAO):
         # Injected dependencies
         self.contact_dao = ContactDAO
         self.geocode = geocode
+
+        # Weights for search result fields
+        # The more content that is filled, the higher ranked the search
+        self._field_weights = {
+            'name': 0.1,
+            'address': 0.05,
+            'latlng': 0.05,
+            'types': 0.1,
+            'phone_numbers': 0.1,
+            'email_key': 0.0,
+            'emails': 0.1,
+            'contacts': 0.1,
+            'organization_url': 0.1,
+            'partners': 0.1,
+            'facebook': 0.05,
+            'twitter': 0.05,
+            'keywords': 0.1,
+            'valid': 0.0,
+            'last_updated': 0.0,
+            'updated_by': 0.0,
+            'page_rank_info': 0.0,
+            'page_rank': 0.0,
+            'page_rank_weight': 0.0,
+            'content_weight': 0.0,
+            'combined_weight': 0.0,
+        }
 
     def merge_documents(self, existing_org_dto, new_org_dto):
         with self.conn():
@@ -311,10 +368,28 @@ class OrganizationDAO(DAO):
                     org_dto.latlng = self.geocode(org_dto.address)
 
             org_dto.last_updated = datetime.utcnow()
+            self._update_weights(org_dto)
             org_dto.save()
             if cascade_add:
                 org_dto = self._add_org_ref_to_children(org_dto)
         return org_dto
+
+    def _update_weights(self, org_dto):
+        weight = 0.0
+        for key in org_dto._data:
+            if key == "id":
+                continue
+            if not hasattr(org_dto, key):
+                continue
+
+            val = getattr(org_dto, key)
+            if val:
+                weight += self._field_weights[key]
+        if org_dto.page_rank_weight is None:
+            org_dto.page_rank_weight = 0.0
+
+        org_dto.content_weight = weight
+        org_dto.combined_weight = (org_dto.page_rank_weight + org_dto.content_weight) / 2.0
 
     # Query getting valid organizations: must be valid and have a valid name
     def _valid_query(self):
@@ -390,12 +465,18 @@ class OrganizationDAO(DAO):
                 dto = org_dtos[i]
                 try:
                     if not store_info:
-                        self.dto.objects(id=dto.id).update_one(set__page_rank=dto.page_rank,
-                                                               set__page_rank_weight=dto.page_rank_weight)
+                        exist_dto = self.find(id=dto.id)
+                        exist_dto.page_rank = dto.page_rank
+                        exist_dto.page_rank_weight = dto.page_rank_weight
+                        self._update_weights(exist_dto)
+                        exist_dto.save()
                     else:
-                        self.dto.objects(id=dto.id).update_one(set__page_rank=dto.page_rank,
-                                                               set__page_rank_weight=dto.page_rank_weight,
-                                                               set_page_rank_info=dto.page_rank_info)
+                        exist_dto = self.find(id=dto.id)
+                        exist_dto.page_rank = dto.page_rank
+                        exist_dto.page_rank_weight = dto.page_rank_weight
+                        exist_dto.page_rank_info = dto.page_rank_info
+                        self._update_weights(exist_dto)
+                        exist_dto.save()
                 except Exception as e:
                     # Something goofy happened but rolling back's not really an option
                     print   "ERROR: Failed to store DTO: {" +\
@@ -490,6 +571,20 @@ class UserDAO(DAO):
 
         # Injected dependencies
         self.org_dao = OrganizationDAO
+        # Weights for search result fields
+        # The more content that is filled, the higher ranked the search
+        self._field_weights = {
+            'first_name': 0.1,
+            'last_name': 0.1,
+            'email': 0.2,
+            'password': 0.0,
+            'background': 0.2,
+            'account_type': 0.1,
+            'org_type': 0.1,
+            'organization': 0.2,
+            'last_updated': 0.0,
+            'content_weight': 0.0,
+        }
 
     def create_update(self, user_dto):
         with self.conn():
@@ -498,5 +593,20 @@ class UserDAO(DAO):
                 user_dto.organization = self.org_dao().create_update(o)
 
             user_dto.last_updated = datetime.utcnow()
+            self._update_weights(user_dto)
             user_dto.save()
         return user_dto
+
+    def _update_weights(self, user_dto):
+        weight = 0.0
+        for key in user_dto._data:
+            if key == "id":
+                continue
+            if not hasattr(user_dto, key):
+                continue
+
+            val = getattr(user_dto, key)
+            if val:
+                weight += self._field_weights[key]
+
+        user_dto.content_weight = weight
