@@ -38,24 +38,8 @@ define(['jquery',
                 self.lastContext = context;
                 self.search(context, function(articles) {
                     // See if there were any articles
+                    articles = self.cleanNews(articles);
                     if (articles.length) {
-                        // Pull the relevant information out of each article
-                        articles = $.map(articles, function(article) {
-                            var imageUrl = '';
-                            var foundImage = $(article.content).find('img[src]');
-                            if(foundImage.length) {
-                                imageUrl = foundImage.attr('src');
-                            }
-                            return {
-                                title: $(article.content).find('td:last div:last a:first b:first').text(),
-                                date: article.publishedDate,
-                                source: $(article.content).find('td:first a:first font').text().trim(),
-                                contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
-                                link: article.link,
-                                image: imageUrl
-                            };
-                        });
-
                         // Load articles into ticker
                         var newsCarousel = $('#news-carousel');
                         var newsDiv = $('#news-results');
@@ -116,6 +100,55 @@ define(['jquery',
                     }
                 }
             });
+        },
+        // Clean raw news resutls, i.e. filter out irrelevant sites and extract the important info
+        cleanNews: function(articles) {
+            // TODO: List of domains that we don't want news from
+            var blockedDomains = [
+                
+            ];
+
+            // Pull the relevant information out of each article
+            articles = $.map(articles, function(article) {
+                // Find the image URL
+                var imageUrl = '';
+                var foundImage = $(article.content).find('img[src]');
+                if(foundImage.length) {
+                    imageUrl = foundImage.attr('src');
+                }
+                // Find the original URL of the news article (not the Google Feed URL)
+                var rawUrl = article.link;
+                var cleanedUrl = '';
+                rawUrl.split('?')[1].split('&').every(function(keyValueStr) {
+                    var keyValuePair = keyValueStr.split('=');
+                    if(keyValuePair[0] === 'url') {
+                        cleanedUrl = keyValuePair[1];
+                        return false;
+                    }
+                    return true;
+                });
+                cleanedUrl = cleanedUrl || rawUrl;
+                // Extract title, date, source, content, link, and image from the raw article
+                return {
+                    title: $(article.content).find('td:last div:last a:first b:first').text(),
+                    date: article.publishedDate,
+                    source: $(article.content).find('td:first a:first font').text().trim(),
+                    contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
+                    link: cleanedUrl,
+                    image: imageUrl
+                };
+            });
+
+            // Remove articles from blocked domains
+            articles = articles.filter(function(article) {
+                var domain = article.link.split('//')[1].split('/')[0].replace(/^www\./, '');
+                if($.inArray(domain, blockedDomains) >= 0) {
+                    console.log('blocked ' + domain + ': ' + article.link);
+                }
+                return $.inArray(domain, blockedDomains) < 0;
+            });
+
+            return articles;
         }
     };
 
