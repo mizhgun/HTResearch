@@ -1,0 +1,75 @@
+{% extends "shared/global.html" %}
+
+{% block imports %}
+    <script type="application/javascript" src="/static/scripts/user/send_invite.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-wrapper center-block">
+            <div class="page-header">
+                <h1>
+                    Send Invite
+                    <small>Invite a friend to join the anti-trafficking effort.</small>
+                </h1>
+            </div>
+
+            {% if success %}
+                <div class="alert alert-success">
+                    <p>
+                        {{ success }}
+                    </p>
+                </div>
+            {% endif %}
+
+            {% if error %}
+                <div class="alert alert-danger">
+                    <p>
+                        {{ error }}
+                    </p>
+                </div>
+            {% endif %}
+
+            <form id="invite-form" role="form" method="post" action="/invite/">
+                {% csrf_token %}
+
+                {% if form.email.errors %}
+                    <div class="form-group has-error">
+                {% else %}
+                    <div class="form-group">
+                {% endif %}
+                <label for="id_email" class="control-label">Email</label>
+                <input type="email" class="form-control" id="id_email" name="email" placeholder="Email">
+
+                {% if form.email.errors %}
+                    <span class="help-block">
+                            {% for error in form.email.errors %}
+                                {{ error|escape }}<br/>
+                            {% endfor %}
+                        </span>
+                {% endif %}
+                </div>
+
+                {% if form.message.errors %}
+                    <div class="form-group has-error">
+                {% else %}
+                    <div class="form-group">
+                {% endif %}
+                <label for="id_message" class="control-label">Message (Optional)</label>
+                <textarea class="form-control" form="invite-form" id="id_message" name="message"
+                          placeholder="Enter an invitation message (280 characters max)"></textarea>
+
+                {% if form.message.errors %}
+                    <span class="help-block">
+                            {% for error in form.message.errors %}
+                                {{ error|escape }}<br/>
+                            {% endfor %}
+                        </span>
+                {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

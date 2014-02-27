@@ -20,7 +20,10 @@ define(['jquery',
                 position: google.maps.ControlPosition.TOP_LEFT
             },
             panControl: false,
-            zoomControl: false,
+            zoomControl: true,
+            zoomControlOptions: {
+              position: google.maps.ControlPosition.LEFT_TOP,
+            },
             scaleControl: false,
             streetViewControl: false
         };

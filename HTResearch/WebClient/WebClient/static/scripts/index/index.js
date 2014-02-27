@@ -1,6 +1,5 @@
-define(['index/modal',
+require(['shared/modal',
         'index/map',
-        'index/media-sharing',
         'index/newsloader',
         'index/heatmap',
         'index/searchquery',
@@ -9,13 +8,15 @@ define(['index/modal',
         'jquery.tmpl',
         'bootstrap',
         'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
-    function(Modal, Map, MediaSharing, NewsLoader, HeatMap, SearchQuery, _, $) {
+    function(Modal, Map, NewsLoader, HeatMap, SearchQuery, _, $) {
     'use strict';
 
     var map;
     var newsLoader;
 
     function initialize() {
+        $('#home-nav').addClass('active');
+
         var visited = getCookie("htresearchv2");
         if (!visited) {
             window.location = '/welcome';
@@ -24,7 +25,6 @@ define(['index/modal',
         map = new Map($('#map-canvas')[0]);
         newsLoader = new NewsLoader();
         HeatMap.initialize(map.getMap());
-        MediaSharing.initialize();
 
         /**
          * Put items to search for here.
@@ -93,19 +93,24 @@ define(['index/modal',
             SearchQuery.search(searchText, searchItems, map);
         }, 300));
 
+        $('#search-settings-dropdown').click(function(e) {
+            e.stopPropagation();
+        });
+
         // Repeat search when setting items to visible
-        $('#search-settings-dropdown :checkbox').change(function() {
+        $('#search-settings-dropdown .checkbox').change(function() {
             var show = $(this).is(':checked');
             if(show) {
                 var searchText = $('#search-box').val().trim();
                 SearchQuery.search(searchText, searchItems, map, true);
             } else {
+                var searchItem = $(this).attr('data-search');
                 $('.panel[data-search=' + searchItem + ']').slideUp();
             }
         });
 
         // Prevent search form submit on enter
-        $('#search-box').bind('keyup keypress', function (e) {
+        $('#search-box').bind('keyup keypress', function(e) {
             var code = e.keyCode || e.which;
             if (code === 13) {
                 e.preventDefault();
@@ -200,5 +205,7 @@ define(['index/modal',
         Modal.createModal(data, '#bs-modal', '#publication-modal-template');
     }
 
-    return { initialize: initialize };
+    $(function() {
+       initialize();
+    });
 });
