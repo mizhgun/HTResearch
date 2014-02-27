@@ -1,13 +1,22 @@
 <script id="modal-template" type="text/x-jquery-html">
-<div>
-    <div id="map-modal">
-        <h3 id="firstHeading" class="firstHeading">${name}</h3>
-        <div id="bodyContent">
-            <div id="img-div"><img id ="type-image" src="${img_path}"></div>
-            <table class="table-condensed">
+<div style="padding: 0px;">
+    <div id="map-modal" class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">${name}</h3>
+        </div>
+        <div class="modal-body">
+            <p id="map-validity">
+            {% templatetag openvariable %}if valid{% templatetag closevariable %}
+              <span id="valid" class="pull-left glyphicon glyphicon-ok"></span>&nbsp;Verified
+            {% templatetag openvariable %}else{% templatetag closevariable %}
+              <span id="invalid" class="pull-left glyphicon glyphicon-remove"></span>&nbsp;Not Verified
+            {% templatetag openvariable %}/if{% templatetag closevariable %}
+            </p>
+            <img id="org-building-icon" src="${img_path}" height="128" width="128" class="img-thumbnail pull-left">
+            <table class="table table-condensed" style="width:auto;">
                 {% templatetag openvariable %}if phone_numbers.length{% templatetag closevariable %}
                 <tr class="modal-row">
-                    <td>Tel:</td>
+                    <th>Tel:</th>
                     <td>
                         {% templatetag openvariable %}each phone_numbers{% templatetag closevariable %}
                         ${$value}</br>
@@ -15,9 +24,9 @@
                     </td>
                 </tr>
                 {% templatetag openvariable %}/if{% templatetag closevariable %}
-                {% templatetag openvariable %}if emails.length{% templatetag closevariable %}
+    {% templatetag openvariable %}if emails.length{% templatetag closevariable %}
                 <tr class="modal-row">
-                    <td>Email:</td>
+                    <th>Email:</th>
                     <td>
                         {% templatetag openvariable %}each emails{% templatetag closevariable %}
                         ${$value}</br>
@@ -26,12 +35,18 @@
                 </tr>
                 {% templatetag openvariable %}/if{% templatetag closevariable %}
                 <tr class="modal-row">
-                    <td>Address:</td>
+                    <th>Address:</th>
                     <td>${address}</td>
                 </tr>
             </table>
-            <a id="more-info" href="/organization/${id}" >More Info</a>
+            <div class="clearfix"></div>
+        </div>
+        <div class="modal-footer">
+            <a href="/organization/${id}" class="btn btn-primary pull-right" role="button" >More Info</a>
+            <a id="edit-org-btn" href="/edit-organization/${id}" class="btn btn-primary pull-right">Edit</a>
         </div>
     </div>
 </div>
+
+
 </script>

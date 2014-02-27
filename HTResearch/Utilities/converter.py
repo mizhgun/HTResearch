@@ -1,5 +1,6 @@
 from HTResearch.DataModel.model import *
 from HTResearch.DataAccess.dto import *
+from HTResearch.DataAccess.dao import *
 
 
 class DTOConverter(object):
@@ -7,13 +8,14 @@ class DTOConverter(object):
 
     @staticmethod
     def from_dto(cls, obj):
+        if obj is None:
+            return None
+
         new_cls = cls()
 
         for key in obj._data:
-            if key == 'contacts' or key == 'authors':
+            if key == 'contacts':
                 setattr(new_cls, key, [DTOConverter.from_dto(Contact, c) for c in obj._data[key]])
-            elif key == 'publisher' and obj._data[key] is not None:
-                setattr(new_cls, key, DTOConverter.from_dto(Contact, obj._data[key]))
             elif key == 'organization' and obj._data[key] is not None:
                 setattr(new_cls, key, DTOConverter.from_dto(Organization, obj._data[key]))
             elif key == 'publications':
@@ -28,10 +30,8 @@ class DTOConverter(object):
         new_dto = cls()
 
         for key, value in obj.__dict__.iteritems():
-            if key == 'contacts' or key == 'authors':
+            if key == 'contacts':
                 setattr(new_dto, key, [DTOConverter.to_dto(ContactDTO, c) for c in value])
-            elif key == 'publisher' and value is not None:
-                setattr(new_dto, key, DTOConverter.to_dto(ContactDTO, value))
             elif key == 'organization' and value is not None:
                 setattr(new_dto, key, DTOConverter.to_dto(OrganizationDTO, value))
             elif key == 'partners':
@@ -52,11 +52,11 @@ class ModelConverter(object):
 
         for key, value in obj.iteritems():
             if value:
-                if key == 'contacts' or key == 'authors':
+                if key == 'contacts':
                     setattr(new_model, key, [ModelConverter.to_model(Contact, c) for c in value])
-                elif key == 'publisher' and value is not None:
-                    setattr(new_model, key, ModelConverter.to_model(Contact, value))
-                elif key == 'organizations' or key == 'partners':
+                elif key == 'organization':
+                    setattr(new_model, key, ModelConverter.to_model(Organization, value))
+                elif key == 'partners':
                     setattr(new_model, key, [ModelConverter.to_model(Organization, o) for o in value])
                 elif key == 'publications':
                     setattr(new_model, key, [ModelConverter.to_model(Publication, p) for p in value])

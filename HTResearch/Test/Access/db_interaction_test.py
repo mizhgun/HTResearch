@@ -4,17 +4,14 @@ from springpython.context import ApplicationContext
 from springpython.config import Object
 
 # project imports
-from HTResearch.DataAccess.dto import *
 from HTResearch.DataModel.model import *
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
-from HTResearch.Test.Mocks.connection import MockDBConnection
 from HTResearch.Test.Mocks.dao import *
 from HTResearch.DataModel.enums import AccountType
 
 
 class TestableDAOContext(DAOContext):
-
     @Object()
     def RegisteredDBConnection(self):
         return MockDBConnection
@@ -39,8 +36,8 @@ class TestableDAOContext(DAOContext):
     def RegisteredGeocode(self):
         return lambda x: [0.0, 0.0]
 
-class DatabaseInteractionTest(unittest.TestCase):
 
+class DatabaseInteractionTest(unittest.TestCase):
     def setUp(self):
         print "New DatabaseInteractionTest running"
 
@@ -54,10 +51,17 @@ class DatabaseInteractionTest(unittest.TestCase):
                                          emails=["info@yee.com", "stuff@yee.com"],
                                          phone_numbers=[5555555555, "(555)555-5555"],
                                          facebook="http://www.facebook.com/yee",
-                                         twitter="http://www.twitter.com/yee"
-                                         )
+                                         twitter="http://www.twitter.com/yee",
+                                         address="5124 Yeesy Street Omaha, NE 68024",
+                                         keywords="intj enfp entp isfp enfj istj",
+                                         types=[OrgTypesEnum.RELIGIOUS,
+                                                OrgTypesEnum.GOVERNMENT,
+                                                OrgTypesEnum.PROSECUTION,
+                                                ]
+        )
         self.publication = Publication(title="The Book of Yee",
-                                       authors=[self.contact])
+                                       authors="Sam Adams, {0} {1}".format(self.contact.first_name, self.contact.last_name),
+                                       publisher="{0} {1}".format(self.contact.first_name, self.contact.last_name))
         self.urlmetadata = URLMetadata(url="http://google.com")
         self.user = User(first_name="Bee", last_name="Yee",
                          email="beeyee@yee.com", password="iambeeyee",
@@ -84,6 +88,20 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_contact.first_name, contact_dto.first_name)
         self.assertEqual(assert_contact.last_name, contact_dto.last_name)
         self.assertEqual(assert_contact.email, contact_dto.email)
+
+        print 'Testing contact text search ...'
+
+        assert_contacts = contact_dao.findmany(search='jordan degner',
+                                               num_elements=10)
+        self.assertEqual(len(assert_contacts), 1)
+        self.assertEqual(assert_contacts[0].first_name, contact_dto.first_name)
+
+        assert_contacts = contact_dao.findmany(search='bee yee', num_elements=10)
+        self.assertEqual(len(assert_contacts), 0)
+
+        assert_contacts = contact_dao.findmany(search='@gmail', search_fields=['email', ], num_elements=10)
+        self.assertEqual(len(assert_contacts), 1)
+        self.assertEqual(assert_contacts[0].first_name, contact_dto.first_name)
 
         print 'Testing contact editing ...'
         contact_dto.first_name = "Djordan"
@@ -115,7 +133,10 @@ class DatabaseInteractionTest(unittest.TestCase):
                                   emails=org_dto.emails,
                                   phone_numbers=org_dto.phone_numbers,
                                   facebook=org_dto.facebook,
-                                  twitter=org_dto.twitter)
+                                  twitter=org_dto.twitter,
+                                  address=org_dto.address,
+                                  keywords=org_dto.keywords,
+                                  types=org_dto.types[0])
         self.assertEqual(assert_org.name, org_dto.name)
         self.assertEqual(assert_org.organization_url, org_dto.organization_url)
         self.assertEqual(assert_org.contacts, org_dto.contacts)
@@ -127,11 +148,24 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Testing organization text search ...'
 
-        assert_orgs = org_dao.text_search(num_elements=10, text='bEe YeE university ers')
+        assert_orgs = org_dao.findmany(search='YeE university ers Religious govern secUTION ISFP Yeesy',
+                                       num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
         self.assertEqual(assert_orgs[0].name, org_dto.name)
 
-        assert_orgs = org_dao.text_search(num_elements=10, text='yee adfgh905w')
-        self.assertEqual(assert_orgs, [])
+        assert_orgs = org_dao.findmany(search='prevention advocacy', num_elements=10)
+        self.assertEqual(len(assert_orgs), 0)
+
+        assert_orgs = org_dao.findmany(search='religious', search_fields=['types', ], num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
+        self.assertEqual(assert_orgs[0].name, org_dto.name)
+
+        assert_orgs = org_dao.findmany(search='ISFP', search_fields=['keywords', ], num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
+
+        assert_orgs = org_dao.findmany(search='omaha', search_fields=['address', ], num_elements=10)
+        self.assertEqual(len(assert_orgs), 1)
+        self.assertEqual(assert_orgs[0].name, org_dto.name)
 
         print 'Testing organization editing ...'
         org_dto.name = "Yee Universityee"
@@ -163,6 +197,21 @@ class DatabaseInteractionTest(unittest.TestCase):
                                   title=pub_dto.title)
         self.assertEqual(assert_pub.title, pub_dto.title)
         self.assertEqual(assert_pub.authors, pub_dto.authors)
+        self.assertEqual(assert_pub.publisher, pub_dto.publisher)
+
+        print 'Testing publication text search ...'
+
+        assert_pubs = pub_dao.findmany(search='book of yee degner ADAMS',
+                                       num_elements=10)
+        self.assertEqual(len(assert_pubs), 1)
+        self.assertEqual(assert_pubs[0].title, pub_dto.title)
+
+        assert_pubs = pub_dao.findmany(search='nosuchpublication', num_elements=10)
+        self.assertEqual(len(assert_pubs), 0)
+
+        assert_pubs = pub_dao.findmany(search='sam adams', search_fields=['authors', ], num_elements=10)
+        self.assertEqual(len(assert_pubs), 1)
+        self.assertEqual(assert_pubs[0].title, pub_dto.title)
 
         print 'Testing publication editing ...'
         pub_dto.title = "The Book of Mee"
@@ -247,15 +296,16 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'Creating a duplicate and attempting an insert ...'
         new_contact = Contact(email="jdegner0129@gmail.com",
-                              phone=4029813230)
+                              phones=['4029813230'])
         new_contact_dto = DTOConverter.to_dto(ContactDTO, new_contact)
         contact_dao.create_update(new_contact_dto)
 
         print 'Asserting that the old contact was updated'
         assert_contact = contact_dao.find(id=contact_dto.id)
-        self.assertEqual(assert_contact.phone, new_contact_dto.phone)
+        self.assertEqual(assert_contact.phones, new_contact_dto.phones)
 
         print 'Merge records tests passed'
+
 
 if __name__ == '__main__':
     try:

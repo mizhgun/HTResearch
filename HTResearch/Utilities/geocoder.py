@@ -7,7 +7,6 @@ google_geocode_url = "http://maps.googleapis.com/maps/api/geocode/json?"
 
 def geocode(address, bounds=None, region=None,
             language=None, sensor=False, exactly_one=True, timeout=None):
-
     params = {
         'address': address.encode('ascii', 'ignore'),
         'sensor': str(sensor).lower()
