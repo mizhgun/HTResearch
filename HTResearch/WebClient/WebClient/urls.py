@@ -4,6 +4,7 @@ from django.conf.urls import patterns, url
 # from django.contrib import admin
 # admin.autodiscover()
 
+handler403 = 'HTResearch.WebClient.WebClient.views.unauthorized'
 handler404 = 'HTResearch.WebClient.WebClient.views.get_http_404_page'
 handler500 = handler404
 

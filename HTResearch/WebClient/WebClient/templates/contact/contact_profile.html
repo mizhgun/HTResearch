@@ -1,9 +1,7 @@
 {% extends "shared/global.html" %}
 
 {% block imports %}
-    {% include "norequire.html" %}
     <title>Contact - {{ first_name }}</title>
-    <link href="/static/css/profile.css" rel="stylesheet"/>
     <link href="/static/css/shared/profile.css" rel="stylesheet"/>
     <script type="application/javascript" src="/static/scripts/contact/contact.js"></script>
 {% endblock %}
@@ -66,7 +64,7 @@
             <h4>Organization</h4>
 
             <p>
-                {% if org_url or organization %}
+                {% if organization %}
                     <a target="_blank" href="/organization/{{ organization.id }}">{{ organization.name }}</a>
                 {% else %}
                     None

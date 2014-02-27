@@ -61,6 +61,12 @@ def welcome(request):
     return render(request, 'shared/welcome.html')
 
 
+def unauthorized(request):
+    template = get_template('shared/unauthorized.html')
+    html = template.render(Context({}))
+    return HttpResponseNotFound(html, status=403)
+
+
 def get_started(request):
     return render(request, 'shared/get_started.html')
 
