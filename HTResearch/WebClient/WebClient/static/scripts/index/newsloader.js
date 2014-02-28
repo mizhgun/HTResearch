@@ -4,9 +4,31 @@ define(['jquery',
         'goog!feeds,1'], function($) {
    'use strict';
 
+    // Maximum number of news articles to retrieve
     var NEWS_COUNT = 10;
+    // Url of news feed
     var NEWS_URL = 'https://news.google.com/news/feeds?output=rss&num=' + NEWS_COUNT + '&q=';
-    var BASE_QUERY = 'prostitution OR "sex trafficking" OR "human trafficking" OR brothel OR "child trafficking" OR "anti trafficking"';
+    // Base search terms for trafficking news
+    var BASE_TERMS = [
+        'prostitute',
+        'prostitution',
+        'sex trafficking',
+        'human trafficking',
+        'brothel',
+        'child trafficking',
+        'anti trafficking'
+    ];
+    // Base search query, based on base search terms
+    var BASE_QUERY = BASE_TERMS.map(function(term) {
+        if(term.indexOf(' ') >= 0) {
+            return '"' + term + '"';
+        } else {
+            return term;
+        }
+    }).reduce(function(t1, t2) {
+        return t1 + ' OR ' + t2;
+    });
+    // General location for news
     var GENERAL_LOCATION = 'India';
 
     var self;
