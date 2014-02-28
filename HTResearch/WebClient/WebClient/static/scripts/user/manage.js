@@ -29,8 +29,7 @@ require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
                     required: true
                 },
                 password: {
-                    rangelength: [8, 40],
-                    required: true
+                    rangelength: [8, 40]
                 },
                 confirm_password: {
                     equalTo: '#id_password'
