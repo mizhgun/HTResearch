@@ -15,12 +15,37 @@ define(['jquery',
         this.newsFeed = null;
         this.lastContext = '';
         this.geocoder = new google.maps.Geocoder();
+
+        // List of domains that we don't want news from
+        var blockedDomains = [
+        ];
+
+        // List of keywords we don't want in the title
+        var blockedKeywords = [
+            'coverage',
+            'listing'
+        ];
+
+        // Test whether article is valid/relevant article
+        var isValidArticle = function(article) {
+            // Block certain domains
+            var domain = article.link.split('//')[1].split('/')[0].replace(/^www\./, '');
+            if(blockedDomains.indexOf(domain) >= 0) {
+                console.log('blocked ' + domain + ': ' + article.link);
+                return false;
+            }
+            // Block certain keywords in title
+            _.each(blockedKeywords, function(keyword) {
+                if(article.title.toLowerCase().indexOf(keyword.toLowerCase()) >= 0) {
+                    console.log('blocked ' + keyword + ': ' + article.title);
+                    return false;
+                }
+            });
+            return true;
+        };
+
         // Clean raw news resutls, i.e. filter out irrelevant sites and extract the important info
         this.cleanNews = function(articles) {
-            // TODO: List of domains that we don't want news from
-            var blockedDomains = [
-
-            ];
 
             // Pull the relevant information out of each article
             articles = $.map(articles, function(article) {
@@ -54,33 +79,25 @@ define(['jquery',
             });
 
             // Remove articles from blocked domains
-            articles = articles.filter(function(article) {
-                var domain = article.link.split('//')[1].split('/')[0].replace(/^www\./, '');
-                return $.inArray(domain, blockedDomains) < 0;
-            });
+            articles = articles.filter(isValidArticle);
 
             return articles;
-        }
+        };
         self = this;
     };
 
     NewsLoader.prototype = {
-        loading: false,
         // Search for news
         search: function(searchQuery, ready) {
-            if(!self.loading) {
-                var query = GENERAL_LOCATION + ' ' + BASE_QUERY + (searchQuery ? ' ' + searchQuery : '');
-                var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
-                self.newsFeed = new google.feeds.Feed(feedParam);
-                self.newsFeed.setNumEntries(10);
-                self.loading = true;
-                self.newsFeed.load(function(result) {
-                    if (!result.error) {
-                        ready(result.feed.entries);
-                    }
-                    self.loading = false;
-                });
-            }
+            var query = GENERAL_LOCATION + ' ' + BASE_QUERY + (searchQuery ? ' ' + searchQuery : '');
+            var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
+            self.newsFeed = new google.feeds.Feed(feedParam);
+            self.newsFeed.setNumEntries(10);
+            self.newsFeed.load(function(result) {
+                if (!result.error) {
+                    ready(result.feed.entries);
+                }
+            });
         },
         // Load news into ticker by query
         loadNews: function(context, altText) {
@@ -124,6 +141,9 @@ define(['jquery',
                         // Show news panel and set context indicator
                         $('.news-panel').show('slide', { direction: 'right' });
                         $('#news-context').html(altText || context || GENERAL_LOCATION);
+
+                        // Refresh panel to make sure carousel still works
+                        $('#news-carousel').replaceWith($('#news-carousel')[0].outerHTML);
                     } else if(context) {
                         // If there were no results with context, try again for general results
                         self.loadNews();
