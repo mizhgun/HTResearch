@@ -38,40 +38,29 @@ define(['jquery',
         this.lastContext = '';
         this.geocoder = new google.maps.Geocoder();
 
-        // List of domains that we don't want news from
-        var blockedDomains = [
-        ];
-
-        // List of keywords we don't want in the title
-        var blockedKeywords = [
-            'coverage',
-            'listing'
-        ];
-
-        // Test whether article is valid/relevant article
-        var isValidArticle = function(article) {
-            // Block certain domains
-            var domain = article.link.split('//')[1].split('/')[0].replace(/^www\./, '');
-            if(blockedDomains.indexOf(domain) >= 0) {
-                console.log('blocked ' + domain + ': ' + article.link);
-                return false;
-            }
-            // Block certain keywords in title
-            var allowKeywords = blockedKeywords.every(function(keyword) {
-                if(article.title.toLowerCase().indexOf(keyword.toLowerCase()) >= 0) {
-                    console.log('blocked ' + keyword + ': ' + article.title);
+        // Find the original URL of a news article (not the Google Feed URL)
+        this.cleanArticleUrl = function(rawUrl) {
+            var cleanedUrl = '';
+            rawUrl.split('?')[1].split('&').every(function(keyValueStr) {
+                var keyValuePair = keyValueStr.split('=');
+                if(keyValuePair[0] === 'url') {
+                    cleanedUrl = keyValuePair[1];
                     return false;
                 }
                 return true;
             });
-            if(!allowKeywords) {
-                return false;
-            }
-            // Valid article
-            return true;
+            return cleanedUrl || rawUrl;
         };
 
-        // Clean raw news resutls, i.e. filter out irrelevant sites and extract the important info
+        // Test whether article is valid/relevant article by checking the title for relevant keywords
+        this.isValidArticle = function(article) {
+            return BASE_TERMS.some(function(keyword) {
+                keyword = keyword.toLowerCase();
+                return article.title.toLowerCase().indexOf(keyword) >= 0;
+            });
+        };
+
+        // Clean raw news results, i.e. filter out irrelevant sites and extract the important info
         this.cleanNews = function(articles) {
             // Pull the relevant information out of each article
             articles = $.map(articles, function(article) {
@@ -81,31 +70,19 @@ define(['jquery',
                 if(foundImage.length) {
                     imageUrl = foundImage.attr('src');
                 }
-                // Find the original URL of the news article (not the Google Feed URL)
-                var rawUrl = article.link;
-                var cleanedUrl = '';
-                rawUrl.split('?')[1].split('&').every(function(keyValueStr) {
-                    var keyValuePair = keyValueStr.split('=');
-                    if(keyValuePair[0] === 'url') {
-                        cleanedUrl = keyValuePair[1];
-                        return false;
-                    }
-                    return true;
-                });
-                cleanedUrl = cleanedUrl || rawUrl;
                 // Extract title, date, source, content, link, and image from the raw article
                 return {
                     title: $(article.content).find('td:last div:last a:first b:first').text(),
                     date: article.publishedDate,
                     source: $(article.content).find('td:first a:first font').text().trim(),
                     contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
-                    link: cleanedUrl,
+                    link:  self.cleanArticleUrl(article.link),
                     image: imageUrl
                 };
             });
 
             // Remove articles from blocked domains
-            articles = articles.filter(isValidArticle);
+            articles = articles.filter(this.isValidArticle);
 
             return articles;
         };
