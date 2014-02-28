@@ -97,8 +97,8 @@ require(['shared/modal',
             e.stopPropagation();
         });
 
-        // Repeat search when setting items to visible
-        $('#search-settings-dropdown .checkbox').change(function() {
+        // Repeat search when setting items to visible; hide when setting to invisible
+        $('#search-settings-dropdown :checkbox').change(function() {
             var show = $(this).is(':checked');
             if(show) {
                 var searchText = $('#search-box').val().trim();
