@@ -194,11 +194,7 @@ require(['shared/modal',
     }
 
     function showContactModal(data) {
-        if (data['type'] === 'contact') {
-            window.location.assign('/contact/' + data.id);
-        } else {
-            Modal.createModal(data, '#bs-modal', '#' + data['type'] + '-modal-template');
-        }
+        Modal.createModal(data, '#bs-modal', '#' + data['type'] + '-modal-template');
     }
 
     function showPublicationModal(data) {

@@ -18,6 +18,7 @@ class ContactDTO(mongo.Document):
     valid = mongo.BooleanField(db_field='v', default=True)
     last_updated = mongo.DateTimeField(db_field='lu')
     updated_by = mongo.ObjectIdField(db_field='ub')
+    content_weight = mongo.FloatField(min_value=0.0, db_field='c')
 
 
 class OrganizationDTO(mongo.Document):
@@ -42,6 +43,8 @@ class OrganizationDTO(mongo.Document):
     page_rank_info = mongo.EmbeddedDocumentField(document_type=PageRankInfoDTO, db_field='r')
     page_rank = mongo.LongField(min_value=0, db_field='pr')
     page_rank_weight = mongo.FloatField(min_value=0.0, max_value=1.0, db_field='w')
+    content_weight = mongo.FloatField(min_value=0.0, db_field='c')
+    combined_weight = mongo.FloatField(min_value=0.0, db_field='cw')
 
 
 class PublicationDTO(mongo.Document):
@@ -83,3 +86,4 @@ class UserDTO(mongo.Document):
     org_type = mongo.IntField(db_field='ot', choices=ORG_TYPE_CHOICES)
     organization = mongo.ReferenceField(OrganizationDTO, db_field='o')
     last_updated = mongo.DateTimeField(db_field='lu')
+    content_weight = mongo.FloatField(min_value=0.0, db_field='c')
