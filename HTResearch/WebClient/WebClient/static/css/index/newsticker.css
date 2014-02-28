@@ -8,28 +8,34 @@
 
 .news-panel .btn-regional {
     font-size: 24px;
-    color: #888;
+    color: #fff;
     padding: 0;
-    width: 36px;
     height: 36px;
     background: transparent;
     box-shadow: none;
     -ms-box-shadow: none;
     -moz-box-shadow: none;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.news-panel .btn-regional:not(.active):hover {
+.news-panel .btn-regional:not(.active) i {
+    color: #888;
+}
+
+.news-panel .btn-regional:not(.active):hover i {
     color: #8aa;
 }
 
-.news-panel .btn-regional.active {
+.news-panel .btn-regional.active i {
     color: #f80;
 }
 
 .news-panel .news-header {
     white-space: nowrap;
     height: 36px;
-    color: #ccc;
+    color: #fff;
     display: block;
     width: 100%;
     text-align: center;

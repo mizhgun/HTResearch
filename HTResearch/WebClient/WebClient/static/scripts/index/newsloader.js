@@ -144,6 +144,7 @@ define(['jquery',
 
                         // Refresh panel to make sure carousel still works
                         $('#news-carousel').replaceWith($('#news-carousel')[0].outerHTML);
+                        $('#news-carousel').carousel();
                     } else if(context) {
                         // If there were no results with context, try again for general results
                         self.loadNews();
