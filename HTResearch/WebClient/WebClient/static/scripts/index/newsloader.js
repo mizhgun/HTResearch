@@ -60,10 +60,9 @@ define(['jquery',
             });
         };
 
-        // Clean raw news results, i.e. filter out irrelevant sites and extract the important info
+        // Extract relevant info from raw news results
         this.cleanNews = function(articles) {
-            // Pull the relevant information out of each article
-            articles = $.map(articles, function(article) {
+            return $.map(articles, function(article) {
                 // Find the image URL
                 var imageUrl = '';
                 var foundImage = $(article.content).find('img[src]');
@@ -80,11 +79,6 @@ define(['jquery',
                     image: imageUrl
                 };
             });
-
-            // Remove articles from blocked domains
-            articles = articles.filter(this.isValidArticle);
-
-            return articles;
         };
         self = this;
     };
@@ -100,6 +94,7 @@ define(['jquery',
                 if (!result.error) {
                     var articles = result.feed.entries;
                     articles = self.cleanNews(articles);
+                    articles = articles.filter(self.isValidArticle);
                     ready(articles);
                 }
             });
