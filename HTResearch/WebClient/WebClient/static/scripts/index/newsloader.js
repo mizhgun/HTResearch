@@ -31,8 +31,6 @@ define(['jquery',
     // General location for news
     var GENERAL_LOCATION = 'India';
 
-    var self;
-
     var NewsLoader = function() {
         this.newsFeed = null;
         this.lastContext = '';
@@ -62,6 +60,7 @@ define(['jquery',
 
         // Extract relevant info from raw news results
         this.cleanNews = function(articles) {
+            var self = this;
             return $.map(articles, function(article) {
                 // Find the image URL
                 var imageUrl = '';
@@ -80,12 +79,12 @@ define(['jquery',
                 };
             });
         };
-        self = this;
     };
 
     NewsLoader.prototype = {
         // Search for news
         search: function(searchQuery, ready) {
+            var self = this;
             var query = GENERAL_LOCATION + ' ' + BASE_QUERY + (searchQuery ? ' ' + searchQuery : '');
             var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
             self.newsFeed = new google.feeds.Feed(feedParam);
@@ -101,6 +100,7 @@ define(['jquery',
         },
         // Load news into ticker by query
         loadNews: function(context, altText) {
+            var self = this;
             // Only reload when context changes
             if(context !== self.lastContext) {
                 self.lastContext = context;
@@ -156,6 +156,7 @@ define(['jquery',
         },
         // Load news into ticker by map region
         loadNewsByRegion: function(map) {
+            var self = this;
             self.geocoder.geocode({
                 latLng: map.getCenter(),
                 bounds: map.getBounds()
