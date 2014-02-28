@@ -30,7 +30,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
             radius: heatMapRadius,
             gradient: heatMapGradient
         });
-    };
+    }
 
     function loadCoordinates(success_cb) {
         // Clear array
