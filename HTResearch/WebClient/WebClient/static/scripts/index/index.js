@@ -76,7 +76,7 @@ require(['shared/modal',
             },
             {
                 name: 'news',
-                search: newsLoader.search,
+                search: function(query, ready) { newsLoader.search(query, ready); },
                 toggleSelector: '#news-toggle',
                 collapseSelector: '#collapse-news',
                 listSelector: '#news-search-list',
