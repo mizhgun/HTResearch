@@ -35,18 +35,22 @@ define(['jquery',
                 return false;
             }
             // Block certain keywords in title
-            _.each(blockedKeywords, function(keyword) {
+            var allowKeywords = blockedKeywords.every(function(keyword) {
                 if(article.title.toLowerCase().indexOf(keyword.toLowerCase()) >= 0) {
                     console.log('blocked ' + keyword + ': ' + article.title);
                     return false;
                 }
+                return true;
             });
+            if(!allowKeywords) {
+                return false;
+            }
+            // Valid article
             return true;
         };
 
         // Clean raw news resutls, i.e. filter out irrelevant sites and extract the important info
         this.cleanNews = function(articles) {
-
             // Pull the relevant information out of each article
             articles = $.map(articles, function(article) {
                 // Find the image URL
@@ -95,7 +99,9 @@ define(['jquery',
             self.newsFeed.setNumEntries(10);
             self.newsFeed.load(function(result) {
                 if (!result.error) {
-                    ready(result.feed.entries);
+                    var articles = result.feed.entries;
+                    articles = self.cleanNews(articles);
+                    ready(articles);
                 }
             });
         },
@@ -106,7 +112,6 @@ define(['jquery',
                 self.lastContext = context;
                 self.search(context, function(articles) {
                     // See if there were any articles
-                    articles = self.cleanNews(articles);
                     if (articles.length) {
                         // Load articles into ticker
                         var newsCarousel = $('#news-carousel');
