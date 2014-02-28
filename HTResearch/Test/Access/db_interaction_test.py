@@ -160,6 +160,21 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'ContactDAO tests passed'
 
+    def test_contact_dao_field_weights(self):
+        print "Checking ContactDAO._field_weights for consistency with ContactDTO"
+        contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)
+        contact_dao = self.ctx.get_object("ContactDAO")
+        for key in contact_dto:
+            if key == "id":
+                continue
+            self.assertIn(key, contact_dao._field_weights.keys(),
+                          "ERROR: a field was added to DTO but not to _field_weights,"
+                          "a member of ContactDAO")
+        total = 0.0
+        for key, value in contact_dao._field_weights.iteritems():
+            total += value
+        self.assertEqual(1.0, total, "ERROR: ContactDAO._field_weights do not add to 1.0")
+
     def test_organization_dao(self):
         org_dto = DTOConverter.to_dto(OrganizationDTO, self.organization)
         org_dao = self.ctx.get_object("OrganizationDAO")
@@ -188,8 +203,6 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_org.facebook, org_dto.facebook)
         self.assertEqual(assert_org.twitter, org_dto.twitter)
         self._compare_page_rank_info(assert_org, org_dto)
-        
-        
 
         print 'Testing organization text search ...'
 
@@ -230,6 +243,21 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertTrue(assert_org is None)
 
         print 'OrganizationDAO tests passed'
+
+    def test_organization_dao_field_weights(self):
+        print "Checking OrganizationDAO._field_weights for consistency with OrganizationDTO"
+        org_dto = DTOConverter.to_dto(OrganizationDTO, self.organization)
+        org_dao = self.ctx.get_object("OrganizationDAO")
+        for key in org_dto:
+            if key == "id":
+                continue
+            self.assertIn(key, org_dao._field_weights.keys(),
+                          "ERROR: a field was added to DTO but not to _field_weights,"
+                          "a member of OrganizationDAO")
+        total = 0.0
+        for key, value in org_dao._field_weights.iteritems():
+            total += value
+        self.assertEqual(1.0, total, "ERROR: OrganizationDAO._field_weights do not add to 1.0")
 
     def test_publication_dao(self):
         pub_dto = DTOConverter.to_dto(PublicationDTO, self.publication)
@@ -332,6 +360,21 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'UserDAO tests passed'
 
+    def test_user_dao_field_weights(self):
+        print "Checking UserDAO._field_weights for consistency with UserDTO"
+        user_dto = DTOConverter.to_dto(UserDTO, self.user)
+        user_dao = self.ctx.get_object("UserDAO")
+        for key in user_dto:
+            if key == "id":
+                continue
+            self.assertIn(key, user_dao._field_weights.keys(),
+                          "ERROR: a field was added to DTO but not to _field_weights,"
+                          "a member of UserDAO")
+        total = 0.0
+        for key, value in user_dao._field_weights.iteritems():
+            total += value
+        self.assertEqual(1.0, total, "ERROR: UserDAO._field_weights do not add to 1.0")
+
     def test_merge_records(self):
         contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)
         contact_dao = self.ctx.get_object("ContactDAO")
@@ -350,8 +393,8 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_contact.phones, new_contact_dto.phones)
 
         print 'Merge records tests passed'
-    
-    
+
+
     def _compare_page_rank_info(self, org1, org2):
         page_rank_info1 = org1.page_rank_info
         page_rank_info2 = org2.page_rank_info
@@ -365,8 +408,8 @@ class DatabaseInteractionTest(unittest.TestCase):
             self.assertEqual(ref1.count, ref2.count)
             self.assertEqual(len(ref1.pages), len(ref2.pages))
             for j in range(len(ref1.pages)):
-                pair1= ref1.pages[j]
-                pair2= ref2.pages[j]
+                pair1 = ref1.pages[j]
+                pair2 = ref2.pages[j]
                 self.assertEqual(pair1.url, pair2.url)
                 self.assertEqual(pair1.count, pair2.count)
 
