@@ -89,7 +89,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
             toggleHeatMap();
             $(this).removeAttr("disabled");
         });
-        heatmap_control_div.index = 1;
+        heatmap_control_div.index = -1;
         map.controls[google.maps.ControlPosition.LEFT_TOP].push(heatmap_control_div);
     }
 

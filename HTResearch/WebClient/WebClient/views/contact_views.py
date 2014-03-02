@@ -7,6 +7,7 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
+from HTResearch.WebClient.WebClient.views.shared_views import unauthorized
 from HTResearch.WebClient.WebClient.models import EditContactForm
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 
@@ -14,24 +15,47 @@ logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
 
 
-def contact_profile(request, contact_id):
+def contact_profile(request, id):
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
-    logger.info('Request made for profile of contact={0} by user={1}'.format(contact_id, user_id))
+    logger.info('Request made for profile of contact={0} by user={1}'.format(id, user_id))
+
+    user_dao = ctx.get_object('UserDAO')
+
+    try:
+        user = user_dao.find(id=id)
+
+    except Exception:
+        logger.error('Exception encountered on user lookup for user={0}'.format(id))
+        return get_http_404_page(request)
+
+    if user and not user_id:
+        logger.warn('Unauthorized request made for user={0}'.format(user.id))
+        return unauthorized(request)
+
     contact_dao = ctx.get_object('ContactDAO')
 
     try:
-        contact = contact_dao.find(id=contact_id)
+        contact = contact_dao.find(id=id)
     except Exception:
-        logger.error('Exception encountered on contact lookup for contact={0}'.format(contact_id))
+        logger.error('Exception encountered on contact lookup for contact={0}'.format(id))
         return get_http_404_page(request)
 
-    org_url = '/organization/' + str(contact.organization.id) if contact.organization else ''
+    if contact:
+        results = contact.__dict__['_data']
+    elif user:
+        results = user.__dict__['_data']
 
-    params = {"contact": contact,
-              "org_url": org_url}
+    org_dao = ctx.get_object('OrganizationDAO')
+    try:
+        if results['organization']:
+            org = org_dao.find(id=results['organization'].id)
+            results['organization'] = org.__dict__['_data']
+    except Exception:
+        logger.error('Exception encountered on organization lookup with search_text={0}'.format(results['organization'].name))
+        return get_http_404_page(request)
 
-    return render(request, 'contact_profile.html', params)
+    return render(request, 'contact/contact_profile.html', results)
 
 
 def search_contacts(request):
@@ -51,19 +75,20 @@ def search_contacts(request):
         try:
             contacts = contact_dao.findmany(search=search_text,
                                             num_elements=10,
-                                            sort_fields=['valid', 'last_name', 'first_name'])
+                                            sort_fields=['valid', 'content_weight', 'last_name', 'first_name'])
         except Exception:
             logger.error('Exception encountered on contact search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
 
-        user_dao = ctx.get_object('UserDAO')
-        try:
-            users = user_dao.findmany(search=search_text,
-                                      num_elements=10,
-                                      sort_fields=['valid', 'last_name', 'first_name'])
-        except Exception:
-            logger.error('Exception encountered on user search with search_text={0}'.format(search_text))
-            return get_http_404_page(request)
+        if user_id:
+            user_dao = ctx.get_object('UserDAO')
+            try:
+                users = user_dao.findmany(search=search_text,
+                                          num_elements=10,
+                                          sort_fields=['valid', 'content_weight', 'last_name', 'first_name'])
+            except Exception:
+                logger.error('Exception encountered on user search with search_text={0}'.format(search_text))
+                return get_http_404_page(request)
 
     results = []
     for dto in contacts:
@@ -92,7 +117,7 @@ def search_contacts(request):
         u['type'] = 'user'
         results.append(u)
 
-    results = sorted(results, key=lambda k: k['first_name'])[:10]
+    results = sorted(results, key=lambda k: (k['first_name'], k['last_name'], k['content_weight'], k['valid']))[:10]
 
     # Add the org types to show
     # for index, contact in enumerate(results):
@@ -161,7 +186,7 @@ def edit_contact(request, contact_id):
                 except:
                     error = 'Oops! There was an error updating the contact. Please try again soon.'
 
-    return render(request, 'edit_contact.html', {'form': form, 'contact_id': contact_id,
+    return render(request, 'contact/edit_contact.html', {'form': form, 'contact_id': contact_id,
                                                  'success': success, 'error': error})
 
 

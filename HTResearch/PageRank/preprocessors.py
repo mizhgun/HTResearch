@@ -37,11 +37,11 @@ class PageRankPreprocessor(object):
 
             org.page_rank_info.total = 0
             org.page_rank_info.total_with_self = 0
-            for ref in org.page_rank_info.references:
+            for i in xrange(len(org.page_rank_info.references) - 1, -1, -1):
+                ref = org.page_rank_info.references[i]
                 # If the domain of the reference is not in the domain of organizations, then it's a link to
                 # a non-org like facebook.com so we delete it
                 if not ref.org_domain in org_domains:
-                    i = org.page_rank_info.references.index(ref)
                     del org.page_rank_info.references[i]
                     continue
 
@@ -100,6 +100,9 @@ class PageRankPreprocessor(object):
                 # first, try to distribute equally
                 diff = 1.0 - total
                 refs_count = len(org.page_rank_info.references)
+                if refs_count == 0:
+                    # set to org_count if no references
+                    refs_count = org_count
                 diff_to_add = diff / refs_count
                 for i in range(0, org_count):
                     if row[i] != 0.0:

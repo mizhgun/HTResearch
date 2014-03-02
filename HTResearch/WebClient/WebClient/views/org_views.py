@@ -31,7 +31,8 @@ def search_organizations(request):
 
     if request.method == 'GET':
         search_text = request.GET['search_text']
-        logger.info('Search request made for organizations with search_text={0} by user={1}'.format(search_text, user_id))
+        logger.info(
+            'Search request made for organizations with search_text={0} by user={1}'.format(search_text, user_id))
     else:
         search_text = ''
 
@@ -40,7 +41,8 @@ def search_organizations(request):
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
         try:
-            organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['valid', 'name'])
+            organizations = org_dao.findmany(search=search_text, num_elements=10,
+                                             sort_fields=['valid', 'combined_weight', 'name'])
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
@@ -80,8 +82,8 @@ def organization_profile(request, org_id):
     params = {"organization": org,
               "scheme": scheme,
               "types": org_types,
-              }
-    return render(request, 'organization_profile.html', params)
+    }
+    return render(request, 'organization/organization_profile.html', params)
 
 
 def request_organization(request):
@@ -114,7 +116,7 @@ def request_organization(request):
                 except:
                     error = 'Something went wrong with your request. Please try again later.'
 
-    return render(request, 'request_organization.html', {'form': form, 'success': success, 'error': error})
+    return render(request, 'organization/request_organization.html', {'form': form, 'success': success, 'error': error})
 
 
 def edit_organization(request, org_id):
@@ -143,7 +145,7 @@ def edit_organization(request, org_id):
                                 initial=_create_org_dict(org),
                                 emails=emails,
                                 phone_numbers=phone_numbers,
-                                types=types,)
+                                types=types, )
     error = ''
     success = ''
 
@@ -186,7 +188,7 @@ def edit_organization(request, org_id):
                     error = 'Oops! There was an error updating the organization. Please try again later.'
                     logger.error('Error occurred saving org={0} by user={1}'.format(org_id, user_id))
 
-    return render(request, "edit_organization.html", {'form': form,
+    return render(request, "organization/edit_organization.html", {'form': form,
                                                       'type_choices': ORG_TYPE_CHOICES,
                                                       'org_id': org_id,
                                                       'success': success,
@@ -249,7 +251,7 @@ def get_org_rank_rows(request):
 
 
 def org_rank(request, sort_method=''):
-    return render(request, 'org_rank.html')
+    return render(request, 'organization/org_rank.html')
 
 
 def _create_org_dict(org):
