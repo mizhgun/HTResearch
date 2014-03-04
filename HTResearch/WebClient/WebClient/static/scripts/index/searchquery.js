@@ -10,7 +10,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         var searchResultsDiv = $('#search-results-div');
 
         if (searchText) {
-            // Perform each search// Perform each search
+            // Perform each search
             _.each(searchItems, function(searchItem) {
                 // See if we want to search for this item
                 var shouldSearch = $(':checkbox:checked[data-search=' + searchItem.name + ']').length > 0;
@@ -19,9 +19,9 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                     // Search begin
                     startAjaxSearch();
                     // See if we should do a custom search or just an ajax call
-                    var search = searchItem.search || ajaxSearch;
+                    var searchFn = searchItem.search || ajaxSearch;
                     // Retrieve search results
-                    search(searchQuery, function(results) {
+                    searchFn(searchQuery, function(results) {
                         // Show search results for this item
                         displaySearchResults(searchItem, results, map);
                         // Search end
