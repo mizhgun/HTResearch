@@ -1,0 +1,200 @@
+{% extends "shared/global.html" %}
+
+{% block imports %}
+    <title>Human Trafficking Research</title>
+    <script type="application/javascript" src="/static/scripts/user/manage.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+    <div class="form-wrapper center-block">
+    <div class="page-header">
+        <h1>Manage
+            <small>Change your account settings here.</small>
+        </h1>
+    </div>
+
+    {% if error %}
+        <div class="alert alert-danger">
+            <p>{{ error }}</p>
+        </div>
+    {% endif %}
+    {% if success %}
+        <div class="alert alert-success">
+            <p>{{ success }}</p>
+        </div>
+    {% endif %}
+
+    <form id="manage-form" role="form" method="post" action="/account-settings/">
+        {% csrf_token %}
+        <input type="hidden" id="id_user_id" name="user_id" value="{{ form.user_id.value }}"/>
+        {% if form.first_name.errors %}
+            <div class="form-group has-error">
+        {% else %}
+            <div class="form-group">
+        {% endif %}
+        <label for="id_first_name" class="control-label">First name*</label>
+        <input type="text" class="form-control" id="id_first_name" name="first_name" value="{{ form.first_name.value }}">
+        {% if form.first_name.errors %}
+            <span class="help-block">
+                {% for error in form.first_name.errors %}
+                    {{ error|escape }}<br/>
+                {% endfor %}
+            </span>
+        {% endif %}
+        </div>
+
+        {% if form.last_name.errors %}
+            <div class="form-group has-error">
+        {% else %}
+            <div class="form-group">
+        {% endif %}
+        <label for="id_last_name" class="control-label">Last name*</label>
+        <input type="text" class="form-control" id="id_last_name" name="last_name" value="{{ form.last_name.value }}">
+        {% if form.last_name.errors %}
+            <span class="help-block">
+                {% for error in form.last_name.errors %}
+                    {{ error|escape }}<br/>
+                {% endfor %}
+            </span>
+        {% endif %}
+        </div>
+
+        {% if form.email.errors %}
+            <div class="form-group has-error">
+        {% else %}
+            <div class="form-group">
+        {% endif %}
+        <label for="id_email" class="control-label">Email*</label>
+        <input type="email" class="form-control" id="id_email" name="email" value="{{ form.email.value }}">
+        {% if form.email.errors %}
+            <span class="help-block">
+                {% for error in form.email.errors %}
+                    {{ error|escape }}<br/>
+                {% endfor %}
+            </span>
+        {% endif %}
+        </div>
+
+        {% if form.account_type.errors %}
+            <div class="form-group has-error">
+        {% else %}
+            <div class="form-group">
+        {% endif %}
+        <label for="id_account_type" class="control-label">Account Type*</label>
+        <div id="id_account_type">
+            {% for type in form.account_type.field.choices %}
+            <div class="radio">
+                <label>
+                    <input type="radio" name="account_type" value="{{type.0}}"
+                            {% ifequal form.account_type.value|add:"0" type.0 %}checked{% endifequal %}>{{ type.1 }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        {% if form.account_type.errors %}
+            <span class="help-block">
+                {% for error in form.account_type.errors %}
+                    {{ error|escape }}<br/>
+                {% endfor %}
+            </span>
+        {% endif %}
+        </div>
+
+        {% if form.org_type.errors %}
+            <div class="form-group has-error">
+        {% else %}
+            <div class="form-group">
+        {% endif %}
+        <label for="id_org_type" class="control-label">Affiliation</label>
+        <div id="id_org_type">
+            {% for type in form.org_type.field.choices %}
+            <div class="radio">
+                <label>
+                    <input type="radio" name="org_type" value="{{ type.0 }}"
+                            {% ifequal form.org_type.value|add:"0" type.0 %}checked{% endifequal %}>
+                    {{ type.1 }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        {% if form.org_type.errors %}
+            <span class="help-block">
+                {% for error in form.org_type.errors %}
+                    {{ error|escape }}<br/>
+                {% endfor %}
+            </span>
+        {% endif %}
+        </div>
+
+        {% if form.organization.errors %}
+            <div class="form-group has-error">
+        {% else %}
+            <div class="form-group">
+        {% endif %}
+        <label for="id_organization" class="control-label">Organization</label>
+        <input type="text" class="form-control" id="id_organization" name="organization" placeholder="Organization"
+                value="{% if form.organization.value %}{{ form.organization.value }}{% endif %}">
+        {% if form.organization.errors %}
+            <span class="help-block">
+                {% for error in form.organization.errors %}
+                    {{ error|escape }}<br/>
+                {% endfor %}
+            </span>
+        {% endif %}
+        </div>
+
+        {% if form.background.errors %}
+            <div class="form-group has-error">
+        {% else %}
+            <div class="form-group">
+        {% endif %}
+        <label for="id_background" class="control-label">Background*</label>
+        <textarea class="form-control" form="manage-form" id="id_background" name="background">{{ form.background.value }}</textarea>
+        {% if form.background.errors %}
+            <span class="help-block">
+                {% for error in form.background.errors %}
+                    {{ error|escape }}<br/>
+                {% endfor %}
+            </span>
+        {% endif %}
+        </div>
+
+        {% if form.password.errors %}
+            <div class="form-group has-error">
+        {% else %}
+            <div class="form-group">
+        {% endif %}
+        <label for="id_password" class="control-label">Change Password</label>
+        <input type="password" class="form-control" id="id_password" name="password" placeholder="Password">
+        {% if form.password.errors %}
+            <span class="help-block">
+                {% for error in form.password.errors %}
+                    {{ error|escape }}<br/>
+                {% endfor %}
+            </span>
+        {% endif %}
+        </div>
+
+        {% if form.confirm_password.errors %}
+            <div class="form-group has-error">
+        {% else %}
+            <div class="form-group">
+        {% endif %}
+        <label for="id_confirm_password" class="control-label">Confirm Password</label>
+        <input type="password" class="form-control" id="id_confirm_password" name="confirm_password"
+               placeholder="Password">
+        {% if form.confirm_password.errors %}
+            <span class="help-block">
+                {% for error in form.confirm_password.errors %}
+                    {{ error|escape }}<br/>
+                {% endfor %}
+            </span>
+        {% endif %}
+        </div>
+        <p>* Required field</p>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    </div>
+    </div>
+{% endblock %}
