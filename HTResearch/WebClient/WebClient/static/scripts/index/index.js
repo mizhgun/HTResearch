@@ -152,7 +152,7 @@ require(['shared/modal',
         });
 
         // Make the collapse icons for the search groups
-        $('.search-link').on('click',function(){
+        $('.search-anchor').on('click',function(){
             var group = (this.id).split('-')[0];
             var icon = $('#' + group + '-icon');
             var div = '#collapse-' + group;
