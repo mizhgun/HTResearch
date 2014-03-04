@@ -155,13 +155,7 @@ require(['shared/modal',
         $('.search-anchor').on('click',function(){
             var group = (this.id).split('-')[0];
             var icon = $('#' + group + '-icon');
-            var div = '#collapse-' + group;
-
-            /* If the group isn't news, then add an 's' since the div
-               for the other groups is plural */
-            if (group !== 'news'){
-                div += 's';
-            }
+            var div = $(this).attr('href');
 
             if ($(div).hasClass('collapse')){
                 icon.removeClass('glyphicon-collapse-down');
