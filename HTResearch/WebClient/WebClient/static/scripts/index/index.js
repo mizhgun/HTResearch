@@ -151,6 +151,27 @@ require(['shared/modal',
             }, 0);
         });
 
+        // Make the collapse icons for the search groups
+        $('.search-link').on('click',function(){
+            var group = (this.id).split('-')[0];
+            var icon = $('#' + group + '-icon');
+            var div = '#collapse-' + group;
+
+            /* If the group isn't news, then add an 's' since the div
+               for the other groups is plural */
+            if (group !== 'news'){
+                div += 's';
+            }
+
+            if ($(div).hasClass('collapse')){
+                icon.removeClass('glyphicon-collapse-down');
+                icon.addClass('glyphicon-collapse-up');
+            } else if ($(div).hasClass('in')){
+                icon.removeClass('glyphicon-collapse-up');
+                icon.addClass('glyphicon-collapse-down');
+            }
+        });
+
         // Initially load news
         newsLoader.loadNews();
 
