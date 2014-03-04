@@ -5,11 +5,14 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     var searchResultsDiv = $('#search-results-div');
 
     // Move within search results by using up/down keys
+    // Click link using enter
     searchBox.keydown(function(e) {
         if(e.keyCode === 38) { // up
             moveSelection(-1);
         } else if(e.keyCode === 40) { // down
             moveSelection(+1);
+        } else if(e.keyCode === 13) { // enter
+            clickSelection();
         }
     });
 
@@ -26,6 +29,12 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         var sel = searchBox.data('selection') || 0;
         sel = (((sel + amount) % resultCount) + resultCount) % resultCount;
         searchBox.data('selection', sel).trigger('changeSelection', sel);
+    }
+
+    // Click the current selection
+    function clickSelection() {
+        var sel = searchBox.data('selection') || 0;
+        searchResultsDiv.find('li').eq(sel).find('a').click();
     }
 
     function search(searchText, searchItems, map, reload) {
@@ -53,7 +62,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                     searchFn(searchQuery, function(results) {
                         resultCount += results.length;
                         searchBox.data('resultCount', resultCount);
-                        console.log(resultCount);
                         // Show search results for this item
                         displaySearchResults(searchItem, results, map);
                         // Search end
