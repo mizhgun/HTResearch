@@ -1,27 +1,59 @@
 define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     var lastSearchedText;
 
+    var searchBox = $('#search-box');
+    var searchResultsDiv = $('#search-results-div');
+
+    // Move within search results by using up/down keys
+    searchBox.keydown(function(e) {
+        if(e.keyCode === 38) { // up
+            moveSelection(-1);
+        } else if(e.keyCode === 40) { // down
+            moveSelection(+1);
+        }
+    });
+
+    // Highlight selected result
+    searchBox.on('changeSelection', function(e, sel) {
+        var results = searchResultsDiv.find('li');
+        results.removeClass('active');
+        results.eq(sel).addClass('active');
+    });
+
+    // Move the result selection index by an amount (usually +/- 1)
+    function moveSelection(amount) {
+        var resultCount = searchBox.data('resultCount') || 1;
+        var sel = searchBox.data('selection') || 0;
+        sel = (((sel + amount) % resultCount) + resultCount) % resultCount;
+        searchBox.data('selection', sel).trigger('changeSelection', sel);
+    }
+
     function search(searchText, searchItems, map, reload) {
         if (!reload && lastSearchedText === searchText)
             return;
         lastSearchedText = searchText;
 
         map.removeAllMarkers();
-        var searchResultsDiv = $('#search-results-div');
 
         if (searchText) {
+            // Keep track of number of results
+            var resultCount = 0;
+            searchBox.data('selection', 0);
             // Perform each search
             _.each(searchItems, function(searchItem) {
                 // See if we want to search for this item
                 var shouldSearch = $(':checkbox:checked[data-search=' + searchItem.name + ']').length > 0;
                 if(shouldSearch) {
-                    var searchQuery = $('#search-box').val();
+                    var searchQuery = searchBox.val();
                     // Search begin
                     startAjaxSearch();
                     // See if we should do a custom search or just an ajax call
                     var searchFn = searchItem.search || ajaxSearch;
                     // Retrieve search results
                     searchFn(searchQuery, function(results) {
+                        resultCount += results.length;
+                        searchBox.data('resultCount', resultCount);
+                        console.log(resultCount);
                         // Show search results for this item
                         displaySearchResults(searchItem, results, map);
                         // Search end
