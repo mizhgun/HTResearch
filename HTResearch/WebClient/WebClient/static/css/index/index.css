@@ -352,3 +352,7 @@ ul {
   display: inline-block;
   vertical-align: middle;
 }
+
+#footer {
+    display: none;
+}
