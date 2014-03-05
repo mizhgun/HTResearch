@@ -16,7 +16,7 @@ require(['shared/modal',
 
     function initialize() {
         $('#home-nav').addClass('active');
-
+        $('#search-box-div').show();
         var visited = getCookie("htresearchv2");
         if (!visited) {
             window.location = '/welcome';
