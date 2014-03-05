@@ -155,14 +155,12 @@ require(['shared/modal',
         $('.search-anchor').on('click',function(){
             var group = (this.id).split('-')[0];
             var icon = $('#' + group + '-icon');
-            var div = $(this).attr('href');
+            var div = $($(this).attr('href'));
 
-            if ($(div).hasClass('collapse')){
-                icon.removeClass('glyphicon-collapse-down');
-                icon.addClass('glyphicon-collapse-up');
-            } else if ($(div).hasClass('in')){
-                icon.removeClass('glyphicon-collapse-up');
-                icon.addClass('glyphicon-collapse-down');
+            if (div.hasClass('collapse')){
+                switchClasses(icon, 'glyphicon-collapse-down', 'glyphicon-collapse-up');
+            } else if (div.hasClass('in')){
+                switchClasses(icon, 'glyphicon-collapse-up', 'glyphicon-collapse-down');
             }
         });
 
@@ -214,6 +212,11 @@ require(['shared/modal',
 
     function showPublicationModal(data) {
         Modal.createModal(data, '#bs-modal', '#publication-modal-template');
+    }
+
+    function switchClasses(jqueryObject, c1, c2){
+        jqueryObject.removeClass(c1);
+        jqueryObject.addClass(c2);
     }
 
     $(function() {
