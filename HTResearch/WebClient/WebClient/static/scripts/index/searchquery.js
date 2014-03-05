@@ -49,13 +49,15 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     searchBox.on('moveSelection', function() {
         var selection = highlightSelection();
 
-        // Make sure panel containing selection is open
-        selection.closest('.collapse').collapse('show');
+        if(selection) {
+            // Make sure panel containing selection is open
+            selection.closest('.collapse').collapse('show');
 
-        // Scroll to selection
-        var top = selection.offset().top - searchResultsContainer.offset().top - searchResultsContainer.height() / 2
-            + selection.height() / 2 + searchResultsContainer.scrollTop();
-        searchResultsContainer.animate({ scrollTop: top }, { duration: 200, queue: false });
+            // Scroll to selection
+            var top = selection.offset().top - searchResultsContainer.offset().top - searchResultsContainer.height() / 2
+                + selection.height() / 2 + searchResultsContainer.scrollTop();
+            searchResultsContainer.animate({ scrollTop: top }, { duration: 200, queue: false });
+        }
     });
 
     // Set selection by hovering
