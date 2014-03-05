@@ -9,8 +9,15 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         map.removeAllMarkers();
         var searchResultsDiv = $('#search-results-div');
 
+        // Change the icon back if a search is performed
+        var icon = $('.collapse-icon');
+        if (icon.hasClass('glyphicon-collapse-down')){
+            icon.removeClass('glyphicon-collapse-down');
+            icon.addClass('glyphicon-collapse-up');
+        }
+
         if (searchText) {
-            // Perform each search// Perform each search
+            // Perform each search
             _.each(searchItems, function(searchItem) {
                 // See if we want to search for this item
                 var shouldSearch = $(':checkbox:checked[data-search=' + searchItem.name + ']').length > 0;
