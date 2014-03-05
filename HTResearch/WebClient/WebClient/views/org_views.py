@@ -1,9 +1,11 @@
 from urlparse import urlparse
 import json
+from datetime import datetime, timedelta
 
+from django.core.cache import cache
 from django.shortcuts import render
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from springpython.context import ApplicationContext
 
 from HTResearch.DataAccess.dto import URLMetadataDTO
@@ -25,6 +27,7 @@ from HTResearch.Utilities.encoder import MongoJSONEncoder
 logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
 
+REFRESH_PARTNER_MAP = timedelta(minutes=5)
 
 def search_organizations(request):
     user_id = request.session['user_id'] if 'user_id' in request.session else None
@@ -252,6 +255,51 @@ def get_org_rank_rows(request):
 
 def org_rank(request, sort_method=''):
     return render(request, 'organization/org_rank.html')
+
+
+def org_partner_map(request):
+    if request.method != 'GET':
+        return HttpResponseBadRequest
+
+    pmap = None#cache.get('partner_map')
+    last_update = cache.get('partner_map_last_update')
+    if not pmap or not last_update or (datetime.utcnow() - last_update > REFRESH_PARTNER_MAP):
+        new_pmap = {"nodes":[], "links":[]}
+        cache.set('partner_map_last_update', datetime.utcnow())
+        ctx = ApplicationContext(DAOContext())
+        org_dao = ctx.get_object('OrganizationDAO')
+        organizations = org_dao.all('name', 'id', 'partners')
+        i = 0
+        for org in organizations:
+            if not org.partners:
+                continue
+
+            new_pmap["nodes"].append({
+                "name": org.name,
+                "id": str(org.id)
+            })
+            for part in org.partners:
+                partner_id = str(part.id)
+                for j in xrange(0, i):
+                    if new_pmap["nodes"][j]["id"] == partner_id:
+                        new_pmap["links"].append({
+                           "source": i,
+                           "target": j
+                        })
+
+            i += 1
+
+
+
+        pmap = MongoJSONEncoder().encode(new_pmap)
+
+        cache.set('partner_map', pmap)
+
+    return HttpResponse(pmap, content_type="application/json")
+
+
+def partner_map_demo(request):
+    return render(request, 'data-vis/partner-map-demo.html')
 
 
 def _create_org_dict(org):

@@ -3,10 +3,12 @@ require.config({
     paths: {
         index: '../index',
         contact: '../contact',
+        datavis: '../data-vis',
         organization: '../organization',
         shared: '../shared',
         user: '../user',
-        fuelux: 'http://www.fuelcdn.com/fuelux/2.6.0/'
+        fuelux: 'http://www.fuelcdn.com/fuelux/2.6.0/',
+        d3: "d3"
     },
     shim: {
         underscore: {
@@ -16,7 +18,7 @@ require.config({
         'jquery.validate': ['jquery'],
         'jquery-ui': ['jquery'],
         'bootstrap': ['jquery'],
-        'd3.layout.cloud': ['d3']
+        'd3.layout.cloud': ['d3_v2.7.4']
     }
 });
 
