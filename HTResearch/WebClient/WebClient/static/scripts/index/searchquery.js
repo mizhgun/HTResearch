@@ -154,7 +154,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         $(searchItem.listSelector).html('');
         // Show number of results
         var resultCount = results.length;
-        var resultsString = (resultCount > 10 ? '10+' : resultCount)
+        var resultsString = resultCount
             + ' result'
             + (resultCount == 1 ? '' : 's');
         $(searchItem.toggleSelector).find('.count').text(resultsString);
