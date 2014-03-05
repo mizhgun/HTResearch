@@ -50,7 +50,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         var selection = highlightSelection();
 
         // Make sure panel containing selection is open
-        console.log(selection.closest('.collapse').length);
         selection.closest('.collapse').collapse('show');
 
         // Scroll to selection
