@@ -2,45 +2,71 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     var lastSearchedText;
 
     var searchBox = $('#search-box');
-    var searchResultsDiv = $('#search-results-div');
+    var searchResultsContainer = $('#search-results-div');
+
+    // Hover to select search result
+    $(document).on('mouseenter', '#search-results-div li', function() {
+        var sel = $('#search-results-div li').index(this);
+        hoverSelection(sel);
+    });
 
     // Move within search results by using up/down keys
     // Click link using enter
     searchBox.keydown(function(e) {
         if(e.keyCode === 38) { // up
             moveSelection(-1);
+            e.preventDefault();
         } else if(e.keyCode === 40) { // down
             moveSelection(+1);
+            e.preventDefault();
         } else if(e.keyCode === 13) { // enter
             clickSelection();
         }
     });
 
-    // Highlight selected result
-    searchBox.on('changeSelection', function(e, sel) {
-        var results = searchResultsDiv.find('li');
-        var selection = results.eq(sel);
-        results.removeClass('active');
+    // Highlight current selection
+    function highlightSelection() {
+        var sel = searchBox.data('selection');
+
+        var searchResults = searchResultsContainer.find('li');
+        searchResults.removeClass('active');
+
+        var selection = searchResults.eq(sel);
         selection.addClass('active');
 
+        return selection;
+    }
+
+    // Highlight selected result on hover
+    searchBox.on('hoverSelection', highlightSelection);
+
+    // Highlight and scroll to selected result on selection move
+    searchBox.on('moveSelection', function() {
+        var selection = highlightSelection();
+
         // Scroll to selection
-        var top = selection.offset().top - searchResultsDiv.offset().top - searchResultsDiv.height() / 2
-            + selection.height() / 2 + searchResultsDiv.scrollTop();
-        searchResultsDiv.scrollTop(top);
+        var top = selection.offset().top - searchResultsContainer.offset().top - searchResultsContainer.height() / 2
+            + selection.height() / 2 + searchResultsContainer.scrollTop();
+        searchResultsContainer.animate({ scrollTop: top }, { duration: 200, queue: false });
     });
+
+    // Set selection by hovering
+    function hoverSelection(sel) {
+        searchBox.data('selection', sel).trigger('hoverSelection');
+    }
 
     // Move the result selection index by an amount (usually +/- 1)
     function moveSelection(amount) {
         var resultCount = searchBox.data('resultCount') || 1;
         var sel = searchBox.data('selection') || 0;
         sel = (((sel + amount) % resultCount) + resultCount) % resultCount;
-        searchBox.data('selection', sel).trigger('changeSelection', sel);
+        searchBox.data('selection', sel).trigger('moveSelection');
     }
 
     // Click the current selection
     function clickSelection() {
         var sel = searchBox.data('selection') || 0;
-        searchResultsDiv.find('li').eq(sel).find('a').click();
+        searchResultsContainer.find('li').eq(sel).find('a').click();
     }
 
     function search(searchText, searchItems, map, reload) {
@@ -72,16 +98,16 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                         endAjaxSearch();
                         // Update selection
                         searchBox.data('resultCount', resultCount);
-                        searchBox.data('selection', 0).trigger('changeSelection', 0);
+                        searchBox.data('selection', 0).trigger('moveSelection');
                     }, searchItem);
                 } else {
                     // Hide panel
                     $(searchItem.toggleSelector).closest('.panel').hide();
                 }
             });
-            searchResultsDiv.slideDown();
+            searchResultsContainer.slideDown();
         } else {
-            searchResultsDiv.slideUp();
+            searchResultsContainer.slideUp();
         }
     }
 
