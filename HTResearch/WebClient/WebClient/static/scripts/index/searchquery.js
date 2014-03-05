@@ -19,8 +19,14 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     // Highlight selected result
     searchBox.on('changeSelection', function(e, sel) {
         var results = searchResultsDiv.find('li');
+        var selection = results.eq(sel);
         results.removeClass('active');
-        results.eq(sel).addClass('active');
+        selection.addClass('active');
+
+        // Scroll to selection
+        var top = selection.offset().top - searchResultsDiv.offset().top - searchResultsDiv.height() / 2
+            + selection.height() / 2 + searchResultsDiv.scrollTop();
+        searchResultsDiv.scrollTop(top);
     });
 
     // Move the result selection index by an amount (usually +/- 1)
@@ -47,7 +53,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         if (searchText) {
             // Keep track of number of results
             var resultCount = 0;
-            searchBox.data('selection', 0);
             // Perform each search
             _.each(searchItems, function(searchItem) {
                 // See if we want to search for this item
@@ -61,11 +66,13 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                     // Retrieve search results
                     searchFn(searchQuery, function(results) {
                         resultCount += results.length;
-                        searchBox.data('resultCount', resultCount);
                         // Show search results for this item
                         displaySearchResults(searchItem, results, map);
                         // Search end
                         endAjaxSearch();
+                        // Update selection
+                        searchBox.data('resultCount', resultCount);
+                        searchBox.data('selection', 0).trigger('changeSelection', 0);
                     }, searchItem);
                 } else {
                     // Hide panel
