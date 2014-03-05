@@ -85,6 +85,13 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
 
         map.removeAllMarkers();
 
+        // Change the icon back if a search is performed
+        var icon = $('.collapse-icon');
+        if (icon.hasClass('glyphicon-collapse-down')){
+            icon.removeClass('glyphicon-collapse-down');
+            icon.addClass('glyphicon-collapse-up');
+        }
+
         if (searchText) {
             searchBox.data('resultCount', 0);
             // Perform each search
