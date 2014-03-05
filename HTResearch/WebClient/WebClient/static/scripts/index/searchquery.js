@@ -4,6 +4,11 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     var searchBox = $('#search-box');
     var searchResultsContainer = $('#search-results-div');
 
+    // Focus search box when hovering over search area
+    $('#search-box-div').on('mouseenter', function() {
+        searchBox.focus();
+    });
+
     // Hover to select search result
     $(document).on('mouseenter', '#search-results-div li', function() {
         var sel = $('#search-results-div li').index(this);
@@ -44,6 +49,10 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     searchBox.on('moveSelection', function() {
         var selection = highlightSelection();
 
+        // Make sure panel containing selection is open
+        console.log(selection.closest('.collapse').length);
+        selection.closest('.collapse').collapse('show');
+
         // Scroll to selection
         var top = selection.offset().top - searchResultsContainer.offset().top - searchResultsContainer.height() / 2
             + selection.height() / 2 + searchResultsContainer.scrollTop();
@@ -77,8 +86,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         map.removeAllMarkers();
 
         if (searchText) {
-            // Keep track of number of results
-            var resultCount = 0;
+            searchBox.data('resultCount', 0);
             // Perform each search
             _.each(searchItems, function(searchItem) {
                 // See if we want to search for this item
@@ -91,13 +99,15 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                     var searchFn = searchItem.search || ajaxSearch;
                     // Retrieve search results
                     searchFn(searchQuery, function(results) {
-                        resultCount += results.length;
                         // Show search results for this item
                         displaySearchResults(searchItem, results, map);
                         // Search end
                         endAjaxSearch();
-                        // Update selection
+                        // Update number of results
+                        var resultCount = searchBox.data('resultCount');
+                        resultCount += results.length;
                         searchBox.data('resultCount', resultCount);
+                        // Update selection
                         searchBox.data('selection', 0).trigger('moveSelection');
                     }, searchItem);
                 } else {
