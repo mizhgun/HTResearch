@@ -18,13 +18,13 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     // Move within search results by using up/down keys
     // Click link using enter
     searchBox.keydown(function(e) {
-        if(e.keyCode === 38) { // up
+        if(e.keyCode === $.ui.keyCode.UP) {
             moveSelection(-1);
             e.preventDefault();
-        } else if(e.keyCode === 40) { // down
+        } else if(e.keyCode === $.ui.keyCode.DOWN) {
             moveSelection(+1);
             e.preventDefault();
-        } else if(e.keyCode === 13) { // enter
+        } else if(e.keyCode === $.ui.keyCode.ENTER) {
             clickSelection();
         }
     });
