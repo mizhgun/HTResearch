@@ -853,7 +853,7 @@ class PublicationURLScraper(object):
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-        sources = hxs.select('//a').extract()
+        sources = hxs.select('//h3/a').extract()
 
         urls = []
         for i in range(0, len(self.titles)):
@@ -863,7 +863,7 @@ class PublicationURLScraper(object):
         index = 0
         for title in self.titles:
             for source in sources:
-                    if title in source:
+                    if re.sub(r'\W+', '', title) in re.sub(r'\W+', '', source):
                         raw_link = source.encode('ascii', 'ignore')
                         urls[index] = raw_link[raw_link.find(start) + len(start):raw_link.find("\">")]
             index += 1

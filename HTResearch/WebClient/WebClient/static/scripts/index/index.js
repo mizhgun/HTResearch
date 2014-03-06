@@ -76,7 +76,7 @@ require(['shared/modal',
             },
             {
                 name: 'news',
-                search: newsLoader.search,
+                search: function(query, ready) { newsLoader.search(query, ready); },
                 toggleSelector: '#news-toggle',
                 collapseSelector: '#collapse-news',
                 listSelector: '#news-search-list',
@@ -97,8 +97,8 @@ require(['shared/modal',
             e.stopPropagation();
         });
 
-        // Repeat search when setting items to visible
-        $('#search-settings-dropdown .checkbox').change(function() {
+        // Repeat search when setting items to visible; hide when setting to invisible
+        $('#search-settings-dropdown :checkbox').change(function() {
             var show = $(this).is(':checked');
             if(show) {
                 var searchText = $('#search-box').val().trim();
@@ -151,6 +151,21 @@ require(['shared/modal',
             }, 0);
         });
 
+        // Make the collapse icons for the search groups
+        $('.search-anchor').on('click',function(){
+            var group = (this.id).split('-')[0];
+            var icon = $('#' + group + '-icon');
+            var div = $($(this).attr('href'));
+
+            if (div.hasClass('collapse')){
+                icon.removeClass('glyphicon-collapse-down');
+                icon.addClass('glyphicon-collapse-up');
+            } else if (div.hasClass('in')){
+                icon.removeClass('glyphicon-collapse-up');
+                icon.addClass('glyphicon-collapse-down');
+            }
+        });
+
         // Initially load news
         newsLoader.loadNews();
 
@@ -194,11 +209,7 @@ require(['shared/modal',
     }
 
     function showContactModal(data) {
-        if (data['type'] === 'contact') {
-            window.location.assign('/contact/' + data.id);
-        } else {
-            Modal.createModal(data, '#bs-modal', '#' + data['type'] + '-modal-template');
-        }
+        Modal.createModal(data, '#bs-modal', '#' + data['type'] + '-modal-template');
     }
 
     function showPublicationModal(data) {

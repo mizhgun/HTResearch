@@ -17,7 +17,10 @@ require.config({
         'jquery.tmpl': ['jquery'],
         'jquery.validate': ['jquery'],
         'jquery-ui': ['jquery'],
-        'bootstrap': ['jquery'],
+        'bootstrap': [
+            'jquery',
+            'jquery-ui'
+        ],
         'd3.layout.cloud': ['d3_v2.7.4']
     }
 });
