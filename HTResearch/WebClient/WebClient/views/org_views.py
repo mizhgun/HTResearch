@@ -264,19 +264,26 @@ def org_partner_map(request):
     pmap = None#cache.get('partner_map')
     last_update = cache.get('partner_map_last_update')
     if not pmap or not last_update or (datetime.utcnow() - last_update > REFRESH_PARTNER_MAP):
-        new_pmap = {"nodes":[], "links":[]}
+        new_pmap = {
+            "nodes":[],
+            "links":[],
+            "threeps": {
+                "PREVENTION": OrgTypesEnum.PREVENTION,
+                "PROTECTION": OrgTypesEnum.PROTECTION,
+                "PROSECUTION": OrgTypesEnum.PROSECUTION
+            }
+        }
         cache.set('partner_map_last_update', datetime.utcnow())
         ctx = ApplicationContext(DAOContext())
         org_dao = ctx.get_object('OrganizationDAO')
-        organizations = org_dao.all('name', 'id', 'partners')
+        organizations = org_dao.all('name', 'id', 'partners', 'types', 'address')
         i = 0
         for org in organizations:
-            if not org.partners:
-                continue
-
             new_pmap["nodes"].append({
                 "name": org.name,
-                "id": str(org.id)
+                "id": str(org.id),
+                "types": org.types,
+                "addr": org.address
             })
             for part in org.partners:
                 partner_id = str(part.id)
