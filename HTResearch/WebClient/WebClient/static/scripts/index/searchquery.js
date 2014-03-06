@@ -41,12 +41,12 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         }
     });
 
-    // Move the result selection index by an amount (usually +/- 1)
-    function moveSelection(amount) {
+    // Set the result selection index
+    function setSelection(index) {
         var visibleResults = searchResultsContainer.find('.panel:visible li');
         var resultCount = visibleResults.length || 1;
-        var index = visibleResults.index(visibleResults.filter('.active'));
-        index = (((index + amount) % resultCount) + resultCount) % resultCount;
+
+        index = ((index % resultCount) + resultCount) % resultCount;
 
         var selection = visibleResults.eq(index);
 
@@ -62,6 +62,14 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                 + selection.height() / 2 + searchResultsContainer.scrollTop();
             searchResultsContainer.animate({ scrollTop: top }, { duration: 200, queue: false });
         }
+    }
+
+    // Move the result selection index by an amount (usually +/- 1)
+    function moveSelection(amount) {
+        var visibleResults = searchResultsContainer.find('.panel:visible li');
+        var index = visibleResults.index(searchResultsContainer.find('li.active'));
+        index += amount;
+        setSelection(index);
     }
 
     // Click the current selection
@@ -100,6 +108,8 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                         displaySearchResults(searchItem, results, map);
                         // Search end
                         endAjaxSearch();
+                        // Select first result
+                        setSelection(0);
                     }, searchItem);
                 } else {
                     // Hide panel
