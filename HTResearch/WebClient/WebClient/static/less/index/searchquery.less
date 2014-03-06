@@ -3,10 +3,6 @@
     width: 100%;
     margin-top: 1px;
     height: calc(100% - 55px);
-    opacity: 0.5;
-    filter: alpha(opacity=50); /* For IE8 and earlier */
-    transition: opacity 1s;
-    -webkit-transition: opacity 1s;
     line-height: 1.5em;
     border-radius: 5px;
 }
@@ -25,15 +21,6 @@
 
 #search-results-div .panel-heading {
     line-height: 2;
-}
-
-#search-box-div:hover #search-results-div {
-    opacity: 1.0;
-    filter: alpha(opacity=100); /* For IE8 and earlier */
-}
-
-.search-query:focus {
-    opacity: 1.0 !important;
 }
 
 #search-box {
@@ -96,8 +83,6 @@
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     width: 100%;
-    transition: opacity 0.2s;
-    -webkit-transition: opacity 0.2s;
 }
 
 #search-settings-btn {
