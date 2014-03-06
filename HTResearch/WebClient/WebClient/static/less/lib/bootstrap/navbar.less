@@ -525,10 +525,12 @@
     }
     > .active > a {
       &,
-      &:hover,
       &:focus {
         color: @navbar-inverse-link-active-color;
         background-color: @navbar-inverse-link-active-bg;
+      }
+      &:hover {
+        color: @navbar-inverse-link-hover-color;
       }
     }
     > .disabled > a {
