@@ -286,7 +286,7 @@
 }
 #search-box-div {
   width: 100%;
-  height: calc(-150%);
+  height: calc(100% - 250px);
   background-color: transparent;
   border-right: 2px solid transparent;
   padding: 10px 10px 0 10px;
@@ -350,8 +350,8 @@ noscript {
   margin: 0;
   padding: 0;
   display: table;
-  margin-top: -42px;
-  padding-top: 42px;
+  margin-top: -51px;
+  padding-top: 51px;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
