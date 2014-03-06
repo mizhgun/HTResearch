@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    {% load compress %}
-    {% compress css %}
-        <link rel="stylesheet" type="text/less" media="all" href="/static/lib/bootstrap/less/swatchmaker.less"/>
-    {% endcompress %}
-    <link href="/static/css/shared/global.css" rel="stylesheet"/>
-    <link href="/static/lib/font-awesome-4.0.3/css/font-awesome.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/css/lib/bootstrap/bootstrap.css">
+    <link href="/static/css/shared/global.css" rel="stylesheet">
+    <link href="/static/css/lib/font-awesome/font-awesome.css" rel="stylesheet">
     <script type="application/javascript" src="/static/scripts/lib/require.js"></script>
     <script type="application/javascript" src="/static/scripts/requireconfig.js"></script>
     {% block imports %}

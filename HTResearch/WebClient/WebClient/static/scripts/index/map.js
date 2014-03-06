@@ -15,7 +15,7 @@ define(['jquery',
         var options = {
             center: INITIAL_LATLNG,
             zoom: 5,
-            mapTypeId: google.maps.MapTypeId.HYBRID,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
             mapTypeControlOptions: {
                 position: google.maps.ControlPosition.TOP_LEFT
             },
