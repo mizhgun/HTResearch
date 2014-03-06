@@ -4,15 +4,27 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     var searchBox = $('#search-box');
     var searchResultsContainer = $('#search-results-div');
 
-    // Focus search box when hovering over search area
-    searchResultsContainer.on('mouseenter', function() {
+    // Focus search box when typing
+    $(document).keypress(function() {
         searchBox.focus();
+    });
+
+    // Focus search box when hovering over search results
+    searchResultsContainer.hover(function() {
+        searchBox.focus();
+    });
+
+    // Clear and blur search box using escape
+    $(document).keydown(function(e) {
+        if(e.keyCode === $.ui.keyCode.ESCAPE) {
+            searchBox.val('').blur();
+        }
     });
 
     // Hover to select search result
     $(document).on('mouseenter', '#search-results-div li', function() {
-        var sel = $('#search-results-div li').index(this);
-        hoverSelection(sel);
+        searchResultsContainer.find('li').removeClass('active');
+        $(this).addClass('active');
     });
 
     // Move within search results by using up/down keys
@@ -29,52 +41,40 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         }
     });
 
-    // Highlight current selection
-    function highlightSelection() {
-        var sel = searchBox.data('selection');
+    // Set the result selection index
+    function setSelection(index) {
+        var visibleResults = searchResultsContainer.find('.panel:visible li');
+        var resultCount = visibleResults.length || 1;
 
-        var searchResults = searchResultsContainer.find('li');
-        searchResults.removeClass('active');
+        index = ((index % resultCount) + resultCount) % resultCount;
 
-        var selection = searchResults.eq(sel);
+        var selection = visibleResults.eq(index);
+
+        visibleResults.removeClass('active');
         selection.addClass('active');
 
-        return selection;
-    }
+        if(selection.length) {
+            // Make sure panel containing selection is open
+            selection.closest('.collapse').collapse('show');
 
-    // Highlight selected result on hover
-    searchBox.on('hoverSelection', highlightSelection);
-
-    // Highlight and scroll to selected result on selection move
-    searchBox.on('moveSelection', function() {
-        var selection = highlightSelection();
-
-        // Make sure panel containing selection is open
-        selection.closest('.collapse').collapse('show');
-
-        // Scroll to selection
-        var top = selection.offset().top - searchResultsContainer.offset().top - searchResultsContainer.height() / 2
-            + selection.height() / 2 + searchResultsContainer.scrollTop();
-        searchResultsContainer.animate({ scrollTop: top }, { duration: 200, queue: false });
-    });
-
-    // Set selection by hovering
-    function hoverSelection(sel) {
-        searchBox.data('selection', sel).trigger('hoverSelection');
+            // Scroll to selection
+            var top = selection.offset().top - searchResultsContainer.offset().top - searchResultsContainer.height() / 2
+                + selection.height() / 2 + searchResultsContainer.scrollTop();
+            searchResultsContainer.animate({ scrollTop: top }, { duration: 200, queue: false });
+        }
     }
 
     // Move the result selection index by an amount (usually +/- 1)
     function moveSelection(amount) {
-        var resultCount = searchBox.data('resultCount') || 1;
-        var sel = searchBox.data('selection') || 0;
-        sel = (((sel + amount) % resultCount) + resultCount) % resultCount;
-        searchBox.data('selection', sel).trigger('moveSelection');
+        var visibleResults = searchResultsContainer.find('.panel:visible li');
+        var index = visibleResults.index(searchResultsContainer.find('li.active'));
+        index += amount;
+        setSelection(index);
     }
 
     // Click the current selection
     function clickSelection() {
-        var sel = searchBox.data('selection') || 0;
-        searchResultsContainer.find('li').eq(sel).find('a').click();
+        searchResultsContainer.find('li.active').find('a').click();
     }
 
     function search(searchText, searchItems, map, reload) {
@@ -92,7 +92,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         }
 
         if (searchText) {
-            searchBox.data('resultCount', 0);
             // Perform each search
             _.each(searchItems, function(searchItem) {
                 // See if we want to search for this item
@@ -109,12 +108,8 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                         displaySearchResults(searchItem, results, map);
                         // Search end
                         endAjaxSearch();
-                        // Update number of results
-                        var resultCount = searchBox.data('resultCount');
-                        resultCount += results.length;
-                        searchBox.data('resultCount', resultCount);
-                        // Update selection
-                        searchBox.data('selection', 0).trigger('moveSelection');
+                        // Select first result
+                        setSelection(0);
                     }, searchItem);
                 } else {
                     // Hide panel
