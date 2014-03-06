@@ -1,3 +1,8 @@
+.navbar-nav > li:hover,
+.navbar-nav > li.active {
+  border-bottom: 5px solid #00a67c;
+  height: 50px;
+}
 /* Sticky footer styles
 -------------------------------------------------- */
 html,
