@@ -152,7 +152,7 @@
 #news-carousel .carousel-caption .article-source {
   position: absolute;
   left: 0;
-  top: calc(66%);
+  top: calc(6% + 60px);
   right: 0;
   font-size: 12px;
   font-weight: 100;
@@ -179,7 +179,7 @@
   text-align: justify;
 }
 #news-carousel .carousel-caption.with-image .article-content-snippet {
-  left: calc(102%);
+  left: calc(14% + 88px);
 }
 #news-carousel .article-content {
   display: none;
@@ -188,7 +188,7 @@
   overflow-y: auto;
   width: 100%;
   margin-top: 1px;
-  height: calc(45%);
+  height: calc(100% - 55px);
   line-height: 1.5em;
   border-radius: 5px;
 }
@@ -208,7 +208,7 @@
 #search-box {
   line-height: 2;
   float: left;
-  width: calc(46%);
+  width: calc(100% - 54px);
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   -webkit-border-top-left-radius: 5px;
@@ -271,7 +271,7 @@
 }
 #search-box-div {
   width: 100%;
-  height: calc(-150%);
+  height: calc(100% - 250px);
   background-color: transparent;
   border-right: 2px solid transparent;
   padding: 10px 10px 0 10px;
