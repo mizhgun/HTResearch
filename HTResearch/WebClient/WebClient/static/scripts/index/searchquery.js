@@ -5,7 +5,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     var searchResultsContainer = $('#search-results-div');
 
     // Focus search box when hovering over search area
-    $('#search-box-div').on('mouseenter', function() {
+    searchResultsContainer.on('mouseenter', function() {
         searchBox.focus();
     });
 
