@@ -5,7 +5,12 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     var searchResultsContainer = $('#search-results-div');
 
     // Focus search box when typing
-    $(document).keypress(function(e) {
+    $(document).keypress(function() {
+        searchBox.focus();
+    });
+
+    // Focus search box when hovering over search results
+    searchResultsContainer.hover(function() {
         searchBox.focus();
     });
 
@@ -17,6 +22,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
 
     // Move within search results by using up/down keys
     // Click link using enter
+    // Clear and blur box using escape
     searchBox.keydown(function(e) {
         if(e.keyCode === $.ui.keyCode.UP) {
             moveSelection(-1);
@@ -26,6 +32,8 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             e.preventDefault();
         } else if(e.keyCode === $.ui.keyCode.ENTER) {
             clickSelection();
+        } else if(e.keyCode === $.ui.keyCode.ESCAPE) {
+            searchBox.val('').blur();
         }
     });
 
