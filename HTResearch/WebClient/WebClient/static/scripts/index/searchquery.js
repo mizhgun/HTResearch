@@ -14,6 +14,13 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         searchBox.focus();
     });
 
+    // Clear and blur search box using escape
+    $(document).keydown(function(e) {
+        if(e.keyCode === $.ui.keyCode.ESCAPE) {
+            searchBox.val('').blur();
+        }
+    });
+
     // Hover to select search result
     $(document).on('mouseenter', '#search-results-div li', function() {
         searchResultsContainer.find('li').removeClass('active');
@@ -22,7 +29,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
 
     // Move within search results by using up/down keys
     // Click link using enter
-    // Clear and blur box using escape
     searchBox.keydown(function(e) {
         if(e.keyCode === $.ui.keyCode.UP) {
             moveSelection(-1);
@@ -32,8 +38,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             e.preventDefault();
         } else if(e.keyCode === $.ui.keyCode.ENTER) {
             clickSelection();
-        } else if(e.keyCode === $.ui.keyCode.ESCAPE) {
-            searchBox.val('').blur();
         }
     });
 
