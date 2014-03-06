@@ -158,9 +158,11 @@ require(['shared/modal',
             var div = $($(this).attr('href'));
 
             if (div.hasClass('collapse')){
-                switchClasses(icon, 'glyphicon-collapse-down', 'glyphicon-collapse-up');
+                icon.removeClass('glyphicon-collapse-down');
+                icon.addClass('glyphicon-collapse-up');
             } else if (div.hasClass('in')){
-                switchClasses(icon, 'glyphicon-collapse-up', 'glyphicon-collapse-down');
+                icon.removeClass('glyphicon-collapse-up');
+                icon.addClass('glyphicon-collapse-down');
             }
         });
 
@@ -212,11 +214,6 @@ require(['shared/modal',
 
     function showPublicationModal(data) {
         Modal.createModal(data, '#bs-modal', '#publication-modal-template');
-    }
-
-    function switchClasses(jqueryObject, c1, c2){
-        jqueryObject.removeClass(c1);
-        jqueryObject.addClass(c2);
     }
 
     $(function() {
