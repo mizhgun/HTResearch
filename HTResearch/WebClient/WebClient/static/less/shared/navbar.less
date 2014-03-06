@@ -1,7 +1,8 @@
-//.navbar-nav > li {
-//    .li-border {
-//      &:hover, &:active {
-//        outline: thick solid @ht-teal;
-//      }
-//    }
-//}
+.navbar-nav {
+  > li {
+    &:hover, &.active {
+      border-bottom: 5px solid @ht-teal;
+      height: 50px; // I don't like statically sizing this, but the navbar already is
+    }
+  }
+}
