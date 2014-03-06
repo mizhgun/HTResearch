@@ -11,8 +11,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
 
     // Hover to select search result
     $(document).on('mouseenter', '#search-results-div li', function() {
-        var sel = $('#search-results-div li').index(this);
-        hoverSelection(sel);
+        hoverSelection($(this));
     });
 
     // Move within search results by using up/down keys
@@ -29,27 +28,25 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         }
     });
 
-    // Highlight current selection
-    function highlightSelection() {
-        var sel = searchBox.data('selection');
-
-        var searchResults = searchResultsContainer.find('li');
-        searchResults.removeClass('active');
-
-        var selection = searchResults.eq(sel);
+    // Set selection by hovering
+    function hoverSelection(selection) {
+        searchResultsContainer.find('li').removeClass('active');
         selection.addClass('active');
-
-        return selection;
     }
 
-    // Highlight selected result on hover
-    searchBox.on('hoverSelection', highlightSelection);
+    // Move the result selection index by an amount (usually +/- 1)
+    function moveSelection(amount) {
+        var visibleResults = searchResultsContainer.find('.panel:visible li');
+        var resultCount = visibleResults.length || 1;
+        var index = visibleResults.index(visibleResults.filter('.active'));
+        index = (((index + amount) % resultCount) + resultCount) % resultCount;
 
-    // Highlight and scroll to selected result on selection move
-    searchBox.on('moveSelection', function() {
-        var selection = highlightSelection();
+        var selection = visibleResults.eq(index);
 
-        if(selection) {
+        visibleResults.removeClass('active');
+        selection.addClass('active');
+
+        if(selection.length) {
             // Make sure panel containing selection is open
             selection.closest('.collapse').collapse('show');
 
@@ -58,25 +55,11 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                 + selection.height() / 2 + searchResultsContainer.scrollTop();
             searchResultsContainer.animate({ scrollTop: top }, { duration: 200, queue: false });
         }
-    });
-
-    // Set selection by hovering
-    function hoverSelection(sel) {
-        searchBox.data('selection', sel).trigger('hoverSelection');
-    }
-
-    // Move the result selection index by an amount (usually +/- 1)
-    function moveSelection(amount) {
-        var resultCount = searchBox.data('resultCount') || 1;
-        var sel = searchBox.data('selection') || 0;
-        sel = (((sel + amount) % resultCount) + resultCount) % resultCount;
-        searchBox.data('selection', sel).trigger('moveSelection');
     }
 
     // Click the current selection
     function clickSelection() {
-        var sel = searchBox.data('selection') || 0;
-        searchResultsContainer.find('li').eq(sel).find('a').click();
+        searchResultsContainer.find('li.active').find('a').click();
     }
 
     function search(searchText, searchItems, map, reload) {
@@ -94,7 +77,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         }
 
         if (searchText) {
-            searchBox.data('resultCount', 0);
             // Perform each search
             _.each(searchItems, function(searchItem) {
                 // See if we want to search for this item
@@ -111,12 +93,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                         displaySearchResults(searchItem, results, map);
                         // Search end
                         endAjaxSearch();
-                        // Update number of results
-                        var resultCount = searchBox.data('resultCount');
-                        resultCount += results.length;
-                        searchBox.data('resultCount', resultCount);
-                        // Update selection
-                        searchBox.data('selection', 0).trigger('moveSelection');
                     }, searchItem);
                 } else {
                     // Hide panel
