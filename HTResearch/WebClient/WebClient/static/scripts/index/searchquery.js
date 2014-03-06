@@ -11,7 +11,8 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
 
     // Hover to select search result
     $(document).on('mouseenter', '#search-results-div li', function() {
-        hoverSelection($(this));
+        searchResultsContainer.find('li').removeClass('active');
+        $(this).addClass('active');
     });
 
     // Move within search results by using up/down keys
@@ -27,12 +28,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             clickSelection();
         }
     });
-
-    // Set selection by hovering
-    function hoverSelection(selection) {
-        searchResultsContainer.find('li').removeClass('active');
-        selection.addClass('active');
-    }
 
     // Move the result selection index by an amount (usually +/- 1)
     function moveSelection(amount) {
