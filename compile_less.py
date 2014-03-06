@@ -14,8 +14,7 @@ class CompileLessHandler(FileSystemEventHandler):
             parent_directory = path_split[-2]
             less_file = path_split[-1]
             css_file = less_file.replace('.less', '.css')
-            command_arg = '{0}\\less\\{1}\\{2} > {3}\\css\\{4}\\{5}'.format(path, parent_directory, less_file,
-                                                                           path, parent_directory, css_file)
+            command_arg = '{0}\\less\\{1}\\{2} > {0}\\css\\{1}\\{3}'.format(path, parent_directory, less_file, css_file)
             call('lessc ' + command_arg, shell=True)
 
 if __name__ == "__main__":
