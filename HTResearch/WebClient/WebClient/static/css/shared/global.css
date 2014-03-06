@@ -9,17 +9,17 @@ body {
 #wrapper {
   min-height: 100%;
   height: auto;
-  /* Negative indent footer by its height */
+  /* Negative bottom indent footer by its height */
+  /* Negative top margin for header height */
   margin: 0 auto -60px;
   /* Pad bottom by footer height */
   padding: 0 0 60px;
 }
 /* Set the fixed height of the footer here */
 #footer {
+  margin-top: -60px;
   height: 60px;
   background-color: #eeeeee;
-  display: none;
-  visibility: hidden;
 }
 #footer-text {
   position: relative;
