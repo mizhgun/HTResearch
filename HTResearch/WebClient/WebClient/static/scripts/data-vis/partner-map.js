@@ -93,13 +93,30 @@ define(['jquery', 'd3', 'bootstrap'], function($, d3) {
                         })
                     }
                 );
-                //.call(force.drag);
 
             node.append('svg:circle').attr('r', 15)
                 .style('stroke', '#fff')
                 .style('stroke-width', '1.5px')
                 .style('fill', function(d) { return map_types_to_color(d.types, graph.threeps) })
-                .style('fill-opacity', 0.5);
+                .style('fill-opacity', 0.5)
+                .on('mouseenter', function(e) { $(this).css('fill-opacity', 1.0) })
+                .on('mouseleave', function(e) { $(this).css('fill-opacity', 0.5) });
+
+            var legend = svg.append("g")
+                .attr("class", "legend")
+                .attr("transform", "translate(50,30)")
+                .style("font-size", "12px")
+                .call(createLegend, {
+                    "Prevention": {
+                        color: color.PREVENTION
+                    },
+                    "Protection": {
+                        color: color.PROTECTION
+                    },
+                    "Prosecution": {
+                        color: color.PROSECUTION
+                    }
+                });
 
             $('.partner-map-svg').bind('DOMMouseScroll mousewheel', function(e) {
                 e.preventDefault();
@@ -117,21 +134,6 @@ define(['jquery', 'd3', 'bootstrap'], function($, d3) {
             });
 
             force.on('tick', function() {
-                var max_width = width;
-                var max_height = height;
-
-//                force.nodes().forEach(function(o, i) {
-//                    if (o.y < 0)
-//                        o.y = 0;
-//                    else if (o.y > max_height)
-//                        o.y = max_height;
-//
-//                    if (o.x < 0)
-//                        o.x = 0;
-//                    else if (o.x > max_width)
-//                        o.x = max_width;
-//                });
-
                 link.attr('x1', function(d) { return d.source.x; })
                     .attr('y1', function(d) { return d.source.y; })
                     .attr('x2', function(d) { return d.target.x; })
@@ -143,6 +145,46 @@ define(['jquery', 'd3', 'bootstrap'], function($, d3) {
 
             });
         });
+    }
+
+    function createLegend(g, items) {
+        g.each(function() {
+            var g= d3.select(this),
+                svg = d3.select(g.property("nearestViewportElement")),
+                legendPadding = g.attr("data-style-padding") || 5,
+                lb = g.selectAll(".legend-box").data([true]),
+                li = g.selectAll(".legend-items").data([true])
+
+            lb.enter().append("rect").classed("legend-box",true).attr('fill', 'white').attr('stroke', 'black')
+            li.enter().append("g").classed("legend-items",true)
+
+            items = d3.entries(items).sort(function(a,b) { return a.value.pos-b.value.pos})
+
+            li.selectAll("text")
+                .data(items,function(d) { return d.key})
+                .call(function(d) { d.enter().append("text")})
+                .call(function(d) { d.exit().remove()})
+                .attr("y",function(d,i) { return i+"em"})
+                .attr("x","1em")
+                .text(function(d) { ;return d.key})
+
+            li.selectAll("circle")
+                .data(items,function(d) { return d.key})
+                .call(function(d) { d.enter().append("circle")})
+                .call(function(d) { d.exit().remove()})
+                .attr("cy",function(d,i) { return i-0.25+"em"})
+                .attr("cx",0)
+                .attr("r","0.4em")
+                .style("fill",function(d) { console.log(d.value.color);return d.value.color})
+
+            // Reposition and resize the box
+            var lbbox = li[0][0].getBBox()
+            lb.attr("x",(lbbox.x-legendPadding))
+                .attr("y",(lbbox.y-legendPadding))
+                .attr("height",(lbbox.height+2*legendPadding))
+                .attr("width",(lbbox.width+2*legendPadding))
+      })
+      return g
     }
 
     function create_popover_content(node) {

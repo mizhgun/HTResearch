@@ -1,3 +1,3 @@
 require(['datavis/partner-map', 'bootstrap'], function(PartnerMap) {
-    PartnerMap.initialize();
+    PartnerMap.initialize('#partner-map');
 });
