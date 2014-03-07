@@ -13,21 +13,15 @@ class CompileLessHandler(FileSystemEventHandler):
 
         # Get all the section values in a dictionary
         files_to_compile = get_section_values("LESS")
-        if event.src_path[-5:] == '.less':
-            # Get the path of the changed file and keep checking parent directories until the LESS directory,
-            # if any of those parent directories are in the config, recompile
-            src_path = event.src_path.split('\\')
-            src_path.reverse()
-            for directory in src_path[1:]:
-                if directory in files_to_compile:
-                    for key, value in files_to_compile.iteritems():
-                        files = value.split(',')
-                        for f in files:
-                            command_arg = '{0}\\less\\{1}\\{2}.less > {0}\\css\\{1}\\{2}.css'.format(path, key,
-                                                                                                     f.strip())
-                            call('lessc ' + command_arg, shell=True)
-                elif directory == 'less':
-                    break
+        parent_dir = (event.src_path.split('\\'))[-2]
+
+        if event.src_path[-5:] == '.less' and parent_dir in files_to_compile:
+            for key, value in files_to_compile.iteritems():
+                files = value.split(',')
+                for f in files:
+                    command_arg = '{0}\\less\\{1}\\{2}.less > {0}\\css\\{1}\\{2}.css'.format(path, key,
+                                                                                             f.strip())
+                    call('lessc ' + command_arg, shell=True)
 
 if __name__ == "__main__":
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'HTResearch\\WebClient\\WebClient\\static\\less')
