@@ -87,7 +87,7 @@ require(['shared/modal',
         ];
 
         // Update search when changing text input
-        $('#search-box').bind("keyup change", _.debounce(function() {
+        $('#search-box').bind("keyup change blur", _.debounce(function() {
             var searchText = $('#search-box').val().trim();
 
             SearchQuery.search(searchText, searchItems, map);
