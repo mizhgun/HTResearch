@@ -261,7 +261,7 @@ def org_partner_map(request):
     if request.method != 'GET':
         return HttpResponseBadRequest
 
-    pmap = None#cache.get('partner_map')
+    pmap = cache.get('partner_map')
     last_update = cache.get('partner_map_last_update')
     if not pmap or not last_update or (datetime.utcnow() - last_update > REFRESH_PARTNER_MAP):
         new_pmap = {
