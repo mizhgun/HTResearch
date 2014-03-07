@@ -16,6 +16,8 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
 
     var defs;
 
+    var nodeCount;
+
     var r;
 
     var color = {
@@ -51,6 +53,8 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
                 .nodes(graph.nodes)
                 .links(graph.links)
                 .size([width, height]);
+
+            nodeCount = graph.nodes.length;
 
             // Create links for nodes
             var link = svg.selectAll('.link')
@@ -152,13 +156,12 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
 
             });
 
-            force.start();
-            for (var i = 0; i < Math.pow(graph.nodes.length, 2); i ++) {
-                force.tick();
-            }
-            force.stop();
-
+            startStopForce();
         });
+    }
+
+    function startStopForce() {
+        force.start();
     }
 
     function createLegend(g, items) {
@@ -272,12 +275,13 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
         if(evt.originalEvent.wheelDelta > 0) {
             r = ++r;
             $('.node circle').attr('r', r);
-            force.charge(curCharge - 500).start();
+            force.charge(curCharge - 500);
+            startStopForce();
         } else {
-            if (r > 1 && curCharge + 500 < 0) {
-                r = --r;
+            if (r > 1 && curCharge + 500 < 0) { r = --r;
                 $('.node circle').attr('r', r);
-                force.charge(curCharge + 500).start();
+                force.charge(curCharge + 500);
+                startStopForce();
             }
         }
     }
