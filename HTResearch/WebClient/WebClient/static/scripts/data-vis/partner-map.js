@@ -1,6 +1,10 @@
-define(['jquery', 'd3', 'bootstrap'], function($, d3) {
+define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
     var width = window.innerWidth,
         height = window.innerHeight;
+
+    var fisheye = d3.fisheye.circular()
+        .radius(200)
+        .distortion(2);
 
     var force = d3.layout.force()
         .charge(-5000)
@@ -11,6 +15,8 @@ define(['jquery', 'd3', 'bootstrap'], function($, d3) {
     var svg;
 
     var defs;
+
+    var r;
 
     var color = {
         'PROTECTION': '#FF6B64',
@@ -44,8 +50,7 @@ define(['jquery', 'd3', 'bootstrap'], function($, d3) {
             force
                 .nodes(graph.nodes)
                 .links(graph.links)
-                .size([width, height])
-                .start();
+                .size([width, height]);
 
             // Create links for nodes
             var link = svg.selectAll('.link')
@@ -85,6 +90,7 @@ define(['jquery', 'd3', 'bootstrap'], function($, d3) {
                     }
                 );
 
+            r = 15;
 
             // Add circles for every node
             node.append('svg:circle').attr('r', 15)
@@ -118,6 +124,22 @@ define(['jquery', 'd3', 'bootstrap'], function($, d3) {
                 zoomInOut(e);
             });
 
+            svg.on("mousemove", function() {
+              fisheye.focus(d3.mouse(this));
+
+              node.each(function(d) { d.fisheye = fisheye(d); })
+                  .attr("cx", function(d) { return d.fisheye.x; })
+                  .attr("cy", function(d) { return d.fisheye.y; })
+                  .attr('transform', function(d) {return 'translate(' + d.fisheye.x + ',' + d.fisheye.y +')'; })
+                  .selectAll('circle')
+                  .attr("r", function(d) { return d.fisheye.z * r; });
+
+              link.attr("x1", function(d) { return d.source.fisheye.x; })
+                  .attr("y1", function(d) { return d.source.fisheye.y; })
+                  .attr("x2", function(d) { return d.target.fisheye.x; })
+                  .attr("y2", function(d) { return d.target.fisheye.y; });
+            });
+
             force.on('tick', function() {
                 link.attr('x1', function(d) { return d.source.x; })
                     .attr('y1', function(d) { return d.source.y; })
@@ -129,6 +151,13 @@ define(['jquery', 'd3', 'bootstrap'], function($, d3) {
                     .attr('transform', function(d) {return 'translate(' + d.x + ',' + d.y +')'; });
 
             });
+
+            force.start();
+            for (var i = 0; i < Math.pow(graph.nodes.length, 2); i ++) {
+                force.tick();
+            }
+            force.stop();
+
         });
     }
 
@@ -160,7 +189,7 @@ define(['jquery', 'd3', 'bootstrap'], function($, d3) {
                 .attr('cy',function(d,i) { return i-0.25+'em'})
                 .attr('cx',0)
                 .attr('r','0.4em')
-                .style('fill',function(d) { console.log(d.value.color);return d.value.color});
+                .style('fill',function(d) { return d.value.color});
 
             // Reposition and resize the box
             var lbbox = li[0][0].getBBox()
@@ -239,14 +268,15 @@ define(['jquery', 'd3', 'bootstrap'], function($, d3) {
     }
 
     function zoomInOut(evt) {
-        var curRad = parseInt($('.node circle').attr('r'), 10);
         var curCharge = force.charge();
         if(evt.originalEvent.wheelDelta > 0) {
-            $('.node circle').attr('r', ++curRad);
+            r = ++r;
+            $('.node circle').attr('r', r);
             force.charge(curCharge - 500).start();
         } else {
-            if (curRad > 1 && curCharge + 500 < 0) {
-                $('.node circle').attr('r', --curRad);
+            if (r > 1 && curCharge + 500 < 0) {
+                r = --r;
+                $('.node circle').attr('r', r);
                 force.charge(curCharge + 500).start();
             }
         }
