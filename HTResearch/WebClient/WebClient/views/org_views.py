@@ -42,7 +42,7 @@ def search_organizations(request):
         org_dao = ctx.get_object('OrganizationDAO')
         try:
             organizations = org_dao.findmany(search=search_text, num_elements=10,
-                                             sort_fields=['valid', 'page_rank', 'name'])
+                                             sort_fields=['valid', 'combined_weight', 'name'])
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
