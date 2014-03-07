@@ -70,7 +70,7 @@
   color: #8aa;
 }
 .news-panel .btn-regional.active i {
-  color: #f80;
+  color: #ff9e00;
 }
 .news-panel .news-header {
   white-space: nowrap;
@@ -355,6 +355,9 @@ body {
   display: table-cell;
   padding-left: 0;
   padding-right: 0;
+}
+input:focus {
+  opacity: 50.0;
 }
 /*Navbar override*/
 .navbar {
