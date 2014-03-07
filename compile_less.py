@@ -7,13 +7,15 @@ from watchdog.events import FileSystemEventHandler
 
 
 class CompileLessHandler(FileSystemEventHandler):
-    # called on directory or file change
+    # Called on directory or file change
     def on_modified(self, event):
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'HTResearch\\WebClient\\WebClient\\static')
-        if event.src_path[-5:] == '.less':
-            # Get all the section values in a dictionary
-            files_to_compile = get_section_values("LESS")
 
+        # Get all the section values in a dictionary
+        files_to_compile = get_section_values("LESS")
+        parent_dir = (event.src_path.split('\\'))[-2]
+
+        if event.src_path[-5:] == '.less' and parent_dir in files_to_compile:
             for key, value in files_to_compile.iteritems():
                 files = value.split(',')
                 for f in files:
