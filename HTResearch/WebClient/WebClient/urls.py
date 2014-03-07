@@ -24,6 +24,7 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views.shared_views',
                        url(r'^coming-soon/$', 'unimplemented', name='unimplemented'),
                        url(r'^welcome/$', 'welcome', name='welcome'),
                        url(r'^get-started/$', 'get_started', name='get-started'),
+                       url(r'^dashboard/$', 'dashboard', name='dashboard'),
                        )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
