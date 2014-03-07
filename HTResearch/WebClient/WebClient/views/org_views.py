@@ -265,8 +265,8 @@ def org_partner_map(request):
     last_update = cache.get('partner_map_last_update')
     if not pmap or not last_update or (datetime.utcnow() - last_update > REFRESH_PARTNER_MAP):
         new_pmap = {
-            "nodes":[],
-            "links":[],
+            "nodes": [],
+            "links": [],
             "threeps": {
                 "PREVENTION": OrgTypesEnum.PREVENTION,
                 "PROTECTION": OrgTypesEnum.PROTECTION,

@@ -8,7 +8,7 @@ require.config({
         shared: '../shared',
         user: '../user',
         fuelux: 'http://www.fuelcdn.com/fuelux/2.6.0/',
-        d3: "d3"
+        d3: 'd3'
     },
     shim: {
         underscore: {

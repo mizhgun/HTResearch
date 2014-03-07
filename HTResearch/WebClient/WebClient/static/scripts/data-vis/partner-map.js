@@ -12,13 +12,10 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
         .friction(0.3)
         .linkDistance(30);
 
-    var svg;
-
-    var defs;
-
-    var nodeCount;
-
-    var r;
+    var svg,
+        defs,
+        nodeCount,
+        r;
 
     var color = {
         'PROTECTION': '#FF6B64',
@@ -32,10 +29,14 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
 
 
     function initialize(selector, options) {
-        if (options && options.width)
-            width = options.width;
-        if (options && options.height)
-            height = options.height;
+        if (options) {
+            if (options.width){
+                width = options.width;
+            }
+            if (options.height) {
+                height = options.height;
+            }
+        }
 
         svg = d3.select(selector).append('svg')
             .attr('width', width)
@@ -183,7 +184,7 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
                 .call(function(d) { d.exit().remove()})
                 .attr('y',function(d,i) { return i+'em'})
                 .attr('x','1em')
-                .text(function(d) { ;return d.key});
+                .text(function(d) { return d.key});
 
             li.selectAll('circle')
                 .data(items,function(d) { return d.key})
@@ -195,7 +196,7 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
                 .style('fill',function(d) { return d.value.color});
 
             // Reposition and resize the box
-            var lbbox = li[0][0].getBBox()
+            var lbbox = li[0][0].getBBox();
             lb.attr('x',(lbbox.x-legendPadding))
                 .attr('y',(lbbox.y-legendPadding))
                 .attr('height',(lbbox.height+2*legendPadding))
