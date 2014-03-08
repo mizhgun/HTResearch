@@ -34,17 +34,20 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^get-org-rank-rows/$', 'get_org_rank_rows', name='get-org-rank-rows'),
                         url(r'^get-org-keywords/$', 'get_org_keywords', name='get-org-keywords'),
                         url(r'^request-organization/$', 'request_organization', name='request-organization'),
-                        url(r'^edit-organization/(\w+)', 'edit_organization', name='edit-organization')
+                        url(r'^edit-organization/(\w+)', 'edit_organization', name='edit-organization'),
+                        url(r'^org-count/$', 'org_count', name='org-count'),
                         )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
                         url(r'^search-contacts/$', 'search_contacts', name='search-contacts'),
                         url(r'^contact/(\w+)', 'contact_profile', name='con-prof'),
                         url(r'^edit-contact/(\w+)', 'edit_contact', name='edit-contact'),
+                        url(r'^contact-count/$', 'contact_count', name='contact-count'),
                         )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.publication_views',
                         url(r'^search-publications/$', 'search_publications', name='search-publications'),
+                        url(r'^pub-count/$', 'pub_count', name='pub-count'),
                         )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
