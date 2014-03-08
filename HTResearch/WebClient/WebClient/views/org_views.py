@@ -29,6 +29,8 @@ ctx = ApplicationContext(DAOContext())
 def org_count(request):
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
+    logger.info('Publication count request made by user {0}'.format(user_id))
+
     org_dao = ctx.get_object('OrganizationDAO')
 
     count = ''
