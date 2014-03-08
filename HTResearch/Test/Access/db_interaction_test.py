@@ -57,10 +57,51 @@ class DatabaseInteractionTest(unittest.TestCase):
                                          types=[OrgTypesEnum.RELIGIOUS,
                                                 OrgTypesEnum.GOVERNMENT,
                                                 OrgTypesEnum.PROSECUTION,
-                                                ]
+                                         ],
+                                         page_rank_info=PageRankInfoDTO(
+                                             total_with_self=10,
+                                             total=10,
+                                             references=[
+                                                 PageRankVectorDTO(
+                                                     org_domain='yoyodyne.com',
+                                                     count=2,
+                                                     pages=[
+                                                         UrlCountPairDTO(
+                                                             url='http://www.yoyodyne.com/',
+                                                             count=2
+                                                         )
+                                                     ]
+                                                 ),
+                                                 PageRankVectorDTO(
+                                                     org_domain='trystero.org',
+                                                     count=4,
+                                                     pages=[
+                                                         UrlCountPairDTO(
+                                                             url='http://www.yoyodyne.com/',
+                                                             count=3
+                                                         ),
+                                                         UrlCountPairDTO(
+                                                             url='http://www.yoyodyne.com/contacts.php',
+                                                             count=1
+                                                         )
+                                                     ]
+                                                 ),
+                                                 PageRankVectorDTO(
+                                                     org_domain='thurnandtaxis.info',
+                                                     count=4,
+                                                     pages=[
+                                                         UrlCountPairDTO(
+                                                             url='http://www.yoyodyne.com/',
+                                                             count=4
+                                                         )
+                                                     ]
+                                                 )
+                                             ]
+                                         )
         )
         self.publication = Publication(title="The Book of Yee",
-                                       authors="Sam Adams, {0} {1}".format(self.contact.first_name, self.contact.last_name),
+                                       authors="Sam Adams, {0} {1}".format(self.contact.first_name,
+                                                                           self.contact.last_name),
                                        publisher="{0} {1}".format(self.contact.first_name, self.contact.last_name))
         self.urlmetadata = URLMetadata(url="http://google.com")
         self.user = User(first_name="Bee", last_name="Yee",
@@ -119,6 +160,21 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'ContactDAO tests passed'
 
+    def test_contact_dao_field_weights(self):
+        print "Checking ContactDAO._field_weights for consistency with ContactDTO"
+        contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)
+        contact_dao = self.ctx.get_object("ContactDAO")
+        for key in contact_dto:
+            if key == "id":
+                continue
+            self.assertIn(key, contact_dao._field_weights.keys(),
+                          "ERROR: a field was added to DTO but not to _field_weights,"
+                          "a member of ContactDAO")
+        total = 0.0
+        for key, value in contact_dao._field_weights.iteritems():
+            total += value
+        self.assertEqual(1.0, total, "ERROR: ContactDAO._field_weights do not add to 1.0")
+
     def test_organization_dao(self):
         org_dto = DTOConverter.to_dto(OrganizationDTO, self.organization)
         org_dao = self.ctx.get_object("OrganizationDAO")
@@ -136,7 +192,8 @@ class DatabaseInteractionTest(unittest.TestCase):
                                   twitter=org_dto.twitter,
                                   address=org_dto.address,
                                   keywords=org_dto.keywords,
-                                  types=org_dto.types[0])
+                                  types=org_dto.types[0],
+        )
         self.assertEqual(assert_org.name, org_dto.name)
         self.assertEqual(assert_org.organization_url, org_dto.organization_url)
         self.assertEqual(assert_org.contacts, org_dto.contacts)
@@ -145,6 +202,7 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_org.phone_numbers, org_dto.phone_numbers)
         self.assertEqual(assert_org.facebook, org_dto.facebook)
         self.assertEqual(assert_org.twitter, org_dto.twitter)
+        self._compare_page_rank_info(assert_org, org_dto)
 
         print 'Testing organization text search ...'
 
@@ -185,6 +243,21 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertTrue(assert_org is None)
 
         print 'OrganizationDAO tests passed'
+
+    def test_organization_dao_field_weights(self):
+        print "Checking OrganizationDAO._field_weights for consistency with OrganizationDTO"
+        org_dto = DTOConverter.to_dto(OrganizationDTO, self.organization)
+        org_dao = self.ctx.get_object("OrganizationDAO")
+        for key in org_dto:
+            if key == "id":
+                continue
+            self.assertIn(key, org_dao._field_weights.keys(),
+                          "ERROR: a field was added to DTO but not to _field_weights,"
+                          "a member of OrganizationDAO")
+        total = 0.0
+        for key, value in org_dao._field_weights.iteritems():
+            total += value
+        self.assertEqual(1.0, total, "ERROR: OrganizationDAO._field_weights do not add to 1.0")
 
     def test_publication_dao(self):
         pub_dto = DTOConverter.to_dto(PublicationDTO, self.publication)
@@ -287,6 +360,21 @@ class DatabaseInteractionTest(unittest.TestCase):
 
         print 'UserDAO tests passed'
 
+    def test_user_dao_field_weights(self):
+        print "Checking UserDAO._field_weights for consistency with UserDTO"
+        user_dto = DTOConverter.to_dto(UserDTO, self.user)
+        user_dao = self.ctx.get_object("UserDAO")
+        for key in user_dto:
+            if key == "id":
+                continue
+            self.assertIn(key, user_dao._field_weights.keys(),
+                          "ERROR: a field was added to DTO but not to _field_weights,"
+                          "a member of UserDAO")
+        total = 0.0
+        for key, value in user_dao._field_weights.iteritems():
+            total += value
+        self.assertEqual(1.0, total, "ERROR: UserDAO._field_weights do not add to 1.0")
+
     def test_merge_records(self):
         contact_dto = DTOConverter.to_dto(ContactDTO, self.contact)
         contact_dao = self.ctx.get_object("ContactDAO")
@@ -305,6 +393,25 @@ class DatabaseInteractionTest(unittest.TestCase):
         self.assertEqual(assert_contact.phones, new_contact_dto.phones)
 
         print 'Merge records tests passed'
+
+
+    def _compare_page_rank_info(self, org1, org2):
+        page_rank_info1 = org1.page_rank_info
+        page_rank_info2 = org2.page_rank_info
+        self.assertEqual(page_rank_info1.total_with_self, page_rank_info2.total_with_self)
+        self.assertEqual(page_rank_info1.total, page_rank_info2.total)
+        self.assertEqual(len(page_rank_info2.references), len(page_rank_info1.references))
+        for i in range(len(page_rank_info1.references)):
+            ref1 = page_rank_info1.references[i]
+            ref2 = page_rank_info2.references[i]
+            self.assertEqual(ref1.org_domain, ref2.org_domain)
+            self.assertEqual(ref1.count, ref2.count)
+            self.assertEqual(len(ref1.pages), len(ref2.pages))
+            for j in range(len(ref1.pages)):
+                pair1 = ref1.pages[j]
+                pair2 = ref2.pages[j]
+                self.assertEqual(pair1.url, pair2.url)
+                self.assertEqual(pair1.count, pair2.count)
 
 
 if __name__ == '__main__':

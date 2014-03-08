@@ -61,6 +61,43 @@ class SignupForm(forms.Form):
         return confirm_password
 
 
+class ManageForm(forms.Form):
+    user_id = forms.CharField(widget=forms.HiddenInput())
+    first_name = forms.CharField(max_length=25)
+    last_name = forms.CharField(max_length=25)
+    email = forms.EmailField(max_length=40)
+    account_type = forms.ChoiceField(
+        choices=((AccountType.COLLABORATOR, 'Collaborator'), (AccountType.CONTRIBUTOR, 'Contributor')))
+    org_type = forms.ChoiceField(choices=ORG_TYPE_CHOICES, required=False)
+    organization = forms.CharField(max_length=60, required=False)
+    background = forms.CharField(widget=forms.Textarea, max_length=120)
+    password = forms.CharField(widget=forms.PasswordInput, min_length=8, max_length=40, required=False)
+    confirm_password = forms.CharField(widget=forms.PasswordInput, min_length=8, max_length=40, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ManageForm, self).__init__(*args, **kwargs)
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        user_id = self.cleaned_data['user_id']
+        ctx = ApplicationContext(DAOContext())
+        dao = ctx.get_object('UserDAO')
+
+        user = dao.find(email=email, id__ne=user_id)
+        if user:
+            raise ValidationError('An account with that email already exists.')
+
+        return email
+
+    def clean_confirm_password(self):
+        password = self.cleaned_data['password']
+        confirm_password = self.cleaned_data['confirm_password']
+
+        if password != confirm_password:
+            raise ValidationError('Please ensure your passwords match.')
+        return confirm_password
+
+
 class RequestOrgForm(forms.Form):
     url = forms.URLField()
 
@@ -68,6 +105,11 @@ class RequestOrgForm(forms.Form):
         url = self.cleaned_data['url']
         ctx = ApplicationContext(DAOContext())
         dao = ctx.get_object('OrganizationDAO')
+
+        try:
+            url = UrlUtility().get_domain(url)
+        except:
+            raise ValidationError("Oops! We couldn't find information on that domain.")
 
         if dao.find(organization_url=url):
             raise ValidationError("Oops! Looks like we already have information on that organization.")

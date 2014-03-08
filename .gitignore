@@ -18,6 +18,9 @@ obj/
 # Ignore the logging directory
 logs/
 
+# Ignore cached CSS
+CACHE/
+
 # =========================
 # Windows detritus
 # =========================

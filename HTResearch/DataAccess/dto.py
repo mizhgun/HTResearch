@@ -1,5 +1,6 @@
 import mongoengine as mongo
 
+from HTResearch.DataAccess.embedded_dto import *
 from HTResearch.DataModel.enums import AccountType
 from HTResearch.DataModel.globals import ORG_TYPE_CHOICES
 
@@ -17,6 +18,7 @@ class ContactDTO(mongo.Document):
     valid = mongo.BooleanField(db_field='v', default=True)
     last_updated = mongo.DateTimeField(db_field='lu')
     updated_by = mongo.ObjectIdField(db_field='ub')
+    content_weight = mongo.FloatField(min_value=0.0, db_field='c')
 
 
 class OrganizationDTO(mongo.Document):
@@ -38,6 +40,11 @@ class OrganizationDTO(mongo.Document):
     valid = mongo.BooleanField(db_field='v', default=True)
     last_updated = mongo.DateTimeField(db_field='lu')
     updated_by = mongo.ObjectIdField(db_field='ub')
+    page_rank_info = mongo.EmbeddedDocumentField(document_type=PageRankInfoDTO, db_field='r')
+    page_rank = mongo.LongField(min_value=0, db_field='pr')
+    page_rank_weight = mongo.FloatField(min_value=0.0, max_value=1.0, db_field='w')
+    content_weight = mongo.FloatField(min_value=0.0, db_field='c')
+    combined_weight = mongo.FloatField(min_value=0.0, db_field='cw')
 
 
 class PublicationDTO(mongo.Document):
@@ -48,7 +55,7 @@ class PublicationDTO(mongo.Document):
     publisher = mongo.StringField(db_field='p')
     publication_date = mongo.DateTimeField(db_field='d')
     types = mongo.ListField(mongo.IntField(), db_field='ts')
-    content_url = mongo.URLField(db_field='u')
+    content_url = mongo.StringField(db_field='u')
     valid = mongo.BooleanField(db_field='v', default=True)
     last_updated = mongo.DateTimeField(db_field='lu')
     updated_by = mongo.ObjectIdField(db_field='ub')
@@ -79,3 +86,4 @@ class UserDTO(mongo.Document):
     org_type = mongo.IntField(db_field='ot', choices=ORG_TYPE_CHOICES)
     organization = mongo.ReferenceField(OrganizationDTO, db_field='o')
     last_updated = mongo.DateTimeField(db_field='lu')
+    content_weight = mongo.FloatField(min_value=0.0, db_field='c')
