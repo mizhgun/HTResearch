@@ -1,4 +1,4 @@
-define(['jquery', 'd3', 'd3.layout.cloud'], function($) {
+define(['jquery', 'd3_v2.7.4', 'd3.layout.cloud'], function($) {
     function initialize() {
         var data = {
             'org_id': document.URL.split("/")[4]
