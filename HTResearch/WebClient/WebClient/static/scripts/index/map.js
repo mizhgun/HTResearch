@@ -1,3 +1,8 @@
+/**
+ * map.js
+ *
+ * Provides an abstraction for a Google Maps instance.
+ */
 define(['jquery',
         'jquery.tmpl',
         'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'], function($) {

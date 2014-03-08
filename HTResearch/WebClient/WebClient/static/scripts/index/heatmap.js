@@ -1,6 +1,10 @@
+/**
+ * heatmap.js
+ *
+ * Provides a means of initializing the heatmap of anti-trafficking organizations on a Map module.
+ */
 define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'], function($) {
     'use strict';
-
 
     var heatMap,
         map,
@@ -70,6 +74,10 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
         }
     }
 
+    /**
+     * Initializes the heatmap.
+     * @param gMap The Google Maps instance to use.
+     */
     function initialize(gMap) {
         map = gMap;
 
