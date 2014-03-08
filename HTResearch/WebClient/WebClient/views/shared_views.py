@@ -57,9 +57,6 @@ def heatmap_coordinates(request):
     return HttpResponse(coords, content_type="application/json")
 
 
-def
-
-
 def welcome(request):
     return render(request, 'shared/welcome.html')
 
