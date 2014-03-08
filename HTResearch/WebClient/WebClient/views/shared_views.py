@@ -23,6 +23,10 @@ def index(request):
     return render(request, 'index/index.html', args)
 
 
+def dashboard(request):
+    return render(request, 'dashboard/dashboard.html')
+
+
 # Encodes a DTO's non-string fields to JSON
 def encode_dto(dto):
     dto_type = type(dto)
