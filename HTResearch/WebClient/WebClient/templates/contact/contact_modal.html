@@ -1,0 +1,63 @@
+<script id="contact-modal-template" type="text/x-jquery-html">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-header">
+            {% templatetag openvariable %}if first_name != "None"{% templatetag closevariable %}
+            ${first_name}
+            {% templatetag openvariable %}/if{% templatetag closevariable %}
+            {% templatetag openvariable %}if last_name != "None"{% templatetag closevariable %}
+            ${last_name}
+            {% templatetag openvariable %}/if{% templatetag closevariable %}
+            <button class="btn btn-default close" data-dismiss="modal">&#x2716;</button>
+        </h4>
+      </div>
+      <div class="modal-body" id="modal-body">
+          <table class="table table-condensed">
+              {% templatetag openvariable %}if phones{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <th>Tel:</th>
+                  <td>
+                    {% templatetag openvariable %}each phones{% templatetag closevariable %}
+                    ${$value}<br />
+                    {% templatetag openvariable %}/each{% templatetag closevariable %}
+                  </td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+              {% templatetag openvariable %}if email{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <th>Email:</th>
+                  <td>${email}</td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+              {% templatetag openvariable %}if position != "None"{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <th>Position:</th>
+                  <td>${position}</td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+              {% templatetag openvariable %}if organization{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <th>Organizations affiliated with:</th>
+                  <td><a href="/organization/${organization.id}">${organization.name}</a></td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+              {% templatetag openvariable %}if publications{% templatetag closevariable %}
+              <tr class="modal-row">
+                  <th>Publications:</th>
+                  <td>
+                  {% templatetag openvariable %}each publications{% templatetag closevariable %}
+                  ${$value}
+                  {% templatetag openvariable %}/each{% templatetag closevariable %}
+                  </td>
+              </tr>
+              {% templatetag openvariable %}/if{% templatetag closevariable %}
+          </table>
+          <div class="modal-footer">
+              <a href="/contact/${id}" class="btn btn-primary pull-right">More Info</a>
+              <a id="edit-contact-btn" href="/edit-contact/${id}" class="btn btn-primary pull-right">Edit</a>
+          </div>
+      </div>
+    </div>
+  </div>
+</script>

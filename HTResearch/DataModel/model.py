@@ -7,7 +7,7 @@ class Contact(object):
     def __init__(self, first_name=None, last_name=None,
                  phones=[], email=None, organization=None,
                  publications=[], position=None, valid=True,
-                 updated_by=None):
+                 updated_by=None, content_weight=None):
         self.first_name = first_name
         self.last_name = last_name
         self.phones = phones
@@ -18,6 +18,7 @@ class Contact(object):
         self.valid = valid
         self.last_updated = datetime.utcnow()
         self.updated_by = updated_by
+        self.content_weight = content_weight
 
 
 class Organization(object):
@@ -28,7 +29,9 @@ class Organization(object):
                  emails=[], contacts=[],
                  organization_url=None,
                  partners=[], facebook=None, twitter=None,
-                 keywords=None, valid=True, updated_by=None):
+                 keywords=None, valid=True, updated_by=None,
+                 page_rank_info=None, page_rank=None, page_rank_weight=None,
+                 content_weight=None, combined_weight=None):
         self.name = name
         self.address = address
         self.types = types
@@ -44,6 +47,31 @@ class Organization(object):
         self.valid = valid
         self.last_updated = datetime.utcnow()
         self.updated_by = updated_by
+        self.page_rank_info = page_rank_info
+        self.page_rank = page_rank
+        self.page_rank_weight = page_rank_weight
+        self.content_weight = content_weight
+        self.combined_weight = combined_weight
+
+
+class PageRankInfo(object):
+    """A Model class for Information related to PageRank """
+
+    def __init__(self, total_with_self=0, total=0,
+                 references=[]):
+        self.total_with_self = total_with_self
+        self.total = total
+        self.references = references
+
+
+class PageRankVector(object):
+    """A Model class for counting referenced organizations"""
+
+    def __init__(self, org_domain=None, count=0,
+                 pages=[]):
+        self.org_domain = org_domain
+        self.count = count
+        self.pages = pages
 
 
 class Publication(object):
@@ -62,6 +90,14 @@ class Publication(object):
         self.valid = valid
         self.last_updated = datetime.utcnow()
         self.updated_by = updated_by
+
+
+class UrlCountPair(object):
+    """A Model class for pairing Source URLs and the Number of References to some Page"""
+
+    def __init__(self, url=None, count=0):
+        self.url = url
+        self.count = count
 
 
 class URLMetadata(object):
@@ -85,7 +121,7 @@ class User(object):
     def __init__(self, first_name=None, last_name=None,
                  email=None, password=None, background=None,
                  account_type=None, org_type=None,
-                 organization=None):
+                 organization=None, content_weight=None):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -95,3 +131,4 @@ class User(object):
         self.org_type = org_type
         self.organization = organization
         self.last_updated = datetime.utcnow()
+        self.content_weight = content_weight

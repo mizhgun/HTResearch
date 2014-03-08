@@ -7,6 +7,7 @@ from springpython.config import Object
 from HTResearch.Test.Mocks.utility_scrapers import *
 from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
+from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import PageRankScraper
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
@@ -177,49 +178,49 @@ class ScraperTests(unittest.TestCase):
                     names.append(ret)
 
         # Hardcoded results based on the sites that were crawled
-        assert_list = [# from first site, US names
-                       {'name': "Gloria Steinem"},
-                       {'name': "Jennifer Buffett"},
-                       {'name': "Peter Buffett"},
-                       {'name': "Vishakha Desai"},
-                       {'name': "Leslie Bluhm"},
-                       {'name': "Judy Gold"},
-                       {'name': "Ashley Judd"},
-                       {'name': "Jounghoon Lee"},
-                       {'name': "Pamela Shifman"},
-                       {'name': "Lekha Poddar"},
-                       {'name': "Namita Saraf"},
-                       {'name': "Nayantara Palchoudhuri"},
-                       {'name': "Pallavi Shardul Shroff"},
-                       {'name': "Sujata Prasad"},
-                       {'name': "Suresh Neotia"},
-                       {'name': "Lata Bajoria"},
-                       {'name': "Raju Bharat"},
-                       {'name': "Manish Agarwal"},
-                       {'name': "Lela Goren"},
-                       {'name': "Ellyson Perkins"},
-                       {'name': "Mona Sinha"},
-                       # from second site, Indian names
-                       {'name': 'Rishi Prakash'},
-                       {'name': 'Vinod Seth'},
-                       {'name': 'S K Gandhi'},
-                       {'name': 'M S Gill'},
-                       {'name': 'Chandra Kant Tyagi'},
-                       {'name': 'Pooran Chandra Joshi'},
-                       {'name': 'K P Singh'},
-                       {'name': 'KHC Rao'},
-                       {'name': 'Ajay Kumar'},
-                       {'name': 'S. Narayan'},
-                       {'name': 'S. Jalaja'},
-                       {'name': 'R. Krishnamurthy'},
-                       {'name': 'Mukesh Kumar'},
-                       {'name': 'Jaimini Kumar Srivastava'},
-                       {'name': 'Utpal Narayan Sarkar'},
-                       {'name': 'Shoba George'},
-                       {'name': 'Om Prakash'},
-                       {'name': 'S K Shukla'},
-                       {'name': 'Sudhir Chopra'},
-                       {'name': 'C P Gupta'}]
+        assert_list = [  # from first site, US names
+                         {'name': "Gloria Steinem"},
+                         {'name': "Jennifer Buffett"},
+                         {'name': "Peter Buffett"},
+                         {'name': "Vishakha Desai"},
+                         {'name': "Leslie Bluhm"},
+                         {'name': "Judy Gold"},
+                         {'name': "Ashley Judd"},
+                         {'name': "Jounghoon Lee"},
+                         {'name': "Pamela Shifman"},
+                         {'name': "Lekha Poddar"},
+                         {'name': "Namita Saraf"},
+                         {'name': "Nayantara Palchoudhuri"},
+                         {'name': "Pallavi Shardul Shroff"},
+                         {'name': "Sujata Prasad"},
+                         {'name': "Suresh Neotia"},
+                         {'name': "Lata Bajoria"},
+                         {'name': "Raju Bharat"},
+                         {'name': "Manish Agarwal"},
+                         {'name': "Lela Goren"},
+                         {'name': "Ellyson Perkins"},
+                         {'name': "Mona Sinha"},
+                         # from second site, Indian names
+                         {'name': 'Rishi Prakash'},
+                         {'name': 'Vinod Seth'},
+                         {'name': 'S K Gandhi'},
+                         {'name': 'M S Gill'},
+                         {'name': 'Chandra Kant Tyagi'},
+                         {'name': 'Pooran Chandra Joshi'},
+                         {'name': 'K P Singh'},
+                         {'name': 'KHC Rao'},
+                         {'name': 'Ajay Kumar'},
+                         {'name': 'S. Narayan'},
+                         {'name': 'S. Jalaja'},
+                         {'name': 'R. Krishnamurthy'},
+                         {'name': 'Mukesh Kumar'},
+                         {'name': 'Jaimini Kumar Srivastava'},
+                         {'name': 'Utpal Narayan Sarkar'},
+                         {'name': 'Shoba George'},
+                         {'name': 'Om Prakash'},
+                         {'name': 'S K Shukla'},
+                         {'name': 'Sudhir Chopra'},
+                         {'name': 'C P Gupta'}]
 
         for test in assert_list:
             self.assertIn(test, names, 'Name {0} not found'.format(str(test)))
@@ -463,7 +464,8 @@ class ScraperTests(unittest.TestCase):
                     types = types + ret
                 else:
                     types.append(ret)
-        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PREVENTION, OrgTypesEnum.PROTECTION]
+        assert_list = [OrgTypesEnum.RELIGIOUS, OrgTypesEnum.GOVERNMENT, OrgTypesEnum.PREVENTION,
+                       OrgTypesEnum.PROTECTION]
         for test in assert_list:
             self.assertIn(test, types, 'Type \'' + OrgTypesEnum.reverse_mapping[test] + '\' not found')
 
@@ -507,6 +509,204 @@ class ScraperTests(unittest.TestCase):
         for test in assert_list:
             self.assertNotIn(test, partner_urls, 'Invalid URL (not a partner org): %s' % test)
 
+    def test_page_rank_info_scraper(self):
+        test_files = [
+            "httpwwwstoptraffickingnet",
+            "httpnewsunledunewsroomsunltoday",
+            "httpespngocomespnradiodallasplay",
+        ]
+
+        pri_scraper = PageRankScraper()
+        infos = []
+
+        for input_file in test_files:
+            response = file_to_response(input_file)
+            if response is not None:
+                ret = pri_scraper.parse(response)
+                if isinstance(ret, type([])):
+                    infos = infos + ret
+                else:
+                    infos.append(ret)
+
+        assert_list = [
+            {
+                'total': 0,
+                'total_with_self': 13,
+                'references': [
+                    {
+                        'count': 13,
+                        'org_domain': 'stoptrafficking.net',
+                        'pages': [
+                            {
+                                'count': 13,
+                                'url': 'http://www.stoptrafficking.net/'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                'total': 16,
+                'total_with_self': 89,
+                'references': [
+                    {
+                        'count': 73,
+                        'org_domain': 'unl.edu',
+                        'pages': [
+                            {
+                                'count': 73,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'weather.gov',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'nufoundation.org',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 2,
+                        'org_domain': 'nebraska.edu',
+                        'pages': [
+                            {
+                                'count': 2,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'nutechventures.org',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'meltycampus.fr',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'kbia.org',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'cbslocal.com',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'insidehighered.com',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 2,
+                        'org_domain': 'twitter.com',
+                        'pages': [
+                            {
+                                'count': 2,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'huskers.com',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'huskeralum.org',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'facebook.com',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'cic.net',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                    {
+                        'count': 1,
+                        'org_domain': 'bigten.org',
+                        'pages': [
+                            {
+                                'count': 1,
+                                'url': 'http://news.unl.edu/newsrooms/unltoday/'
+                            }
+                        ]
+                    },
+                ]
+            },
+            None
+        ]
+
+        for test in assert_list:
+            self.assertIn(test, infos, "URL " + str(test) + " was not found")
+
     def test_contact_scraper(self):
         test_files = [
             "httpwwwprajwalaindiacomcontactushtml",
@@ -525,37 +725,37 @@ class ScraperTests(unittest.TestCase):
                     contacts.append(ret)
 
         assert_list = [{
-                         'email': 'lalitha.gollamudi@gmail.com',
-                         'first_name': 'Lalitha',
-                         'last_name': 'Gollamudi',
-                         'organization': {'name': 'PRAJWALA'},
-                         'position': None,
-                         'phones': ['914024410813'],
-                         },
+                           'email': 'lalitha.gollamudi@gmail.com',
+                           'first_name': 'Lalitha',
+                           'last_name': 'Gollamudi',
+                           'organization': {'name': 'PRAJWALA'},
+                           'position': None,
+                           'phones': ['914024410813'],
+                       },
                        {
-                         'email': 'lavanya.ravulapalli@gmail.com',
-                         'first_name': 'Lavanya',
-                         'last_name': 'Ravulapalli',
-                         'organization': {'name': 'PRAJWALA'},
-                         'position': None,
-                         'phones': []
-                         },
+                           'email': 'lavanya.ravulapalli@gmail.com',
+                           'first_name': 'Lavanya',
+                           'last_name': 'Ravulapalli',
+                           'organization': {'name': 'PRAJWALA'},
+                           'position': None,
+                           'phones': []
+                       },
                        {
-                         'email': 'kmulhauser@consultingwomen.com',
-                         'first_name': 'Karen',
-                         'last_name': 'Mulhuaser',
-                         'organization': {'name': 'PRAJWALA'},
-                         'position': None,
-                         'phones': [],
-                         },
+                           'email': 'kmulhauser@consultingwomen.com',
+                           'first_name': 'Karen',
+                           'last_name': 'Mulhuaser',
+                           'organization': {'name': 'PRAJWALA'},
+                           'position': None,
+                           'phones': [],
+                       },
                        {
-                         'email': 'sunitha_2002@yahoo.com',
-                         'first_name': 'Sunitha',
-                         'last_name': 'Krishnan',
-                         'organization': {'name': 'PRAJWALA'},
-                         'position': 'Chief Functionary',
-                         'phones': ['919848025014'],
-                         }]
+                           'email': 'sunitha_2002@yahoo.com',
+                           'first_name': 'Sunitha',
+                           'last_name': 'Krishnan',
+                           'organization': {'name': 'PRAJWALA'},
+                           'position': 'Chief Functionary',
+                           'phones': ['919848025014'],
+                       }]
 
         for test in assert_list:
             self.assertIn(test, contacts, 'Contact \'' + str(test) + '\' not found')
@@ -580,33 +780,33 @@ class ScraperTests(unittest.TestCase):
                     orgs.append(ret)
 
         assert_list = [{
-            'name': 'Bombay Teen Challenge',
-            'types': [
-                OrgTypesEnum.RELIGIOUS,
-                OrgTypesEnum.EDUCATION,
-                OrgTypesEnum.PREVENTION,
-            ],
-            'phone_numbers': [
-                '16157124863',  # US number
-                '912226042242'  # indian number
-            ],
-            'emails': [
-                'tvarghese@bombayteenchallenge.org',
-                'kkdevaraj@bombayteenchallenge.org',
-            ],
-            'address':
-                'Mumbai 400052',
-            'contacts': [
-                # not yet implemented
-            ],
-            'organization_url': 'bombayteenchallenge.org/',
-            'partners': [
-                # not yet implemented
-            ],
-            'facebook': 'http://www.facebook.com/BombayTeenChallenge',
-            'twitter': 'https://twitter.com/bombaytc',
-            'keywords': 'bombay teen challenge seek mumbai woman health india life read street vocational education program music rescued blog btc child contact donate drug gift light live reach red trust wa district men safe addict care training [] education. out. office tel access afraid allows ambedkar announced ash bandra beauty began betrayed',
-        }]
+                           'name': 'Bombay Teen Challenge',
+                           'types': [
+                               OrgTypesEnum.RELIGIOUS,
+                               OrgTypesEnum.EDUCATION,
+                               OrgTypesEnum.PREVENTION,
+                           ],
+                           'phone_numbers': [
+                               '16157124863',  # US number
+                               '912226042242'  # indian number
+                           ],
+                           'emails': [
+                               'tvarghese@bombayteenchallenge.org',
+                               'kkdevaraj@bombayteenchallenge.org',
+                           ],
+                           'address':
+                               'Mumbai 400052',
+                           'contacts': [
+                               # not yet implemented
+                           ],
+                           'organization_url': 'bombayteenchallenge.org/',
+                           'partners': [
+                               # not yet implemented
+                           ],
+                           'facebook': 'http://www.facebook.com/BombayTeenChallenge',
+                           'twitter': 'https://twitter.com/bombaytc',
+                           'keywords': 'bombay teen challenge seek mumbai woman health india life read street vocational education program music rescued blog btc child contact donate drug gift light live reach red trust wa district men safe addict care training [] education. out. office tel access afraid allows ambedkar announced ash bandra beauty began betrayed',
+                       }]
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
 
@@ -647,13 +847,13 @@ class ScraperTests(unittest.TestCase):
             {
                 'checksum': Binary('94565939257467841022060717122642335157'),
                 'last_visited': datetime.utcnow().date(),
-                'update_freq': 6, # incremented one from setup b/c diff checksum
+                'update_freq': 6,  # incremented one from setup b/c diff checksum
                 'url': 'http://www.google.com'
             },
             {
                 'checksum': Binary('199553381546012383114562002951261892300'),
                 'last_visited': datetime.utcnow().date(),
-                'update_freq': 1, # not incremented b/c checksum is same
+                'update_freq': 1,  # not incremented b/c checksum is same
                 'url': 'http://www.halftheskymovement.org/partners'
             },
         ]
@@ -682,7 +882,8 @@ class ScraperTests(unittest.TestCase):
                     sources.append(ret)
 
         assert_list = [
-            'FD5U1mFUAe8J', 'GouvW1uXQv4J', 'A_punTK0il4J', '09vlKiKyzVMJ', '1MI5x95WVlIJ', '5RnnsNt0VwwJ', 'HZXqLOywHBMJ', '_mfiSSkjBDMJ', 'hjmy2wt_cq8J', 'qoyC2e35yt4J'
+            'FD5U1mFUAe8J', 'GouvW1uXQv4J', 'A_punTK0il4J', '09vlKiKyzVMJ', '1MI5x95WVlIJ', '5RnnsNt0VwwJ',
+            'HZXqLOywHBMJ', '_mfiSSkjBDMJ', 'hjmy2wt_cq8J', 'qoyC2e35yt4J'
         ]
 
         for test in assert_list:
@@ -816,6 +1017,7 @@ class ScraperTests(unittest.TestCase):
 
         for test in assert_list:
             self.assertIn(test, pubs, "URL (" + test + ") not found")
+
 
 if __name__ == '__main__':
     try:

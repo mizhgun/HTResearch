@@ -4,6 +4,7 @@ from django.conf.urls import patterns, url
 # from django.contrib import admin
 # admin.autodiscover()
 
+handler403 = 'HTResearch.WebClient.WebClient.views.unauthorized'
 handler404 = 'HTResearch.WebClient.WebClient.views.get_http_404_page'
 handler500 = handler404
 
@@ -28,12 +29,13 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views.shared_views',
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^search-organizations/$', 'search_organizations', name='search-organizations'),
                         url(r'^organization/(\w+)', 'organization_profile', name='org-prof'),
-                        url(r'^org-rank$', 'org_rank', name='org-rank'),
-                        url(r'^org-rank/(\w+)$', 'org_rank', name='org-rank'),
+                        url(r'^org-rank/$', 'org_rank', name='org-rank'),
                         url(r'^get-org-rank-rows/$', 'get_org_rank_rows', name='get-org-rank-rows'),
                         url(r'^get-org-keywords/$', 'get_org_keywords', name='get-org-keywords'),
                         url(r'^request-organization/$', 'request_organization', name='request-organization'),
-                        url(r'^edit-organization/(\w+)', 'edit_organization', name='edit-organization')
+                        url(r'^edit-organization/(\w+)', 'edit_organization', name='edit-organization'),
+                        url(r'^partner-map/$', 'org_partner_map', name='org-partner-map'),
+                        url(r'^partner-map-demo/$', 'partner_map_demo', name='partner-map-demo')
                         )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
@@ -51,4 +53,5 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
                         url(r'^logout/$', 'logout', name='logout'),
                         url(r'^signup/$', 'signup', name='signup'),
                         url(r'^invite/$', 'send_invite', name='invite'),
+                        url(r'^account-settings/$', 'manage_account', name='manage'),
                         )
