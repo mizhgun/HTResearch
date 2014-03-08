@@ -15,6 +15,26 @@ logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
 
 
+def contact_count(request):
+    user_id = request.session['user_id'] if 'user_id' in request.session else None
+
+    logger.info('Contact count request made by user {0}'.format(user_id))
+
+    contact_dao = ctx.get_object('ContactDAO')
+
+    count = ''
+    try:
+        count = contact_dao.count()
+    except:
+        logger.error('Exception encountered on contact count by user={0}'.format(user_id))
+
+    data = {
+        'count': count
+    }
+
+    return HttpResponse(data)
+
+
 def contact_profile(request, id):
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
