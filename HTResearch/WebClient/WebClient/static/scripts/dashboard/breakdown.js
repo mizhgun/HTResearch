@@ -1,3 +1,3 @@
-require(['dashboard/org-pie', 'jquery', 'bootstrap'], function($) {
-    console.log('successful!!!');
-});
+/*require(['jquery', 'd3', 'dashboard/org-pie', 'bootstrap'], function($, d3) {
+    console.log('yay');
+});*/

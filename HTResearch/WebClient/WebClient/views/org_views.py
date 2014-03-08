@@ -26,6 +26,24 @@ logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
 
 
+def org_count(request):
+    user_id = request.session['user_id'] if 'user_id' in request.session else None
+
+    org_dao = ctx.get_object('OrganizationDAO')
+
+    count = ''
+    try:
+        count = org_dao.count()
+    except:
+        logger.error('Exception encountered on organziation count by user={0}'.format(user_id))
+
+    data = {
+        'count': count
+    }
+
+    return HttpResponse(data)
+
+
 def search_organizations(request):
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
