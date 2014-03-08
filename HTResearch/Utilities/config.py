@@ -13,3 +13,13 @@ def get_config_value(section, key):
         return parser.get(section, key)
     except:
         return None
+
+
+def get_section_values(section):
+    try:
+        parser = ConfigParser.ConfigParser()
+        parser.read(CONFIG_PATH)
+
+        return dict(parser.items(section=section))
+    except:
+        return None
