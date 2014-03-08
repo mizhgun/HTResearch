@@ -55,7 +55,7 @@ class PublicationDTO(mongo.Document):
     publisher = mongo.StringField(db_field='p')
     publication_date = mongo.DateTimeField(db_field='d')
     types = mongo.ListField(mongo.IntField(), db_field='ts')
-    content_url = mongo.URLField(db_field='u')
+    content_url = mongo.StringField(db_field='u')
     valid = mongo.BooleanField(db_field='v', default=True)
     last_updated = mongo.DateTimeField(db_field='lu')
     updated_by = mongo.ObjectIdField(db_field='ub')

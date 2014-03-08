@@ -87,7 +87,7 @@ require(['shared/modal',
         ];
 
         // Update search when changing text input
-        $('#search-box').bind("keyup change", _.debounce(function() {
+        $('#search-box').bind("keyup change blur", _.debounce(function() {
             var searchText = $('#search-box').val().trim();
 
             SearchQuery.search(searchText, searchItems, map);
@@ -149,6 +149,21 @@ require(['shared/modal',
                     newsLoader.loadNews();
                 }
             }, 0);
+        });
+
+        // Make the collapse icons for the search groups
+        $('.search-anchor').on('click',function(){
+            var group = (this.id).split('-')[0];
+            var icon = $('#' + group + '-icon');
+            var div = $($(this).attr('href'));
+
+            if (div.hasClass('collapse')){
+                icon.removeClass('glyphicon-collapse-down');
+                icon.addClass('glyphicon-collapse-up');
+            } else if (div.hasClass('in')){
+                icon.removeClass('glyphicon-collapse-up');
+                icon.addClass('glyphicon-collapse-down');
+            }
         });
 
         // Initially load news
