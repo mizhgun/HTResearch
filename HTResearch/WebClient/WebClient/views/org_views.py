@@ -258,6 +258,12 @@ def org_rank(request, sort_method=''):
 
 
 def org_partner_map(request):
+    """
+    Generates the data needed to display the organization partner map and then stores it in the
+    cache. Data returned as a JSON string.
+
+    request: HttpRequest from Django (GET)
+    """
     if request.method != 'GET':
         return HttpResponseBadRequest
 

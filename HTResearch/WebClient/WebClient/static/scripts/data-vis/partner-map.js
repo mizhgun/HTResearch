@@ -244,12 +244,12 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
         }
 
         // check for presence of each type
-        $.each(types, function(index, type) {
-            if (type == three_ps.PROTECTION)
+        _.each(types, function(type) {
+            if (type === three_ps.PROTECTION)
                 has_prot = true;
-            if (type == three_ps.PROSECUTION)
+            if (type === three_ps.PROSECUTION)
                 has_pros = true;
-            if (type == three_ps.PREVENTION)
+            if (type === three_ps.PREVENTION)
                 has_prev = true;
         });
 
@@ -274,12 +274,13 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
     function zoomInOut(evt) {
         var curCharge = force.charge();
         if(evt.originalEvent.wheelDelta > 0) {
-            r = ++r;
+            r++;
             $('.node circle').attr('r', r);
             force.charge(curCharge - 500);
             startStopForce();
         } else {
-            if (r > 1 && curCharge + 500 < 0) { r = --r;
+            if (r > 1 && curCharge + 500 < 0) {
+                r--;
                 $('.node circle').attr('r', r);
                 force.charge(curCharge + 500);
                 startStopForce();
