@@ -36,6 +36,8 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^request-organization/$', 'request_organization', name='request-organization'),
                         url(r'^edit-organization/(\w+)', 'edit_organization', name='edit-organization'),
                         url(r'^org-count/$', 'org_count', name='org-count'),
+                        url(r'^partner-map/$', 'org_partner_map', name='org-partner-map'),
+                        url(r'^partner-map-demo/$', 'partner_map_demo', name='partner-map-demo'),
                         )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',

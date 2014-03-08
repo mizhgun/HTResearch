@@ -70,31 +70,26 @@
   left: 0;
   bottom: 0;
   width: @carousel-control-width;
-  .opacity(@carousel-control-opacity);
   font-size: @carousel-control-font-size;
   color: @carousel-control-color;
   text-align: center;
-  text-shadow: @carousel-text-shadow;
   // We can't have this transition here because WebKit cancels the carousel
   // animation if you trip this while in the middle of another animation.
 
   // Set gradients for backgrounds
   &.left {
-    #gradient > .horizontal(@start-color: rgba(0,0,0,.5); @end-color: rgba(0,0,0,.0001));
   }
   &.right {
     left: auto;
     right: 0;
-    #gradient > .horizontal(@start-color: rgba(0,0,0,.0001); @end-color: rgba(0,0,0,.5));
   }
 
   // Hover/focus state
   &:hover,
   &:focus {
     outline: none;
-    color: @carousel-control-color;
+    color: @ht-light-orange;
     text-decoration: none;
-    .opacity(.9);
   }
 
   // Toggles
