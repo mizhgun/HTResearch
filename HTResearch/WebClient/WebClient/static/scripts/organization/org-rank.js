@@ -1,4 +1,6 @@
 require(['organization/org-datasource', 'jquery', 'fuelux/all'], function(OrgDataSource, $) {
+    'use strict';
+
     $(function () {
         $('#view-all-orgs-nav').addClass('active');
 

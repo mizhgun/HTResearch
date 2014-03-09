@@ -1,4 +1,6 @@
 define(['jquery', 'underscore'], function($, _) {
+    'use strict';
+
     var SITE_URL = 'http://unlhtprod.cloudapp.net';
 
     function initialize() {

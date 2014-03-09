@@ -4,6 +4,8 @@
  * @module partner-map
  */
 define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
+    'use strict';
+
     var width = window.innerWidth,
         height = window.innerHeight;
 

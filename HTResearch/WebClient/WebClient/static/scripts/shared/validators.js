@@ -1,4 +1,6 @@
 define(function() {
+    'use strict';
+
     function checkURL(field) {
         var url = field.value;
         if (!(/^https?:\/\//.test(url))) {
