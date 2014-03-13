@@ -36,7 +36,7 @@ def pub_count(request):
         'count': count
     }
 
-    return HttpResponse(data)
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def search_publications(request):

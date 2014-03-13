@@ -13,6 +13,7 @@ from HTResearch.Utilities.encoder import MongoJSONEncoder
 
 logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
+import json
 
 
 def contact_count(request):
@@ -21,18 +22,25 @@ def contact_count(request):
     logger.info('Contact count request made by user {0}'.format(user_id))
 
     contact_dao = ctx.get_object('ContactDAO')
+    user_dao = ctx.get_object('UserDAO')
 
-    count = ''
+    contact_count = 0
+    user_count = 0
     try:
-        count = contact_dao.count()
+        contact_count = contact_dao.count()
     except:
         logger.error('Exception encountered on contact count by user={0}'.format(user_id))
 
+    try:
+        user_count = user_dao.count()
+    except:
+        logger.error('Exception encountered on user count by user={0}'.format(user_id))
+
     data = {
-        'count': count
+        'count': contact_count + user_count
     }
 
-    return HttpResponse(data)
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def contact_profile(request, id):
