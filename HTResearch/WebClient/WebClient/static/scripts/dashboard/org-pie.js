@@ -2,7 +2,7 @@ require(['jquery', 'd3'], function($, d3) {
 
     var w = 300,                        //width
         h = 300,                            //height
-        r = 100;                            //radius
+        r = 150;                            //radius
 
     /*var data = [
         {"label":"one", "value":200},
