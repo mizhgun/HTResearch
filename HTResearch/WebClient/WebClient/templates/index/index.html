@@ -15,120 +15,118 @@
     {% include "publication/publication_modal.html" %}
     {% include "user/user_modal.html" %}
     {% include "index/map_legend.html" %}
-    <div class="row">
-        <div class="col-md-12">
-            <noscript>You must enable JavaScript to use this site.</noscript>
-            <div class="search-div" style="display:none">
-                <div id="search-box-div" class="">
-                    <form id="custom-search-form" class="form-search form-horizontal">
-                        <div class="input-append span12">
-                            {% csrf_token %}
-                            <div class="input-group">
-                                <input type="text" tabindex="1" id="search-box" class="search-query" placeholder=" Search...">
-                                <div class="input-group-btn">
-                                    <button id="search-settings-btn" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul id="search-settings-dropdown" role="menu" class="dropdown-menu pull-right">
-                                        <li role="presentation">
-                                            <label class="checkbox">
-                                                <input type="checkbox" data-search="organization" class="pull-right" checked>Organizations
-                                            </label>
-                                        </li>
-                                        <li role="presentation">
-                                            <label class="checkbox">
-                                                <input type="checkbox" data-search="contact" class="pull-right" checked>People
-                                            </label>
-                                        </li>
-                                        <li role="presentation">
-                                            <label class="checkbox">
-                                                <input type="checkbox" data-search="publication" class="pull-right" checked>Publications
-                                            </label>
-                                        </li>
-                                        <li role="presentation">
-                                            <label class="checkbox">
-                                                <input type="checkbox" data-search="news" class="pull-right" checked>News
-                                            </label>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div id="search-ajax-loader" class="ajax-loader hidden"></div>
-                        </div>
-                    </form>
-                    <div id="search-results-div" class="panel-group" style="display: none">
-                        <div data-search="organization" class="panel panel-default search-results-panel">
-                            <div class="panel-heading">
-                                <h2 id="organization-list-header" class="panel-title">
-                                    <a id="organization-toggle" class="search-anchor" data-toggle="collapse"
-                                       href="#collapse-organizations">Organizations
-                                        <div class="count"></div>
-                                        <div class="pull-right info-glyph">
-                                            <span id="organization-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
-                                        </div>
-                                    </a>
-                                </h2>
-                            </div>
-                            <div id="collapse-organizations" class="panel-collapse collapse">
-                                <ul id="organization-search-list"></ul>
+    <div id="map-container">
+        <noscript>You must enable JavaScript to use this site.</noscript>
+        <div class="search-div" style="display:none">
+            <div id="search-box-div" class="">
+                <form id="custom-search-form" class="form-search form-horizontal">
+                    <div class="input-append span12">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" tabindex="1" id="search-box" class="search-query" placeholder=" Search...">
+                            <div class="input-group-btn">
+                                <button id="search-settings-btn" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                </button>
+                                <ul id="search-settings-dropdown" role="menu" class="dropdown-menu pull-right">
+                                    <li role="presentation">
+                                        <label class="checkbox">
+                                            <input type="checkbox" data-search="organization" class="pull-right" checked>Organizations
+                                        </label>
+                                    </li>
+                                    <li role="presentation">
+                                        <label class="checkbox">
+                                            <input type="checkbox" data-search="contact" class="pull-right" checked>People
+                                        </label>
+                                    </li>
+                                    <li role="presentation">
+                                        <label class="checkbox">
+                                            <input type="checkbox" data-search="publication" class="pull-right" checked>Publications
+                                        </label>
+                                    </li>
+                                    <li role="presentation">
+                                        <label class="checkbox">
+                                            <input type="checkbox" data-search="news" class="pull-right" checked>News
+                                        </label>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-                        <div data-search="contact" class="panel panel-default search-results-panel">
-                            <div class="panel-heading">
-                                <h2 id="contact-list-header" class="panel-title">
-                                    <a id="contact-toggle" class="search-anchor disabled" data-toggle="collapse"
-                                       href="#collapse-contacts">People
-                                        <div class="count"></div>
-                                        <div class="pull-right info-glyph">
-                                            <span id="contact-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
-                                        </div>
-                                    </a>
-                                </h2>
-                            </div>
-                            <div id="collapse-contacts" class="panel-collapse collapse">
-                                <ul id="contact-search-list"></ul>
-                            </div>
+                        <div id="search-ajax-loader" class="ajax-loader hidden"></div>
+                    </div>
+                </form>
+                <div id="search-results-div" class="panel-group" style="display: none">
+                    <div data-search="organization" class="panel panel-default search-results-panel">
+                        <div class="panel-heading">
+                            <h2 id="organization-list-header" class="panel-title">
+                                <a id="organization-toggle" class="search-anchor" data-toggle="collapse"
+                                   href="#collapse-organizations">Organizations
+                                    <div class="count"></div>
+                                    <div class="pull-right info-glyph">
+                                        <span id="organization-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
+                                    </div>
+                                </a>
+                            </h2>
                         </div>
-                        <div data-search="publication" class="panel panel-default search-results-panel">
-                            <div class="panel-heading">
-                                <h2 id="publication-list-header" class="panel-title">
-                                    <a id="publication-toggle" class="search-anchor disabled" data-toggle="collapse"
-                                       href="#collapse-publications">Publications
-                                        <div class="count"></div>
-                                        <div class="pull-right info-glyph">
-                                            <span id="publication-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
-                                        </div>
-                                    </a>
-                                </h2>
-                            </div>
-                            <div id="collapse-publications" class="panel-collapse collapse">
-                                <ul id="publication-search-list"></ul>
-                            </div>
+                        <div id="collapse-organizations" class="panel-collapse collapse">
+                            <ul id="organization-search-list"></ul>
                         </div>
-                        <div data-search="news" class="panel panel-default search-results-panel">
-                            <div class="panel-heading">
-                                <h2 id="news-list-header" class="panel-title">
-                                    <a id="news-toggle" class="search-anchor disabled" data-toggle="collapse"
-                                       href="#collapse-news">News
-                                        <div class="count"></div>
-                                        <div class="pull-right info-glyph">
-                                            <span id="news-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
-                                        </div>
-                                    </a>
-                                </h2>
-                            </div>
-                            <div id="collapse-news" class="panel-collapse collapse">
-                                <ul id="news-search-list"></ul>
-                            </div>
+                    </div>
+                    <div data-search="contact" class="panel panel-default search-results-panel">
+                        <div class="panel-heading">
+                            <h2 id="contact-list-header" class="panel-title">
+                                <a id="contact-toggle" class="search-anchor disabled" data-toggle="collapse"
+                                   href="#collapse-contacts">People
+                                    <div class="count"></div>
+                                    <div class="pull-right info-glyph">
+                                        <span id="contact-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
+                                    </div>
+                                </a>
+                            </h2>
+                        </div>
+                        <div id="collapse-contacts" class="panel-collapse collapse">
+                            <ul id="contact-search-list"></ul>
+                        </div>
+                    </div>
+                    <div data-search="publication" class="panel panel-default search-results-panel">
+                        <div class="panel-heading">
+                            <h2 id="publication-list-header" class="panel-title">
+                                <a id="publication-toggle" class="search-anchor disabled" data-toggle="collapse"
+                                   href="#collapse-publications">Publications
+                                    <div class="count"></div>
+                                    <div class="pull-right info-glyph">
+                                        <span id="publication-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
+                                    </div>
+                                </a>
+                            </h2>
+                        </div>
+                        <div id="collapse-publications" class="panel-collapse collapse">
+                            <ul id="publication-search-list"></ul>
+                        </div>
+                    </div>
+                    <div data-search="news" class="panel panel-default search-results-panel">
+                        <div class="panel-heading">
+                            <h2 id="news-list-header" class="panel-title">
+                                <a id="news-toggle" class="search-anchor disabled" data-toggle="collapse"
+                                   href="#collapse-news">News
+                                    <div class="count"></div>
+                                    <div class="pull-right info-glyph">
+                                        <span id="news-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
+                                    </div>
+                                </a>
+                            </h2>
+                        </div>
+                        <div id="collapse-news" class="panel-collapse collapse">
+                            <ul id="news-search-list"></ul>
                         </div>
                     </div>
                 </div>
-                <div class="news-panel">
-                    {% include "index/news.html" %}
-                </div>
             </div>
-            <div id="map-canvas"></div>
+            <div class="news-panel">
+                {% include "index/news.html" %}
+            </div>
         </div>
+        <div id="map-canvas"></div>
     </div>
     <div class="modal fade" id="bs-modal" tabindex="-1"></div>
 {% endblock %}
