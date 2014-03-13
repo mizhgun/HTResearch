@@ -1,9 +1,11 @@
 from urlparse import urlparse
 import json
+from datetime import datetime, timedelta
 
+from django.core.cache import cache
 from django.shortcuts import render
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from springpython.context import ApplicationContext
 
 from HTResearch.DataAccess.dto import URLMetadataDTO
@@ -25,13 +27,15 @@ from HTResearch.Utilities.encoder import MongoJSONEncoder
 logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
 
+REFRESH_PARTNER_MAP = timedelta(minutes=5)
 
 def search_organizations(request):
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     if request.method == 'GET':
         search_text = request.GET['search_text']
-        logger.info('Search request made for organizations with search_text={0} by user={1}'.format(search_text, user_id))
+        logger.info(
+            'Search request made for organizations with search_text={0} by user={1}'.format(search_text, user_id))
     else:
         search_text = ''
 
@@ -40,7 +44,8 @@ def search_organizations(request):
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
         try:
-            organizations = org_dao.findmany(search=search_text, num_elements=10, sort_fields=['valid', 'name'])
+            organizations = org_dao.findmany(search=search_text, num_elements=10,
+                                             sort_fields=['valid', 'combined_weight', 'name'])
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
@@ -80,8 +85,8 @@ def organization_profile(request, org_id):
     params = {"organization": org,
               "scheme": scheme,
               "types": org_types,
-              }
-    return render(request, 'organization_profile.html', params)
+    }
+    return render(request, 'organization/organization_profile.html', params)
 
 
 def request_organization(request):
@@ -114,7 +119,7 @@ def request_organization(request):
                 except:
                     error = 'Something went wrong with your request. Please try again later.'
 
-    return render(request, 'request_organization.html', {'form': form, 'success': success, 'error': error})
+    return render(request, 'organization/request_organization.html', {'form': form, 'success': success, 'error': error})
 
 
 def edit_organization(request, org_id):
@@ -143,7 +148,7 @@ def edit_organization(request, org_id):
                                 initial=_create_org_dict(org),
                                 emails=emails,
                                 phone_numbers=phone_numbers,
-                                types=types,)
+                                types=types, )
     error = ''
     success = ''
 
@@ -186,7 +191,7 @@ def edit_organization(request, org_id):
                     error = 'Oops! There was an error updating the organization. Please try again later.'
                     logger.error('Error occurred saving org={0} by user={1}'.format(org_id, user_id))
 
-    return render(request, "edit_organization.html", {'form': form,
+    return render(request, "organization/edit_organization.html", {'form': form,
                                                       'type_choices': ORG_TYPE_CHOICES,
                                                       'org_id': org_id,
                                                       'success': success,
@@ -249,7 +254,65 @@ def get_org_rank_rows(request):
 
 
 def org_rank(request, sort_method=''):
-    return render(request, 'org_rank.html')
+    return render(request, 'organization/org_rank.html')
+
+
+def org_partner_map(request):
+    """
+    Generates the data needed to display the organization partner map and then stores it in the
+    cache. Data returned as a JSON string.
+
+    request: HttpRequest from Django (GET)
+    """
+    if request.method != 'GET':
+        return HttpResponseBadRequest
+
+    pmap = cache.get('partner_map')
+    last_update = cache.get('partner_map_last_update')
+    if not pmap or not last_update or (datetime.utcnow() - last_update > REFRESH_PARTNER_MAP):
+        new_pmap = {
+            "nodes": [],
+            "links": [],
+            "threeps": {
+                "PREVENTION": OrgTypesEnum.PREVENTION,
+                "PROTECTION": OrgTypesEnum.PROTECTION,
+                "PROSECUTION": OrgTypesEnum.PROSECUTION
+            }
+        }
+        cache.set('partner_map_last_update', datetime.utcnow())
+        ctx = ApplicationContext(DAOContext())
+        org_dao = ctx.get_object('OrganizationDAO')
+        organizations = org_dao.all('name', 'id', 'partners', 'types', 'address')
+        i = 0
+        for org in organizations:
+            new_pmap["nodes"].append({
+                "name": org.name,
+                "id": str(org.id),
+                "types": org.types,
+                "addr": org.address
+            })
+            for part in org.partners:
+                partner_id = str(part.id)
+                for j in xrange(0, i):
+                    if new_pmap["nodes"][j]["id"] == partner_id:
+                        new_pmap["links"].append({
+                           "source": i,
+                           "target": j
+                        })
+
+            i += 1
+
+
+
+        pmap = MongoJSONEncoder().encode(new_pmap)
+
+        cache.set('partner_map', pmap)
+
+    return HttpResponse(pmap, content_type="application/json")
+
+
+def partner_map_demo(request):
+    return render(request, 'data-vis/partner-map-demo.html')
 
 
 def _create_org_dict(org):

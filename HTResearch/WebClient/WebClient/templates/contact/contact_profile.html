@@ -1,0 +1,101 @@
+{% extends "shared/global.html" %}
+
+{% block imports %}
+    <title>Contact - {{ first_name }}</title>
+    <link href="/static/css/contact/contact-profile.css" rel="stylesheet"/>
+    <script type="application/javascript" src="/static/scripts/contact/contact.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="top-bar">
+        <div class="top-bar-panel center-block">
+            <h5 class="top-bar-text"><strong>CONTACT</strong></h5>
+            <span class="top-bar-glyph center-block glyphicon glyphicon-user"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-offset-1 col-md-offset-1 col-sm-offset-1 col-lg-10 col-md-10 col-sm-10">
+            <h1> {% if first_name %}{{ first_name }}{% endif %}
+                {% if last_name %}{{ last_name }}{% endif %}</h1>
+            {% if position %}
+                <h1>
+                    <small>{{ position }}</small>
+                </h1>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <hr class="col-md-10" />
+        <div class="col-md-1"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-offset-1 col-md-offset-1 col-sm-offset-1 col-lg-10 col-md-10 col-sm-10">
+            <div class="pull-left panel info-glyph">
+                <span class="center-block glyphicon glyphicon-earphone"></span>
+            </div>
+            <h4>Phone Number</h4>
+
+            <p>
+                {% if phones %}
+                    {{ phones|join:",<br />" }}
+                {% else %}
+                    None
+                {% endif %}
+            </p>
+
+            <span class="clearfix"></span>
+
+            <div class="pull-left panel info-glyph">
+                <span class="center-block glyphicon glyphicon-envelope"></span>
+            </div>
+            <h4>Email Address</h4>
+
+            <p>{% if email %}{{ email }}{% else %}None{% endif %}</p>
+
+            <span class="clearfix"></span>
+
+            <div class="pull-left panel info-glyph">
+                <span class="center-block glyphicon glyphicon-globe"></span>
+            </div>
+            <h4>Organization</h4>
+
+            <p>
+                {% if organization %}
+                    <a target="_blank" href="/organization/{{ organization.id }}">{{ organization.name }}</a>
+                {% else %}
+                    None
+                {% endif %}
+            </p>
+
+            <span class="clearfix"></span>
+
+            <div class="pull-left panel info-glyph">
+                <span class="center-block glyphicon glyphicon-file"></span>
+            </div>
+            <h4>Publications</h4>
+            {% if publications %}
+                {% for pub in publications %}
+                    <p>{{ pub.title }}</p>
+                {% endfor %}
+            {% else %}
+                <p>None</p>
+            {% endif %}
+
+            <span class="clearfix"></span>
+        
+            {% if background %}
+            <div class="pull-left panel info-glyph">
+                <span class="center-block glyphicon glyphicon-info-sign"></span>
+            </div>
+            <h4>Background</h4>
+            <p>{{ background }}</p>
+            {% endif %}
+
+            <span class="clearfix"></span>
+        </div>
+    </div>
+{% endblock %}

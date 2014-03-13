@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/static/css/lib/bootstrap/bootstrap.css">
+    <link href="/static/css/shared/global.css" rel="stylesheet">
+    <link href="/static/css/lib/font-awesome/font-awesome.css" rel="stylesheet">
+    <script type="application/javascript" src="/static/scripts/lib/require.js"></script>
+    <script type="application/javascript" src="/static/scripts/requireconfig.js"></script>
+    {% block imports %}
+    {% endblock %}
+</head>
+
+<body>
+<div id="header">
+    {% include "shared/navbar.html" %}
+</div>
+
+{% block content %}
+{% endblock %}
+
+<div id="footer">
+    <div id="footer-text" class="text-muted credit">
+        &copy 2013 UNL Human Trafficking Research
+    </div>
+</div>
+</body>
+
+</html>

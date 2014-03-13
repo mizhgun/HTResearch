@@ -20,7 +20,7 @@ def index(request):
     logger.info('Request made for index')
     args = {}
     args.update(csrf(request))
-    return render(request, 'index.html', args)
+    return render(request, 'index/index.html', args)
 
 
 # Encodes a DTO's non-string fields to JSON
@@ -58,18 +58,22 @@ def heatmap_coordinates(request):
 
 
 def welcome(request):
-    return render(request, 'welcome.html')
+    return render(request, 'shared/welcome.html')
+
+
+def unauthorized(request):
+    html = render(request, 'shared/unauthorized.html')
+    return HttpResponseNotFound(html, status=403)
 
 
 def get_started(request):
-    return render(request, 'get_started.html')
+    return render(request, 'shared/get_started.html')
 
 
 def get_http_404_page(request):
-    template = get_template('404.html')
-    html = template.render(Context({}))
+    html = render(request, 'shared/404.html')
     return HttpResponseNotFound(html, status=404)
 
 
 def unimplemented(request):
-    return render(request, 'unimplemented.html')
+    return render(request, 'shared/unimplemented.html')

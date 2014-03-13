@@ -7,6 +7,7 @@ from dto import *
 from connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.geocoder import geocode
+from HTResearch.Utilities.url_tools import UrlUtility
 import re
 
 
@@ -18,6 +19,10 @@ class DAO(object):
 
     def __init__(self):
         self.conn = DBConnection
+
+    def all(self, *only):
+        with self.conn():
+            return self.dto.objects(self._valid_query()).only(*only)
 
     def merge_documents(self, dto, merge_dto):
         with self.conn():
@@ -98,9 +103,6 @@ class DAO(object):
             fields = self._default_search_fields()
         entry_query = self._get_query(text, fields)
         found_entries = self.dto.objects(entry_query & self._valid_query())
-
-        ob = self.dto.objects()[0]
-
         return found_entries
 
     # Create search term list from search string
@@ -111,7 +113,7 @@ class DAO(object):
 
     # Get a query representing text search results
     def _get_query(self, query_string, search_fields):
-        query = None # Query to search for every search term
+        query = None  # Query to search for every search term
         terms = self._normalize_query(query_string)
         for term in terms:
             or_query = None
@@ -142,6 +144,22 @@ class ContactDAO(DAO):
         # Injected dependencies
         self.org_dao = OrganizationDAO
         self.pub_dao = PublicationDAO
+        # Weights for search result fields
+        # The more content that is filled, the higher ranked the search
+        self._field_weights = {
+            'first_name': 0.1,
+            'last_name': 0.1,
+            'phones': 0.2,
+            'email': 0.2,
+            'organization': 0.1,
+            'publications': 0.2,
+            'position': 0.1,
+            'valid': 0.0,
+            'last_updated': 0.0,
+            'updated_by': 0.0,
+            'content_weight': 0.0,
+        }
+
 
     def _add_contact_ref_to_children(self, contact_dto):
         if contact_dto.organization is not None and contact_dto not in contact_dto.organization.contacts:
@@ -178,8 +196,23 @@ class ContactDAO(DAO):
                         saved_dto = self._add_contact_ref_to_children(saved_dto)
                     return saved_dto
             contact_dto.last_updated = datetime.utcnow()
+            self._update_weights(contact_dto)
             contact_dto.save()
         return contact_dto
+
+    def _update_weights(self, contact_dto):
+        weight = 0.0
+        for key in contact_dto._data:
+            if key == "id":
+                continue
+            if not hasattr(contact_dto, key):
+                continue
+
+            val = getattr(contact_dto, key)
+            if val:
+                weight += self._field_weights[key]
+
+        contact_dto.content_weight = weight
 
     def _default_search_fields(self):
         return ['first_name', 'last_name', 'position', ]
@@ -198,11 +231,41 @@ class OrganizationDAO(DAO):
         self.contact_dao = ContactDAO
         self.geocode = geocode
 
+        # Weights for search result fields
+        # The more content that is filled, the higher ranked the search
+        self._field_weights = {
+            'name': 0.1,
+            'address': 0.05,
+            'latlng': 0.05,
+            'types': 0.1,
+            'phone_numbers': 0.1,
+            'email_key': 0.0,
+            'emails': 0.1,
+            'contacts': 0.1,
+            'organization_url': 0.1,
+            'partners': 0.1,
+            'facebook': 0.05,
+            'twitter': 0.05,
+            'keywords': 0.1,
+            'valid': 0.0,
+            'last_updated': 0.0,
+            'updated_by': 0.0,
+            'page_rank_info': 0.0,
+            'page_rank': 0.0,
+            'page_rank_weight': 0.0,
+            'content_weight': 0.0,
+            'combined_weight': 0.0,
+        }
+
     def merge_documents(self, existing_org_dto, new_org_dto):
         with self.conn():
             attributes = new_org_dto._data
             for key in attributes:
-                if attributes[key] or key == 'latlng':
+                if key == 'page_rank_info' and attributes['page_rank_info']:
+                    new_val = self._merge_page_rank_info(attributes['page_rank_info'], existing_org_dto.page_rank_info,
+                                         attributes['organization_url'])
+                    existing_org_dto.page_rank_info = new_val
+                elif attributes[key] or key == 'latlng':
                     cur_attr = getattr(existing_org_dto, key)
                     if not cur_attr:
                         if key == 'latlng' and not attributes['latlng'] and attributes['address']:
@@ -217,6 +280,52 @@ class OrganizationDAO(DAO):
             existing_org_dto.last_updated = datetime.utcnow()
             existing_org_dto.save()
             return existing_org_dto
+
+    def _merge_page_rank_info(self, new_references, existing_references, organization_url):
+        if existing_references is None:
+            return new_references
+
+        org_domain = UrlUtility().get_domain(organization_url)
+        for ref in new_references.references:
+            ref_exists = False
+            # Search for existing references from one organization to another
+            for exist_ref in existing_references.references:
+                if ref.org_domain == exist_ref.org_domain:
+                    # We found existing data for references from Org A to Org B
+                    ref_exists = True
+                    for page in ref.pages:
+                        page_exists = False
+                        # Search if we have data from this specific URL to this specific organization
+                        for exist_page in exist_ref.pages:
+                            if page.url == exist_page.url:
+                                # We found existing data for references from URL A to Org B
+                                page_exists = True
+                                count_diff = page.count - exist_page.count
+                                if count_diff != 0:
+                                    # This page must have changed b/c the number of references is different
+                                    # update everything
+                                    exist_page.count = page.count
+                                    exist_ref.count += count_diff
+                                    existing_references.total_with_self += count_diff
+                                    if exist_ref.org_domain != org_domain:
+                                        # This value only updated if Organization A and B are different
+                                        existing_references.total += count_diff
+                                break;
+                        if not page_exists:
+                            # We have recorded other references to this organization, but none from this url
+                            exist_ref.pages.append(page)
+                            exist_ref.count += page.count
+                            existing_references.total_with_self += page.count
+                            if exist_ref.org_domain != org_domain:
+                                existing_references.total += page.count
+                    break;
+            # If this organization has not yet referenced the specified outside org, add it
+            if not ref_exists:
+                existing_references.references.append(ref)
+                existing_references.total_with_self += ref.count
+                if ref.org_domain != org_domain:
+                    existing_references.total += ref.count
+        return existing_references
 
     def _add_org_ref_to_children(self, org_dto):
         for i in range(len(org_dto.contacts)):
@@ -259,10 +368,28 @@ class OrganizationDAO(DAO):
                     org_dto.latlng = self.geocode(org_dto.address)
 
             org_dto.last_updated = datetime.utcnow()
+            self._update_weights(org_dto)
             org_dto.save()
             if cascade_add:
                 org_dto = self._add_org_ref_to_children(org_dto)
         return org_dto
+
+    def _update_weights(self, org_dto):
+        weight = 0.0
+        for key in org_dto._data:
+            if key == "id":
+                continue
+            if not hasattr(org_dto, key):
+                continue
+
+            val = getattr(org_dto, key)
+            if val:
+                weight += self._field_weights[key]
+        if org_dto.page_rank_weight is None:
+            org_dto.page_rank_weight = 0.0
+
+        org_dto.content_weight = weight
+        org_dto.combined_weight = (org_dto.page_rank_weight + org_dto.content_weight) / 2.0
 
     # Query getting valid organizations: must be valid and have a valid name
     def _valid_query(self):
@@ -325,6 +452,36 @@ class OrganizationDAO(DAO):
 
         existing_dto = self.dto.objects(same_phone | same_email | same_url | same_fb | same_twitter | same_name).first()
         return existing_dto
+
+    def page_rank_store(self, org_dtos, store_info=False):
+        """
+        A method for storing a list of org_dtos' new page_rank information
+        NOTE: store_info should only be called if the spider wasn't running during calculation process,
+        otherwise we might overwrite new page_rank_info
+        """
+
+        with self.conn():
+            for i in range(0, len(org_dtos)):
+                dto = org_dtos[i]
+                try:
+                    if not store_info:
+                        exist_dto = self.find(id=dto.id)
+                        exist_dto.page_rank = dto.page_rank
+                        exist_dto.page_rank_weight = dto.page_rank_weight
+                        self._update_weights(exist_dto)
+                        exist_dto.save()
+                    else:
+                        exist_dto = self.find(id=dto.id)
+                        exist_dto.page_rank = dto.page_rank
+                        exist_dto.page_rank_weight = dto.page_rank_weight
+                        exist_dto.page_rank_info = dto.page_rank_info
+                        self._update_weights(exist_dto)
+                        exist_dto.save()
+                except Exception as e:
+                    # Something goofy happened but rolling back's not really an option
+                    print   "ERROR: Failed to store DTO: {" +\
+                            "\n\t id: " + str(dto.id) +\
+                        "\n} with exception: \n\n" + e.message
 
 
 class PublicationDAO(DAO):
@@ -414,6 +571,20 @@ class UserDAO(DAO):
 
         # Injected dependencies
         self.org_dao = OrganizationDAO
+        # Weights for search result fields
+        # The more content that is filled, the higher ranked the search
+        self._field_weights = {
+            'first_name': 0.1,
+            'last_name': 0.1,
+            'email': 0.2,
+            'password': 0.0,
+            'background': 0.2,
+            'account_type': 0.1,
+            'org_type': 0.1,
+            'organization': 0.2,
+            'last_updated': 0.0,
+            'content_weight': 0.0,
+        }
 
     def create_update(self, user_dto):
         with self.conn():
@@ -422,5 +593,20 @@ class UserDAO(DAO):
                 user_dto.organization = self.org_dao().create_update(o)
 
             user_dto.last_updated = datetime.utcnow()
+            self._update_weights(user_dto)
             user_dto.save()
         return user_dto
+
+    def _update_weights(self, user_dto):
+        weight = 0.0
+        for key in user_dto._data:
+            if key == "id":
+                continue
+            if not hasattr(user_dto, key):
+                continue
+
+            val = getattr(user_dto, key)
+            if val:
+                weight += self._field_weights[key]
+
+        user_dto.content_weight = weight
