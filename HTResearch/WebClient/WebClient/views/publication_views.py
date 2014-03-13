@@ -12,8 +12,6 @@ from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
 
 from HTResearch.Utilities.encoder import MongoJSONEncoder
 
-from datetime import *
-
 
 logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())

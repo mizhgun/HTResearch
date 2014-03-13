@@ -239,13 +239,16 @@ def send_invite(request):
 
 
 def _create_user_dict(user):
-    user_dict = {
-        'first_name': user.first_name or "",
-        'last_name': user.last_name or "",
-        'email': user.email or "",
-        'account_type': user.account_type if user.account_type is not None else "",
-        'org_type': user.org_type if user.org_type is not None else "",
-        'organization': user.organization.name if user.organization else "",
-        'background': user.background or ""
-    }
+    try:
+        user_dict = {
+            'first_name': user.first_name or "",
+            'last_name': user.last_name or "",
+            'email': user.email or "",
+            'account_type': user.account_type if user.account_type is not None else "",
+            'org_type': user.org_type if user.org_type is not None else "",
+            'organization': user.organization.name if user.organization else "",
+            'background': user.background or ""
+        }
+    except:
+        logger.error('Error occurred while creating a dictionary for user={0}'.format(user))
     return user_dict

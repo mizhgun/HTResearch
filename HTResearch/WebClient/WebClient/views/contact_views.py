@@ -25,7 +25,7 @@ def contact_profile(request, id):
     try:
         user = user_dao.find(id=id)
 
-    except Exception:
+    except:
         logger.error('Exception encountered on user lookup for user={0}'.format(id))
         return get_http_404_page(request)
 
@@ -37,7 +37,7 @@ def contact_profile(request, id):
 
     try:
         contact = contact_dao.find(id=id)
-    except Exception:
+    except:
         logger.error('Exception encountered on contact lookup for contact={0}'.format(id))
         return get_http_404_page(request)
 
@@ -51,7 +51,7 @@ def contact_profile(request, id):
         if results['organization']:
             org = org_dao.find(id=results['organization'].id)
             results['organization'] = org.__dict__['_data']
-    except Exception:
+    except:
         logger.error('Exception encountered on organization lookup with search_text={0}'.format(results['organization'].name))
         return get_http_404_page(request)
 
@@ -86,7 +86,7 @@ def search_contacts(request):
                 users = user_dao.findmany(search=search_text,
                                           num_elements=10,
                                           sort_fields=['valid', 'content_weight', 'last_name', 'first_name'])
-            except Exception:
+            except:
                 logger.error('Exception encountered on user search with search_text={0}'.format(search_text))
                 return get_http_404_page(request)
 
@@ -98,7 +98,7 @@ def search_contacts(request):
             if c['organization']:
                 org = org_dao.find(id=c['organization'].id)
                 c['organization'] = org.__dict__['_data']
-        except Exception:
+        except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
         c['type'] = 'contact'
@@ -111,22 +111,13 @@ def search_contacts(request):
             if u['organization']:
                 org = org_dao.find(id=u['organization'].id)
                 u['organization'] = org.__dict__['_data']
-        except Exception:
+        except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
         u['type'] = 'user'
         results.append(u)
 
     results = sorted(results, key=lambda k: (k['first_name'], k['last_name'], k['content_weight'], k['valid']))[:10]
-
-    # Add the org types to show
-    # for index, contact in enumerate(results):
-    #     if contact['organization'] and contact['organization']['types']:
-    #         type_nums = contact['organization']['types']
-    #         org_types = []
-    #         for org_type in type_nums:
-    #             org_types.append(OrgTypesEnum.reverse_mapping[org_type].title())
-    #         results[index]['organization']['types'] = org_types
 
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
@@ -147,7 +138,7 @@ def edit_contact(request, contact_id):
 
     try:
         contact = contact_dao.find(id=contact_id)
-    except Exception:
+    except:
         logger.error('Exception encountered on contact lookup for contact={0} by user={1}'.format(contact_id, user_id))
         return get_http_404_page(request)
 
