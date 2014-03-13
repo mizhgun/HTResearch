@@ -44,7 +44,7 @@ def search_publications(request):
         # Change the datetime to make it readable in the modal
         pub['publication_date'] = str(pub['publication_date'].year)
         results.append(pub)
-    results = sorted(results, key=lambda k: (k['valid']))
+    results = [r for r in results if r['valid']]
 
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type='application/json')

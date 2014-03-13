@@ -105,7 +105,7 @@ def search_contacts(request):
         results.append(c)
 
     # Check validity here since users don't have a 'valid' field
-    results = sorted(results, key=lambda k: (k['valid']))
+    results = [r for r in results if r['valid']]
 
     for dto in users:
         u = dto.__dict__['_data']

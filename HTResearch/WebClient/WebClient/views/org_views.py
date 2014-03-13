@@ -57,7 +57,7 @@ def search_organizations(request):
         # Split organization keyword string into list of words
         org['keywords'] = (org['keywords'] or '').split()
         results.append(org)
-    results = sorted(results, key=lambda k: (k['valid']))
+    results = [r for r in results if r['valid']]
 
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
