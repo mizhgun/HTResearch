@@ -28,11 +28,11 @@
 }
 .key {
   background-repeat: no-repeat;
-  padding: 0 32px 0 0;
+  padding: 0 50px 0 0;
   height: 32px;
-  width: 128px;
+  width: 150px;
   font-size: large;
-  background-position-x: 106px;
+  background-position-x: 110px;
 }
 .key.prevention {
   background-image: url("/static/images/prevention_pin_small.png");
@@ -311,6 +311,14 @@ body {
   padding: 0;
   overflow-y: hidden;
 }
+noscript {
+  top: 50%;
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  margin-top: -2em;
+  font-size: xx-large;
+}
 #edit-org-btn,
 #edit-contact-btn {
   margin-right: 10px;
@@ -336,8 +344,8 @@ body {
   margin: 0;
   padding: 0;
   display: table;
-  margin-top: -50px;
-  padding-top: 50px;
+  margin-top: -51px;
+  padding-top: 51px;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
