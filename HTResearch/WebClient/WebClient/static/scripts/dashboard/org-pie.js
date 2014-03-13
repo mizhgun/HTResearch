@@ -1,10 +1,8 @@
 require(['jquery', 'd3'], function($, d3) {
-    var element = 'body';
 
     var w = 300,                        //width
         h = 300,                            //height
-        r = 100,                            //radius
-        color = d3.scale.category20c();     //builtin range of colors
+        r = 100;                            //radius
 
     /*var data = [
         {"label":"one", "value":200},
@@ -14,6 +12,9 @@ require(['jquery', 'd3'], function($, d3) {
 
     $.get('/orgs-by-region/', function(data) {
         data = data.data;
+
+        var element = '#orgs-by-region';
+        var color = d3.scale.category20c();
 
         var vis = d3.select(element)
             .append("svg:svg")
@@ -52,6 +53,14 @@ require(['jquery', 'd3'], function($, d3) {
     $.get('/orgs-by-type/', function(data) {
         data = data.data;
 
+        var element = '#orgs-by-type';
+        var colors = [
+            '#4ecdc4',
+            '#c7f464',
+            '#ff6b6b',
+            '#888888'
+        ];
+
         var vis = d3.select(element)
             .append("svg:svg")
             .data([data])
@@ -73,7 +82,7 @@ require(['jquery', 'd3'], function($, d3) {
             .attr("class", "slice");
 
         arcs.append("svg:path")
-            .attr("fill", function(d, i) { return color(i); } )
+            .attr("fill", function(d, i) { return colors[i]; } )
             .attr("d", arc);
 
         arcs.append("svg:text")
@@ -88,6 +97,9 @@ require(['jquery', 'd3'], function($, d3) {
 
     $.get('/orgs-by-members/', function(data) {
         data = data.data;
+
+        var element = '#orgs-by-members';
+        var color = d3.scale.category20c();
 
         var vis = d3.select(element)
             .append("svg:svg")
