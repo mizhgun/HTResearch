@@ -104,6 +104,9 @@ def search_contacts(request):
         c['type'] = 'contact'
         results.append(c)
 
+    # Check validity here since users don't have a 'valid' field
+    results = sorted(results, key=lambda k: (k['valid']))
+
     for dto in users:
         u = dto.__dict__['_data']
         org_dao = ctx.get_object('OrganizationDAO')
@@ -117,10 +120,7 @@ def search_contacts(request):
         u['type'] = 'user'
         results.append(u)
 
-    if users:
-        results = sorted(results, key=lambda k: (k['first_name'], k['last_name'], k['content_weight']))[:10]
-    else:
-        results = sorted(results, key=lambda k: (k['first_name'], k['last_name'], k['content_weight'], k['valid']))[:10]
+    results = sorted(results, key=lambda k: (k['first_name'], k['last_name'], k['content_weight']))[:10]
 
     # Add the org types to show
     # for index, contact in enumerate(results):
