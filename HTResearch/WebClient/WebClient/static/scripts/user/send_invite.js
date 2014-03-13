@@ -1,4 +1,6 @@
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
+    'use strict';
+
     $(function() {
         $('#invite-nav').addClass('active');
 

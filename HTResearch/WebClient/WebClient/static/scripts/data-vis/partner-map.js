@@ -1,4 +1,11 @@
+/**
+ * Provides a means of initializing the graph of organizations and their partners.
+ *
+ * @module partner-map
+ */
 define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
+    'use strict';
+
     var width = window.innerWidth,
         height = window.innerHeight;
 
@@ -27,7 +34,11 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
         'ALL': 'url(#all-grad)'
     };
 
-
+    /**
+     * Initializes the partner map.
+     * @param {string} selector The selector of the DOM element to use for instantiation.
+     * @param {object} options The options object associated with instantiation (width, height).
+     */
     function initialize(selector, options) {
         if (options) {
             if (options.width){

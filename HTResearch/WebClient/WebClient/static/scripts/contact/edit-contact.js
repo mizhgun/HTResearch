@@ -1,4 +1,6 @@
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
+    'use strict';
+
     $(function() {
         $('#edit-contact-form').validate({
             rules: {
