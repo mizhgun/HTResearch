@@ -91,11 +91,11 @@ class ContactNameScraper(object):
 
                     # if the last name wasn't caught but first name was and next word is last name format
                     try:
-                        next_uppercase = str_split[i+1].istitle() or str_split[i+1].isupper()
-                        next_all_alpha = all(c.isalpha() or c == '.' for c in str_split[i+1])
-                        if next_uppercase and str_split[i+1] not in cns._stopwords and \
-                                next_all_alpha and str_split[i+1] not in name_to_add:
-                            name_to_add += str_split[i+1]
+                        next_uppercase = str_split[i + 1].istitle() or str_split[i + 1].isupper()
+                        next_all_alpha = all(c.isalpha() or c == '.' for c in str_split[i + 1])
+                        if next_uppercase and str_split[i + 1] not in cns._stopwords and \
+                                next_all_alpha and str_split[i + 1] not in name_to_add:
+                            name_to_add += str_split[i + 1]
                     except IndexError:
                         pass
 
@@ -960,10 +960,6 @@ class UrlMetadataScraper(object):
         # if the existing checksum was None, set the checksum and update_freq to 0 (above),
         # as this should be the first time we've seen this page
 
-        # TODO: Score the page. <- this belong here still?
-        # Ideas for page scoring:  Simple Google PageRank using references to/from other pages; Keyword Search;
-        # Update frequency; User Feedback (the more a page is clicked the more we want to keep it updated)
-
         return metadata
 
 
@@ -991,10 +987,6 @@ class USPhoneNumberScraper(object):
         phone_nums_list = []
         for num in phone_nums:
             num = re.sub("\D", "", num)
-            # Removing item in favor of giving data ready for DB
-            # Paul Poulsen
-            #number = ScrapedPhoneNumber()
-            #number["phone_number"] = num
             phone_nums_list.append(num)
 
         return phone_nums_list

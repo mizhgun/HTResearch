@@ -16,6 +16,9 @@ logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class OrgSpider(BaseSpider):
+    """
+    Crawls pages for organizations and contacts (through OrgContactsScraper)
+    """
     name = 'org_spider'
     # empty start_urls, we're setting our own
     start_urls = []
@@ -105,6 +108,9 @@ class OrgSpider(BaseSpider):
 
 
 class StopTraffickingSpider(BaseSpider):
+    """
+    Crawls a very specific site so we can have more data
+    """
     name = "stop_trafficking"
     allowed_domains = ['stoptrafficking.in']
     start_urls = ['http://www.stoptrafficking.in/Directory.aspx']
@@ -170,6 +176,9 @@ class StopTraffickingSpider(BaseSpider):
 
 
 class PublicationSpider(BaseSpider):
+    """
+    Crawls Google Scholar with different queries for publications
+    """
     name = "publication_spider"
     allowed_domains = ['scholar.google.com']
 
@@ -195,7 +204,7 @@ class PublicationSpider(BaseSpider):
             self.main_page = response
             #Return citation requests
             for url in self.citation_urls:
-                yield Request('http://'+url, dont_filter=True)
+                yield Request('http://' + url, dont_filter=True)
 
         else:
             #Publications will be stored in the scraper until all information

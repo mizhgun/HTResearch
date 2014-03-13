@@ -1,5 +1,9 @@
-import string
+"""
+document_scrapers.py
+Contains scrapers that is used by spiders contained in spiders.py
+"""
 import re
+import string
 
 from link_scraper import PageRankScraper
 from utility_scrapers import *
@@ -10,9 +14,9 @@ from HTResearch.URLFrontier.urlfrontier import URLFrontier
 
 
 class ContactScraper():
-    def __init__(self):
-        contact = None
-
+    """
+    Uses the OrgContactsScraper to find contacts associated with a particular organization
+    """
     def parse(self, response):
         #get all the values out of the dictionary that the Contact scraper returns
         org_contact_scraper = OrgContactsScraper()
@@ -22,8 +26,8 @@ class ContactScraper():
             contact = ScrapedContact()
             name_split = name.split()
             n = len(name_split)
-            contact['first_name'] = ' '.join(name_split[0:n-1])
-            contact['last_name'] = name_split[n-1]
+            contact['first_name'] = ' '.join(name_split[0:n - 1])
+            contact['last_name'] = name_split[n - 1]
             contact['phones'] = contact_dicts[name]['number']
             contact['email'] = contact_dicts[name]['email']
             contact['position'] = contact_dicts[name]['position']
@@ -35,6 +39,9 @@ class ContactScraper():
 
 
 class OrganizationScraper():
+    """
+    Scrapes an Organization from a given page
+    """
     def __init__(self):
         self._scrapers = {
             'name': [OrgNameScraper],
@@ -113,6 +120,9 @@ class OrganizationScraper():
 
 
 class PublicationScraper():
+    """
+    Scrapes Publications from Google Scholar
+    """
     def __init__(self):
         #Scrapers
         self.key_scraper = PublicationCitationSourceScraper()
@@ -150,8 +160,6 @@ class PublicationScraper():
     def parse_main_page(self, response):
         #Must scrape several pubs at a time
         #Each page will have roughly 10 publications
-        publications = []
-
         #Response is the main GS results page
         keys = self.key_scraper.parse(response)
 
