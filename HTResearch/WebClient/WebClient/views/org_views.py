@@ -331,10 +331,6 @@ def org_partner_map(request):
     return HttpResponse(pmap, content_type="application/json")
 
 
-def partner_map_demo(request):
-    return render(request, 'data-vis/partner-map-demo.html')
-
-
 def orgs_by_region(request):
     items = [
         {
