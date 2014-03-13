@@ -76,7 +76,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
 
     /**
      * Initializes the heatmap.
-     * @param gMap The Google Maps instance to use.
+     * @param {object} gMap The Google Maps instance to use.
      */
     function initialize(gMap) {
         map = gMap;
