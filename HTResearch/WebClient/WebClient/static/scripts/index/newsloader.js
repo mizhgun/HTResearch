@@ -1,5 +1,5 @@
 /**
- * Provides an abstraction for interacting with the Google News carousel.
+ * Provides an abstraction for interacting with the Google News feed and news carousel.
  *
  * @module newsloader
  */
