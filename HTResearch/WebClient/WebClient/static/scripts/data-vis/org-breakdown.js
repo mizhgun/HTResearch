@@ -19,6 +19,7 @@ define(['jquery', 'd3'], function($, d3) {
                 .attr('transform', 'translate(' + r + ',' + r + ')');
 
             var arc = d3.svg.arc()
+                .innerRadius(r * 0.3)
                 .outerRadius(r);
 
             var pie = d3.layout.pie()
@@ -43,6 +44,16 @@ define(['jquery', 'd3'], function($, d3) {
                 .attr('text-anchor', 'middle')
                 .text(function(d, i) { return data[i].label; });
 
+            vis.append('foreignObject')
+                .attr('width', 80)
+                .attr('height', 80)
+                .attr('transform', function(d) {
+                    return 'translate(-40, -34)';
+                })
+                .html(function() {
+                    return '<h1><i class="fa fa-globe"></i></h1>';
+                });
+
             element.append('<h2>Region</h2>');
         });
 
@@ -66,6 +77,7 @@ define(['jquery', 'd3'], function($, d3) {
                 .attr('transform', 'translate(' + r + ',' + r + ')');
 
             var arc = d3.svg.arc()
+                .innerRadius(r * 0.3)
                 .outerRadius(r);
 
             var pie = d3.layout.pie()
@@ -82,13 +94,23 @@ define(['jquery', 'd3'], function($, d3) {
                 .attr('d', arc);
 
             arcs.append('svg:text')
-                .attr("transform", function(d) {
+                .attr('transform', function(d) {
                     d.innerRadius = 0;
                     d.outerRadius = r;
                     return 'translate(' + arc.centroid(d) + ')';
                 })
                 .attr('text-anchor', 'middle')
                 .text(function(d, i) { return data[i].label; });
+
+            vis.append('foreignObject')
+                .attr('width', 80)
+                .attr('height', 80)
+                .attr('transform', function(d) {
+                    return 'translate(-40, -34)';
+                })
+                .html(function() {
+                    return '<h1><i class="fa fa-gavel"></i></h1>';
+                });
 
             element.append('<h2>Type</h2>');
         });
@@ -108,6 +130,7 @@ define(['jquery', 'd3'], function($, d3) {
                 .attr('transform', 'translate(' + r + ',' + r + ')');
 
             var arc = d3.svg.arc()
+                .innerRadius(r * 0.3)
                 .outerRadius(r);
 
             var pie = d3.layout.pie()
@@ -131,6 +154,16 @@ define(['jquery', 'd3'], function($, d3) {
                 })
                 .attr('text-anchor', 'middle')
                 .text(function(d, i) { return data[i].label; });
+
+            vis.append('foreignObject')
+                .attr('width', 80)
+                .attr('height', 80)
+                .attr('transform', function(d) {
+                    return 'translate(-40, -34)';
+                })
+                .html(function() {
+                    return '<h1><i class="fa fa-users"></i></h1>';
+                });
 
             element.append('<h2>Members</h2>');
         });
