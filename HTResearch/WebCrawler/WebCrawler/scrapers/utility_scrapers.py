@@ -1,36 +1,36 @@
+"""
+utility_scrapers.py
+Contains scrapers that are used by the document scrapers contained in document_scrapers.py
+"""
+import datetime
+import hashlib
+import heapq
 import itertools
 import os
 import re
-from urlparse import urlparse, urljoin
 import string
-import datetime
-import hashlib
-import operator
-import heapq
-from sgmllib import SGMLParseError
 
+from ..items import *
+from bson.binary import Binary
+from HTResearch.DataAccess.dao import *
+from HTResearch.DataModel.enums import OrgTypesEnum
+from HTResearch.Utilities.converter import *
+from HTResearch.Utilities.logutil import *
+from link_scraper import LinkScraper
 from nltk import FreqDist, WordNetLemmatizer
 from scrapy.selector import HtmlXPathSelector
 from scrapy.selector import XPathSelectorList
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
-from bson.binary import Binary
-
-from ..items import *
-from HTResearch.DataAccess.dao import *
-from HTResearch.Utilities.converter import *
-from HTResearch.Utilities.logutil import *
-from link_scraper import LinkScraper
-from HTResearch.DataModel.enums import OrgTypesEnum
-
-
-
-# ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
-# Will likely remove/change them.
+from sgmllib import SGMLParseError
+from urlparse import urlparse, urljoin
 
 _utilityscrapers_logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class ContactNameScraper(object):
+    """
+    Scrapes first and last names of people on a given page
+    """
     try:
         _names and _last_names and _stopwords and _titles
     except NameError:
@@ -49,7 +49,7 @@ class ContactNameScraper(object):
         length = len(_titles)
         # catch Dr and Dr.
         for i in range(0, length):
-            _titles.append(_titles[i]+'.')
+            _titles.append(_titles[i] + '.')
 
     def __init__(self):
         # Make a regex check for if a potential name is actually a date. Not concerned with months that aren't in the
@@ -119,6 +119,9 @@ class ContactNameScraper(object):
 
 
 class ContactPositionScraper(object):
+    """
+    Scrapes work positions of people on a given page
+    """
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/positions.txt')) as f:
             self._positions = f.read().splitlines()
@@ -131,12 +134,10 @@ class ContactPositionScraper(object):
                 return position
 
 
-class ContactPublicationsScraper(object):
-    def __init__(self):
-        self.publications = []
-
-
 class EmailScraper(object):
+    """
+    Scrapes emails on a given page
+    """
     def __init__(self):
         self.email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
                                       r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
@@ -173,6 +174,9 @@ class EmailScraper(object):
 
 
 class KeywordScraper(object):
+    """
+    Scrapes the 50 most used words on a given page excluding stopwords listed in stopwords.txt
+    """
     NUM_KEYWORDS = 50
     _stopwords = []
     _lemmatizer = WordNetLemmatizer()
@@ -230,6 +234,9 @@ class KeywordScraper(object):
 
 
 class IndianPhoneNumberScraper(object):
+    """
+    Scrapes Indian phone numbers on a given page
+    """
     def __init__(self):
         self._india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?'
                                               r'[-./\s]?[0-9]{5}[0-9]?\b|\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?'
@@ -254,16 +261,15 @@ class IndianPhoneNumberScraper(object):
         phone_nums_list = []
         for num in phone_nums:
             num = re.sub("\D", "", num)
-            # removing ScrapedPhoneNumber() item in favor of returning exactly what DB expects
-            # Paul Poulsen
-            #number = ScrapedPhoneNumber()
-            #number["phone_number"] = num
             phone_nums_list.append(num)
 
         return phone_nums_list
 
 
 class OrgAddressScraper(object):
+    """
+    Scrapes the city and country of an organization on a given page
+    """
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/cities.txt')) as f:
             self._cities = f.read().splitlines()
@@ -310,6 +316,9 @@ class OrgAddressScraper(object):
 
 
 class OrgContactsScraper(object):
+    """
+    Scrapes the contacts that are associated with an organization on a given page.
+    """
     def __init__(self):
         self._name_scraper = ContactNameScraper()
         self._number_scraper = IndianPhoneNumberScraper()
@@ -327,17 +336,16 @@ class OrgContactsScraper(object):
         if names is not None:
             self._contacts = {name.get('name'): {} for name in names}
             for name in names:
-                n = string.find(response.body, name.get('name'))    #find the index of each contact so we can search
-                contact_indices.append(n)                           #only between the contacts for their info
+                n = string.find(response.body, name.get('name'))    # find the index of each contact so we can search
+                contact_indices.append(n)                           # only between the contacts for their info
         for i in range(len(names)):
             if i < len(names) - 1:
                 cr = response.replace(body=response.body[contact_indices[i]:contact_indices[i + 1]])
             else:
                 cr = response.replace(body=response.body[contact_indices[i]:])
             self._contacts[names[i].get('name')]['position'] = [self._position_scraper.parse(cr)
-                                                          if self._position_scraper.parse(cr)
-                                                          else None][0]
-            numbers = []
+                                                                if self._position_scraper.parse(cr)
+                                                                else None][0]
             india_num = self._number_scraper.parse(cr)[0] if self._number_scraper.parse(cr) else None
             if india_num:
                 numbers = [india_num]
@@ -368,6 +376,9 @@ class OrgContactsScraper(object):
 
 
 class OrgFacebookScraper(object):
+    """
+    Scrapes an organization's Facebook link on a given page
+    """
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?facebook\.com/.+(?:/)?$", re.IGNORECASE)
         self.fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
@@ -387,6 +398,9 @@ class OrgFacebookScraper(object):
 
 
 class OrgTwitterScraper(object):
+    """
+    Scrapes an organization's Twitter link on a given page
+    """
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?twitter\.com/(?:#!/)?\w+(?:/)?$", re.IGNORECASE)
         self.tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
@@ -406,6 +420,9 @@ class OrgTwitterScraper(object):
 
 
 class OrgNameScraper(object):
+    """
+    Scrapes the organization name on a given page
+    """
     def __init__(self):
         self._split_punctuation = re.compile(r"[ \w']+")
         #Load words to be ignored
@@ -456,6 +473,9 @@ class OrgNameScraper(object):
 
 
 class OrgPartnersScraper(object):
+    """
+    Scrapes partner organizations of a particular organization on a given page
+    """
     def __init__(self):
         self._link_scraper = LinkScraper()
         self._partner_text = 'partner'
@@ -535,6 +555,9 @@ class OrgPartnersScraper(object):
 
 
 class OrgTypeScraper(object):
+    """
+    Scrapes the type of an organization based on keywords that were scraped
+    """
     def __init__(self):
         # Lemmatizer for shortening each word to a more-commonly-used form of the word
         self._lemmatizer = WordNetLemmatizer()
@@ -721,22 +744,26 @@ class OrgTypeScraper(object):
         #if there are less than three types and none of them are P's, append prevention
         if not threepees:
             types.append(OrgTypesEnum.PREVENTION)
-
-
         return types or [OrgTypesEnum.UNKNOWN]
 
 
 class OrgUrlScraper(object):
+    """
+    Scrapes the url of an organization on a given page
+    """
     def __init__(self):
         pass
 
     def parse(self, response):
         parse = urlparse(response.url)
-        url = '%s/' % (parse.netloc)
+        url = '%s/' % parse.netloc
         return url
 
 
 class PublicationCitationSourceScraper(object):
+    """
+    Scrapes the sources of a publication
+    """
     def __init__(self):
         self.hash_regex = re.compile('\w{12}')
 
@@ -755,6 +782,9 @@ class PublicationCitationSourceScraper(object):
 
 
 class PublicationAuthorsScraper(object):
+    """
+    Scrapes the author(s) of a publication
+    """
     def __init__(self):
         pass
 
@@ -777,6 +807,9 @@ class PublicationAuthorsScraper(object):
 
 
 class PublicationDateScraper(object):
+    """
+    Scrapes the date of a publication
+    """
     def __init__(self):
         self.date_regex = re.compile('\d{4}')
 
@@ -793,6 +826,9 @@ class PublicationDateScraper(object):
 
 
 class PublicationPublisherScraper(object):
+    """
+    Scrapes the publisher of a citation
+    """
     def __init__(self):
         pass
 
@@ -818,6 +854,9 @@ class PublicationPublisherScraper(object):
 
 
 class PublicationTitleScraper(object):
+    """
+    Scrapes the title of a publication
+    """
     def __init__(self):
         pass
 
@@ -844,6 +883,9 @@ class PublicationTitleScraper(object):
 
 
 class PublicationURLScraper(object):
+    """
+    Scrapes the url of a publication
+    """
     def __init__(self):
         #Seed titles to look for on page
         self.titles = []
@@ -869,7 +911,11 @@ class PublicationURLScraper(object):
             index += 1
         return urls
 
+
 class UrlMetadataScraper(object):
+    """
+    Scrapes the metadata of a particular url
+    """
     def __init__(self):
         self.dao = URLMetadataDAO
 
@@ -914,7 +960,7 @@ class UrlMetadataScraper(object):
         # if the existing checksum was None, set the checksum and update_freq to 0 (above),
         # as this should be the first time we've seen this page
 
-        # TODO: Score the page.
+        # TODO: Score the page. <- this belong here still?
         # Ideas for page scoring:  Simple Google PageRank using references to/from other pages; Keyword Search;
         # Update frequency; User Feedback (the more a page is clicked the more we want to keep it updated)
 
@@ -922,6 +968,9 @@ class UrlMetadataScraper(object):
 
 
 class USPhoneNumberScraper(object):
+    """
+    Scrapes US phone numbers on a given page
+    """
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
         us_format_regex = re.compile(
