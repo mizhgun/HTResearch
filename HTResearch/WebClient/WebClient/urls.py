@@ -38,6 +38,9 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^org-count/$', 'org_count', name='org-count'),
                         url(r'^partner-map/$', 'org_partner_map', name='org-partner-map'),
                         url(r'^partner-map-demo/$', 'partner_map_demo', name='partner-map-demo'),
+                        url(r'^orgs-by-region/$', 'orgs_by_region', name='orgs-by-region'),
+                        url(r'^orgs-by-type/$', 'orgs_by_type', name='orgs-by-type'),
+                        url(r'^orgs-by-members/$', 'orgs_by_members', name='orgs-by-members'),
                         )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',

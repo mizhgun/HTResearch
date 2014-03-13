@@ -335,6 +335,81 @@ def partner_map_demo(request):
     return render(request, 'data-vis/partner-map-demo.html')
 
 
+def orgs_by_region(request):
+    items = [
+        {
+            'value': 235,
+            'label': 'Maharashtra',
+        },
+        {
+            'value': 225,
+            'label': 'Andhra Pradesh',
+        },
+        {
+            'value': 20,
+            'label': 'Karnataka',
+        },
+        {
+            'value': 70,
+            'label': 'Tamil Nadu',
+        },
+    ]
+    data = {
+        'data': items
+    }
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def orgs_by_type(request):
+    items = [
+        {
+            'value': 250,
+            'label': 'Prevention',
+        },
+        {
+            'value': 864,
+            'label': 'Protection',
+        },
+        {
+            'value': 500,
+            'label': 'Prosecution',
+        },
+        {
+            'value': 430,
+            'label': 'Other',
+        },
+    ]
+    data = {
+        'data': items
+    }
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def orgs_by_members(request):
+    items = [
+        {
+            'value': 250,
+            'label': '1-3',
+        },
+        {
+            'value': 864,
+            'label': '4-6',
+        },
+        {
+            'value': 500,
+            'label': '7-9',
+        },
+        {
+            'value': 430,
+            'label': '10+',
+        },
+    ]
+    data = {
+        'data': items
+    }
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
 def _create_org_dict(org):
     org_dict = {
         'name': org.name if org.name else "",
