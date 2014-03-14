@@ -1,4 +1,14 @@
+/**
+ * Provides a means of initializing the keyword cloud associated with an organization.
+ *
+ * @module word-cloud
+ */
 define(['jquery', 'd3_v2.7.4', 'd3.layout.cloud'], function($) {
+    'use strict';
+
+    /**
+     * Initializes the word cloud.
+     */
     function initialize() {
         var data = {
             'org_id': document.URL.split("/")[4]

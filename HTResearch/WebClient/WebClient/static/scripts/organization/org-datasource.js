@@ -1,4 +1,17 @@
+/**
+ * Provides a representation of a datasource for Organizations.
+ *
+ * @module org-datasource
+ */
 define(['jquery'], function($) {
+    'use strict';
+
+    /**
+     * A representation of an Organization data source.
+     * @param {object} options The options object associated with the data source.
+     * @constructor
+     * @alias module:org-datasource
+     */
     var OrgDataSource = function(options) {
         this._formatter = options.formatter;
         this._columns = options.columns;
@@ -8,6 +21,7 @@ define(['jquery'], function($) {
 
         /**
          * Returns stored column metadata
+         * @returns {object} Column metadata.
          */
         columns: function() {
             return this._columns;
@@ -20,8 +34,6 @@ define(['jquery'], function($) {
          * @param {function} callback to be called with the requested data.
          */
         data: function (options, callback) {
-
-            var url = '/get-org-rank-rows/';
             var self = this;
 
             var request = {

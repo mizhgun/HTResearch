@@ -1,6 +1,16 @@
+/**
+ * Provides a means of initializing the social media sharing elements.
+ *
+ * @module media-sharing
+ */
 define(['jquery', 'underscore'], function($, _) {
+    'use strict';
+
     var SITE_URL = 'http://unlhtprod.cloudapp.net';
 
+    /**
+     * Initializes the DOM elements for Facebook, Twitter, Google+, and LinkedIn sharing.
+     */
     function initialize() {
         var elements = $('.share');
         var height, width;

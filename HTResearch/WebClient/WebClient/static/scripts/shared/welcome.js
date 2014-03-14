@@ -1,4 +1,6 @@
 require(['jquery'], function($) {
+    'use strict';
+
     $('.btn').click(function () {
         var expire = new Date();
         expire = new Date(expire.getTime() + 7776000000);

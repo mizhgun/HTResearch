@@ -1,4 +1,6 @@
 require(['shared/validators', 'jquery', 'jquery.validate', 'bootstrap'], function(Validators, $) {
+    'use strict';
+
     $(function() {
         $('input[type="url"]').blur(function() {
              Validators.checkURL(this);
