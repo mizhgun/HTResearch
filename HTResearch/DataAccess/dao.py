@@ -1,6 +1,8 @@
 from datetime import datetime
 from mongoengine import Q
+from pymongo.errors import AutoReconnect
 from mongoengine.fields import StringField
+import time
 
 from dto import *
 
@@ -9,6 +11,9 @@ from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.geocoder import geocode
 from HTResearch.Utilities.url_tools import UrlUtility
 import re
+from HTResearch.Utilities.logutil import LoggingSection, get_logger
+
+logger = get_logger(LoggingSection.CLIENT, __name__)
 
 
 class DAO(object):
@@ -21,20 +26,30 @@ class DAO(object):
         self.conn = DBConnection
 
     def all(self, *only):
-        with self.conn():
-            return self.dto.objects(self._valid_query()).only(*only)
+        for i in range(5):
+            try:
+                with self.conn():
+                    return self.dto.objects(self._valid_query()).only(*only)
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     def merge_documents(self, dto, merge_dto):
-        with self.conn():
-            attributes = merge_dto._data
-            for key in attributes:
-                if attributes[key] is not None:
-                    cur_attr = getattr(dto, key)
-                    if cur_attr is None or (isinstance(cur_attr, type([])) and len(cur_attr) == 0):
-                        setattr(dto, key, attributes[key])
-                    else:
-                        # TODO: Maybe we should merge all reference documents, as well?
-                        pass
+        for i in range(5):
+            try:
+                with self.conn():
+                    attributes = merge_dto._data
+                    for key in attributes:
+                        if attributes[key] is not None:
+                            cur_attr = getattr(dto, key)
+                            if cur_attr is None or (isinstance(cur_attr, type([])) and len(cur_attr) == 0):
+                                setattr(dto, key, attributes[key])
+                            else:
+                                # TODO: Maybe we should merge all reference documents, as well?
+                                pass
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
             dto.last_updated = datetime.utcnow()
             dto.save()
@@ -44,53 +59,73 @@ class DAO(object):
         pass
 
     def delete(self, dto):
-        with self.conn():
-            dto.delete()
+        for i in range(5):
+            try:
+                with self.conn():
+                    dto.delete()
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
     def find(self, **constraints):
-        with self.conn():
-            return self.dto.objects(Q(**constraints) & self._valid_query()).first()
+        for i in range(5):
+            try:
+                with self.conn():
+                    return self.dto.objects(Q(**constraints) & self._valid_query()).first()
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     def count(self, search=None, **constraints):
-        with self.conn():
-            # Do text search or grab by constraints
-            if search is not None:
-                return len(self._text_search(search, None))
-            else:
-                return self.dto.objects(Q(**constraints) & self._valid_query()).count()
+        for i in range(5):
+            try:
+                with self.conn():
+                    # Do text search or grab by constraints
+                    if search is not None:
+                        return len(self._text_search(search, None))
+                    else:
+                        return self.dto.objects(Q(**constraints) & self._valid_query()).count()
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
     def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=None,
                  search=None, search_fields=None, **constraints):
-        with self.conn():
-            # Do text search or grab by constraints
-            if search is not None:
-                ret = self._text_search(search, fields=search_fields)
-            else:
-                ret = self.dto.objects(Q(**constraints) & self._valid_query())
+        for i in range(5):
+            try:
+                with self.conn():
+                    # Do text search or grab by constraints
+                    if search is not None:
+                        ret = self._text_search(search, fields=search_fields)
+                    else:
+                        ret = self.dto.objects(Q(**constraints) & self._valid_query())
 
-            # Sort if there are sort fields
-            if sort_fields is not None and len(sort_fields) > 0:
-                ret = ret.order_by(*sort_fields)
+                    # Sort if there are sort fields
+                    if sort_fields is not None and len(sort_fields) > 0:
+                        ret = ret.order_by(*sort_fields)
 
-            if num_elements is not None:
-                return ret[:num_elements]
-            elif page_size is not None and page is not None:
-                # as an example, if we want page 3 with a page size of 50, we want elements with index 150 to 199
-                pg_start = page_size * page
-                pg_end = page_size * (page + 1)
-                # NOTE: Even though end would equal 200 in our example, python's slicing is not inclusive for end
-                return ret[pg_start:pg_end]
-            elif start is not None:
-                if end is None:
-                    return ret[start:]
-                else:
-                    return ret[start:end + 1]
+                    if num_elements is not None:
+                        return ret[:num_elements]
+                    elif page_size is not None and page is not None:
+                        # as an example, if we want page 3 with a page size of 50, we want elements with index 150 to 199
+                        pg_start = page_size * page
+                        pg_end = page_size * (page + 1)
+                        # NOTE: Even though end would equal 200 in our example, python's slicing is not inclusive for end
+                        return ret[pg_start:pg_end]
+                    elif start is not None:
+                        if end is None:
+                            return ret[start:]
+                        else:
+                            return ret[start:end + 1]
 
-            return ret
+                    return ret
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     # Query to get all valid objects
     def _valid_query(self):
@@ -175,30 +210,35 @@ class ContactDAO(DAO):
 
     def create_update(self, contact_dto, cascade_add=True):
         no_id = contact_dto.id is None
-        with self.conn():
-            if cascade_add:
-                o = contact_dto.organization
-                if o:
-                    if contact_dto in o.contacts and no_id:
-                        o.contacts.remove(contact_dto)
-                    contact_dto.organization = self.org_dao().create_update(o, False)
-                for i in range(len(contact_dto.publications)):
-                    p = contact_dto.publications[i]
-                    if contact_dto in p.authors and no_id:
-                        p.authors.remove(contact_dto)
-                    contact_dto.publications[i] = self.pub_dao().create_update(p, False)
-
-            if no_id:
-                existing_dto = self.dto.objects(email=contact_dto.email).first()
-                if existing_dto is not None:
-                    saved_dto = self.merge_documents(existing_dto, contact_dto)
+        for i in range(5):
+            try:
+                with self.conn():
                     if cascade_add:
-                        saved_dto = self._add_contact_ref_to_children(saved_dto)
-                    return saved_dto
-            contact_dto.last_updated = datetime.utcnow()
-            self._update_weights(contact_dto)
-            contact_dto.save()
-        return contact_dto
+                        o = contact_dto.organization
+                        if o:
+                            if contact_dto in o.contacts and no_id:
+                                o.contacts.remove(contact_dto)
+                            contact_dto.organization = self.org_dao().create_update(o, False)
+                        for i in range(len(contact_dto.publications)):
+                            p = contact_dto.publications[i]
+                            if contact_dto in p.authors and no_id:
+                                p.authors.remove(contact_dto)
+                            contact_dto.publications[i] = self.pub_dao().create_update(p, False)
+
+                    if no_id:
+                        existing_dto = self.dto.objects(email=contact_dto.email).first()
+                        if existing_dto is not None:
+                            saved_dto = self.merge_documents(existing_dto, contact_dto)
+                            if cascade_add:
+                                saved_dto = self._add_contact_ref_to_children(saved_dto)
+                            return saved_dto
+                    contact_dto.last_updated = datetime.utcnow()
+                    self._update_weights(contact_dto)
+                    contact_dto.save()
+                return contact_dto
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     def _update_weights(self, contact_dto):
         weight = 0.0
@@ -258,28 +298,33 @@ class OrganizationDAO(DAO):
         }
 
     def merge_documents(self, existing_org_dto, new_org_dto):
-        with self.conn():
-            attributes = new_org_dto._data
-            for key in attributes:
-                if key == 'page_rank_info' and attributes['page_rank_info']:
-                    new_val = self._merge_page_rank_info(attributes['page_rank_info'], existing_org_dto.page_rank_info,
-                                         attributes['organization_url'])
-                    existing_org_dto.page_rank_info = new_val
-                elif attributes[key] or key == 'latlng':
-                    cur_attr = getattr(existing_org_dto, key)
-                    if not cur_attr:
-                        if key == 'latlng' and not attributes['latlng'] and attributes['address']:
-                            setattr(existing_org_dto, key, attributes[key])
-                    elif type(cur_attr) is list:
-                        merged_list = list(set(cur_attr + attributes[key]))
-                        # if this is org types and we have more than one org type, make sure unknown isn't a type :P
-                        if key == "types" and len(merged_list) > 1 and OrgTypesEnum.UNKNOWN in merged_list:
-                            merged_list.remove(OrgTypesEnum.UNKNOWN)
-                        setattr(existing_org_dto, key, attributes[key])
+        for i in range(5):
+            try:
+                with self.conn():
+                    attributes = new_org_dto._data
+                    for key in attributes:
+                        if key == 'page_rank_info' and attributes['page_rank_info']:
+                            new_val = self._merge_page_rank_info(attributes['page_rank_info'], existing_org_dto.page_rank_info,
+                                                 attributes['organization_url'])
+                            existing_org_dto.page_rank_info = new_val
+                        elif attributes[key] or key == 'latlng':
+                            cur_attr = getattr(existing_org_dto, key)
+                            if not cur_attr:
+                                if key == 'latlng' and not attributes['latlng'] and attributes['address']:
+                                    setattr(existing_org_dto, key, attributes[key])
+                            elif type(cur_attr) is list:
+                                merged_list = list(set(cur_attr + attributes[key]))
+                                # if this is org types and we have more than one org type, make sure unknown isn't a type :P
+                                if key == "types" and len(merged_list) > 1 and OrgTypesEnum.UNKNOWN in merged_list:
+                                    merged_list.remove(OrgTypesEnum.UNKNOWN)
+                                setattr(existing_org_dto, key, attributes[key])
 
-            existing_org_dto.last_updated = datetime.utcnow()
-            existing_org_dto.save()
-            return existing_org_dto
+                    existing_org_dto.last_updated = datetime.utcnow()
+                    existing_org_dto.save()
+                    return existing_org_dto
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     def _merge_page_rank_info(self, new_references, existing_references, organization_url):
         if existing_references is None:
@@ -342,37 +387,42 @@ class OrganizationDAO(DAO):
 
     def create_update(self, org_dto, cascade_add=True):
         no_id = org_dto.id is None
-        with self.conn():
-            if cascade_add:
-                for i in range(len(org_dto.contacts)):
-                    c = org_dto.contacts[i]
-                    if c.organization is not None and c.organization == org_dto:
-                        c.organization = None
-                    org_dto.contacts[i] = self.contact_dao().create_update(c, False)
-
-                for i in range(len(org_dto.partners)):
-                    p = org_dto.partners[i]
-                    if org_dto in p.partners:
-                        p.partners.remove(org_dto)
-                    org_dto.partners[i] = self.create_update(p, False)
-
-            if no_id:
-                existing_dto = self._smart_search_orgs(org_dto)
-                if existing_dto is not None:
-                    saved_dto = self.merge_documents(existing_dto, org_dto)
+        for i in range(5):
+            try:
+                with self.conn():
                     if cascade_add:
-                        saved_dto = self._add_org_ref_to_children(saved_dto)
-                    return saved_dto
-                elif org_dto.latlng is None and org_dto.address:
-                    # Geocode it
-                    org_dto.latlng = self.geocode(org_dto.address)
+                        for i in range(len(org_dto.contacts)):
+                            c = org_dto.contacts[i]
+                            if c.organization is not None and c.organization == org_dto:
+                                c.organization = None
+                            org_dto.contacts[i] = self.contact_dao().create_update(c, False)
 
-            org_dto.last_updated = datetime.utcnow()
-            self._update_weights(org_dto)
-            org_dto.save()
-            if cascade_add:
-                org_dto = self._add_org_ref_to_children(org_dto)
-        return org_dto
+                        for i in range(len(org_dto.partners)):
+                            p = org_dto.partners[i]
+                            if org_dto in p.partners:
+                                p.partners.remove(org_dto)
+                            org_dto.partners[i] = self.create_update(p, False)
+
+                    if no_id:
+                        existing_dto = self._smart_search_orgs(org_dto)
+                        if existing_dto is not None:
+                            saved_dto = self.merge_documents(existing_dto, org_dto)
+                            if cascade_add:
+                                saved_dto = self._add_org_ref_to_children(saved_dto)
+                            return saved_dto
+                        elif org_dto.latlng is None and org_dto.address:
+                            # Geocode it
+                            org_dto.latlng = self.geocode(org_dto.address)
+
+                    org_dto.last_updated = datetime.utcnow()
+                    self._update_weights(org_dto)
+                    org_dto.save()
+                    if cascade_add:
+                        org_dto = self._add_org_ref_to_children(org_dto)
+                return org_dto
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     def _update_weights(self, org_dto):
         weight = 0.0
@@ -459,29 +509,33 @@ class OrganizationDAO(DAO):
         NOTE: store_info should only be called if the spider wasn't running during calculation process,
         otherwise we might overwrite new page_rank_info
         """
-
-        with self.conn():
-            for i in range(0, len(org_dtos)):
-                dto = org_dtos[i]
-                try:
-                    if not store_info:
-                        exist_dto = self.find(id=dto.id)
-                        exist_dto.page_rank = dto.page_rank
-                        exist_dto.page_rank_weight = dto.page_rank_weight
-                        self._update_weights(exist_dto)
-                        exist_dto.save()
-                    else:
-                        exist_dto = self.find(id=dto.id)
-                        exist_dto.page_rank = dto.page_rank
-                        exist_dto.page_rank_weight = dto.page_rank_weight
-                        exist_dto.page_rank_info = dto.page_rank_info
-                        self._update_weights(exist_dto)
-                        exist_dto.save()
-                except Exception as e:
-                    # Something goofy happened but rolling back's not really an option
-                    print   "ERROR: Failed to store DTO: {" +\
-                            "\n\t id: " + str(dto.id) +\
-                        "\n} with exception: \n\n" + e.message
+        for i in range(5):
+            try:
+                with self.conn():
+                    for i in range(0, len(org_dtos)):
+                        dto = org_dtos[i]
+                        try:
+                            if not store_info:
+                                exist_dto = self.find(id=dto.id)
+                                exist_dto.page_rank = dto.page_rank
+                                exist_dto.page_rank_weight = dto.page_rank_weight
+                                self._update_weights(exist_dto)
+                                exist_dto.save()
+                            else:
+                                exist_dto = self.find(id=dto.id)
+                                exist_dto.page_rank = dto.page_rank
+                                exist_dto.page_rank_weight = dto.page_rank_weight
+                                exist_dto.page_rank_info = dto.page_rank_info
+                                self._update_weights(exist_dto)
+                                exist_dto.save()
+                        except Exception as e:
+                            # Something goofy happened but rolling back's not really an option
+                            print   "ERROR: Failed to store DTO: {" +\
+                                    "\n\t id: " + str(dto.id) +\
+                                "\n} with exception: \n\n" + e.message
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
 
 class PublicationDAO(DAO):
@@ -498,16 +552,21 @@ class PublicationDAO(DAO):
 
     def create_update(self, pub_dto, cascade_add=True):
         no_id = pub_dto.id is None
-        with self.conn():
-            if no_id:
-                existing_dto = self.dto.objects(title=pub_dto.title).first()
-                if existing_dto is not None:
-                    saved_dto = self.merge_documents(existing_dto, pub_dto)
-                    return saved_dto
+        for i in range(5):
+            try:
+                with self.conn():
+                    if no_id:
+                        existing_dto = self.dto.objects(title=pub_dto.title).first()
+                        if existing_dto is not None:
+                            saved_dto = self.merge_documents(existing_dto, pub_dto)
+                            return saved_dto
 
-            pub_dto.last_updated = datetime.utcnow()
-            pub_dto.save()
-        return pub_dto
+                    pub_dto.last_updated = datetime.utcnow()
+                    pub_dto.save()
+                return pub_dto
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     def _default_search_fields(self):
         return ['title', 'authors', ]
@@ -523,29 +582,39 @@ class URLMetadataDAO(DAO):
         self.dto = URLMetadataDTO
 
     def merge_documents(self, dto, merge_dto):
-        with self.conn():
-            attributes = merge_dto._data
-            for key in attributes:
-                if key == "last_visited":
-                    cur_attr = getattr(dto, key)
-                    if attributes[key] > cur_attr:
-                        setattr(dto, key, attributes[key])
-                elif attributes[key] is not None:
-                    setattr(dto, key, attributes[key])
-            dto.save()
-            return dto
+        for i in range(5):
+            try:
+                with self.conn():
+                    attributes = merge_dto._data
+                    for key in attributes:
+                        if key == "last_visited":
+                            cur_attr = getattr(dto, key)
+                            if attributes[key] > cur_attr:
+                                setattr(dto, key, attributes[key])
+                        elif attributes[key] is not None:
+                            setattr(dto, key, attributes[key])
+                    dto.save()
+                    return dto
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     def create_update(self, url_dto):
-        with self.conn():
-            if url_dto.id is None:
-                existing_dto = self.dto.objects(url=url_dto.url).first()
-                if existing_dto is not None:
-                    saved_dto = self.merge_documents(existing_dto, url_dto)
-                    return saved_dto
+        for i in range(5):
+            try:
+                with self.conn():
+                    if url_dto.id is None:
+                        existing_dto = self.dto.objects(url=url_dto.url).first()
+                        if existing_dto is not None:
+                            saved_dto = self.merge_documents(existing_dto, url_dto)
+                            return saved_dto
 
-            url_dto.last_updated = datetime.utcnow()
-            url_dto.save()
-        return url_dto
+                    url_dto.last_updated = datetime.utcnow()
+                    url_dto.save()
+                return url_dto
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     def findmany_by_domains(self, num_elements, required_domains, blocked_domains, *sort_fields):
         if len(required_domains) > 0:
@@ -557,11 +626,16 @@ class URLMetadataDAO(DAO):
         else:
             blk_query = Q()
 
-        with self.conn():
-            if len(sort_fields) > 0:
-                return URLMetadataDTO.objects(req_query & blk_query).order_by(*sort_fields)[:num_elements]
-            else:
-                return URLMetadataDTO.objects(req_query & blk_query)[:num_elements]
+        for i in range(5):
+            try:
+                with self.conn():
+                    if len(sort_fields) > 0:
+                        return URLMetadataDTO.objects(req_query & blk_query).order_by(*sort_fields)[:num_elements]
+                    else:
+                        return URLMetadataDTO.objects(req_query & blk_query)[:num_elements]
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
 
 class UserDAO(DAO):
@@ -587,15 +661,20 @@ class UserDAO(DAO):
         }
 
     def create_update(self, user_dto):
-        with self.conn():
-            if user_dto.organization is not None:
-                o = user_dto.organization
-                user_dto.organization = self.org_dao().create_update(o)
+        for i in range(5):
+            try:
+                with self.conn():
+                    if user_dto.organization is not None:
+                        o = user_dto.organization
+                        user_dto.organization = self.org_dao().create_update(o)
 
-            user_dto.last_updated = datetime.utcnow()
-            self._update_weights(user_dto)
-            user_dto.save()
-        return user_dto
+                    user_dto.last_updated = datetime.utcnow()
+                    self._update_weights(user_dto)
+                    user_dto.save()
+                return user_dto
+            except AutoReconnect:
+                logger.error('Exception while connecting to Mongo. Retrying...')
+                time.sleep(pow(2, i))
 
     def _update_weights(self, user_dto):
         weight = 0.0
