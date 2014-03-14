@@ -335,44 +335,11 @@ def orgs_by_region(request):
     org_dao = ctx.get_object('OrganizationDAO')
 
     regions = [
-        'Uttar Pradesh',
-        'Maharashtra',
-        'Bihar',
-        'West Bengal',
-        'Andhra Pradesh',
-        'Madhya Pradesh',
-        'Tamil Nadu',
-        'Rajasthan',
-        'Karnataka',
-        'Gujarat',
-        'Odisha',
-        'Kerala',
-        'Jharkhand',
-        'Assam',
-        'Punjab',
-        'Chhattisgarh',
-        'Haryana',
-        'Jammu and Kashmir',
-        'Uttarakhand',
-        'Himachal Pradesh',
-        'Tripura',
-        'Meghalaya',
-        'Manipur',
-        'Nagaland',
-        'Goa',
-        'Arunachal Pradesh',
-        'Mizoram',
-        'Sikkim',
-        'Delhi',
-        'Puducherry',
-        'Chandigarh',
-        'Andaman',
-        'Nicobar Islands',
-        'Dadra',
-        'Nagar Haveli',
-        'Daman',
-        'Diu',
-        'Lakshadweep',
+        'Uttar Pradesh', 'Maharashtra', 'Bihar', 'West Bengal', 'Andhra Pradesh', 'Madhya Pradesh', 'Tamil Nadu',
+        'Rajasthan', 'Karnataka', 'Gujarat', 'Odisha', 'Kerala', 'Jharkhand', 'Assam', 'Punjab', 'Chhattisgarh',
+        'Haryana', 'Jammu and Kashmir', 'Uttarakhand', 'Himachal Pradesh', 'Tripura', 'Meghalaya', 'Manipur',
+        'Nagaland', 'Goa', 'Arunachal Pradesh', 'Mizoram', 'Sikkim', 'Delhi', 'Puducherry', 'Chandigarh', 'Andaman',
+        'Nicobar Islands', 'Dadra', 'Nagar Haveli', 'Daman', 'Diu', 'Lakshadweep',
     ]
 
     region_count = {}
@@ -402,26 +369,29 @@ def orgs_by_region(request):
 
 
 def orgs_by_type(request):
-    items = [
-        {
-            'value': 250,
-            'label': 'Prevention',
-        },
-        {
-            'value': 864,
-            'label': 'Protection',
-        },
-        {
-            'value': 500,
-            'label': 'Prosecution',
-        },
-        {
-            'value': 430,
-            'label': 'Other',
-        },
-    ]
+    org_dao = ctx.get_object('OrganizationDAO')
+
+    organizations = list(org_dao.findmany())
+
+    results = []
+    type_count = {}
+    for org in organizations:
+        if len(org['types']) > 0:
+            for i in range(len(OrgTypesEnum.mapping)):
+                if org['types'][0] == i:
+                    key = OrgTypesEnum.reverse_mapping[i]
+                    if key in type_count:
+                        type_count[key] += 1
+                    else:
+                        type_count[key] = 1
+
+    for region in type_count.iterkeys():
+        results.append({
+            'label': region.lower(),
+            'value': type_count[region],
+        })
     data = {
-        'data': items
+        'data': results
     }
     return HttpResponse(json.dumps(data), content_type='application/json')
 

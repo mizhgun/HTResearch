@@ -61,12 +61,11 @@ define(['jquery', 'd3'], function($, d3) {
             data = data.data;
 
             var element = $(typeSelector);
-            var colors = [
-                '#4ecdc4',
-                '#c7f464',
-                '#ff6b6b',
-                '#888888'
-            ];
+            var colors = {
+                'protection': '#4ecdc4',
+                'prevention': '#c7f464',
+                'prosecution': '#ff6b6b'
+            };
 
             var vis = d3.select(typeSelector)
                 .append('svg:svg')
@@ -89,8 +88,16 @@ define(['jquery', 'd3'], function($, d3) {
                 .append('svg:g')
                 .attr('class', 'slice');
 
+            function hex(x) { return ('0' + parseInt(x).toString(16)).slice(-2); }
+            function grayscale(x) {
+                return '#' + hex(x*255) + hex(x*255) + hex(x*255);
+            }
+
             arcs.append('svg:path')
-                .attr('fill', function(d, i) { return colors[i]; } )
+                .attr('fill', function(d, i) {
+                    return colors[d.data.label.toLowerCase()]
+                       || grayscale(0.4 + 0.6 * i / data.length);
+                })
                 .attr('d', arc);
 
             arcs.append('svg:text')
