@@ -332,26 +332,71 @@ def org_partner_map(request):
 
 
 def orgs_by_region(request):
-    items = [
-        {
-            'value': 235,
-            'label': 'Maharashtra',
-        },
-        {
-            'value': 225,
-            'label': 'Andhra Pradesh',
-        },
-        {
-            'value': 20,
-            'label': 'Karnataka',
-        },
-        {
-            'value': 70,
-            'label': 'Tamil Nadu',
-        },
+    org_dao = ctx.get_object('OrganizationDAO')
+
+    regions = [
+        'Uttar Pradesh',
+        'Maharashtra',
+        'Bihar',
+        'West Bengal',
+        'Andhra Pradesh',
+        'Madhya Pradesh',
+        'Tamil Nadu',
+        'Rajasthan',
+        'Karnataka',
+        'Gujarat',
+        'Odisha',
+        'Kerala',
+        'Jharkhand',
+        'Assam',
+        'Punjab',
+        'Chhattisgarh',
+        'Haryana',
+        'Jammu and Kashmir',
+        'Uttarakhand',
+        'Himachal Pradesh',
+        'Tripura',
+        'Meghalaya',
+        'Manipur',
+        'Nagaland',
+        'Goa',
+        'Arunachal Pradesh',
+        'Mizoram',
+        'Sikkim',
+        'Delhi',
+        'Puducherry',
+        'Chandigarh',
+        'Andaman',
+        'Nicobar Islands',
+        'Dadra',
+        'Nagar Haveli',
+        'Daman',
+        'Diu',
+        'Lakshadweep',
     ]
+
+    region_count = {}
+    results = []
+
+    organizations = list(org_dao.findmany())
+    for org in organizations:
+        if org['address']:
+            for region in regions:
+                if region in org['address']:
+                    if region in region_count:
+                        region_count[region] += 1
+                    else:
+                        region_count[region] = 1
+                    break
+
+    for region in region_count.iterkeys():
+        results.append({
+            'label': region,
+            'value': region_count[region],
+        })
+
     data = {
-        'data': items
+        'data': results
     }
     return HttpResponse(json.dumps(data), content_type='application/json')
 
