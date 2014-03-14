@@ -356,10 +356,10 @@ def orgs_by_region(request):
                         region_count[region] = 1
                     break
 
-    for region in region_count.iterkeys():
+    for key in region_count.iterkeys():
         results.append({
-            'label': region,
-            'value': region_count[region],
+            'label': key,
+            'value': region_count[key],
         })
 
     data = {
@@ -375,6 +375,7 @@ def orgs_by_type(request):
 
     results = []
     type_count = {}
+
     for org in organizations:
         if len(org['types']) > 0:
             for i in range(len(OrgTypesEnum.mapping)):
@@ -384,11 +385,12 @@ def orgs_by_type(request):
                         type_count[key] += 1
                     else:
                         type_count[key] = 1
+                    break
 
-    for region in type_count.iterkeys():
+    for key in type_count.iterkeys():
         results.append({
-            'label': region.lower(),
-            'value': type_count[region],
+            'label': key.lower(),
+            'value': type_count[key],
         })
     data = {
         'data': results
@@ -397,26 +399,30 @@ def orgs_by_type(request):
 
 
 def orgs_by_members(request):
-    items = [
-        {
-            'value': 250,
-            'label': '1-3',
-        },
-        {
-            'value': 864,
-            'label': '4-6',
-        },
-        {
-            'value': 500,
-            'label': '7-9',
-        },
-        {
-            'value': 430,
-            'label': '10+',
-        },
+
+    org_dao = ctx.get_object('OrganizationDAO')
+
+    ranges = [
+        (1, 3, '1-3'),
+        (4, 6, '4-6'),
+        (7, 9, '7-9'),
+        (10, 12, '10+'),
     ]
+
+    results = []
+
+    for r in ranges:
+        count = 0
+        for i in range(r[0], r[1] + 1):
+            count += org_dao.count(contacts__size=i)
+
+        results.append({
+            'label': r[2],
+            'value': count
+        })
+
     data = {
-        'data': items
+        'data': results
     }
     return HttpResponse(json.dumps(data), content_type='application/json')
 
