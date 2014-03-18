@@ -2,14 +2,14 @@ import mongoengine as mongo
 
 
 class UrlCountPairDTO(mongo.EmbeddedDocument):
-    """A DTO wrapper for pairing Source URLs and the Number of References to some Page"""
+    """A DTO wrapper for pairing source URLs and the number of references to some page."""
 
     url = mongo.URLField(db_field='u')
     count = mongo.LongField(min_value=0, db_field='c')
 
 
 class PageRankVectorDTO(mongo.EmbeddedDocument):
-    """A DTO wrapper for counting referenced organizations"""
+    """A DTO wrapper for counting referenced organizations."""
 
     org_domain = mongo.StringField(db_field='o')
     count = mongo.LongField(min_value=0, db_field='c')
@@ -17,7 +17,7 @@ class PageRankVectorDTO(mongo.EmbeddedDocument):
 
 
 class PageRankInfoDTO(mongo.EmbeddedDocument):
-    """A DTO wrapper for Information related to PageRank """
+    """A DTO wrapper for information related to PageRank."""
 
     total_with_self = mongo.LongField(min_value=0, db_field='ts')
     total = mongo.LongField(min_value=0, db_field='t')
