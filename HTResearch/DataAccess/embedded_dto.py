@@ -1,3 +1,8 @@
+#
+# embedded_dto.py
+# A module containing the DTOs for embedded documents within MongoDB.
+#
+
 import mongoengine as mongo
 
 

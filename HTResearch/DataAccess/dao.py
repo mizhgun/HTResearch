@@ -1,3 +1,9 @@
+#
+# dao.py
+# A module containing the different data access objects used for interaction with our MongoDB collections.
+#
+
+
 from datetime import datetime
 from mongoengine import Q
 from mongoengine.fields import StringField

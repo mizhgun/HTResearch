@@ -1,3 +1,8 @@
+#
+# connection.py
+# A module for wrapping MongoDB connection details.
+#
+
 # stdlib imports
 from mongoengine.connection import connect, disconnect, get_connection
 

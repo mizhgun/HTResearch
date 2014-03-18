@@ -1,3 +1,8 @@
+#
+# dto.py
+# A module containing the different DTOs used for interaction with our MongoDB documents.
+#
+
 import mongoengine as mongo
 
 from HTResearch.DataAccess.embedded_dto import *
