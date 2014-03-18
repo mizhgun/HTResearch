@@ -1,3 +1,9 @@
+#
+# model.py
+# A module for the data models corresponding to important anti-trafficking information.
+#
+
+
 from datetime import datetime
 
 

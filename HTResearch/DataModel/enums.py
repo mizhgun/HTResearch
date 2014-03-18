@@ -1,3 +1,9 @@
+#
+# enums.py
+# A module containing the various enums used throughout the project.
+#
+
+
 from HTResearch.Utilities.data_structures import enum
 
 AccountType = enum(
