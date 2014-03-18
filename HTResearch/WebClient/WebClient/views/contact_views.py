@@ -75,7 +75,8 @@ def search_contacts(request):
         try:
             contacts = contact_dao.findmany(search=search_text,
                                             num_elements=10,
-                                            sort_fields=['valid', 'content_weight', 'last_name', 'first_name'])
+                                            sort_fields=['content_weight', 'last_name', 'first_name'],
+                                            valid=True)
         except Exception:
             logger.error('Exception encountered on contact search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
@@ -103,9 +104,6 @@ def search_contacts(request):
             return get_http_404_page(request)
         c['type'] = 'contact'
         results.append(c)
-
-    # Check validity here since users don't have a 'valid' field
-    results = [r for r in results if r['valid']]
 
     for dto in users:
         u = dto.__dict__['_data']
