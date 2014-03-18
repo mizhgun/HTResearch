@@ -1,3 +1,7 @@
+/**
+ * Fetches data for the organization table and formats it
+ */
+
 require(['organization/org-datasource', 'jquery', 'fuelux/all'], function(OrgDataSource, $) {
     'use strict';
 

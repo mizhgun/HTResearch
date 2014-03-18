@@ -1,3 +1,7 @@
+/**
+ * Main script for the index page.
+ */
+
 require(['shared/modal',
         'index/map',
         'index/newsloader',
@@ -173,6 +177,7 @@ require(['shared/modal',
         $('[rel=tooltip]').tooltip();
     }
 
+    //Retrieve the cookie that is created upon first visiting the website
     function getCookie(name) {
         var arg = name + "=";
         var argLength = arg.length;
