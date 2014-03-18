@@ -33,7 +33,7 @@ def search_publications(request):
     if search_text:
         pub_dao = ctx.get_object('PublicationDAO')
         try:
-            publications = pub_dao.findmany(search=search_text, num_elements=10, sort_fields=['valid', 'title'])
+            publications = pub_dao.findmany(search=search_text, num_elements=10, sort_fields=['title'], valid=True)
         except Exception:
             logger.error('Exception encountered on publication search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
@@ -44,7 +44,6 @@ def search_publications(request):
         # Change the datetime to make it readable in the modal
         pub['publication_date'] = str(pub['publication_date'].year)
         results.append(pub)
-    results = [r for r in results if r['valid']]
 
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type='application/json')

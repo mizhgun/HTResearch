@@ -46,7 +46,7 @@ def search_organizations(request):
         org_dao = ctx.get_object('OrganizationDAO')
         try:
             organizations = org_dao.findmany(search=search_text, num_elements=10,
-                                             sort_fields=['valid', 'combined_weight', 'name'])
+                                             sort_fields=['combined_weight', 'name'], valid=True)
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
@@ -57,7 +57,6 @@ def search_organizations(request):
         # Split organization keyword string into list of words
         org['keywords'] = (org['keywords'] or '').split()
         results.append(org)
-    results = [r for r in results if r['valid']]
 
     data = {'results': results}
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
