@@ -1,3 +1,7 @@
+/**
+ * Demonstrates the Partner Map.
+ */
+
 require(['datavis/partner-map', 'bootstrap'], function(PartnerMap) {
     'use strict';
 

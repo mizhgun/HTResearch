@@ -1,5 +1,5 @@
 /**
- * Fetches data for the organization table and formats it
+ * Fetches data for the organization table and formats it using Fuel UX.
  */
 
 require(['organization/org-datasource', 'jquery', 'fuelux/all'], function(OrgDataSource, $) {

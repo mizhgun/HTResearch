@@ -1,5 +1,5 @@
 /**
- * Provides validation for the edit organization form
+ * Provides validation for the "Edit Organization" form
  */
 
 require(['shared/validators', 'jquery', 'jquery.validate', 'bootstrap'], function(Validators, $) {

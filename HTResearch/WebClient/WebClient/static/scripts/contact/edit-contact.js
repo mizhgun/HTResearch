@@ -1,5 +1,5 @@
 /**
- * Provides validation for the edit contact form
+ * Provides validation for the "Edit Contact" form.
  */
 
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {

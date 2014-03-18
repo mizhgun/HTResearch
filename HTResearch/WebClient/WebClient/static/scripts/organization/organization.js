@@ -1,5 +1,5 @@
 /**
- * Main script for the organization profile page
+ * Main script for the Organization Profile page.
  */
 
 require(['organization/word-cloud', 'bootstrap'], function(WordCloud) {

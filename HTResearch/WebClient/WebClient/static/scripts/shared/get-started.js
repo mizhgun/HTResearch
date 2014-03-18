@@ -1,5 +1,5 @@
 /**
- * Main script for the Get Started page
+ * Main script for the "Get Started" page.
  */
 
 require(['jquery', 'bootstrap'], function($) {

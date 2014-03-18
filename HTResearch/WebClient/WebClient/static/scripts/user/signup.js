@@ -1,5 +1,5 @@
 /**
- * Performs client side signup form validation
+ * Performs client side signup form validation.
  */
 
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {

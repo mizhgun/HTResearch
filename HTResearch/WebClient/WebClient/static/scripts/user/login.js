@@ -1,5 +1,5 @@
 /**
- * Performs client side login validation
+ * Performs client side login validation.
  */
 
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {

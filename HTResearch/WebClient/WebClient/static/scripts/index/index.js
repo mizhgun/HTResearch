@@ -1,5 +1,5 @@
 /**
- * Main script for the index page.
+ * Main script for the Index page.
  */
 
 require(['shared/modal',

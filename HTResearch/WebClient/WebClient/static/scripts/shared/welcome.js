@@ -1,5 +1,5 @@
 /**
- * Main script for the welcome page. Creates a cookie to mark a user's initial visit
+ * Main script for the Welcome page. Creates a cookie to mark a user's initial visit.
  */
 
 require(['jquery'], function($) {

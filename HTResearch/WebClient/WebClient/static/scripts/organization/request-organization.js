@@ -1,5 +1,5 @@
 /**
- * Performs validation on a requested organization url
+ * Performs validation on a requested organization url.
  */
 
 require(['shared/validators', 'jquery', 'bootstrap'], function(Validators, $) {
