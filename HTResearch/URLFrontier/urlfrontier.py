@@ -126,7 +126,8 @@ class URLFrontier:
         """
         Starts the child process that maintains the URL cache.
 
-        rules - The list of rules to be applied to the cache.
+        Arguments:
+            rules (URLFrontierRules): The rules to be applied to the cache.
         """
         with self._start_term_lock:
             cs = rules.checksum
@@ -161,7 +162,8 @@ class URLFrontier:
         """
         Terminates the child URL cache process.
 
-        rules - The list of rules associated with the cache.
+        Arguments:
+            rules (URLFrontierRules): The list of rules associated with the cache.
         """
         with self._start_term_lock:
             cs = rules.checksum
@@ -186,7 +188,11 @@ class URLFrontier:
         """
         Fetches the next URL from the queue.
 
-        rules - The rules used in fetching the next URL.
+        Arguments
+            rules (URLFrontierRules): The rules used in fetching the next URL.
+
+        Returns:
+            A URL string for the next URL in the queue.
         """
         cs = rules.checksum
         start_process = False
@@ -214,9 +220,10 @@ class URLFrontier:
 
     def put_url(self, u):
         """
-        Puts a new URL in the queue.
+        Puts a new URL in the database.
 
-        u - The URL to be placed in the queue.
+        Arguments:
+            u (URLMetadata): The URL to be placed in the database.
         """
         url_dto = DTOConverter.to_dto(URLMetadataDTO, u)
         self.dao().create_update(url_dto)
@@ -225,7 +232,8 @@ class URLFrontier:
         """
         Empties the cache. This should ONLY be used for testing purposes.
 
-        rules - The rules associated with the cache process.
+        Arguments:
+            rules (URLFrontierRules): The rules associated with the cache process.
         """
         cs = rules.checksum
         with self._mid_empty_conds[cs]:
