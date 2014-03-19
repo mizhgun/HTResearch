@@ -33,7 +33,7 @@ def search_publications(request):
     if search_text:
         pub_dao = ctx.get_object('PublicationDAO')
         try:
-            publications = pub_dao.findmany(search=search_text, num_elements=10, sort_fields=['valid', 'title'])
+            publications = pub_dao.findmany(search=search_text, num_elements=10, sort_fields=['title'], valid=True)
         except Exception:
             logger.error('Exception encountered on publication search with search_text={0}'.format(search_text))
             return get_http_404_page(request)

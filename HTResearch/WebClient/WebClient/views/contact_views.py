@@ -75,7 +75,8 @@ def search_contacts(request):
         try:
             contacts = contact_dao.findmany(search=search_text,
                                             num_elements=10,
-                                            sort_fields=['valid', 'content_weight', 'last_name', 'first_name'])
+                                            sort_fields=['content_weight', 'last_name', 'first_name'],
+                                            valid=True)
         except Exception:
             logger.error('Exception encountered on contact search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
@@ -117,7 +118,7 @@ def search_contacts(request):
         u['type'] = 'user'
         results.append(u)
 
-    results = sorted(results, key=lambda k: (k['first_name'], k['last_name'], k['content_weight'], k['valid']))[:10]
+    results = sorted(results, key=lambda k: (k['first_name'], k['last_name'], k['content_weight']))[:10]
 
     # Add the org types to show
     # for index, contact in enumerate(results):
