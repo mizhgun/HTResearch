@@ -15,6 +15,7 @@ define(['jquery', 'underscore'], function($, _) {
         var elements = $('.share');
         var height, width;
 
+        //Iterate over each given social medium and initialize them with sizes and urls
         _.each(elements, function(ele){
             // Add href
             switch (ele.id){

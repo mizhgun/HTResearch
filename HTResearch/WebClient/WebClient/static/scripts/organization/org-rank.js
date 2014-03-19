@@ -1,3 +1,7 @@
+/**
+ * Fetches data for the organization table and formats it using Fuel UX.
+ */
+
 require(['shared/analytics', 'organization/org-datasource', 'jquery', 'fuelux/all'], function(Analytics, OrgDataSource, $) {
     'use strict';
 

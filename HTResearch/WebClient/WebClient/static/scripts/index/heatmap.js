@@ -27,6 +27,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
         ],
         heatMapRadius = 30;
 
+    //Creates the Organization Density information using cached coordinates from the server
     function createHeatMap() {
         var pointArray = new google.maps.MVCArray(orgCoordinates);
         heatMap = new google.maps.visualization.HeatmapLayer({
@@ -36,6 +37,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
         });
     }
 
+    //Use an AJAX request to retrieve cached coordinate information
     function loadCoordinates(success_cb) {
         // Clear array
         orgCoordinates.length = 0;
@@ -67,6 +69,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
         loadCoordinates(createHeatMap);
     }
 
+    //Toggles the organization density feature
     function toggleHeatMap() {
         // map is a variable from the file index.js
         if (heatMap != null) {

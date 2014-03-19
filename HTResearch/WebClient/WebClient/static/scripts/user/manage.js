@@ -1,3 +1,7 @@
+/**
+ * Performs management page validation.
+ */
+
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
     'use strict';
 

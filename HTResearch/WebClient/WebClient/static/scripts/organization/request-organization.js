@@ -1,3 +1,7 @@
+/**
+ * Performs validation on a requested organization url.
+ */
+
 require(['shared/analytics', 'shared/validators', 'jquery', 'bootstrap'], function(Analytics, Validators, $) {
     'use strict';
 
