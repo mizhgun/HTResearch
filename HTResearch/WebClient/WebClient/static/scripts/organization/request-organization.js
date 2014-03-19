@@ -1,7 +1,9 @@
-require(['shared/validators', 'jquery', 'bootstrap'], function(Validators, $) {
+require(['shared/analytics', 'shared/validators', 'jquery', 'bootstrap'], function(Analytics, Validators, $) {
     'use strict';
 
-    $(function (){
+    $(function() {
+        Analytics.startTracking();
+
         $('input[type="url"]').blur(function() {
              Validators.checkURL(this);
         });
