@@ -1,14 +1,19 @@
-require(['shared/modal',
-        'index/map',
-        'index/newsloader',
-        'index/heatmap',
-        'index/searchquery',
-        'underscore',
-        'jquery',
-        'jquery.tmpl',
-        'bootstrap',
-        'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
-    function(Modal, Map, NewsLoader, HeatMap, SearchQuery, _, $) {
+/**
+ * Main script for the Index page.
+ */
+
+require(['shared/analytics',
+    'shared/modal',
+    'index/map',
+    'index/newsloader',
+    'index/heatmap',
+    'index/searchquery',
+    'underscore',
+    'jquery',
+    'jquery.tmpl',
+    'bootstrap',
+    'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
+    function(Analytics, Modal, Map, NewsLoader, HeatMap, SearchQuery, _, $) {
     'use strict';
 
     var map;
@@ -24,6 +29,8 @@ require(['shared/modal',
 
         map = new Map($('#map-canvas')[0]);
         newsLoader = new NewsLoader();
+
+        Analytics.startTracking();
         HeatMap.initialize(map.getMap());
 
         /**
@@ -173,6 +180,7 @@ require(['shared/modal',
         $('[rel=tooltip]').tooltip();
     }
 
+    //Retrieve the cookie that is created upon first visiting the website
     function getCookie(name) {
         var arg = name + "=";
         var argLength = arg.length;

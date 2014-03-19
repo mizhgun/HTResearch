@@ -140,22 +140,6 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
                 zoomInOut(e);
             });
 
-            svg.on("mousemove", function() {
-              fisheye.focus(d3.mouse(this));
-
-              node.each(function(d) { d.fisheye = fisheye(d); })
-                  .attr("cx", function(d) { return d.fisheye.x; })
-                  .attr("cy", function(d) { return d.fisheye.y; })
-                  .attr('transform', function(d) {return 'translate(' + d.fisheye.x + ',' + d.fisheye.y +')'; })
-                  .selectAll('circle')
-                  .attr("r", function(d) { return d.fisheye.z * r; });
-
-              link.attr("x1", function(d) { return d.source.fisheye.x; })
-                  .attr("y1", function(d) { return d.source.fisheye.y; })
-                  .attr("x2", function(d) { return d.target.fisheye.x; })
-                  .attr("y2", function(d) { return d.target.fisheye.y; });
-            });
-
             force.on('tick', function() {
                 link.attr('x1', function(d) { return d.source.x; })
                     .attr('y1', function(d) { return d.source.y; })

@@ -1,7 +1,13 @@
-require(['organization/org-datasource', 'jquery', 'fuelux/all'], function(OrgDataSource, $) {
+/**
+ * Fetches data for the organization table and formats it using Fuel UX.
+ */
+
+require(['shared/analytics', 'organization/org-datasource', 'jquery', 'fuelux/all'], function(Analytics, OrgDataSource, $) {
     'use strict';
 
     $(function () {
+        Analytics.startTracking();
+
         $('#view-all-orgs-nav').addClass('active');
 
         $('#org-rank-table').datagrid({

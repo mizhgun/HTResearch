@@ -1,7 +1,13 @@
-require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
+/**
+ * Provides validation for the "Edit Contact" form.
+ */
+
+require(['shared/analytics', 'jquery', 'jquery.validate', 'bootstrap'], function(Analytics, $) {
     'use strict';
 
     $(function() {
+        Analytics.startTracking();
+
         $('#edit-contact-form').validate({
             rules: {
                 first_name: {
