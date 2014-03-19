@@ -2,8 +2,10 @@
  * Main script for the Welcome page. Creates a cookie to mark a user's initial visit.
  */
 
-require(['jquery'], function($) {
+require(['shared/analytics', 'jquery'], function(Analytics, $) {
     'use strict';
+
+    Analytics.startTracking();
 
     $('.btn').click(function () {
         var expire = new Date();

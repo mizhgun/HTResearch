@@ -2,17 +2,18 @@
  * Main script for the Index page.
  */
 
-require(['shared/modal',
-        'index/map',
-        'index/newsloader',
-        'index/heatmap',
-        'index/searchquery',
-        'underscore',
-        'jquery',
-        'jquery.tmpl',
-        'bootstrap',
-        'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
-    function(Modal, Map, NewsLoader, HeatMap, SearchQuery, _, $) {
+require(['shared/analytics',
+    'shared/modal',
+    'index/map',
+    'index/newsloader',
+    'index/heatmap',
+    'index/searchquery',
+    'underscore',
+    'jquery',
+    'jquery.tmpl',
+    'bootstrap',
+    'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
+    function(Analytics, Modal, Map, NewsLoader, HeatMap, SearchQuery, _, $) {
     'use strict';
 
     var map;
@@ -28,6 +29,8 @@ require(['shared/modal',
 
         map = new Map($('#map-canvas')[0]);
         newsLoader = new NewsLoader();
+
+        Analytics.startTracking();
         HeatMap.initialize(map.getMap());
 
         /**
