@@ -59,7 +59,7 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
 
         defineGradients();
 
-        d3.json('/partner-map/', function(error, graph) {
+        d3.json('/api/partner-map/', function(error, graph) {
             // start d3.layout.force
             force
                 .nodes(graph.nodes)
