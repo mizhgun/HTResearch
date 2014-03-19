@@ -21,6 +21,9 @@ class DAO(object):
     """
     A generic DAO class that may be subclassed by DAOs for operations on
     specific documents.
+
+    Attributes:
+        conn (DBConnection): The database connection class to use.
     """
 
     def __init__(self):
@@ -30,7 +33,11 @@ class DAO(object):
         """
         Returns all documents in the collection.
 
-        only - The specific fields to return from the collection, if any.
+        Arguments:
+            only (param[]): The specific fields to return from the collection, if any.
+
+        Returns:
+            The documents or specified fields in the collection.
         """
         with self.conn():
             return self.dto.objects(self._valid_query()).only(*only)
@@ -39,8 +46,12 @@ class DAO(object):
         """
         Merges two documents (the latter document into the former).
 
-        dto - The base DTO to merge into.
-        merge_dto - The DTO with information to be merged.
+        Arguments:
+            dto (DTO): The base DTO to merge into.
+            merge_dto (DTO): The DTO with information to be merged.
+
+        Returns:
+            The newly merged DTO.
         """
         with self.conn():
             attributes = merge_dto._data
@@ -61,7 +72,11 @@ class DAO(object):
         """
         Creates or updates a document.
 
-        dto - The DTO to be created or updated.
+        Arguments:
+            dto (DTO): The DTO to be created or updated.
+
+        Returns:
+            The newly created or updated DTO.
         """
         pass
 
@@ -69,7 +84,8 @@ class DAO(object):
         """
         Deletes an existing document.
 
-        dto - The DTO to be deleted.
+        Arguments:
+            dto (DTO): The DTO to be deleted.
         """
         with self.conn():
             dto.delete()
@@ -80,7 +96,11 @@ class DAO(object):
         """
         Finds and returns a single document.
 
-        constraints - The constraints to apply to the find operation.
+        Arguments:
+            constraints (param[]): The constraints to apply to the find operation.
+
+        Returns:
+            A DTO matching the constraints provided.
         """
         with self.conn():
             return self.dto.objects(Q(**constraints) & self._valid_query()).first()
@@ -89,8 +109,12 @@ class DAO(object):
         """
         Returns the number of documents that satisfy a query.
 
-        search - A text search to apply to documents' fields.
-        constraints - The constraints to apply to the count operation.
+        Arguments:
+            search (string): A text search to apply to documents' fields.
+            constraints (param[]): The constraints to apply to the count operation.
+
+        Returns:
+            The number of documents matching the constraints provided.
         """
         with self.conn():
             # Do text search or grab by constraints
@@ -106,14 +130,18 @@ class DAO(object):
         """
         Finds and returns a list of documents.
 
-        num_elements - The number of documents to limit the result size to.
-        page_size - The number of documents to include per paginated result.
-        start - The page of results to start on, inclusive.
-        end - The page of results to end on, inclusive.
-        sort_fields - The document fields to sort results by.
-        search - A text search for documents' fields.
-        search_fields - The document fields to text search by.
-        constraints - The constraints to apply to the find operation.
+        Arguments:
+            num_elements (int): The number of documents to limit the result size to.
+            page_size (int): The number of documents to include per paginated result.
+            start (int): The page of results to start on, inclusive.
+            end (int): The page of results to end on, inclusive.
+            sort_fields (param[]): The document fields to sort results by.
+            search (string): A text search for documents' fields.
+            search_fields (param[]): The document fields to text search by.
+            constraints (param[]): The constraints to apply to the find operation.
+
+        Returns:
+            A list of all documents satisfying the constraints provided.
         """
 
         with self.conn():
