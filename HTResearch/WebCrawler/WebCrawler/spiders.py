@@ -1,15 +1,5 @@
-"""
-spiders.py
-This module contains the spiders that crawl pages and are scheduled to run weekly.
-The spiders use the scrapers to get data and the data is added to the database.
-
-Attributes:
-    logger: Logs information regarding the spiders' behavior
-"""
+# stdlib imports
 import os
-
-from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
-from HTResearch.Utilities.context import URLFrontierContext
 from scrapers.document_scrapers import *
 from scrapers.site_specific import StopTraffickingDotInScraper
 from scrapy import log
@@ -17,8 +7,13 @@ from scrapy.spider import BaseSpider
 from scrapy.http import Request
 from springpython.context import ApplicationContext
 
-# Since this logger can be shared by the whole module, we can instantiate it here
+# project imports
+from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
+from HTResearch.Utilities.context import URLFrontierContext
+
+#region Globals
 logger = get_logger(LoggingSection.CRAWLER, __name__)
+#endregion
 
 
 class OrgSpider(BaseSpider):

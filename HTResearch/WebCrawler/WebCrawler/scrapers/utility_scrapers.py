@@ -1,11 +1,5 @@
-"""
-utility_scrapers.py
-This module contains scrapers that are used by the ContactScraper, OrganizationScraper,
-and PublicationScraper contained in document_scrapers.py.
-
-Attributes:
-    _utililtyscrapers_logger: Logs information regarding the scrapers' behavior
-"""
+# stdlib imports
+from bson.binary import Binary
 import datetime
 import hashlib
 import heapq
@@ -13,14 +7,6 @@ import itertools
 import os
 import re
 import string
-
-from ..items import *
-from bson.binary import Binary
-from HTResearch.DataAccess.dao import *
-from HTResearch.DataModel.enums import OrgTypesEnum
-from HTResearch.Utilities.converter import *
-from HTResearch.Utilities.logutil import *
-from link_scraper import LinkScraper
 from nltk import FreqDist, WordNetLemmatizer
 from scrapy.selector import HtmlXPathSelector
 from scrapy.selector import XPathSelectorList
@@ -28,7 +14,17 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from sgmllib import SGMLParseError
 from urlparse import urlparse, urljoin
 
+# project imports
+from ..items import *
+from link_scraper import LinkScraper
+from HTResearch.DataAccess.dao import *
+from HTResearch.DataModel.enums import OrgTypesEnum
+from HTResearch.Utilities.converter import *
+from HTResearch.Utilities.logutil import *
+
+#region Globals
 _utilityscrapers_logger = get_logger(LoggingSection.CRAWLER, __name__)
+#endregion
 
 
 class ContactNameScraper(object):

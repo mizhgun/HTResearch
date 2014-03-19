@@ -1,16 +1,13 @@
-"""
-document_scrapers.py
-This module contains scrapers that are used by the OrganizationSpider and PublicationSpider contained in spiders.py
-"""
+# stdlib imports
 import re
 import string
 
-from link_scraper import PageRankScraper
-from utility_scrapers import *
-
+# project imports
 from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.URLFrontier.urlfrontier import URLFrontier
+from link_scraper import PageRankScraper
+from utility_scrapers import *
 
 
 class ContactScraper():
