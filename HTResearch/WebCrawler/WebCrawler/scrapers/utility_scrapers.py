@@ -212,7 +212,7 @@ class KeywordScraper(object):
         """
         Removes the unicode encoding of the list of keywords.
 
-        Args:
+        Arguments:
             list (list of str): List of keywords that were scraped.
 
         Returns:
@@ -226,7 +226,7 @@ class KeywordScraper(object):
         """
         Get all the words from the page by removing punctuation and digits.
 
-        Args:
+        Arguments:
             append_to (list of str): The list of the words that have been scraped at the time.
             source (list of str): The text from the page to be scraped.
 
@@ -423,7 +423,7 @@ class OrgContactsScraper(object):
         """
         Checks if the contact's name is in an email to try and get the correct one.
 
-        Args:
+        Arguments:
             response (Response): The page to scrape for emails.
             name (str): Name of the contact.
 
@@ -571,7 +571,7 @@ class OrgPartnersScraper(object):
         """
         Find the path to selected node(s)
 
-        Args:
+        Arguments:
             sel (list of XPathSelector):
 
         Returns:
@@ -588,7 +588,7 @@ class OrgPartnersScraper(object):
         """
         Find out how many external links are in a list
 
-        Args:
+        Arguments:
             page_url (str): Url of the page
             sel ():
 

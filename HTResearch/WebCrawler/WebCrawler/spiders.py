@@ -187,7 +187,7 @@ class StopTraffickingSpider(BaseSpider):
         """
         Gets the metadata for the page.
 
-        Args:
+        Arguments:
             item (dict): Dictionary of a contact or an organization.
 
         Returns:

@@ -108,8 +108,8 @@ class OrganizationScraper():
         """
         Checks if the current page is a valid page for an organization's homepage.
 
-        Args:
-            reponse (Response): Scrapy Response object of the page
+        Arguments:
+            reponse (Response): Scrapy Response object of the page that is to be scraped
 
         Returns:
             True if it's a valid organization page or already in the database.
@@ -175,8 +175,8 @@ class PublicationScraper():
         """
         Gets the fields from the citation page and adds them to the Publication.
 
-        Args:
-            reponse (Response): Scrapy Response object of the page
+        Arguments:
+            reponse (Response): Scrapy Response object of the page that is to be scraped
         """
         pub = ScrapedPublication()
         pub['title'] = self.title_scraper.parse(response)
@@ -191,8 +191,8 @@ class PublicationScraper():
         """
         Gets all the publication urls.
 
-        Args:
-            reponse (Response): Scrapy Response object of the page
+        Arguments:
+            reponse (Response): Scrapy Response object of the page that is to be scraped
         """
         #Rescrape main page for links
         self.pub_url_scraper.seed_titles(self.titles)
@@ -208,8 +208,8 @@ class PublicationScraper():
     def parse_main_page(self, response):
         """Scrapes Google Scholar page for additional urls to crawl.
 
-        Args:
-            response (response object): Page response for the page that is to be crawled
+        Arguments:
+            response (Response): Scrapy Response object for the page that is to be scraped
 
         Returns:
             next_urls (list of str): List of URLs for the PublicationSpider to crawl
