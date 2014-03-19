@@ -1,3 +1,7 @@
+/**
+ * Provides validation for the "Edit Organization" form
+ */
+
 require(['shared/analytics',
     'shared/validators',
     'jquery',

@@ -1,3 +1,7 @@
+/**
+ * Main script for the Index page.
+ */
+
 require(['shared/analytics',
     'shared/modal',
     'index/map',
@@ -49,7 +53,7 @@ require(['shared/analytics',
         var searchItems = [
             {
                 name: 'organization',
-                url: '/search-organizations/',
+                url: '/api/search-organizations/',
                 toggleSelector: '#organization-toggle',
                 collapseSelector: '#collapse-organizations',
                 listSelector: '#organization-search-list',
@@ -59,7 +63,7 @@ require(['shared/analytics',
             },
             {
                 name: 'contact',
-                url: '/search-contacts/',
+                url: '/api/search-contacts/',
                 toggleSelector: '#contact-toggle',
                 collapseSelector: '#collapse-contacts',
                 listSelector: '#contact-search-list',
@@ -69,7 +73,7 @@ require(['shared/analytics',
             },
             {
                 name: 'publication',
-                url: '/search-publications/',
+                url: '/api/search-publications/',
                 toggleSelector: '#publication-toggle',
                 collapseSelector: '#collapse-publications',
                 listSelector: '#publication-search-list',
@@ -176,6 +180,7 @@ require(['shared/analytics',
         $('[rel=tooltip]').tooltip();
     }
 
+    //Retrieve the cookie that is created upon first visiting the website
     function getCookie(name) {
         var arg = name + "=";
         var argLength = arg.length;

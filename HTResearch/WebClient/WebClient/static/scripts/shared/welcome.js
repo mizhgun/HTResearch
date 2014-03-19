@@ -1,3 +1,7 @@
+/**
+ * Main script for the Welcome page. Creates a cookie to mark a user's initial visit.
+ */
+
 require(['shared/analytics', 'jquery'], function(Analytics, $) {
     'use strict';
 

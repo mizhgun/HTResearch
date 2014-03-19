@@ -204,6 +204,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         }
     }
 
+    //Display the loading indicator if searches are pending
     var searchesPending = 0;
     function startAjaxSearch() {
         searchesPending++;
@@ -211,6 +212,8 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             $('#search-ajax-loader').removeClass('hidden');
         }
     }
+
+    //Similarly, hide the loading indicator if no searches are pending
     function endAjaxSearch() {
         searchesPending--;
         if (searchesPending === 0) {

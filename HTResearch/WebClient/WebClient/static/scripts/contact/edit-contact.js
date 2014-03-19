@@ -1,3 +1,7 @@
+/**
+ * Provides validation for the "Edit Contact" form.
+ */
+
 require(['shared/analytics', 'jquery', 'jquery.validate', 'bootstrap'], function(Analytics, $) {
     'use strict';
 

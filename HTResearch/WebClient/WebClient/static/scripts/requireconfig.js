@@ -1,3 +1,7 @@
+/**
+ * Configuration file for requirejs modules.
+ */
+
 require.config({
     baseUrl: '/static/scripts/lib',
     paths: {
