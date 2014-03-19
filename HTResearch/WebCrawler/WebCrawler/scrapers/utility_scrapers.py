@@ -1,6 +1,10 @@
 """
 utility_scrapers.py
-Contains scrapers that are used by the document scrapers contained in document_scrapers.py
+This module contains scrapers that are used by the ContactScraper, OrganizationScraper,
+and PublicationScraper contained in document_scrapers.py.
+
+Attributes:
+    _utililtyscrapers_logger: Logs information regarding the scrapers' behavior
 """
 import datetime
 import hashlib
@@ -29,7 +33,14 @@ _utilityscrapers_logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 class ContactNameScraper(object):
     """
-    Scrapes first and last names of people on a given page
+    Scrapes first and last names of people on a given page.
+
+    Attributes:
+        _names (list of str): First names to look for on the page.
+        _last_names (list of str): Last names to look for on the page.
+        _stopwords (list of str): Words that will be ignored and won't count as names.
+        _titles (list of str): Different titles a person can have.
+        _date (regex obj): Regex to check if a potential name is a date.
     """
     try:
         _names and _last_names and _stopwords and _titles
@@ -120,13 +131,16 @@ class ContactNameScraper(object):
 
 class ContactPositionScraper(object):
     """
-    Scrapes work positions of people on a given page
+    Scrapes work positions of people on a given page.
+
+    Attributes:
+        _positions (list of str): Professional positions that people may have.
+        _tag (regex obj): Regex to find html tags on a page.
     """
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/positions.txt')) as f:
             self._positions = f.read().splitlines()
         self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
-        self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
 
     def parse(self, response):
         for position in self._positions:
@@ -136,14 +150,19 @@ class ContactPositionScraper(object):
 
 class EmailScraper(object):
     """
-    Scrapes emails on a given page
+    Scrapes emails on a given page.
+
+    Attributes:
+        _email_regex (regex obj): Regex to find all the different email formats.
+        _c_data (regex obj): C data on a page generally could be found as an email format,
+                             so catch it and don't count it as an email.
     """
     def __init__(self):
-        self.email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
-                                      r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
-                                      r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
-                                      r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
-        self.c_data = re.compile(r'(.*?)<!\[CDATA(.*?)]]>(.*?)', re.DOTALL)
+        self._email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
+                                       r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
+                                       r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
+                                       r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
+        self._c_data = re.compile(r'(.*?)<!\[CDATA(.*?)]]>(.*?)', re.DOTALL)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -152,17 +171,17 @@ class EmailScraper(object):
         body = hxs.select('//body//text()')
 
         # Remove C_Data tags, since they are showing up in the body text for some reason
-        body = XPathSelectorList([text for text in body if not (re.match(self.c_data, text.extract()) or
+        body = XPathSelectorList([text for text in body if not (re.match(self._c_data, text.extract()) or
                                                                 text.extract().strip() == '')])
 
-        body = body.re(self.email_regex)
+        body = body.re(self._email_regex)
 
         # hrefs will get emails from hrefs
-        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(self.email_regex)
+        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(self._email_regex)
 
         emails = body + hrefs
 
-        # Take out the unicode or whatever, and substitute [at] for @ and [dot] for .
+        # Take out the unicode, and substitute [at] for @ and [dot] for .
         for i in range(len(emails)):
             emails[i] = emails[i].encode('ascii', 'ignore')
             emails[i] = re.sub(r'(\[at]|\(at\)| at )([A-Za-z0-9.-]+)(\[dot]|\(dot\)| dot )', r'@\2.', emails[i])
@@ -175,7 +194,10 @@ class EmailScraper(object):
 
 class KeywordScraper(object):
     """
-    Scrapes the 50 most used words on a given page excluding stopwords listed in stopwords.txt
+    Scrapes the 50 most used words on a given page.
+
+    Attributes:
+        _stopwords (list of str): Excluding words as keywords if they are in stopwords.txt.
     """
     NUM_KEYWORDS = 50
     _stopwords = []
@@ -187,11 +209,30 @@ class KeywordScraper(object):
             self._stopwords = f.read().splitlines()
 
     def format_extracted_text(self, list):
+        """
+        Removes the unicode encoding of the list of keywords.
+
+        Args:
+            list (list of str): List of keywords that were scraped.
+
+        Returns:
+            list (list of str): List of keywords without unicode.
+        """
         for i in range(len(list)):
             list[i] = list[i].encode('ascii', 'ignore')
         return list
 
     def append_words(self, append_to, source):
+        """
+        Get all the words from the page by removing punctuation and digits.
+
+        Args:
+            append_to (list of str): The list of the words that have been scraped at the time.
+            source (list of str): The text from the page to be scraped.
+
+        Returns:
+            append_to (list of str): List of all words that have been scraped thus far.
+        """
         if not source:
             return append_to
 
@@ -235,7 +276,10 @@ class KeywordScraper(object):
 
 class IndianPhoneNumberScraper(object):
     """
-    Scrapes Indian phone numbers on a given page
+    Scrapes Indian phone numbers on a given page.
+
+    Attributes:
+        _india_format_regex (regex obj): Regex to catch the formats of Indian phone number formats.
     """
     def __init__(self):
         self._india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?'
@@ -268,7 +312,10 @@ class IndianPhoneNumberScraper(object):
 
 class OrgAddressScraper(object):
     """
-    Scrapes the city and country of an organization on a given page
+    Scrapes the city and country of an organization on a given page.
+
+    Attributes:
+        _cities (list of str): Cities to be scraped from the page.
     """
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/cities.txt')) as f:
@@ -318,6 +365,15 @@ class OrgAddressScraper(object):
 class OrgContactsScraper(object):
     """
     Scrapes the contacts that are associated with an organization on a given page.
+
+    Attributes:
+        _name_scraper (ContactNameScraper): Scrapes the names of contacts associated with this organization.
+        _number_scraper (IndianPhoneNumberScraper): Scrapes Indian phone numbers.
+        _us_number_scraper (USPhoneNumberScraper): Scrapes US phone numbers.
+        _email_scraper (EmailScraper): Scrapes emails.
+        _position_scraper (ContactPositionScraper): Scrapes profession positions of contacts.
+        _org_name_scraper (OrgNameScraper): Scrapes the organization name on its homepage.
+        _contacts (list of Contact): Contains all the contacts that are found.
     """
     def __init__(self):
         self._name_scraper = ContactNameScraper()
@@ -357,13 +413,25 @@ class OrgContactsScraper(object):
                     numbers = []
             self._contacts[names[i].get('name')]['number'] = numbers
             self._contacts[names[i].get('name')]['email'] = [self.compare_emails(cr, names[i].get('name'))
-                                                       if self.compare_emails(cr, names[i].get('name'))
-                                                       else None][0]
+                                                             if self.compare_emails(cr, names[i].get('name'))
+                                                             else None][0]
             self._contacts[names[i].get('name')]['organization'] = org_name
         return self._contacts
 
     # if any part of the name is in the email, take that email, otherwise just take the first element from the list
     def compare_emails(self, response, name):
+        """
+        Checks if the contact's name is in an email to try and get the correct one.
+
+        Args:
+            response (Response): The page to scrape for emails.
+            name (str): Name of the contact.
+
+        Returns:
+            If name is in one of the emails, return that email.
+            Else return first email in the list.
+            If no emails in the list, return None.
+        """
         emails = self._email_scraper.parse(response)
         name_split = name.split()
         for email in emails:
@@ -378,14 +446,17 @@ class OrgContactsScraper(object):
 class OrgFacebookScraper(object):
     """
     Scrapes an organization's Facebook link on a given page
+
+    Attributes:
+        _fb_link_ext (SgmlLinkExtractor): Scrapes the Facebook link.
     """
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?facebook\.com/.+(?:/)?$", re.IGNORECASE)
-        self.fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
+        self._fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
 
     def parse(self, response):
         try:
-            fb_links = self.fb_link_ext.extract_links(response)
+            fb_links = self._fb_link_ext.extract_links(response)
         except SGMLParseError as e:
             # Page was poorly formatted, oh well
             _utilityscrapers_logger.error('Exception encountered when link extracting page: %s' % str(response.url))
@@ -399,15 +470,18 @@ class OrgFacebookScraper(object):
 
 class OrgTwitterScraper(object):
     """
-    Scrapes an organization's Twitter link on a given page
+    Scrapes an organization's Twitter link on a given page.
+
+    Attributes:
+        _tw_link_ext (SgmlLinkExtractor): Scrapes the Twitter link.
     """
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?twitter\.com/(?:#!/)?\w+(?:/)?$", re.IGNORECASE)
-        self.tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
+        self._tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
 
     def parse(self, response):
         try:
-            tw_links = self.tw_link_ext.extract_links(response)
+            tw_links = self._tw_link_ext.extract_links(response)
         except SGMLParseError as e:
             # Page was poorly formatted, oh well
             _utilityscrapers_logger.error('Exception encountered when link extracting page: %s' % str(response.url))
@@ -421,7 +495,11 @@ class OrgTwitterScraper(object):
 
 class OrgNameScraper(object):
     """
-    Scrapes the organization name on a given page
+    Scrapes the organization name on a given page.
+
+    Attributes:
+        _split_punctuation (regex obj): Regex to split the title tag based on punctuation
+        _stopwords (list of str): Words to be ignored
     """
     def __init__(self):
         self._split_punctuation = re.compile(r"[ \w']+")
@@ -474,7 +552,13 @@ class OrgNameScraper(object):
 
 class OrgPartnersScraper(object):
     """
-    Scrapes partner organizations of a particular organization on a given page
+    Scrapes partner organizations of a particular organization on a given page.
+
+    Attributes:
+        _link_scraper (LinkScraper): Scrapes the links on the page.
+        _partner_text (str): Text to determine if the page has partners on it.
+        _blocked_domains (list of str): List of urls that are common but not related to human trafficking.
+                                        Ex: CNN
     """
     def __init__(self):
         self._link_scraper = LinkScraper()
@@ -483,8 +567,16 @@ class OrgPartnersScraper(object):
                                '../Resources/blocked_org_domains.txt')) as f:
             self._blocked_domains = map(lambda x: x.rstrip(), f)
 
-    # Find the path to selected node(s)
     def _path_to(self, sel):
+        """
+        Find the path to selected node(s)
+
+        Args:
+            sel (list of XPathSelector):
+
+        Returns:
+            path (str): XPath to the partner organization's link
+        """
         path = ''
         while sel:
             tags = sel.select('name()').extract()
@@ -492,9 +584,18 @@ class OrgPartnersScraper(object):
             sel = sel.select('..')
         return path
 
-    # Find out how many external links are in a list
-    # (returns 0 if not all external links)
     def _external_link_count(self, page_url, sel):
+        """
+        Find out how many external links are in a list
+
+        Args:
+            page_url (str): Url of the page
+            sel ():
+
+        Returns:
+            count (int): Number of links in
+                         Returns 0 if not all external links
+        """
         count = 0
         checked_domains = []
         for href in sel.select('@href').extract():
@@ -556,7 +657,16 @@ class OrgPartnersScraper(object):
 
 class OrgTypeScraper(object):
     """
-    Scrapes the type of an organization based on keywords that were scraped
+    Scrapes the type of an organization based on keywords that were scraped.
+
+    Attributes:
+        _lemmatizer (WordNetLemmatizer):
+        _keyword_scraper (KeywordScraper): KeywordScraper to check the words.
+        _max_types (int): Maximum number of types an organization can have.
+        _religion_words (list of str): Words that associate with religious organizations.
+        _government_detector (regex str): Checks for a gov domain in the url.
+        _max_rank (int): Lowest rank that a keyword can have and still be a type for an organization. -unused for now
+        _type_words (enum): Enum with keys being the keyword with a list value of the words associated to that type.
     """
     def __init__(self):
         # Lemmatizer for shortening each word to a more-commonly-used form of the word
@@ -686,6 +796,7 @@ class OrgTypeScraper(object):
         for key in self._type_words.iterkeys():
             self._type_words[key] = [self._lemmatizer.lemmatize(word) for word in self._type_words[key]]
 
+    # UNUSED FUNCTION?
     # Find the minimum index of a term from a search list in a list
     @staticmethod
     def _min_index_found(listwords, searchwords):
@@ -749,7 +860,10 @@ class OrgTypeScraper(object):
 
 class OrgUrlScraper(object):
     """
-    Scrapes the url of an organization on a given page
+    Scrapes the url of an organization on a given page.
+
+    Attributes:
+        None
     """
     def __init__(self):
         pass
@@ -762,7 +876,10 @@ class OrgUrlScraper(object):
 
 class PublicationCitationSourceScraper(object):
     """
-    Scrapes the sources of a publication
+    Scrapes the sources of a publication.
+
+    Attributes:
+        hash_regex (regex obj):
     """
     def __init__(self):
         self.hash_regex = re.compile('\w{12}')
@@ -783,7 +900,10 @@ class PublicationCitationSourceScraper(object):
 
 class PublicationAuthorsScraper(object):
     """
-    Scrapes the author(s) of a publication
+    Scrapes the author(s) of a publication.
+
+    Attributes:
+        None
     """
     def __init__(self):
         pass
@@ -808,7 +928,10 @@ class PublicationAuthorsScraper(object):
 
 class PublicationDateScraper(object):
     """
-    Scrapes the date of a publication
+    Scrapes the date of a publication.
+
+    Attributes:
+        date_regex (regex obj):
     """
     def __init__(self):
         self.date_regex = re.compile('\d{4}')
@@ -827,7 +950,10 @@ class PublicationDateScraper(object):
 
 class PublicationPublisherScraper(object):
     """
-    Scrapes the publisher of a citation
+    Scrapes the publisher of a citation.
+
+    Attributes:
+        None
     """
     def __init__(self):
         pass
@@ -855,7 +981,10 @@ class PublicationPublisherScraper(object):
 
 class PublicationTitleScraper(object):
     """
-    Scrapes the title of a publication
+    Scrapes the title of a publication.
+
+    Attributes:
+        None
     """
     def __init__(self):
         pass
@@ -884,7 +1013,10 @@ class PublicationTitleScraper(object):
 
 class PublicationURLScraper(object):
     """
-    Scrapes the url of a publication
+    Scrapes the url of a publication.
+
+    Attributes:
+        titles (list of str): Contains titles of publications.
     """
     def __init__(self):
         #Seed titles to look for on page
@@ -914,7 +1046,10 @@ class PublicationURLScraper(object):
 
 class UrlMetadataScraper(object):
     """
-    Scrapes the metadata of a particular url
+    Scrapes the metadata of a particular url.
+
+    Attributes:
+        dao (URLMetadataDAO): DAO object to check if the url exists in DB already.
     """
     def __init__(self):
         self.dao = URLMetadataDAO
@@ -966,6 +1101,9 @@ class UrlMetadataScraper(object):
 class USPhoneNumberScraper(object):
     """
     Scrapes US phone numbers on a given page
+
+    Attributes:
+        None
     """
     def parse(self, response):
         hxs = HtmlXPathSelector(response)

@@ -1,6 +1,6 @@
 """
 document_scrapers.py
-Contains scrapers that is used by spiders contained in spiders.py
+This module contains scrapers that are used by the OrganizationSpider and PublicationSpider contained in spiders.py
 """
 import re
 import string
@@ -15,7 +15,10 @@ from HTResearch.URLFrontier.urlfrontier import URLFrontier
 
 class ContactScraper():
     """
-    Uses the OrgContactsScraper to find contacts associated with a particular organization
+    Uses the OrgContactsScraper to find contacts associated with a particular organization.
+
+    Attributes:
+        None
     """
     def parse(self, response):
         #get all the values out of the dictionary that the Contact scraper returns
@@ -40,7 +43,20 @@ class ContactScraper():
 
 class OrganizationScraper():
     """
-    Scrapes an Organization from a given page
+    Scrapes an Organization from a given page.
+
+    Attributes:
+        _scrapers (dict): has all the Organization data model fields as keys
+                          and the corresponding scrapers as values
+                ex: { organization field : organization related scraper }
+        _multiple (list of str): contains the organization fields that can have multiple values
+        _required_words (list of str): contains words that must be on the page to be
+                                       considered a valid org to be scraped
+        _punctuation (regex obj): regex object of punctuation
+        org_dao (OrganizationDAO): data access object for Organization to check if
+                                   the organization is valid
+        url_frontier (URLFrontier): object to add the organization url to the url metadata
+                                    to tell the spider the page has already been visited
     """
     def __init__(self):
         self._scrapers = {
@@ -89,6 +105,16 @@ class OrganizationScraper():
         return organization
 
     def check_valid_org(self, response):
+        """
+        Checks if the current page is a valid page for an organization's homepage.
+
+        Args:
+            reponse (Response): Scrapy Response object of the page
+
+        Returns:
+            True if it's a valid organization page or already in the database.
+            False if it's not the homepage
+        """
         # If already in database, then valid
         url = OrgUrlScraper().parse(response)
         org_dto = self.org_dao().find(organization_url=url)
@@ -121,7 +147,17 @@ class OrganizationScraper():
 
 class PublicationScraper():
     """
-    Scrapes Publications from Google Scholar
+    Scrapes Publications from Google Scholar.
+
+    Attributes:
+        key_scraper (PublicationCitationSourceScraper):
+        title_scraper (PublicationTitleScraper): Gets the Publication title
+        author_scraper (PublicationAuthorsScraper): Gets the Publication author(s)
+        date_scraper (PublicationDateScraper): Gets the Publication date
+        publisher_scraper (PublicationPublisherScraper): Gets the Publication publisher
+        pub_url_scraper (PublicationURLScraper): Gets the Publication url
+        titles (list): Titles to search for on the page
+        publications (list of ScrapedPublication): Publications to be added to the database
     """
     def __init__(self):
         #Scrapers
@@ -136,6 +172,12 @@ class PublicationScraper():
 
     #Second
     def parse_citation_page(self, response):
+        """
+        Gets the fields from the citation page and adds them to the Publication.
+
+        Args:
+            reponse (Response): Scrapy Response object of the page
+        """
         pub = ScrapedPublication()
         pub['title'] = self.title_scraper.parse(response)
         self.titles.append(pub['title'])
@@ -146,6 +188,12 @@ class PublicationScraper():
 
     #Third
     def parse_pub_urls(self, response):
+        """
+        Gets all the publication urls.
+
+        Args:
+            reponse (Response): Scrapy Response object of the page
+        """
         #Rescrape main page for links
         self.pub_url_scraper.seed_titles(self.titles)
 
@@ -158,6 +206,14 @@ class PublicationScraper():
 
     #First
     def parse_main_page(self, response):
+        """Scrapes Google Scholar page for additional urls to crawl.
+
+        Args:
+            response (response object): Page response for the page that is to be crawled
+
+        Returns:
+            next_urls (list of str): List of URLs for the PublicationSpider to crawl
+        """
         #Must scrape several pubs at a time
         #Each page will have roughly 10 publications
         #Response is the main GS results page

@@ -1,15 +1,21 @@
+"""
+spiders.py
+This module contains the spiders that crawl pages and are scheduled to run weekly.
+The spiders use the scrapers to get data and the data is added to the database.
+
+Attributes:
+    logger: Logs information regarding the spiders' behavior
+"""
 import os
 
-from springpython.context import ApplicationContext
-from scrapy.spider import BaseSpider
-from scrapy.http import Request
-from scrapy import log
 from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
-
 from HTResearch.Utilities.context import URLFrontierContext
-
 from scrapers.document_scrapers import *
 from scrapers.site_specific import StopTraffickingDotInScraper
+from scrapy import log
+from scrapy.spider import BaseSpider
+from scrapy.http import Request
+from springpython.context import ApplicationContext
 
 # Since this logger can be shared by the whole module, we can instantiate it here
 logger = get_logger(LoggingSection.CRAWLER, __name__)
@@ -17,7 +23,18 @@ logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 class OrgSpider(BaseSpider):
     """
-    Crawls pages for organizations and contacts (through OrgContactsScraper)
+    Crawls pages for organizations and contacts (through OrgContactsScraper).
+
+    Attributes:
+        scrapers (list of obj): Additional scrapers to run after the OrganizationScraper.
+        org_scraper (OrganizationScraper): Checker to see if the page response when scraping is not None.
+                                           If not none, run the other scrapers on that page also.
+        meta_data_scraper (UrlMetadataScraper): Scrape the metadata of the page.
+        url_frontier_rules (URLFrontierRules): Contains the rules for the URLFrontier
+                                               Rule that is given are blocked_domains.
+        ctx (ApplicationContext): The context for the URLFrontier.
+        url_frontier (URLFrontier): Gets urls from the LinkScraper for the spider to crawl
+        next_url_timeout (int):
     """
     name = 'org_spider'
     # empty start_urls, we're setting our own
@@ -33,7 +50,6 @@ class OrgSpider(BaseSpider):
         self.scrapers = []
         self.org_scraper = OrganizationScraper()
         self.meta_data_scraper = UrlMetadataScraper()
-        self.scrapers.append(OrganizationScraper())
         self.scrapers.append(ContactScraper())
         self.scrapers.append(LinkScraper())
         self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
@@ -109,7 +125,13 @@ class OrgSpider(BaseSpider):
 
 class StopTraffickingSpider(BaseSpider):
     """
-    Crawls a very specific site so we can have more data
+    Crawls a very specific site so we can have more data.
+
+    Attributes:
+        saved_path (str): Path to the current working directory.
+        scraper (StopTraffickingDotInScraper): Scraper to be run on each page.
+        first (bool): Check for first time running on that page.
+        directory_results (Response): Scrapy Response object of the Directory.aspx page for Orgs/Contacts.
     """
     name = "stop_trafficking"
     allowed_domains = ['stoptrafficking.in']
@@ -162,8 +184,17 @@ class StopTraffickingSpider(BaseSpider):
         yield url_item
 
     def _get_url_metadata(self, item):
+        """
+        Gets the metadata for the page.
+
+        Args:
+            item (dict): Dictionary of a contact or an organization.
+
+        Returns:
+            url_item (dict): Dictionary of url metadata.
+        """
         if not isinstance(item, ScrapedOrganization) \
-            or item['organization_url'] is None or item['organization_url'] == "":
+           or item['organization_url'] is None or item['organization_url'] == "":
             return None
 
         url_item = ScrapedUrl()
@@ -177,7 +208,15 @@ class StopTraffickingSpider(BaseSpider):
 
 class PublicationSpider(BaseSpider):
     """
-    Crawls Google Scholar with different queries for publications
+    Crawls Google Scholar with different queries for publications.
+
+    Attributes:
+        saved_path (str): Path to the current working directory.
+        start_urls (list of str): Start URLs for the spider to crawl.
+        scraper (PublicationScraper): Scraper to be run on each page.
+        first (bool): Check for first time running on that page.
+        citation_urls (list of str): Citation strings for each publication.
+        main_page (Response): Scrapy Response objects of the start url pages.
     """
     name = "publication_spider"
     allowed_domains = ['scholar.google.com']
