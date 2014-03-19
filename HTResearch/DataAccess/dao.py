@@ -94,7 +94,7 @@ class DAO(object):
     # passed constraints that are reference types!
     def find(self, **constraints):
         """
-        Finds and returns a single document.
+        Finds and returns a single (valid) document.
 
         Arguments:
             constraints (param[]): The constraints to apply to the find operation.
@@ -128,13 +128,14 @@ class DAO(object):
     def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=None,
                  search=None, search_fields=None, **constraints):
         """
-        Finds and returns a list of documents.
+        Finds and returns a list of (valid) documents.
 
         Arguments:
-            num_elements (int): The number of documents to limit the result size to.
-            page_size (int): The number of documents to include per paginated result.
-            start (int): The page of results to start on, inclusive.
-            end (int): The page of results to end on, inclusive.
+            num_elements (int): The number of documents to limit the result size to (used without paging).
+            page_size (int): The number of documents to include per paginated result (used with page).
+            page (int): The page number to return.
+            start (int): The index to start on, inclusive (used without paging).
+            end (int): The index to end on, inclusive (used without paging, with start).
             sort_fields (param[]): The document fields to sort results by.
             search (string): A text search for documents' fields.
             search_fields (param[]): The document fields to text search by.
