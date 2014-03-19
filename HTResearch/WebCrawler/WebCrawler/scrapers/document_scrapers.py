@@ -137,7 +137,7 @@ class PublicationScraper():
     Scrapes Publications from Google Scholar.
 
     Attributes:
-        key_scraper (PublicationCitationSourceScraper):
+        key_scraper (PublicationCitationSourceScraper): Used to scrape ajax hashes from links
         title_scraper (PublicationTitleScraper): Gets the Publication title
         author_scraper (PublicationAuthorsScraper): Gets the Publication author(s)
         date_scraper (PublicationDateScraper): Gets the Publication date
@@ -163,7 +163,7 @@ class PublicationScraper():
         Gets the fields from the citation page and adds them to the Publication.
 
         Arguments:
-            reponse (Response): Scrapy Response object of the page that is to be scraped
+            response (Response): Scrapy Response object of the page that is to be scraped
         """
         pub = ScrapedPublication()
         pub['title'] = self.title_scraper.parse(response)
@@ -179,7 +179,7 @@ class PublicationScraper():
         Gets all the publication urls.
 
         Arguments:
-            reponse (Response): Scrapy Response object of the page that is to be scraped
+            response (Response): Scrapy Response object of the page that is to be scraped
         """
         #Rescrape main page for links
         self.pub_url_scraper.seed_titles(self.titles)
@@ -199,7 +199,7 @@ class PublicationScraper():
             response (Response): Scrapy Response object for the page that is to be scraped
 
         Returns:
-            next_urls (list of str): List of URLs for the PublicationSpider to crawl
+            next_urls (list of str): List of citation URLs for the PublicationSpider to crawl
         """
         #Must scrape several pubs at a time
         #Each page will have roughly 10 publications
