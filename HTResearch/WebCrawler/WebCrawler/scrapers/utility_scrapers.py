@@ -30,13 +30,6 @@ _utilityscrapers_logger = get_logger(LoggingSection.CRAWLER, __name__)
 class ContactNameScraper(object):
     """
     Scrapes first and last names of people on a given page.
-
-    Attributes:
-        _names (list of str): First names to look for on the page.
-        _last_names (list of str): Last names to look for on the page.
-        _stopwords (list of str): Words that will be ignored and won't count as names.
-        _titles (list of str): Different titles a person can have.
-        _date (regex obj): Regex to check if a potential name is a date.
     """
     try:
         _names and _last_names and _stopwords and _titles
@@ -128,10 +121,6 @@ class ContactNameScraper(object):
 class ContactPositionScraper(object):
     """
     Scrapes work positions of people on a given page.
-
-    Attributes:
-        _positions (list of str): Professional positions that people may have.
-        _tag (regex obj): Regex to find html tags on a page.
     """
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/positions.txt')) as f:
@@ -147,11 +136,6 @@ class ContactPositionScraper(object):
 class EmailScraper(object):
     """
     Scrapes emails on a given page.
-
-    Attributes:
-        _email_regex (regex obj): Regex to find all the different email formats.
-        _c_data (regex obj): C data on a page generally could be found as an email format,
-                             so catch it and don't count it as an email.
     """
     def __init__(self):
         self._email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
@@ -191,9 +175,6 @@ class EmailScraper(object):
 class KeywordScraper(object):
     """
     Scrapes the 50 most used words on a given page.
-
-    Attributes:
-        _stopwords (list of str): Excluding words as keywords if they are in stopwords.txt.
     """
     NUM_KEYWORDS = 50
     _stopwords = []
@@ -273,9 +254,6 @@ class KeywordScraper(object):
 class IndianPhoneNumberScraper(object):
     """
     Scrapes Indian phone numbers on a given page.
-
-    Attributes:
-        _india_format_regex (regex obj): Regex to catch the formats of Indian phone number formats.
     """
     def __init__(self):
         self._india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?'
@@ -309,9 +287,6 @@ class IndianPhoneNumberScraper(object):
 class OrgAddressScraper(object):
     """
     Scrapes the city and country of an organization on a given page.
-
-    Attributes:
-        _cities (list of str): Cities to be scraped from the page.
     """
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/cities.txt')) as f:
@@ -361,15 +336,6 @@ class OrgAddressScraper(object):
 class OrgContactsScraper(object):
     """
     Scrapes the contacts that are associated with an organization on a given page.
-
-    Attributes:
-        _name_scraper (ContactNameScraper): Scrapes the names of contacts associated with this organization.
-        _number_scraper (IndianPhoneNumberScraper): Scrapes Indian phone numbers.
-        _us_number_scraper (USPhoneNumberScraper): Scrapes US phone numbers.
-        _email_scraper (EmailScraper): Scrapes emails.
-        _position_scraper (ContactPositionScraper): Scrapes profession positions of contacts.
-        _org_name_scraper (OrgNameScraper): Scrapes the organization name on its homepage.
-        _contacts (list of Contact): Contains all the contacts that are found.
     """
     def __init__(self):
         self._name_scraper = ContactNameScraper()
@@ -442,9 +408,6 @@ class OrgContactsScraper(object):
 class OrgFacebookScraper(object):
     """
     Scrapes an organization's Facebook link on a given page
-
-    Attributes:
-        _fb_link_ext (SgmlLinkExtractor): Scrapes the Facebook link.
     """
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?facebook\.com/.+(?:/)?$", re.IGNORECASE)
@@ -467,9 +430,6 @@ class OrgFacebookScraper(object):
 class OrgTwitterScraper(object):
     """
     Scrapes an organization's Twitter link on a given page.
-
-    Attributes:
-        _tw_link_ext (SgmlLinkExtractor): Scrapes the Twitter link.
     """
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?twitter\.com/(?:#!/)?\w+(?:/)?$", re.IGNORECASE)
@@ -549,12 +509,6 @@ class OrgNameScraper(object):
 class OrgPartnersScraper(object):
     """
     Scrapes partner organizations of a particular organization on a given page.
-
-    Attributes:
-        _link_scraper (LinkScraper): Scrapes the links on the page.
-        _partner_text (str): Text to determine if the page has partners on it.
-        _blocked_domains (list of str): List of urls that are common but not related to human trafficking.
-                                        Ex: CNN
     """
     def __init__(self):
         self._link_scraper = LinkScraper()
@@ -654,15 +608,6 @@ class OrgPartnersScraper(object):
 class OrgTypeScraper(object):
     """
     Scrapes the type of an organization based on keywords that were scraped.
-
-    Attributes:
-        _lemmatizer (WordNetLemmatizer):
-        _keyword_scraper (KeywordScraper): KeywordScraper to check the words.
-        _max_types (int): Maximum number of types an organization can have.
-        _religion_words (list of str): Words that associate with religious organizations.
-        _government_detector (regex str): Checks for a gov domain in the url.
-        _max_rank (int): Lowest rank that a keyword can have and still be a type for an organization. -unused for now
-        _type_words (enum): Enum with keys being the keyword with a list value of the words associated to that type.
     """
     def __init__(self):
         # Lemmatizer for shortening each word to a more-commonly-used form of the word
@@ -857,9 +802,6 @@ class OrgTypeScraper(object):
 class OrgUrlScraper(object):
     """
     Scrapes the url of an organization on a given page.
-
-    Attributes:
-        None
     """
     def __init__(self):
         pass
@@ -873,12 +815,9 @@ class OrgUrlScraper(object):
 class PublicationCitationSourceScraper(object):
     """
     Scrapes the sources of a publication.
-
-    Attributes:
-        hash_regex (regex obj):
     """
     def __init__(self):
-        self.hash_regex = re.compile('\w{12}')
+        self._hash_regex = re.compile('\w{12}')
 
     def parse(self, response):
         #All hashes are fetched by gs_ocit calls
@@ -889,7 +828,7 @@ class PublicationCitationSourceScraper(object):
         #for the ajax source keys
         sources = hxs.select('//a').re(source_string_regex)
         for source in sources:
-            keys.append(re.search(self.hash_regex, source).group())
+            keys.append(re.search(self._hash_regex, source).group())
 
         return keys
 
@@ -897,9 +836,6 @@ class PublicationCitationSourceScraper(object):
 class PublicationAuthorsScraper(object):
     """
     Scrapes the author(s) of a publication.
-
-    Attributes:
-        None
     """
     def __init__(self):
         pass
@@ -925,12 +861,9 @@ class PublicationAuthorsScraper(object):
 class PublicationDateScraper(object):
     """
     Scrapes the date of a publication.
-
-    Attributes:
-        date_regex (regex obj):
     """
     def __init__(self):
-        self.date_regex = re.compile('\d{4}')
+        self._date_regex = re.compile('\d{4}')
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -940,16 +873,13 @@ class PublicationDateScraper(object):
         chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
         chicago_format_html = str.replace(chicago_format_html, '</div>', '')
 
-        date = re.search(self.date_regex, chicago_format_html).group()
+        date = re.search(self._date_regex, chicago_format_html).group()
         return date
 
 
 class PublicationPublisherScraper(object):
     """
     Scrapes the publisher of a citation.
-
-    Attributes:
-        None
     """
     def __init__(self):
         pass
@@ -978,9 +908,6 @@ class PublicationPublisherScraper(object):
 class PublicationTitleScraper(object):
     """
     Scrapes the title of a publication.
-
-    Attributes:
-        None
     """
     def __init__(self):
         pass
@@ -1010,28 +937,25 @@ class PublicationTitleScraper(object):
 class PublicationURLScraper(object):
     """
     Scrapes the url of a publication.
-
-    Attributes:
-        titles (list of str): Contains titles of publications.
     """
     def __init__(self):
         #Seed titles to look for on page
-        self.titles = []
+        self._titles = []
 
     def seed_titles(self, title_names):
-        self.titles = self.titles + title_names
+        self._titles = self._titles + title_names
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
         sources = hxs.select('//h3/a').extract()
 
         urls = []
-        for i in range(0, len(self.titles)):
+        for i in range(0, len(self._titles)):
             urls.append(None)
 
         start = "=\""
         index = 0
-        for title in self.titles:
+        for title in self._titles:
             for source in sources:
                     if re.sub(r'\W+', '', title) in re.sub(r'\W+', '', source):
                         raw_link = source.encode('ascii', 'ignore')
@@ -1043,12 +967,9 @@ class PublicationURLScraper(object):
 class UrlMetadataScraper(object):
     """
     Scrapes the metadata of a particular url.
-
-    Attributes:
-        dao (URLMetadataDAO): DAO object to check if the url exists in DB already.
     """
     def __init__(self):
-        self.dao = URLMetadataDAO
+        self._dao = URLMetadataDAO
 
     def parse(self, response):
         # Initialize item and set url
@@ -1069,7 +990,7 @@ class UrlMetadataScraper(object):
         metadata['update_freq'] = 0
 
         # Compare checksums and update update_freq using the existing URL
-        exist_url_dto = self.dao().find(url=response.url)
+        exist_url_dto = self._dao().find(url=response.url)
         if exist_url_dto is not None:
             exist_url = DTOConverter.from_dto(URLMetadataDTO, exist_url_dto)
             if exist_url.checksum is not None:
@@ -1097,9 +1018,6 @@ class UrlMetadataScraper(object):
 class USPhoneNumberScraper(object):
     """
     Scrapes US phone numbers on a given page
-
-    Attributes:
-        None
     """
     def parse(self, response):
         hxs = HtmlXPathSelector(response)

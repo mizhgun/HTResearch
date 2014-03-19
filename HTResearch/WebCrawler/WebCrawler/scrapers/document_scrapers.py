@@ -13,9 +13,6 @@ from utility_scrapers import *
 class ContactScraper():
     """
     Uses the OrgContactsScraper to find contacts associated with a particular organization.
-
-    Attributes:
-        None
     """
     def parse(self, response):
         #get all the values out of the dictionary that the Contact scraper returns
@@ -43,13 +40,6 @@ class OrganizationScraper():
     Scrapes an Organization from a given page.
 
     Attributes:
-        _scrapers (dict): has all the Organization data model fields as keys
-                          and the corresponding scrapers as values
-                ex: { organization field : organization related scraper }
-        _multiple (list of str): contains the organization fields that can have multiple values
-        _required_words (list of str): contains words that must be on the page to be
-                                       considered a valid org to be scraped
-        _punctuation (regex obj): regex object of punctuation
         org_dao (OrganizationDAO): data access object for Organization to check if
                                    the organization is valid
         url_frontier (URLFrontier): object to add the organization url to the url metadata
