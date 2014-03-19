@@ -132,12 +132,12 @@ class DAO(object):
         return Q()
 
     # Search string fields for text and return list of results
-    def _text_search(self, text, fields):
+    def _text_search(self, text, fields, **constraints):
         # Search default fields if none given
         if fields is None:
             fields = self._default_search_fields()
         entry_query = self._get_query(text, fields)
-        found_entries = self.dto.objects(entry_query & self._valid_query())
+        found_entries = self.dto.objects(entry_query & self._valid_query() & Q(**constraints))
         return found_entries
 
     # Create search term list from search string

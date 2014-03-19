@@ -1,13 +1,10 @@
+# stdlib imports
 from urlparse import urlparse
-import json
-from datetime import datetime, timedelta
-
-from django.core.cache import cache
 from django.shortcuts import render
-
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponseRedirect
 from springpython.context import ApplicationContext
 
+# project imports
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.DataModel.enums import AccountType
@@ -17,47 +14,13 @@ from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.DataModel.enums import OrgTypesEnum
-from HTResearch.Utilities.encoder import MongoJSONEncoder
 from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
 from HTResearch.WebClient.WebClient.models import RequestOrgForm, EditOrganizationForm
 
-from HTResearch.Utilities.encoder import MongoJSONEncoder
-
-
+#region Globals
 logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
-
-REFRESH_PARTNER_MAP = timedelta(minutes=5)
-
-def search_organizations(request):
-    user_id = request.session['user_id'] if 'user_id' in request.session else None
-
-    if request.method == 'GET':
-        search_text = request.GET['search_text']
-        logger.info(
-            'Search request made for organizations with search_text={0} by user={1}'.format(search_text, user_id))
-    else:
-        search_text = ''
-
-    organizations = []
-
-    if search_text:
-        org_dao = ctx.get_object('OrganizationDAO')
-        try:
-            organizations = org_dao.findmany(search=search_text, num_elements=10,
-                                             sort_fields=['valid', 'combined_weight', 'name'])
-        except:
-            logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
-            return get_http_404_page(request)
-
-    results = []
-    for dto in organizations:
-        org = dto.__dict__['_data']
-        # Split organization keyword string into list of words
-        org['keywords'] = (org['keywords'] or '').split()
-        results.append(org)
-    data = {'results': results}
-    return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
+#endregion
 
 
 def organization_profile(request, org_id):
@@ -198,105 +161,8 @@ def edit_organization(request, org_id):
                                                       'error': error})
 
 
-def get_org_keywords(request):
-    if request.method == 'GET':
-        org_id = request.GET['org_id']
-    else:
-        org_id = ''
-
-    org_dao = ctx.get_object('OrganizationDAO')
-    org = org_dao.find(id=org_id)
-    keywords = org.keywords.split(' ')
-    return HttpResponse(json.dumps(keywords), mimetype='application/json')
-
-
-def get_org_rank_rows(request):
-    start = int(request.GET['start'])
-    end = int(request.GET['end'])
-    if 'search' in request.GET:
-        search = request.GET['search']
-    else:
-        search = None
-    if 'sort' in request.GET:
-        sort = request.GET['sort']
-    else:
-        sort = ()
-
-    org_dao = ctx.get_object('OrganizationDAO')
-    organizations = list(org_dao.findmany(start=start, end=end, sort_fields=[sort], search=search))
-    records = org_dao.count(search)
-
-    # add netloc to urls if needed
-    for org in organizations:
-        if org.organization_url is not None:
-            netloc = urlparse(org.organization_url).netloc
-            if netloc == "":
-                org.organization_url = "//" + org.organization_url
-
-    obj = {
-        'data': organizations,
-        'records': records
-    }
-
-    return HttpResponse(MongoJSONEncoder().encode(obj), content_type="application/text")
-
-
 def org_rank(request, sort_method=''):
     return render(request, 'organization/org_rank.html')
-
-
-def org_partner_map(request):
-    """
-    Generates the data needed to display the organization partner map and then stores it in the
-    cache. Data returned as a JSON string.
-
-    request: HttpRequest from Django (GET)
-    """
-    if request.method != 'GET':
-        return HttpResponseBadRequest
-
-    pmap = cache.get('partner_map')
-    last_update = cache.get('partner_map_last_update')
-    if not pmap or not last_update or (datetime.utcnow() - last_update > REFRESH_PARTNER_MAP):
-        new_pmap = {
-            "nodes": [],
-            "links": [],
-            "threeps": {
-                "PREVENTION": OrgTypesEnum.PREVENTION,
-                "PROTECTION": OrgTypesEnum.PROTECTION,
-                "PROSECUTION": OrgTypesEnum.PROSECUTION
-            }
-        }
-        cache.set('partner_map_last_update', datetime.utcnow())
-        ctx = ApplicationContext(DAOContext())
-        org_dao = ctx.get_object('OrganizationDAO')
-        organizations = org_dao.all('name', 'id', 'partners', 'types', 'address')
-        i = 0
-        for org in organizations:
-            new_pmap["nodes"].append({
-                "name": org.name,
-                "id": str(org.id),
-                "types": org.types,
-                "addr": org.address
-            })
-            for part in org.partners:
-                partner_id = str(part.id)
-                for j in xrange(0, i):
-                    if new_pmap["nodes"][j]["id"] == partner_id:
-                        new_pmap["links"].append({
-                           "source": i,
-                           "target": j
-                        })
-
-            i += 1
-
-
-
-        pmap = MongoJSONEncoder().encode(new_pmap)
-
-        cache.set('partner_map', pmap)
-
-    return HttpResponse(pmap, content_type="application/json")
 
 
 def partner_map_demo(request):

@@ -1,18 +1,20 @@
+# stdlib imports
 from django.shortcuts import render
 from springpython.context import ApplicationContext
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 
+# project imports
 from HTResearch.DataModel.enums import AccountType
-from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
 from HTResearch.WebClient.WebClient.views.shared_views import unauthorized
 from HTResearch.WebClient.WebClient.models import EditContactForm
-from HTResearch.Utilities.encoder import MongoJSONEncoder
 
+#region Globals
 logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
+#endregion
 
 
 def contact_profile(request, id):
@@ -56,71 +58,6 @@ def contact_profile(request, id):
         return get_http_404_page(request)
 
     return render(request, 'contact/contact_profile.html', results)
-
-
-def search_contacts(request):
-    user_id = request.session['user_id'] if 'user_id' in request.session else None
-
-    if request.method == 'GET':
-        search_text = request.GET['search_text']
-        logger.info('Search request made for contacts with search_text={0} by user {1}'.format(search_text, user_id))
-    else:
-        search_text = ''
-
-    contacts = []
-    users = []
-
-    if search_text:
-        contact_dao = ctx.get_object('ContactDAO')
-        try:
-            contacts = contact_dao.findmany(search=search_text,
-                                            num_elements=10,
-                                            sort_fields=['valid', 'content_weight', 'last_name', 'first_name'])
-        except Exception:
-            logger.error('Exception encountered on contact search with search_text={0}'.format(search_text))
-            return get_http_404_page(request)
-
-        if user_id:
-            user_dao = ctx.get_object('UserDAO')
-            try:
-                users = user_dao.findmany(search=search_text,
-                                          num_elements=10,
-                                          sort_fields=['valid', 'content_weight', 'last_name', 'first_name'])
-            except:
-                logger.error('Exception encountered on user search with search_text={0}'.format(search_text))
-                return get_http_404_page(request)
-
-    results = []
-    for dto in contacts:
-        c = dto.__dict__['_data']
-        org_dao = ctx.get_object('OrganizationDAO')
-        try:
-            if c['organization']:
-                org = org_dao.find(id=c['organization'].id)
-                c['organization'] = org.__dict__['_data']
-        except:
-            logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
-            return get_http_404_page(request)
-        c['type'] = 'contact'
-        results.append(c)
-
-    for dto in users:
-        u = dto.__dict__['_data']
-        org_dao = ctx.get_object('OrganizationDAO')
-        try:
-            if u['organization']:
-                org = org_dao.find(id=u['organization'].id)
-                u['organization'] = org.__dict__['_data']
-        except:
-            logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
-            return get_http_404_page(request)
-        u['type'] = 'user'
-        results.append(u)
-
-    results = sorted(results, key=lambda k: (k['first_name'], k['last_name'], k['content_weight'], k['valid']))[:10]
-
-    data = {'results': results}
-    return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
 
 
 def edit_contact(request, contact_id):

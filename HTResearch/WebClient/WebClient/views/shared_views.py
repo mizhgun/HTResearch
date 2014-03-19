@@ -1,19 +1,14 @@
-from datetime import datetime, timedelta
-from django.core.cache import cache
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponseRedirect
-from django.template.loader import get_template
-from django.template import Context
+# stdlib imports
+from django.http import HttpResponseNotFound
 from django.core.context_processors import csrf
 from django.shortcuts import render
 
-from mongoengine.fields import StringField, URLField, EmailField
-from springpython.context import ApplicationContext
-from HTResearch.Utilities.encoder import MongoJSONEncoder
-from HTResearch.Utilities.context import DAOContext
+# project imports
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 
+#region Globals
 logger = get_logger(LoggingSection.CLIENT, __name__)
-REFRESH_COORDS_LIST = timedelta(minutes=5)
+#endregion
 
 
 def index(request):
@@ -21,47 +16,6 @@ def index(request):
     args = {}
     args.update(csrf(request))
     return render(request, 'index/index.html', args)
-
-
-# Encodes a DTO's non-string fields to JSON
-def encode_dto(dto):
-    try:
-        dto_type = type(dto)
-        fields_dict = dto_type._fields
-        string_types = (StringField, URLField, EmailField)
-        json_fields = [key for key in fields_dict.iterkeys() if type(fields_dict[key]) not in string_types]
-        for field in json_fields:
-            dto[field] = MongoJSONEncoder().encode(dto[field])
-    except:
-        logger.error('Error occurred while encoding dto={0}'.format(dto))
-    return dto
-
-
-def heatmap_coordinates(request):
-    if request.method != 'GET':
-        return HttpResponseBadRequest
-
-    try:
-        coords = cache.get('organization_coords_list')
-        last_update = cache.get('organization_coords_list_last_update')
-        if not coords or not last_update or (datetime.utcnow() - last_update > REFRESH_COORDS_LIST):
-            new_coords = []
-            cache.set('organization_address_list_last_update', datetime.utcnow())
-            ctx = ApplicationContext(DAOContext())
-            org_dao = ctx.get_object('OrganizationDAO')
-            organizations = org_dao.findmany(latlng__exists=True, latlng__ne=[])
-            for org in organizations:
-                new_coords.append(org.latlng)
-
-            coords = MongoJSONEncoder().encode(new_coords)
-
-            if len(coords) > 0:
-                cache.set('organization_coords_list', coords)
-    except:
-        logger.error('Error occurred while trying to read heatmap coordinates from the cache.')
-
-    return HttpResponse(coords, content_type="application/json")
-
 
 def welcome(request):
     return render(request, 'shared/welcome.html')

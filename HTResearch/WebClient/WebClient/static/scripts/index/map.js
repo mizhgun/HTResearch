@@ -1,3 +1,8 @@
+/**
+ * Provides an abstraction for a Google Maps instance.
+ *
+ * @module map
+ */
 define(['jquery',
         'jquery.tmpl',
         'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'], function($) {
@@ -11,6 +16,12 @@ define(['jquery',
 
     var INITIAL_LATLNG = new google.maps.LatLng(21, 78);
 
+    /**
+     * An encapsulation of the Google Maps object.
+     * @param {string} element The DOM element associated with the Google Maps object.
+     * @alias module:map
+     * @constructor
+     */
     var Map = function(element) {
         var options = {
             center: INITIAL_LATLNG,
@@ -33,12 +44,25 @@ define(['jquery',
     };
 
     Map.prototype = {
+        /**
+         * Binds a function to a specified event on the Google Map.
+         * @param {string} event The event string to bind.
+         * @param {function} func The callback to bind to the event.
+         */
         bind: function(event, func) {
             google.maps.event.addListener(this.map, event, func);
         },
+        /**
+         * Returns the encapsulated Google Map instance.
+         * @returns {object} The Google Map instance.
+         */
         getMap: function() {
             return this.map;
         },
+        /**
+         * Displays info regarding an organization on the map.
+         * @param {object} data The JSON serialization of an Organization model.
+         */
         showInfo: function(data) {
             var coord = new google.maps.LatLng(data.latlng[0], data.latlng[1]);
             this.map.setCenter(coord);
@@ -50,21 +74,37 @@ define(['jquery',
             marker.infowindow.open(this.map, marker.marker);
             marker.open = true;
         },
+        /**
+         * Pushes a new control to the Google Map instance.
+         * @param {object} position The position for the new control.
+         * @param {object} control The maps control to be added.
+         */
         pushControl: function(position, control) {
             this.map.controls[position].push(control);
         },
+        /**
+         * Removes all Markers from the map.
+         */
         removeAllMarkers: function() {
             $.each(this.markers, function (index, value) {
                 value.marker.setMap(null);
             });
             this.markers = [];
         },
+        /**
+         * Closes all opened InfoWindows on the map.
+         */
         closeAllInfowindows: function() {
             $.each(this.markers, function (index, value) {
                 value.infowindow.close();
                 value.open = false;
             });
         },
+        /**
+         * Finds a Marker in the currently registered list of markers on the map.
+         * @param {object} marker The Marker to be found.
+         * @returns {object} The stored Marker.
+         */
         findMarker: function(marker) {
             var retMarker;
             for (var i = 0; i < this.markers.length; i++) {
@@ -75,6 +115,11 @@ define(['jquery',
             }
             return retMarker;
         },
+        /**
+         * Finds a Marker in the currently registered list of markers, by its id.
+         * @param {number} id The ID associated with the Marker.
+         * @returns {object} The stored Marker.
+         */
         findMarkerById: function(id) {
             var marker;
             for (var i = 0; i < this.markers.length; i++) {
@@ -85,6 +130,10 @@ define(['jquery',
             }
             return marker;
         },
+        /**
+         * Plots a new Marker object on the map associated with an organization.
+         * @param {object} data The JSON serialization of an Organization model.
+         */
         plotMarker: function(data) {
             var self = this;
             if (data.latlng && data.latlng.length > 0 && data.latlng[0] && data.latlng[1]) {
