@@ -41,7 +41,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
         orgCoordinates.length = 0;
         $.ajax({
             type: 'GET',
-            url: '/heatmap-coordinates/',
+            url: '/api/heatmap-coordinates/',
             data: {
                 'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
             },
