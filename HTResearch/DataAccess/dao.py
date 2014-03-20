@@ -1,15 +1,16 @@
+#stdlibs imports
 from datetime import datetime
 from mongoengine import Q
 from mongoengine.fields import StringField
 import time
-
+import re
 from dto import *
-
 from connection import DBConnection
+
+#project imports
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.geocoder import geocode
 from HTResearch.Utilities.url_tools import UrlUtility
-import re
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.Utilities import decorators
 
