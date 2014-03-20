@@ -21,8 +21,11 @@ def contact_profile(request, id):
     """
     Sends a request to the Contact Profile page and retrieves Contact information for the profile.
 
+    Arguments:
+        id (string): The id of the contact.
+
     Returns:
-        A dictionary containing the Contact/User information.
+        A rendered page of the Contact Profile.
     """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
@@ -70,8 +73,11 @@ def edit_contact(request, contact_id):
     """
     Sends a request to the Edit Contact page if the user is logged in and has a contributor account type.
 
+    Arguments:
+        contact_id (string): The id of the contact that is being edited.
+
     Returns:
-        A dictionary containing the form, contact id, and success/error flags.
+        A rendered page containing the Edit Contact form.
     """
     if 'user_id' not in request.session:
         return HttpResponseRedirect('/login')

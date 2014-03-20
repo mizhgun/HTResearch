@@ -27,8 +27,11 @@ def organization_profile(request, org_id):
     """
     Sends a request to the Organization Profile page and retrieves Organization information for the profile.
 
+    Arguments:
+        org_id (string): The id of the organization.
+
     Returns:
-        A dictionary containing the Organization information.
+        A rendered page of the Organization Profile.
     """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
@@ -63,7 +66,7 @@ def request_organization(request):
     Sends a request to the Request Organization page if the user is logged in.
 
     Returns:
-        A dictionary containing the form and success/error flags.
+        A rendered page containing the Request Organization form.
     """
     if 'user_id' not in request.session:
         logger.error('Bad request made for organization seed without login')
@@ -101,8 +104,11 @@ def edit_organization(request, org_id):
     """
     Sends a request to the Edit Organization page if the user is logged in and a contributor account type.
 
+    Arguments:
+        org_id (string): The id of the organization that is being edited.
+
     Returns:
-        A dictionary containing the form, organization type choices, the org id, and success/error flags.
+        A rendered page containing the Edit Organization form.
     """
     if 'user_id' not in request.session:
         logger.error('Bad request made to edit org={0} without login'.format(org_id))
@@ -185,6 +191,9 @@ def org_rank(request, sort_method=''):
 
     Arguments:
         sort_method (string): How the organizations should be sorted on the page.
+
+    Returns:
+        A rendered page to the org rank page
     """
     return render(request, 'organization/org_rank.html')
 

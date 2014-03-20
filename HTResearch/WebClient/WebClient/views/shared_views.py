@@ -39,8 +39,3 @@ def get_http_404_page(request):
     """Sends a request to the 404 page."""
     html = render(request, 'shared/404.html')
     return HttpResponseNotFound(html, status=404)
-
-
-def unimplemented(request):
-    """Is this even still a thing?"""
-    return render(request, 'shared/unimplemented.html')

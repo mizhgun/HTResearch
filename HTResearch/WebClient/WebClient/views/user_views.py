@@ -63,7 +63,7 @@ def login(request):
 
 
 def logout(request):
-    """Logs the user out. Send the user to the index page."""
+    """Logs the user out. Sends the user to the index page."""
     if 'user_id' not in request.session:
         logger.error('Bad request made for logout without login')
         return HttpResponseRedirect('/')

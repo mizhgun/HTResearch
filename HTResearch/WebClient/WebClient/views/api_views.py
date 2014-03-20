@@ -165,7 +165,7 @@ def search_publications(request):
     Searches for publications based on the search text.
 
     Returns:
-        A { 'results' : list } dictionary for the search results of Publications.
+        A { 'results' : list of JSON-encoded Publications } dictionary for the search results of Publications.
     """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
@@ -205,7 +205,7 @@ def search_contacts(request):
     Searches for contacts based on the search text.
 
     Returns:
-        A { 'results' : list } dictionary for the search results of Contacts.
+        A { 'results' : list of JSON-encoded Contacts } dictionary for the search results of Contacts.
     """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
@@ -286,7 +286,7 @@ def search_organizations(request):
     Searches for organizations based on the search text.
 
     Returns:
-        A { 'results' : list } dictionary for the search results of Organizations.
+        A { 'results' : list of JSON-encoded Organizations } dictionary for the search results of Organizations.
     """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
