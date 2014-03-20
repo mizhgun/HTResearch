@@ -8,6 +8,8 @@
 
 BOT_NAME = 'WebCrawler'
 
+CONCURRENT_ITEMS = 1
+
 LOG_ENABLED = True
 
 SPIDER_MODULES = ['WebCrawler.spiders', "WebCrawler.utility_spiders"]

@@ -1,3 +1,8 @@
+/**
+ * Provides an interface for performing searches against the database.
+ *
+ * @module searchquery
+ */
 define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     var lastSearchedText;
 
@@ -77,6 +82,14 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         searchResultsContainer.find('li.active').find('a').click();
     }
 
+    /**
+     * Performs a search against the Mongo database.
+     *
+     * @param {string} searchText The search text.
+     * @param {object} searchItems A set of search items to be used for displaying results.
+     * @param {object} map The Google Map object associated with the search.
+     * @param {boolean} reload Whether or not to reload results for the same query.
+     */
     function search(searchText, searchItems, map, reload) {
         if (!reload && lastSearchedText === searchText)
             return;
@@ -191,6 +204,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         }
     }
 
+    //Display the loading indicator if searches are pending
     var searchesPending = 0;
     function startAjaxSearch() {
         searchesPending++;
@@ -198,6 +212,8 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             $('#search-ajax-loader').removeClass('hidden');
         }
     }
+
+    //Similarly, hide the loading indicator if no searches are pending
     function endAjaxSearch() {
         searchesPending--;
         if (searchesPending === 0) {

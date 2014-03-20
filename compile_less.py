@@ -31,9 +31,13 @@ class CompileLessHandler(FileSystemEventHandler):
                     for key, value in files_to_compile.iteritems():
                         files = value.split(',')
                         for f in files:
-                            command_arg = '{0}\\less\\{1}\\{2}.less > {0}\\css\\{1}\\{2}.css'.format(path, key,
-                                                                                                     f.strip())
-                            call('lessc ' + command_arg, shell=True)
+                            f = f.strip()
+                            command_arg = '{0}\\less\\{1}\\{2}.less > {0}\\css\\{1}\\{2}.css'.format(path, key, f)
+                            result = call('lessc ' + command_arg, shell=True)
+                            if result:
+                                print "--File {0}.less had a problem in its compilation--".format(f)
+                            else:
+                                print "File {0}.less has been recompiled.".format(f)
                 elif directory == 'less':
                     break
 
@@ -42,6 +46,7 @@ if __name__ == "__main__":
     event_handler = CompileLessHandler()
     observer = Observer()
 
+    print "Script has been started and is watching {0}".format(path)
     # Schedules watching a path
     observer.schedule(event_handler, path, recursive=True)
     observer.start()
