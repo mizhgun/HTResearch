@@ -3,18 +3,18 @@
 # A module containing the different data access objects used for interaction with our MongoDB collections.
 #
 
-
+# stdlib imports
 from datetime import datetime
 from mongoengine import Q
 from mongoengine.fields import StringField
+import re
 
-from dto import *
-
-from connection import DBConnection
+# project imports
+from HTResearch.DataAccess.dto import *
+from HTResearch.DataAccess.connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.geocoder import geocode
 from HTResearch.Utilities.url_tools import UrlUtility
-import re
 
 
 class DAO(object):
