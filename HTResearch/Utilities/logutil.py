@@ -1,3 +1,8 @@
+#
+# logutil.py
+# A module containing means of interacting with log files.
+#
+
 import logging
 import logging.handlers
 import os
@@ -38,6 +43,16 @@ handler.setFormatter(formatter)
 
 
 def get_logger(section, name):
+    """
+    Fetches a logger.
+
+    Arguments:
+        section (string): The section the logger is attributed to.
+        name (string): The name of the logger.
+
+    Returns:
+        The logger corresponding to the section and name provided.
+    """
     section_name = LoggingSection.reverse_mapping[section].lower()
 
     logger = logging.getLogger('htresearch.{0}.{1}'.format(section_name, name))

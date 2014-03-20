@@ -1,3 +1,8 @@
+#
+# converter.py
+# A module for converting data among its different representations.
+#
+
 from HTResearch.DataModel.model import *
 from HTResearch.DataAccess.dto import *
 from HTResearch.DataAccess.dao import *
@@ -8,6 +13,16 @@ class DTOConverter(object):
 
     @staticmethod
     def from_dto(cls, obj):
+        """
+        Returns the base object mapping of a DTO.
+
+        Arguments:
+            cls (type): The class to convert to.
+            obj (DTO): The object to convert.
+
+        Returns:
+            The base object representation of the DTO.
+        """
         if obj is None:
             return None
 
@@ -36,6 +51,16 @@ class DTOConverter(object):
 
     @staticmethod
     def to_dto(cls, obj):
+        """
+        Returns the DTO mapping of a base object.
+
+        Arguments:
+            cls (type): The DTO class to convert to.
+            obj (object): The object to convert.
+
+        Returns:
+            The DTO representation of the base object.
+        """
         new_dto = cls()
 
         for key, value in obj.__dict__.iteritems():
@@ -72,6 +97,16 @@ class ModelConverter(object):
 
     @staticmethod
     def to_model(cls, obj):
+        """
+        Returns the Model mapping of an item.
+
+        Arguments:
+            cls (type): The model class to convert to.
+            obj (object): The item to convert.
+
+        Returns:
+            The model form of the provided item.
+        """
         new_model = cls()
 
         for key, value in obj.iteritems():
