@@ -192,7 +192,7 @@ class URLFrontier:
             rules (URLFrontierRules): The rules used in fetching the next URL.
 
         Returns:
-            A URL string for the next URL in the queue.
+            A URL string for the next URL in the queue, or None.
         """
         cs = rules.checksum
         start_process = False
