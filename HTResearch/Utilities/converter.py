@@ -100,8 +100,12 @@ class ModelConverter(object):
         """
         Returns the Model mapping of an item.
 
-        cls - The model class to convert to.
-        obj - The item to convert.
+        Arguments:
+            cls (type): The model class to convert to.
+            obj (object): The item to convert.
+
+        Returns:
+            The model form of the provided item.
         """
         new_model = cls()
 
