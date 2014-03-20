@@ -1,4 +1,11 @@
+/**
+ * Provides a means of initializing the graph of organizations and their partners.
+ *
+ * @module partner-map
+ */
 define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
+    'use strict';
+
     var width = window.innerWidth,
         height = window.innerHeight;
 
@@ -27,7 +34,11 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
         'ALL': 'url(#all-grad)'
     };
 
-
+    /**
+     * Initializes the partner map.
+     * @param {string} selector The selector of the DOM element to use for instantiation.
+     * @param {object} options The options object associated with instantiation (width, height).
+     */
     function initialize(selector, options) {
         if (options) {
             if (options.width){
@@ -48,7 +59,7 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
 
         defineGradients();
 
-        d3.json('/partner-map/', function(error, graph) {
+        d3.json('/api/partner-map/', function(error, graph) {
             // start d3.layout.force
             force
                 .nodes(graph.nodes)
@@ -127,22 +138,6 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
             $(selector + ' svg').bind('DOMMouseScroll mousewheel', function(e) {
                 e.preventDefault();
                 zoomInOut(e);
-            });
-
-            svg.on("mousemove", function() {
-              fisheye.focus(d3.mouse(this));
-
-              node.each(function(d) { d.fisheye = fisheye(d); })
-                  .attr("cx", function(d) { return d.fisheye.x; })
-                  .attr("cy", function(d) { return d.fisheye.y; })
-                  .attr('transform', function(d) {return 'translate(' + d.fisheye.x + ',' + d.fisheye.y +')'; })
-                  .selectAll('circle')
-                  .attr("r", function(d) { return d.fisheye.z * r; });
-
-              link.attr("x1", function(d) { return d.source.fisheye.x; })
-                  .attr("y1", function(d) { return d.source.fisheye.y; })
-                  .attr("x2", function(d) { return d.target.fisheye.x; })
-                  .attr("y2", function(d) { return d.target.fisheye.y; });
             });
 
             force.on('tick', function() {
