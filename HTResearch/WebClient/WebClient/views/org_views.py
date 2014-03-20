@@ -25,7 +25,7 @@ ctx = ApplicationContext(DAOContext())
 
 def organization_profile(request, org_id):
     """
-    Sends the user to the Organization Profile page and retrieves Organization information for the profile.
+    Sends a request to the Organization Profile page and retrieves Organization information for the profile.
 
     Returns:
         A dictionary containing the Organization information.
@@ -60,7 +60,7 @@ def organization_profile(request, org_id):
 
 def request_organization(request):
     """
-    Sends the user to the Request Organization page if the user is logged in.
+    Sends a request to the Request Organization page if the user is logged in.
 
     Returns:
         A dictionary containing the form and success/error flags.
@@ -99,7 +99,7 @@ def request_organization(request):
 
 def edit_organization(request, org_id):
     """
-    Sends the user to the Edit Organization page if the user is logged in and a contributor account type.
+    Sends a request to the Edit Organization page if the user is logged in and a contributor account type.
 
     Returns:
         A dictionary containing the form, organization type choices, the org id, and success/error flags.
@@ -181,7 +181,7 @@ def edit_organization(request, org_id):
 
 def org_rank(request, sort_method=''):
     """
-    Sends the user to the org rank page, or the View All Organizations page.
+    Sends a request to the org rank page, or the View All Organizations page.
 
     Arguments:
         sort_method (string): How the organizations should be sorted on the page.

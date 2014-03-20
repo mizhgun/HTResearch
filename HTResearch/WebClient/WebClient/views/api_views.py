@@ -41,7 +41,10 @@ def get_org_keywords(request):
 
 def get_org_rank_rows(request):
     """
+    Retrieves the organization information to populate the org-rank page.
 
+    Returns:
+        Dictionary of the organization info and the count.
     """
     start = int(request.GET['start'])
     end = int(request.GET['end'])

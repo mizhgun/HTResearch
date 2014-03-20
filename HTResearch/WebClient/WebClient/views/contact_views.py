@@ -19,7 +19,7 @@ ctx = ApplicationContext(DAOContext())
 
 def contact_profile(request, id):
     """
-    Sends the user to the Contact Profile page and retrieves Contact information for the profile.
+    Sends a request to the Contact Profile page and retrieves Contact information for the profile.
 
     Returns:
         A dictionary containing the Contact/User information.
@@ -68,7 +68,7 @@ def contact_profile(request, id):
 
 def edit_contact(request, contact_id):
     """
-    Sends the user to the Edit Contact page if the user is logged in and has a contributor account type.
+    Sends a request to the Edit Contact page if the user is logged in and has a contributor account type.
 
     Returns:
         A dictionary containing the form, contact id, and success/error flags.

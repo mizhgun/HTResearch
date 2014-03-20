@@ -26,7 +26,7 @@ logger = get_logger(LoggingSection.CLIENT, __name__)
 
 def login(request):
     """
-    Sends the user to the Login page.
+    Sends a request to the Login page.
 
     Returns:
         Dictionary with the login form and error flags.
@@ -77,7 +77,7 @@ def logout(request):
 
 def signup(request):
     """
-    Sends the user to the Signup page.
+    Sends a request to the Signup page.
 
     Returns:
         Dictionary with the signup form and error flags.
@@ -139,7 +139,7 @@ def signup(request):
 
 def manage_account(request):
     """
-    Sends the user to the Account Preferences page.
+    Sends a request to the Account Preferences page.
 
     Returns:
         Dictionary with the account preferences form and success/error flags.
@@ -199,7 +199,7 @@ def manage_account(request):
 
 def send_invite(request):
     """
-    Sends the user to the Send Invite page.
+    Sends a request to the Send Invite page.
 
     Returns:
         Dictionary with the send invite form and success/error flags.
