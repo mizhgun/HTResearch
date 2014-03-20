@@ -737,16 +737,6 @@ class OrgTypeScraper(object):
         for key in self._type_words.iterkeys():
             self._type_words[key] = [self._lemmatizer.lemmatize(word) for word in self._type_words[key]]
 
-    # UNUSED FUNCTION?
-    # Find the minimum index of a term from a search list in a list
-    @staticmethod
-    def _min_index_found(listwords, searchwords):
-        index = float('inf')
-        for word in searchwords:
-            if word in listwords:
-                index = min(index, listwords.index(word))
-        return index
-
     # Get the organization type
     def parse(self, response):
         keyword_scraper_inst = self._keyword_scraper()
