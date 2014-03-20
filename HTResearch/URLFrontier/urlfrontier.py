@@ -188,7 +188,7 @@ class URLFrontier:
         """
         Fetches the next URL from the queue.
 
-        Arguments
+        Arguments:
             rules (URLFrontierRules): The rules used in fetching the next URL.
 
         Returns:
