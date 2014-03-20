@@ -35,5 +35,10 @@ def get_http_404_page(request):
     return HttpResponseNotFound(html, status=404)
 
 
+def get_http_500_page(request):
+    html = render(request, 'shared/500.html')
+    return HttpResponseNotFound(html, status=500)
+
+
 def unimplemented(request):
     return render(request, 'shared/unimplemented.html')
