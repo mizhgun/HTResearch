@@ -11,9 +11,11 @@ from HTResearch.Utilities.geocoder import geocode
 from HTResearch.Utilities.url_tools import UrlUtility
 import re
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
-from Utilities import decorators
+from HTResearch.Utilities import decorators
 
+#region Globals
 logger = get_logger(LoggingSection.CLIENT, __name__)
+#endregion
 
 
 class DAO(object):
@@ -32,20 +34,20 @@ class DAO(object):
 
     @decorators.safe_mongocall
     def merge_documents(self, dto, merge_dto):
-            with self.conn():
-                attributes = merge_dto._data
-                for key in attributes:
-                    if attributes[key] is not None:
-                        cur_attr = getattr(dto, key)
-                        if cur_attr is None or (isinstance(cur_attr, type([])) and len(cur_attr) == 0):
-                            setattr(dto, key, attributes[key])
-                        else:
-                            # TODO: Maybe we should merge all reference documents, as well?
-                            pass
+        with self.conn():
+            attributes = merge_dto._data
+            for key in attributes:
+                if attributes[key] is not None:
+                    cur_attr = getattr(dto, key)
+                    if cur_attr is None or (isinstance(cur_attr, type([])) and len(cur_attr) == 0):
+                        setattr(dto, key, attributes[key])
+                    else:
+                        # TODO: Maybe we should merge all reference documents, as well?
+                        pass
 
-            dto.last_updated = datetime.utcnow()
-            dto.save()
-            return dto
+        dto.last_updated = datetime.utcnow()
+        dto.save()
+        return dto
 
     def create_update(self, dto):
         pass

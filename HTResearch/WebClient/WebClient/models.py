@@ -86,10 +86,7 @@ class ManageForm(forms.Form):
         ctx = ApplicationContext(DAOContext())
         dao = ctx.get_object('UserDAO')
 
-        try:
-            user = dao.find(email=email, id__ne=user_id)
-        except:
-            logger.error('Error occurred while trying to access user={0}'.format(user))
+        user = dao.find(email=email, id__ne=user_id)
 
         if user:
             logger.error('Error occurred while cleaning email={0}'.format(email))

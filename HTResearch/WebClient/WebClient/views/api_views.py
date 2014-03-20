@@ -12,7 +12,7 @@ from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
 from HTResearch.Utilities.encoder import MongoJSONEncoder
-from Utilities import decorators
+from HTResearch.Utilities import decorators
 
 #region Globals
 logger = get_logger(LoggingSection.CLIENT, __name__)
@@ -34,7 +34,6 @@ def get_org_keywords(request):
     return HttpResponse(json.dumps(keywords), mimetype='application/json')
 
 
-@decorators.safe_apicall
 def get_org_rank_rows(request):
     start = int(request.GET['start'])
     end = int(request.GET['end'])
@@ -145,7 +144,6 @@ def org_partner_map(request):
     return HttpResponse(pmap, content_type="application/json")
 
 
-@decorators.safe_apicall
 def search_publications(request):
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
@@ -180,7 +178,6 @@ def search_publications(request):
     return HttpResponse(MongoJSONEncoder().encode(data), content_type='application/json')
 
 
-@decorators.safe_apicall
 def search_contacts(request):
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
@@ -256,7 +253,6 @@ def search_contacts(request):
     return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
 
 
-@decorators.safe_apicall
 def search_organizations(request):
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
