@@ -46,9 +46,9 @@ class DAO(object):
                         # TODO: Maybe we should merge all reference documents, as well?
                         pass
 
-        dto.last_updated = datetime.utcnow()
-        dto.save()
-        return dto
+            dto.last_updated = datetime.utcnow()
+            dto.save()
+            return dto
 
     def create_update(self, dto):
         pass
