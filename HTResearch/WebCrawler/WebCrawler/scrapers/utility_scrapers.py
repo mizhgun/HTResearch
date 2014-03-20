@@ -921,7 +921,7 @@ class PublicationURLScraper(object):
 class UrlMetadataScraper(object):
     """A class that scrapes the metadata of a particular url."""
     def __init__(self):
-        self._dao = URLMetadataDAO
+        self.dao = URLMetadataDAO
 
     def parse(self, response):
         # Initialize item and set url
@@ -942,7 +942,7 @@ class UrlMetadataScraper(object):
         metadata['update_freq'] = 0
 
         # Compare checksums and update update_freq using the existing URL
-        exist_url_dto = self._dao().find(url=response.url)
+        exist_url_dto = self.dao().find(url=response.url)
         if exist_url_dto is not None:
             exist_url = DTOConverter.from_dto(URLMetadataDTO, exist_url_dto)
             if exist_url.checksum is not None:
