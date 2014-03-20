@@ -16,7 +16,11 @@ class MongoJSONEncoder(json.JSONEncoder):
         """
         The default mechanism used to encode various properties.
 
-        o - The property to encode.
+        Arguments:
+            o (object): The property to encode.
+
+        Returns:
+            The JSON encoding of the property.
         """
         # If ObjectId, cast to string
         if isinstance(o, ObjectId):
@@ -40,7 +44,11 @@ class MongoJSONEncoder(json.JSONEncoder):
         """
         Encodes an object.
 
-        o - The object to encode.
+        Arguments:
+            o (object): The object to encode.
+
+        Returns:
+            The JSON encoding of the object.
         """
         result = super(MongoJSONEncoder, self).encode(o)
         if isinstance(o, ObjectId):

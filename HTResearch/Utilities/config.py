@@ -14,8 +14,12 @@ def get_config_value(section, key):
     """
     Fetches a config value from htconfig.cfg as a string.
 
-    section - The section the value is stored under.
-    key - The key associated with the value.
+    Arguments:
+        section (string): The section the value is stored under.
+        key (string): The key associated with the value.
+
+    Returns:
+        A string for the config value, or None.
     """
     try:
         parser = ConfigParser.ConfigParser()
@@ -30,7 +34,12 @@ def get_section_values(section):
     """
     Fetches all config values within a certain section and returns them as a {key, value} dictionary.
 
-    section - The section values are stored under.
+
+    Arguments:
+        section (string): The section values are stored under.
+
+    Returns:
+        A (string, string) dictionary for all keys and values under the section, or None.
     """
     try:
         parser = ConfigParser.ConfigParser()

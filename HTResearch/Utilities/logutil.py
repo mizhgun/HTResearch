@@ -46,8 +46,12 @@ def get_logger(section, name):
     """
     Fetches a logger.
 
-    section - The section the logger is attributed to.
-    name - The name of the logger.
+    Arguments:
+        section (string): The section the logger is attributed to.
+        name (string): The name of the logger.
+
+    Returns:
+        The logger corresponding to the section and name provided.
     """
     section_name = LoggingSection.reverse_mapping[section].lower()
 

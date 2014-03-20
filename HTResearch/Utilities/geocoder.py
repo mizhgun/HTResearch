@@ -17,12 +17,16 @@ def geocode(address, bounds=None, region=None,
     """
     Geocodes an address.
 
-    address - The address to geocode.
-    bounds - The bounds for geocoding.
-    region - The region for geocoding.
-    language - The specific language for geocoding.
-    sensor - Whether or not a GPS sensor is present (false by default).
-    exactly_one - Whether or not to encode exactly one item (true by default).
+    Arguments:
+        address (string): The address to geocode.
+        bounds (string): The bounds for geocoding.
+        region (string): The region for geocoding.
+        language (string): The specific language for geocoding.
+        sensor (boolean): Whether or not a GPS sensor is present (false by default).
+        exactly_one (boolean): Whether or not to encode exactly one item (true by default).
+
+    Returns:
+        The geocoding of the provided address.
     """
 
     params = {

@@ -16,8 +16,12 @@ class DTOConverter(object):
         """
         Returns the base object mapping of a DTO.
 
-        cls - The class to convert to.
-        obj - The object to convert.
+        Arguments:
+            cls (type): The class to convert to.
+            obj (DTO): The object to convert.
+
+        Returns:
+            The base object representation of the DTO.
         """
         if obj is None:
             return None
@@ -50,8 +54,12 @@ class DTOConverter(object):
         """
         Returns the DTO mapping of a base object.
 
-        cls - The DTO class to convert to.
-        obj - The object to convert.
+        Arguments:
+            cls (type): The DTO class to convert to.
+            obj (object): The object to convert.
+
+        Returns:
+            The DTO representation of the base object.
         """
         new_dto = cls()
 
