@@ -8,9 +8,6 @@ from HTResearch.DataModel.enums import AccountType
 from HTResearch.DataModel.globals import ORG_TYPE_CHOICES
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.url_tools import UrlUtility
-from HTResearch.Utilities.logutil import LoggingSection, get_logger
-
-logger = get_logger(LoggingSection.CLIENT, __name__)
 
 class InviteForm(forms.Form):
     email = forms.EmailField(max_length=40)
@@ -59,7 +56,6 @@ class SignupForm(forms.Form):
         confirm_password = self.cleaned_data['confirm_password']
 
         if password != confirm_password:
-            logger.info('User incorrectly entered password')
             raise ValidationError('Please ensure your passwords match.')
         return confirm_password
 
@@ -89,7 +85,6 @@ class ManageForm(forms.Form):
         user = dao.find(email=email, id__ne=user_id)
 
         if user:
-            logger.error('Error occurred while cleaning email={0}'.format(email))
             raise ValidationError('An account with that email already exists.')
 
         return email
@@ -104,10 +99,7 @@ class ManageForm(forms.Form):
 
 
 class RequestOrgForm(forms.Form):
-    try:
-        url = forms.URLField()
-    except:
-        logger.error('Error occurred while parsing form. url={0}'.format(url))
+    url = forms.URLField()
 
     def clean_url(self):
         url = self.cleaned_data['url']
