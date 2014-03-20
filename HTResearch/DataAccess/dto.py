@@ -3,8 +3,10 @@
 # A module containing the different DTOs used for interaction with our MongoDB documents.
 #
 
+# stdlib imports
 import mongoengine as mongo
 
+# project imports
 from HTResearch.DataAccess.embedded_dto import *
 from HTResearch.DataModel.enums import AccountType
 from HTResearch.DataModel.globals import ORG_TYPE_CHOICES
