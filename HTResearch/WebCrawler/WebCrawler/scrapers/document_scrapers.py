@@ -11,9 +11,7 @@ from utility_scrapers import *
 
 
 class ContactScraper():
-    """
-    Uses the OrgContactsScraper to find contacts associated with a particular organization.
-    """
+    """Uses the OrgContactsScraper to find contacts associated with a particular organization."""
     def parse(self, response):
         #get all the values out of the dictionary that the Contact scraper returns
         org_contact_scraper = OrgContactsScraper()
@@ -36,15 +34,7 @@ class ContactScraper():
 
 
 class OrganizationScraper():
-    """
-    Scrapes an Organization from a given page.
-
-    Attributes:
-        org_dao (OrganizationDAO): Data access object for Organization to check if
-                                   the organization is valid.
-        url_frontier (URLFrontier): Object to add the organization url to the url metadata
-                                    to tell the spider the page has already been visited.
-    """
+    """Scrapes an Organization from a given page."""
     def __init__(self):
         self._scrapers = {
             'name': [OrgNameScraper],
@@ -133,19 +123,7 @@ class OrganizationScraper():
 
 
 class PublicationScraper():
-    """
-    Scrapes Publications from Google Scholar.
-
-    Attributes:
-        key_scraper (PublicationCitationSourceScraper): Used to scrape ajax hashes from links.
-        title_scraper (PublicationTitleScraper): Gets the Publication title.
-        author_scraper (PublicationAuthorsScraper): Gets the Publication author(s).
-        date_scraper (PublicationDateScraper): Gets the Publication date.
-        publisher_scraper (PublicationPublisherScraper): Gets the Publication publisher.
-        pub_url_scraper (PublicationURLScraper): Gets the Publication url.
-        titles (list): Titles to search for on the page.
-        publications (list of ScrapedPublication): Publications to be added to the database
-    """
+    """Scrapes Publications from Google Scholar."""
     def __init__(self):
         #Scrapers
         self.key_scraper = PublicationCitationSourceScraper()

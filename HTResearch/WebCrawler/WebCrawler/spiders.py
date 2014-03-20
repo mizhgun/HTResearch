@@ -17,21 +17,7 @@ logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class OrgSpider(BaseSpider):
-    """
-    Crawls pages for organizations and contacts (through OrgContactsScraper).
-
-    Attributes:
-        scrapers (list of obj): Additional scrapers to run after the OrganizationScraper.
-        org_scraper (OrganizationScraper): Checker to see if the page response when scraping is not None.
-                                           If not none, run the other scrapers on that page also.
-        meta_data_scraper (UrlMetadataScraper): Scrape the metadata of the page.
-        url_frontier_rules (URLFrontierRules): Contains the rules for the URLFrontier
-                                               Rule that is given are blocked_domains.
-        ctx (ApplicationContext): The context for the URLFrontier.
-        url_frontier (URLFrontier): Gets urls from the LinkScraper for the spider to crawl.
-        next_url_timeout (int): Stops the URLFrontier from requesting URLs if queue is empty or is being returned None
-                                on a request.
-    """
+    """Crawls pages for organizations and contacts (through OrgContactsScraper)."""
     name = 'org_spider'
     # empty start_urls, we're setting our own
     start_urls = []
@@ -120,15 +106,7 @@ class OrgSpider(BaseSpider):
 
 
 class StopTraffickingSpider(BaseSpider):
-    """
-    Crawls a very specific site so we can have more data.
-
-    Attributes:
-        saved_path (str): Path to the current working directory.
-        scraper (StopTraffickingDotInScraper): Scraper to be run on each page.
-        first (bool): Check for first time running on that page.
-        directory_results (Response): Scrapy Response object of the Directory.aspx page for Orgs/Contacts.
-    """
+    """Crawls a very specific site so we can have more data."""
     name = "stop_trafficking"
     allowed_domains = ['stoptrafficking.in']
     start_urls = ['http://www.stoptrafficking.in/Directory.aspx']
@@ -203,17 +181,7 @@ class StopTraffickingSpider(BaseSpider):
 
 
 class PublicationSpider(BaseSpider):
-    """
-    Crawls Google Scholar with different queries for publications.
-
-    Attributes:
-        saved_path (str): Path to the current working directory.
-        start_urls (list of str): Start URLs for the spider to crawl.
-        scraper (PublicationScraper): Scraper to be run on each page.
-        first (bool): Check for first time running on that page.
-        citation_urls (list of str): Citation strings for each publication.
-        main_page (Response): Scrapy Response objects of the start url pages.
-    """
+    """Crawls Google Scholar with different queries for publications."""
     name = "publication_spider"
     allowed_domains = ['scholar.google.com']
 
