@@ -149,8 +149,10 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         }).done(function(data) {
             var results = JSON.parse(data).results;
             ready(results);
+            $('.empty-panel').text('No Results');
         }).fail(function(data) {
             console.log(searchItem.name, 'search failed');
+                $('.empty-panel').text('Error occurred: HTTP '+data.status);
             ready([]);
         });
     }

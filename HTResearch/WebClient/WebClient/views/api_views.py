@@ -218,6 +218,8 @@ def search_contacts(request):
         try:
             if c['organization']:
                 org = org_dao.find(id=c['organization'].id)
+                #Prevent adding this field as it cannot be properly encoded
+                org.page_rank_info = None
                 c['organization'] = org.__dict__['_data']
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
@@ -230,7 +232,9 @@ def search_contacts(request):
         org_dao = ctx.get_object('OrganizationDAO')
         try:
             if u['organization']:
-                org = org_dao.find(id=u['organization'].id)
+                org = org_dao.find(id=u['organization'].id).exclude('page_rank_info')
+                #Prevent adding this field as it cannot be properly encoded
+                org.page_rank_info = None
                 u['organization'] = org.__dict__['_data']
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
@@ -271,6 +275,8 @@ def search_organizations(request):
             organizations = org_dao.findmany(search=search_text, num_elements=10,
                                              sort_fields=['valid', 'combined_weight', 'name'],
                                              valid=True)
+            for org in organizations:
+                org.page_rank_info = None
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
@@ -282,4 +288,5 @@ def search_organizations(request):
         org['keywords'] = (org['keywords'] or '').split()
         results.append(org)
     data = {'results': results}
-    return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
+    json_data = MongoJSONEncoder().encode(data)
+    return HttpResponse(json_data, content_type="application/json")
