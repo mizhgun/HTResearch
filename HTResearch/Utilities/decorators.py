@@ -1,6 +1,7 @@
 # stdlib imports
 from pymongo.errors import AutoReconnect
 import time
+from django.http import HttpResponseServerError
 
 # project imports
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
@@ -42,5 +43,6 @@ def safe_apicall(call):
             return call(*args, **kwargs)
         except Exception, e:
             logger.error(e.message)
+            return HttpResponseServerError
 
     return _safe_apicall
