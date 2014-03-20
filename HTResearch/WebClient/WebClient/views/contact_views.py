@@ -18,6 +18,12 @@ ctx = ApplicationContext(DAOContext())
 
 
 def contact_profile(request, id):
+    """
+    Sends the user to the Contact Profile page and retrieves Contact information for the profile.
+
+    Returns:
+        A dictionary containing the Contact/User information.
+    """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     logger.info('Request made for profile of contact={0} by user={1}'.format(id, user_id))
@@ -27,7 +33,7 @@ def contact_profile(request, id):
     try:
         user = user_dao.find(id=id)
 
-    except Exception:
+    except:
         logger.error('Exception encountered on user lookup for user={0}'.format(id))
         return get_http_404_page(request)
 
@@ -61,6 +67,12 @@ def contact_profile(request, id):
 
 
 def edit_contact(request, contact_id):
+    """
+    Sends the user to the Edit Contact page if the user is logged in and has a contributor account type.
+
+    Returns:
+        A dictionary containing the form, contact id, and success/error flags.
+    """
     if 'user_id' not in request.session:
         return HttpResponseRedirect('/login')
     elif 'account_type' not in request.session or request.session['account_type'] != AccountType.CONTRIBUTOR:
@@ -75,7 +87,7 @@ def edit_contact(request, contact_id):
 
     try:
         contact = contact_dao.find(id=contact_id)
-    except Exception:
+    except:
         logger.error('Exception encountered on contact lookup for contact={0} by user={1}'.format(contact_id, user_id))
         return get_http_404_page(request)
 
@@ -115,12 +127,22 @@ def edit_contact(request, contact_id):
                     error = 'Oops! There was an error updating the contact. Please try again soon.'
 
     return render(request, 'contact/edit_contact.html', {'form': form, 'contact_id': contact_id,
-                                                 'success': success, 'error': error})
+                                                         'success': success, 'error': error})
 
 
 def _create_contact_dict(contact):
+    """
+    Helper function to convert a ContactDAO to a dictionary.
+
+    Arguments:
+        contact (ContactDAO): The contact that is being converted.
+
+    Returns:
+        A { string : string } dictionary of ContactDAO fields.
+    """
     contact_dict = {'first_name': contact.first_name if contact.first_name else "",
                     'last_name': contact.last_name if contact.last_name else "",
                     'email': contact.email if contact.email else "",
-                    'position': contact.position if contact.position else "", 'invalid': not contact.valid}
+                    'position': contact.position if contact.position else "",
+                    'invalid': not contact.valid}
     return contact_dict

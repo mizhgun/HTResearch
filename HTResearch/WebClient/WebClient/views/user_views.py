@@ -25,6 +25,12 @@ logger = get_logger(LoggingSection.CLIENT, __name__)
 
 
 def login(request):
+    """
+    Sends the user to the Login page.
+
+    Returns:
+        Dictionary with the login form and error flags.
+    """
     # if we're logged in, redirect to the index
     if 'user_id' in request.session:
         user_id = request.session['user_id']
@@ -57,6 +63,7 @@ def login(request):
 
 
 def logout(request):
+    """Logs the user out. Send the user to the index page."""
     if 'user_id' not in request.session:
         logger.error('Bad request made for logout without login')
         return HttpResponseRedirect('/')
@@ -69,6 +76,12 @@ def logout(request):
 
 
 def signup(request):
+    """
+    Sends the user to the Signup page.
+
+    Returns:
+        Dictionary with the signup form and error flags.
+    """
     if 'user_id' in request.session:
         user_id = request.session['user_id']
         logger.error('Bad request for signup made by user={0}'.format(user_id))
@@ -125,6 +138,12 @@ def signup(request):
 
 
 def manage_account(request):
+    """
+    Sends the user to the Account Preferences page.
+
+    Returns:
+        Dictionary with the account preferences form and success/error flags.
+    """
     if 'user_id' not in request.session:
         logger.error('Request made for account-preferences without login')
         return HttpResponseRedirect('/login')
@@ -179,6 +198,12 @@ def manage_account(request):
 
 
 def send_invite(request):
+    """
+    Sends the user to the Send Invite page.
+
+    Returns:
+        Dictionary with the send invite form and success/error flags.
+    """
     if 'user_id' not in request.session:
         logger.error('Request made for send_invite without login')
         return HttpResponseRedirect('/login')
@@ -239,6 +264,15 @@ def send_invite(request):
 
 
 def _create_user_dict(user):
+    """
+    Helper function to convert a UserDAO to a dictionary.
+
+    Arguments:
+        user (UserDAO): The user that is being converted.
+
+    Returns:
+        A { string : string } dictionary of UserDAO fields.
+    """
     user_dict = {
         'first_name': user.first_name or "",
         'last_name': user.last_name or "",

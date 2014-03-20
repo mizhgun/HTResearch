@@ -24,6 +24,12 @@ ctx = ApplicationContext(DAOContext())
 
 
 def organization_profile(request, org_id):
+    """
+    Sends the user to the Organization Profile page and retrieves Organization information for the profile.
+
+    Returns:
+        A dictionary containing the Organization information.
+    """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     logger.info('Request made for profile of org={0} by user={1}'.format(org_id, user_id))
@@ -48,11 +54,17 @@ def organization_profile(request, org_id):
     params = {"organization": org,
               "scheme": scheme,
               "types": org_types,
-    }
+              }
     return render(request, 'organization/organization_profile.html', params)
 
 
 def request_organization(request):
+    """
+    Sends the user to the Request Organization page if the user is logged in.
+
+    Returns:
+        A dictionary containing the form and success/error flags.
+    """
     if 'user_id' not in request.session:
         logger.error('Bad request made for organization seed without login')
         HttpResponseRedirect('/login')
@@ -86,6 +98,12 @@ def request_organization(request):
 
 
 def edit_organization(request, org_id):
+    """
+    Sends the user to the Edit Organization page if the user is logged in and a contributor account type.
+
+    Returns:
+        A dictionary containing the form, organization type choices, the org id, and success/error flags.
+    """
     if 'user_id' not in request.session:
         logger.error('Bad request made to edit org={0} without login'.format(org_id))
         return HttpResponseRedirect('/login')
@@ -155,21 +173,37 @@ def edit_organization(request, org_id):
                     logger.error('Error occurred saving org={0} by user={1}'.format(org_id, user_id))
 
     return render(request, "organization/edit_organization.html", {'form': form,
-                                                      'type_choices': ORG_TYPE_CHOICES,
-                                                      'org_id': org_id,
-                                                      'success': success,
-                                                      'error': error})
+                                                                   'type_choices': ORG_TYPE_CHOICES,
+                                                                   'org_id': org_id,
+                                                                   'success': success,
+                                                                   'error': error})
 
 
 def org_rank(request, sort_method=''):
+    """
+    Sends the user to the org rank page, or the View All Organizations page.
+
+    Arguments:
+        sort_method (string): How the organizations should be sorted on the page.
+    """
     return render(request, 'organization/org_rank.html')
 
 
 def partner_map_demo(request):
+    """Demo of the partner map."""
     return render(request, 'data-vis/partner-map-demo.html')
 
 
 def _create_org_dict(org):
+    """
+    Helper function to convert a OrganizationDAO to a dictionary.
+
+    Arguments:
+        org (OrganizationDAO): The organization that is being converted.
+
+    Returns:
+        A { string : string } dictionary of OrganizationDAO fields.
+    """
     org_dict = {
         'name': org.name if org.name else "",
         'address': org.address if org.address else "",
