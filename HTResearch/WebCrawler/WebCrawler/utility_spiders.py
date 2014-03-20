@@ -12,10 +12,10 @@ class DebugFileGenerator(BaseSpider):
     """A spider to store responses to files for later use (such as for unit tests)"""
     name = 'debug_file_generator'
     allowed_domains = []
-    start_urls = []  # passed in by command
 
     def __init__(self, *args, **kwargs):
         super(DebugFileGenerator, self).__init__(*args, **kwargs)
+        self.start_urls = kwargs.get('start_urls').split(',')
 
     def parse(self, response):
         # create filename from url

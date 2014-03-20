@@ -1,4 +1,10 @@
+/**
+ * Performs validation on the "Send Invite" form.
+ */
+
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
+    'use strict';
+
     $(function() {
         $('#invite-nav').addClass('active');
 

@@ -1,4 +1,10 @@
+/**
+ * Performs client side signup form validation.
+ */
+
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
+    'use strict';
+
     $(function () {
         $('#sign-up-nav').addClass('active');
 
