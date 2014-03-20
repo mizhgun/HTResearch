@@ -1,4 +1,7 @@
+#project imports
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
+
+#stdlib imports
 from pymongo.errors import AutoReconnect
 import time
 
