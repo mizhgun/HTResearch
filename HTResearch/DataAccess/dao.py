@@ -534,8 +534,9 @@ class OrganizationDAO(DAO):
         NOTE: store_info should only be called if the spider wasn't running during calculation process,
         otherwise we might overwrite new page_rank_info
 
-        org_dtos - The organization DTOs to store page rank information for.
-        store_info - Whether or not we should store new page_rank_info.
+        Arguments:
+            org_dtos (OrganizationDTO[]): The organization DTOs to store page rank information for.
+            store_info (boolean): Whether or not we should store new page_rank_info.
         """
 
         with self.conn():
