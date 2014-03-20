@@ -28,8 +28,9 @@ class OrgSpider(BaseSpider):
         url_frontier_rules (URLFrontierRules): Contains the rules for the URLFrontier
                                                Rule that is given are blocked_domains.
         ctx (ApplicationContext): The context for the URLFrontier.
-        url_frontier (URLFrontier): Gets urls from the LinkScraper for the spider to crawl
-        next_url_timeout (int):
+        url_frontier (URLFrontier): Gets urls from the LinkScraper for the spider to crawl.
+        next_url_timeout (int): Stops the URLFrontier from requesting URLs if queue is empty or is being returned None
+                                on a request.
     """
     name = 'org_spider'
     # empty start_urls, we're setting our own

@@ -40,10 +40,10 @@ class OrganizationScraper():
     Scrapes an Organization from a given page.
 
     Attributes:
-        org_dao (OrganizationDAO): data access object for Organization to check if
-                                   the organization is valid
-        url_frontier (URLFrontier): object to add the organization url to the url metadata
-                                    to tell the spider the page has already been visited
+        org_dao (OrganizationDAO): Data access object for Organization to check if
+                                   the organization is valid.
+        url_frontier (URLFrontier): Object to add the organization url to the url metadata
+                                    to tell the spider the page has already been visited.
     """
     def __init__(self):
         self._scrapers = {
@@ -96,11 +96,11 @@ class OrganizationScraper():
         Checks if the current page is a valid page for an organization's homepage.
 
         Arguments:
-            reponse (Response): Scrapy Response object of the page that is to be scraped
+            reponse (Response): Scrapy Response object of the page that is to be scraped.
 
         Returns:
             True if it's a valid organization page or already in the database.
-            False if it's not the homepage
+            False if it's not the homepage.
         """
         # If already in database, then valid
         url = OrgUrlScraper().parse(response)
@@ -137,13 +137,13 @@ class PublicationScraper():
     Scrapes Publications from Google Scholar.
 
     Attributes:
-        key_scraper (PublicationCitationSourceScraper): Used to scrape ajax hashes from links
-        title_scraper (PublicationTitleScraper): Gets the Publication title
-        author_scraper (PublicationAuthorsScraper): Gets the Publication author(s)
-        date_scraper (PublicationDateScraper): Gets the Publication date
-        publisher_scraper (PublicationPublisherScraper): Gets the Publication publisher
-        pub_url_scraper (PublicationURLScraper): Gets the Publication url
-        titles (list): Titles to search for on the page
+        key_scraper (PublicationCitationSourceScraper): Used to scrape ajax hashes from links.
+        title_scraper (PublicationTitleScraper): Gets the Publication title.
+        author_scraper (PublicationAuthorsScraper): Gets the Publication author(s).
+        date_scraper (PublicationDateScraper): Gets the Publication date.
+        publisher_scraper (PublicationPublisherScraper): Gets the Publication publisher.
+        pub_url_scraper (PublicationURLScraper): Gets the Publication url.
+        titles (list): Titles to search for on the page.
         publications (list of ScrapedPublication): Publications to be added to the database
     """
     def __init__(self):
@@ -163,7 +163,7 @@ class PublicationScraper():
         Gets the fields from the citation page and adds them to the Publication.
 
         Arguments:
-            response (Response): Scrapy Response object of the page that is to be scraped
+            response (Response): Scrapy Response object of the page that is to be scraped.
         """
         pub = ScrapedPublication()
         pub['title'] = self.title_scraper.parse(response)
@@ -179,7 +179,7 @@ class PublicationScraper():
         Gets all the publication urls.
 
         Arguments:
-            response (Response): Scrapy Response object of the page that is to be scraped
+            response (Response): Scrapy Response object of the page that is to be scraped.
         """
         #Rescrape main page for links
         self.pub_url_scraper.seed_titles(self.titles)
@@ -196,10 +196,10 @@ class PublicationScraper():
         """Scrapes Google Scholar page for additional urls to crawl.
 
         Arguments:
-            response (Response): Scrapy Response object for the page that is to be scraped
+            response (Response): Scrapy Response object for the page that is to be scraped.
 
         Returns:
-            next_urls (list of str): List of citation URLs for the PublicationSpider to crawl
+            next_urls (list of str): List of citation URLs for the PublicationSpider to crawl.
         """
         #Must scrape several pubs at a time
         #Each page will have roughly 10 publications

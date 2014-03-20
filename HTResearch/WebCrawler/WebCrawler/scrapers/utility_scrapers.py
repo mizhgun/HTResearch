@@ -320,8 +320,8 @@ class OrgAddressScraper(object):
                         counter += 1
                     if len(body[i + 1]) == 6 and body[i + 1].isdigit():
                         city_and_zip.append((city, body[i + 1]))
-                    elif len(body[i + 1]) == 3 and len(body[i + 2]) == 3 and body[i + 1].isdigit() and body[
-                                i + 2].isdigit():
+                    elif len(body[i + 1]) == 3 and len(body[i + 2]) == 3 and body[i + 1].isdigit() and \
+                            body[i + 2].isdigit():
                         city_and_zip.append((city, body[i + 1] + body[i + 2]))
         address_list = []
         for i in range(len(city_and_zip)):
@@ -407,7 +407,7 @@ class OrgContactsScraper(object):
 
 class OrgFacebookScraper(object):
     """
-    Scrapes an organization's Facebook link on a given page
+    Scrapes an organization's Facebook link on a given page.
     """
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?facebook\.com/.+(?:/)?$", re.IGNORECASE)
@@ -454,8 +454,8 @@ class OrgNameScraper(object):
     Scrapes the organization name on a given page.
 
     Attributes:
-        _split_punctuation (regex obj): Regex to split the title tag based on punctuation
-        _stopwords (list of str): Words to be ignored
+        _split_punctuation (regex obj): Regex to split the title tag based on punctuation.
+        _stopwords (list of str): Words to be ignored.
     """
     def __init__(self):
         self._split_punctuation = re.compile(r"[ \w']+")
@@ -519,13 +519,13 @@ class OrgPartnersScraper(object):
 
     def _path_to(self, sel):
         """
-        Find the path to selected node(s)
+        Find the path to selected node(s).
 
         Arguments:
-            sel (list of XPathSelector):
+            sel (HtmlXPathSelector): XPath to potential partner links.
 
         Returns:
-            path (str): XPath to the partner organization's link
+            path (str): XPath to the partner organization's link.
         """
         path = ''
         while sel:
@@ -536,15 +536,15 @@ class OrgPartnersScraper(object):
 
     def _external_link_count(self, page_url, sel):
         """
-        Find out how many external links are in a list
+        Find out how many external links are in a list.
 
         Arguments:
-            page_url (str): Url of the page
-            sel ():
+            page_url (str): Url of the page.
+            sel (HtmlXPathSelector): XPath to check all the links in that XPath.
 
         Returns:
-            count (int): Number of links in
-                         Returns 0 if not all external links
+            count (int): Number of external links.
+                         Returns 0 if not all external links.
         """
         count = 0
         checked_domains = []
