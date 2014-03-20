@@ -344,6 +344,8 @@ def orgs_by_region(request):
 
     region_count = {}
     results = []
+    # Total count in known categories
+    total_known = 0
 
     organizations = list(org_dao.findmany())
     for org in organizations:
@@ -357,13 +359,19 @@ def orgs_by_region(request):
                     break
 
     for key in region_count.iterkeys():
+        count = region_count[key]
+        total_known += count
         results.append({
             'label': key,
-            'value': region_count[key],
+            'value': count,
         })
 
+    total = org_dao.count()
+
     data = {
-        'data': results
+        'categories': results,
+        'total': total,
+        'total_known': total_known,
     }
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -375,6 +383,8 @@ def orgs_by_type(request):
 
     results = []
     type_count = {}
+    # Total count in known categories
+    total_known = 0
 
     for org in organizations:
         if len(org['types']) > 0:
@@ -388,12 +398,19 @@ def orgs_by_type(request):
                     break
 
     for key in type_count.iterkeys():
+        count = type_count[key]
+        total_known += count
         results.append({
             'label': key.lower(),
-            'value': type_count[key],
+            'value': count,
         })
+
+    total = org_dao.count()
+
     data = {
-        'data': results
+        'categories': results,
+        'total': total,
+        'total_known': total_known,
     }
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -410,19 +427,27 @@ def orgs_by_members(request):
     ]
 
     results = []
+    # Total count in known categories
+    total_known = 0
 
     for r in ranges:
         count = 0
         for i in range(r[0], r[1] + 1):
             count += org_dao.count(contacts__size=i)
 
+        total_known += count
+
         results.append({
             'label': r[2],
-            'value': count
+            'value': count,
         })
 
+    total = org_dao.count()
+
     data = {
-        'data': results
+        'categories': results,
+        'total': total,
+        'total_known': total_known
     }
     return HttpResponse(json.dumps(data), content_type='application/json')
 
