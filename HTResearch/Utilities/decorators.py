@@ -13,3 +13,12 @@ def safe_mongocall(call):
             time.sleep(pow(2, i))
         logger.error('Exception while connecting to Mongo. Retrying...')
       return _safe_mongocall
+
+def safe_apicall(call):
+    def _safe_apicall(*args, **kwargs):
+      try:
+        return call(*args, **kwargs)
+      except Exception, e:
+        logger.error(e.message)
+
+      return _safe_apicall

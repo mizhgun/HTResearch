@@ -79,7 +79,7 @@ class DAO(object):
         with self.conn():
             # Do text search or grab by constraints
             if search is not None:
-                ret = self._text_search(search, fields=search_fields)
+                ret = self._text_search(search, fields=search_fields, **constraints)
             else:
                 ret = self.dto.objects(Q(**constraints) & self._valid_query())
 
