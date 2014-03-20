@@ -1,3 +1,8 @@
+#
+# utility_scrapers.py
+# A module containing the scrapers that grab individual fields of data.
+#
+
 # stdlib imports
 from bson.binary import Binary
 import datetime
@@ -28,7 +33,7 @@ _utilityscrapers_logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class ContactNameScraper(object):
-    """Scrapes first and last names of people on a given page."""
+    """A class that scrapes first and last names of people on a given page."""
     try:
         _names and _last_names and _stopwords and _titles
     except NameError:
@@ -117,7 +122,7 @@ class ContactNameScraper(object):
 
 
 class ContactPositionScraper(object):
-    """Scrapes work positions of people on a given page."""
+    """A class that scrapes work positions of people on a given page."""
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/positions.txt')) as f:
             self._positions = f.read().splitlines()
@@ -130,7 +135,7 @@ class ContactPositionScraper(object):
 
 
 class EmailScraper(object):
-    """Scrapes emails on a given page."""
+    """A class that scrapes emails on a given page."""
     def __init__(self):
         self._email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
                                        r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
@@ -167,7 +172,7 @@ class EmailScraper(object):
 
 
 class KeywordScraper(object):
-    """Scrapes the 50 most used words on a given page."""
+    """A class that scrapes the 50 most used words on a given page."""
     NUM_KEYWORDS = 50
     _stopwords = []
     _lemmatizer = WordNetLemmatizer()
@@ -244,7 +249,7 @@ class KeywordScraper(object):
 
 
 class IndianPhoneNumberScraper(object):
-    """Scrapes Indian phone numbers on a given page."""
+    """A class that scrapes Indian phone numbers on a given page."""
     def __init__(self):
         self._india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?'
                                               r'[-./\s]?[0-9]{5}[0-9]?\b|\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?'
@@ -275,7 +280,7 @@ class IndianPhoneNumberScraper(object):
 
 
 class OrgAddressScraper(object):
-    """Scrapes the city and country of an organization on a given page."""
+    """A class that scrapes the city and country of an organization on a given page."""
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/cities.txt')) as f:
             self._cities = f.read().splitlines()
@@ -322,7 +327,7 @@ class OrgAddressScraper(object):
 
 
 class OrgContactsScraper(object):
-    """Scrapes the contacts that are associated with an organization on a given page."""
+    """A class that scrapes the contacts that are associated with an organization on a given page."""
     def __init__(self):
         self._name_scraper = ContactNameScraper()
         self._number_scraper = IndianPhoneNumberScraper()
@@ -393,7 +398,7 @@ class OrgContactsScraper(object):
 
 
 class OrgFacebookScraper(object):
-    """Scrapes an organization's Facebook link on a given page."""
+    """A class that scrapes an organization's Facebook link on a given page."""
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?facebook\.com/.+(?:/)?$", re.IGNORECASE)
         self._fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
@@ -413,7 +418,7 @@ class OrgFacebookScraper(object):
 
 
 class OrgTwitterScraper(object):
-    """Scrapes an organization's Twitter link on a given page."""
+    """A class that scrapes an organization's Twitter link on a given page."""
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?twitter\.com/(?:#!/)?\w+(?:/)?$", re.IGNORECASE)
         self._tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
@@ -433,7 +438,7 @@ class OrgTwitterScraper(object):
 
 
 class OrgNameScraper(object):
-    """Scrapes the organization name on a given page."""
+    """A class that scrapes the organization name on a given page."""
     def __init__(self):
         self._split_punctuation = re.compile(r"[ \w']+")
         #Load words to be ignored
@@ -484,7 +489,7 @@ class OrgNameScraper(object):
 
 
 class OrgPartnersScraper(object):
-    """Scrapes partner organizations of a particular organization on a given page."""
+    """A class that scrapes partner organizations of a particular organization on a given page."""
     def __init__(self):
         self._link_scraper = LinkScraper()
         self._partner_text = 'partner'
@@ -581,7 +586,7 @@ class OrgPartnersScraper(object):
 
 
 class OrgTypeScraper(object):
-    """Scrapes the type of an organization based on keywords that were scraped."""
+    """A class that scrapes the type of an organization based on keywords that were scraped."""
     def __init__(self):
         # Lemmatizer for shortening each word to a more-commonly-used form of the word
         self._lemmatizer = WordNetLemmatizer()
@@ -763,7 +768,7 @@ class OrgTypeScraper(object):
 
 
 class OrgUrlScraper(object):
-    """Scrapes the url of an organization on a given page."""
+    """A class that scrapes the url of an organization on a given page."""
     def __init__(self):
         pass
 
@@ -774,7 +779,7 @@ class OrgUrlScraper(object):
 
 
 class PublicationCitationSourceScraper(object):
-    """Scrapes the sources of a publication."""
+    """A class that scrapes the sources of a publication."""
     def __init__(self):
         self._hash_regex = re.compile('\w{12}')
 
@@ -793,7 +798,7 @@ class PublicationCitationSourceScraper(object):
 
 
 class PublicationAuthorsScraper(object):
-    """Scrapes the author(s) of a publication."""
+    """A class that scrapes the author(s) of a publication."""
     def __init__(self):
         pass
 
@@ -816,7 +821,7 @@ class PublicationAuthorsScraper(object):
 
 
 class PublicationDateScraper(object):
-    """Scrapes the date of a publication."""
+    """A class that scrapes the date of a publication."""
     def __init__(self):
         self._date_regex = re.compile('\d{4}')
 
@@ -833,7 +838,7 @@ class PublicationDateScraper(object):
 
 
 class PublicationPublisherScraper(object):
-    """Scrapes the publisher of a citation."""
+    """A class that scrapes the publisher of a citation."""
     def __init__(self):
         pass
 
@@ -859,7 +864,7 @@ class PublicationPublisherScraper(object):
 
 
 class PublicationTitleScraper(object):
-    """Scrapes the title of a publication."""
+    """A class that scrapes the title of a publication."""
     def __init__(self):
         pass
 
@@ -886,7 +891,7 @@ class PublicationTitleScraper(object):
 
 
 class PublicationURLScraper(object):
-    """Scrapes the url of a publication."""
+    """A class that scrapes the url of a publication."""
     def __init__(self):
         #Seed titles to look for on page
         self._titles = []
@@ -914,7 +919,7 @@ class PublicationURLScraper(object):
 
 
 class UrlMetadataScraper(object):
-    """Scrapes the metadata of a particular url."""
+    """A class that scrapes the metadata of a particular url."""
     def __init__(self):
         self._dao = URLMetadataDAO
 
@@ -963,7 +968,7 @@ class UrlMetadataScraper(object):
 
 
 class USPhoneNumberScraper(object):
-    """Scrapes US phone numbers on a given page"""
+    """A class that scrapes US phone numbers on a given page"""
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
         us_format_regex = re.compile(

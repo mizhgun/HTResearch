@@ -1,3 +1,8 @@
+#
+# spiders.py
+# A module containing the spiders that crawl pages to scrape data.
+#
+
 # stdlib imports
 import os
 from scrapers.document_scrapers import *
@@ -17,7 +22,7 @@ logger = get_logger(LoggingSection.CRAWLER, __name__)
 
 
 class OrgSpider(BaseSpider):
-    """Crawls pages for organizations and contacts (through OrgContactsScraper)."""
+    """A class that crawls pages for organizations and contacts (through OrgContactsScraper)."""
     name = 'org_spider'
     # empty start_urls, we're setting our own
     start_urls = []
@@ -106,7 +111,7 @@ class OrgSpider(BaseSpider):
 
 
 class StopTraffickingSpider(BaseSpider):
-    """Crawls a very specific site so we can have more data."""
+    """A class that crawls a very specific site so we can have more data."""
     name = "stop_trafficking"
     allowed_domains = ['stoptrafficking.in']
     start_urls = ['http://www.stoptrafficking.in/Directory.aspx']
@@ -181,7 +186,7 @@ class StopTraffickingSpider(BaseSpider):
 
 
 class PublicationSpider(BaseSpider):
-    """Crawls Google Scholar with different queries for publications."""
+    """A class that crawls Google Scholar with different queries for publications."""
     name = "publication_spider"
     allowed_domains = ['scholar.google.com']
 
