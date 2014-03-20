@@ -3,11 +3,14 @@
 # A module that provides functions for interacting with config files.
 #
 
+# stdlib imports
 import ConfigParser
 import os
 
+#region Globals
 DIR = os.path.dirname(__file__)
 CONFIG_PATH = os.path.join(DIR, '../../htconfig.cfg')
+#endregion
 
 
 def get_config_value(section, key):
