@@ -162,10 +162,10 @@ class StopTraffickingSpider(BaseSpider):
         Gets the metadata for the page.
 
         Arguments:
-            item (dict): Dictionary of a contact or an organization.
+            item (dictionary): Dictionary of a contact or an organization.
 
         Returns:
-            url_item (dict): Dictionary of url metadata.
+            url_item (dictionary): Dictionary of url metadata.
         """
         if not isinstance(item, ScrapedOrganization) \
            or item['organization_url'] is None or item['organization_url'] == "":

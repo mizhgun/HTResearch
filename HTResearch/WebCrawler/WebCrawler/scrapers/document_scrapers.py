@@ -177,7 +177,7 @@ class PublicationScraper():
             response (Response): Scrapy Response object for the page that is to be scraped.
 
         Returns:
-            next_urls (list of str): List of citation URLs for the PublicationSpider to crawl.
+            next_urls (list): List of citation URLs for the PublicationSpider to crawl.
         """
         #Must scrape several pubs at a time
         #Each page will have roughly 10 publications

@@ -182,10 +182,10 @@ class KeywordScraper(object):
         Removes the unicode encoding of the list of keywords.
 
         Arguments:
-            list (list of str): List of keywords that were scraped.
+            list (list): List of keywords that were scraped.
 
         Returns:
-            list (list of str): List of keywords without unicode.
+            list (list): List of keywords without unicode.
         """
         for i in range(len(list)):
             list[i] = list[i].encode('ascii', 'ignore')
@@ -196,11 +196,11 @@ class KeywordScraper(object):
         Get all the words from the page by removing punctuation and digits.
 
         Arguments:
-            append_to (list of str): The list of the words that have been scraped at the time.
-            source (list of str): The text from the page to be scraped.
+            append_to (list): The list of the words that have been scraped at the time.
+            source (list): The text from the page to be scraped.
 
         Returns:
-            append_to (list of str): List of all words that have been scraped thus far.
+            append_to (list): List of all words that have been scraped thus far.
         """
         if not source:
             return append_to
@@ -373,7 +373,8 @@ class OrgContactsScraper(object):
 
         Arguments:
             response (Response): The page to scrape for emails.
-            name (str): Name of the contact.
+            name (string): Name of the contact.
+            name (string): Name of the contact.
 
         Returns:
             If name is in one of the emails, return that email.
@@ -499,7 +500,7 @@ class OrgPartnersScraper(object):
             sel (HtmlXPathSelector): XPath to potential partner links.
 
         Returns:
-            path (str): XPath to the partner organization's link.
+            path (string): XPath to the partner organization's link.
         """
         path = ''
         while sel:
@@ -513,11 +514,11 @@ class OrgPartnersScraper(object):
         Find out how many external links are in a list.
 
         Arguments:
-            page_url (str): Url of the page.
+            page_url (string): Url of the page.
             sel (HtmlXPathSelector): XPath to check all the links in that XPath.
 
         Returns:
-            count (int): Number of external links.
+            count (integer): Number of external links.
                          Returns 0 if not all external links.
         """
         count = 0
