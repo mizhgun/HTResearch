@@ -201,6 +201,17 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         } else {
             // Hide panel
             $(searchItem.toggleSelector).closest('.panel').hide();
+            checkForResults();
+        }
+    }
+
+    function checkForResults() {
+        var check = $('.search-results-panel').is(':visible');
+        if(!check) {
+            $('.empty-panel').show();
+        }
+        else {
+            $('.empty-panel').hide();
         }
     }
 
