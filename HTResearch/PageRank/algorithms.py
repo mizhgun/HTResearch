@@ -1,3 +1,8 @@
+#
+# algorithms.py
+# A module containing useful algorithms for calculating PageRank weights from a matrix.
+#
+
 from numpy import multiply
 from scipy import linalg
 from scipy.linalg import LinAlgError
@@ -7,9 +12,16 @@ from HTResearch.Utilities.lists import index_of
 
 def google_matrix(matrix):
     """
-    The google matrix applies a dampening factor to all nodes,
-    and then adds a personalization vector to simulate
-    random behavior
+    Simulates random browsing behavior by multiply each value by a
+    dampening factor and then adding adding (1 - DAMP)/(number of organizations)
+    to every cell in the matrix.
+
+    Arguments:
+        matrix ([[float]]): A square, float matrix in which every row and column sum to one.
+                            This object will be altered during the operation.
+
+    Returns:
+        matrix ([[float]]): The dampened, "Google" matrix.
     """
 
     #CONSTANTS
@@ -29,6 +41,14 @@ def google_matrix(matrix):
     return matrix
 
 def left_eigenvector(matrix):
+    """
+    Calculates the left eigenvector for a given matrix.
+
+    Arguments: matrix ([[float]]): The dampened, "Google" matrix.
+
+    Returns:
+        left_eigenvector ([float]): A vector of weights for each site.
+    """
     try:
         evals, evecs = linalg.eig(a=matrix, left=True, right=False, overwrite_a=True, check_finite=False)
     except LinAlgError as e:
