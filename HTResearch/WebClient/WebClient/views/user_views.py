@@ -265,13 +265,13 @@ def send_invite(request):
 
 def _create_user_dict(user):
     """
-    Helper function to convert a UserDAO to a dictionary.
+    Helper function to convert a User to a dictionary.
 
     Arguments:
-        user (UserDAO): The user that is being converted.
+        user (User): The user that is being converted.
 
     Returns:
-        A { string : string } dictionary of UserDAO fields.
+        A { string : string } dictionary of User fields.
     """
     user_dict = {
         'first_name': user.first_name or "",

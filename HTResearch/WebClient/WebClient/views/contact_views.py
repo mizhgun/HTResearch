@@ -141,7 +141,7 @@ def _create_contact_dict(contact):
     Helper function to convert a Contact to a dictionary.
 
     Arguments:
-        contact (ContactDAO): The contact that is being converted.
+        contact (Contact): The contact that is being converted.
 
     Returns:
         A { string : string } dictionary of Contact fields.
