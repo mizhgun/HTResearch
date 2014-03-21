@@ -29,7 +29,7 @@ def login(request):
     Sends a request to the Login page.
 
     Returns:
-        Dictionary with the login form and error flags.
+        A rendered page of the Login form if the user is not logged in already.
     """
     # if we're logged in, redirect to the index
     if 'user_id' in request.session:
@@ -80,7 +80,7 @@ def signup(request):
     Sends a request to the Signup page.
 
     Returns:
-        Dictionary with the signup form and error flags.
+        A rendered page of the Signup form if the user is not logged in already.
     """
     if 'user_id' in request.session:
         user_id = request.session['user_id']
@@ -142,7 +142,7 @@ def manage_account(request):
     Sends a request to the Account Preferences page.
 
     Returns:
-        Dictionary with the account preferences form and success/error flags.
+        A rendered page with editable account settings if the user is logged in.
     """
     if 'user_id' not in request.session:
         logger.error('Request made for account-preferences without login')
@@ -202,7 +202,7 @@ def send_invite(request):
     Sends a request to the Send Invite page.
 
     Returns:
-        Dictionary with the send invite form and success/error flags.
+        A rendered page with the Send Invite form if the user is logged in.
     """
     if 'user_id' not in request.session:
         logger.error('Request made for send_invite without login')
