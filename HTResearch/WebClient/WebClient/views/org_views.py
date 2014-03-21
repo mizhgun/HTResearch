@@ -205,13 +205,13 @@ def partner_map_demo(request):
 
 def _create_org_dict(org):
     """
-    Helper function to convert a OrganizationDAO to a dictionary.
+    Helper function to convert a Organization to a dictionary.
 
     Arguments:
         org (OrganizationDAO): The organization that is being converted.
 
     Returns:
-        A { string : string } dictionary of OrganizationDAO fields.
+        A { string : string } dictionary of Organization fields.
     """
     org_dict = {
         'name': org.name if org.name else "",

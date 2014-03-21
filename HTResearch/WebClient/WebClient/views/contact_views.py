@@ -138,13 +138,13 @@ def edit_contact(request, contact_id):
 
 def _create_contact_dict(contact):
     """
-    Helper function to convert a ContactDAO to a dictionary.
+    Helper function to convert a Contact to a dictionary.
 
     Arguments:
         contact (ContactDAO): The contact that is being converted.
 
     Returns:
-        A { string : string } dictionary of ContactDAO fields.
+        A { string : string } dictionary of Contact fields.
     """
     contact_dict = {'first_name': contact.first_name if contact.first_name else "",
                     'last_name': contact.last_name if contact.last_name else "",
