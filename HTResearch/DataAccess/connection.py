@@ -1,3 +1,8 @@
+#
+# connection.py
+# A module for wrapping MongoDB connection details.
+#
+
 # stdlib imports
 from mongoengine.connection import connect, disconnect, get_connection
 
@@ -11,7 +16,7 @@ logger = get_logger(LoggingSection.DATA, __name__)
 
 
 class DBConnection(object):
-    """A class that encapsulates the MongoDB connection"""
+    """A class that encapsulates the MongoDB connection."""
 
     def __init__(self):
         try:

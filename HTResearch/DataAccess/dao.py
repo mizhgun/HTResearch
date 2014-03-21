@@ -1,30 +1,58 @@
+#
+# dao.py
+# A module containing the different data access objects used for interaction with our MongoDB collections.
+#
+
+# stdlib imports
 from datetime import datetime
 from mongoengine import Q
 from mongoengine.fields import StringField
+import re
 
-from dto import *
-
-from connection import DBConnection
+# project imports
+from HTResearch.DataAccess.dto import *
+from HTResearch.DataAccess.connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.geocoder import geocode
 from HTResearch.Utilities.url_tools import UrlUtility
-import re
 
 
 class DAO(object):
     """
     A generic DAO class that may be subclassed by DAOs for operations on
     specific documents.
+
+    Attributes:
+        conn (DBConnection): The database connection class to use.
     """
 
     def __init__(self):
         self.conn = DBConnection
 
     def all(self, *only):
+        """
+        Returns all documents in the collection.
+
+        Arguments:
+            only (param[]): The specific fields to return from the collection, if any.
+
+        Returns:
+            The documents or specified fields in the collection.
+        """
         with self.conn():
             return self.dto.objects(self._valid_query()).only(*only)
 
     def merge_documents(self, dto, merge_dto):
+        """
+        Merges two documents (the latter document into the former).
+
+        Arguments:
+            dto (DTO): The base DTO to merge into.
+            merge_dto (DTO): The DTO with information to be merged.
+
+        Returns:
+            The newly merged DTO.
+        """
         with self.conn():
             attributes = merge_dto._data
             for key in attributes:
@@ -41,19 +69,53 @@ class DAO(object):
             return dto
 
     def create_update(self, dto):
+        """
+        Creates or updates a document.
+
+        Arguments:
+            dto (DTO): The DTO to be created or updated.
+
+        Returns:
+            The newly created or updated DTO.
+        """
         pass
 
     def delete(self, dto):
+        """
+        Deletes an existing document.
+
+        Arguments:
+            dto (DTO): The DTO to be deleted.
+        """
         with self.conn():
             dto.delete()
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
     def find(self, **constraints):
+        """
+        Finds and returns a single (valid) document.
+
+        Arguments:
+            constraints (param[]): The constraints to apply to the find operation.
+
+        Returns:
+            A DTO matching the constraints provided.
+        """
         with self.conn():
             return self.dto.objects(Q(**constraints) & self._valid_query()).first()
 
     def count(self, search=None, **constraints):
+        """
+        Returns the number of documents that satisfy a query.
+
+        Arguments:
+            search (string): A text search to apply to documents' fields.
+            constraints (param[]): The constraints to apply to the count operation.
+
+        Returns:
+            The number of documents matching the constraints provided.
+        """
         with self.conn():
             # Do text search or grab by constraints
             if search is not None:
@@ -65,6 +127,24 @@ class DAO(object):
     # passed constraints that are reference types!
     def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=None,
                  search=None, search_fields=None, **constraints):
+        """
+        Finds and returns a list of (valid) documents.
+
+        Arguments:
+            num_elements (int): The number of documents to limit the result size to (used without paging).
+            page_size (int): The number of documents to include per paginated result (used with page).
+            page (int): The page number to return.
+            start (int): The index to start on, inclusive (used without paging).
+            end (int): The index to end on, inclusive (used without paging, with start).
+            sort_fields (param[]): The document fields to sort results by.
+            search (string): A text search for documents' fields.
+            search_fields (param[]): The document fields to text search by.
+            constraints (param[]): The constraints to apply to the find operation.
+
+        Returns:
+            A list of all documents satisfying the constraints provided.
+        """
+
         with self.conn():
             # Do text search or grab by constraints
             if search is not None:
@@ -133,9 +213,7 @@ class DAO(object):
 
 
 class ContactDAO(DAO):
-    """
-    A DAO for the Contact document
-    """
+    """A DAO for the Contact document."""
 
     def __init__(self):
         super(ContactDAO, self).__init__()
@@ -159,7 +237,6 @@ class ContactDAO(DAO):
             'updated_by': 0.0,
             'content_weight': 0.0,
         }
-
 
     def _add_contact_ref_to_children(self, contact_dto):
         if contact_dto.organization is not None and contact_dto not in contact_dto.organization.contacts:
@@ -219,9 +296,7 @@ class ContactDAO(DAO):
 
 
 class OrganizationDAO(DAO):
-    """
-    A DAO for the Organization document
-    """
+    """A DAO for the Organization document."""
 
     def __init__(self):
         super(OrganizationDAO, self).__init__()
@@ -310,7 +385,7 @@ class OrganizationDAO(DAO):
                                     if exist_ref.org_domain != org_domain:
                                         # This value only updated if Organization A and B are different
                                         existing_references.total += count_diff
-                                break;
+                                break
                         if not page_exists:
                             # We have recorded other references to this organization, but none from this url
                             exist_ref.pages.append(page)
@@ -318,7 +393,7 @@ class OrganizationDAO(DAO):
                             existing_references.total_with_self += page.count
                             if exist_ref.org_domain != org_domain:
                                 existing_references.total += page.count
-                    break;
+                    break
             # If this organization has not yet referenced the specified outside org, add it
             if not ref_exists:
                 existing_references.references.append(ref)
@@ -458,6 +533,10 @@ class OrganizationDAO(DAO):
         A method for storing a list of org_dtos' new page_rank information
         NOTE: store_info should only be called if the spider wasn't running during calculation process,
         otherwise we might overwrite new page_rank_info
+
+        Arguments:
+            org_dtos (OrganizationDTO[]): The organization DTOs to store page rank information for.
+            store_info (boolean): Whether or not we should store new page_rank_info.
         """
 
         with self.conn():
@@ -479,15 +558,13 @@ class OrganizationDAO(DAO):
                         exist_dto.save()
                 except Exception as e:
                     # Something goofy happened but rolling back's not really an option
-                    print   "ERROR: Failed to store DTO: {" +\
-                            "\n\t id: " + str(dto.id) +\
+                    print "ERROR: Failed to store DTO: {" +\
+                        "\n\t id: " + str(dto.id) +\
                         "\n} with exception: \n\n" + e.message
 
 
 class PublicationDAO(DAO):
-    """
-    A DAO for the Publication document
-    """
+    """A DAO for the Publication document."""
 
     def __init__(self):
         super(PublicationDAO, self).__init__()
@@ -514,9 +591,7 @@ class PublicationDAO(DAO):
 
 
 class URLMetadataDAO(DAO):
-    """
-    A DAO for the URLMetadata document
-    """
+    """A DAO for the URLMetadata document."""
 
     def __init__(self):
         super(URLMetadataDAO, self).__init__()
