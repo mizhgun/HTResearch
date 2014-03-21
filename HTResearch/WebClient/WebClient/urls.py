@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 
 handler403 = 'HTResearch.WebClient.WebClient.views.unauthorized'
-handler404 = 'HTResearch.WebClient.WebClient.views.get_http_404_page'
+handler404 = 'HTResearch.WebClient.WebClient.views.shared_views.get_http_404_page'
 handler500 = handler404
 
 urlpatterns = patterns('HTResearch.WebClient.WebClient.views.api_views',
