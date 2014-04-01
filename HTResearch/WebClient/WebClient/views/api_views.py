@@ -22,6 +22,12 @@ REFRESH_PARTNER_MAP = timedelta(minutes=5)
 
 
 def get_org_keywords(request):
+    """
+    Retrieves the organization's keywords to create the word cloud on the profile page.
+
+    Returns:
+        List of keywords encoded in JSON.
+    """
     if request.method == 'GET':
         org_id = request.GET['org_id']
     else:
@@ -34,6 +40,12 @@ def get_org_keywords(request):
 
 
 def get_org_rank_rows(request):
+    """
+    Retrieves the organization information to populate the org-rank page.
+
+    Returns:
+        Dictionary of the organization info and the count.
+    """
     start = int(request.GET['start'])
     end = int(request.GET['end'])
     if 'search' in request.GET:
@@ -65,6 +77,12 @@ def get_org_rank_rows(request):
 
 
 def heatmap_coordinates(request):
+    """
+    Gets all the lat/long values for all organizations.
+
+    Returns:
+        List of lat/long coordinates encoded in JSON.
+    """
     if request.method != 'GET':
         return HttpResponseBadRequest
 
@@ -88,6 +106,12 @@ def heatmap_coordinates(request):
 
 
 def org_count(request):
+    """
+    Gets the total organization count.
+
+    Returns:
+        Total number of organizations.
+    """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     logger.info('Publication count request made by user {0}'.format(user_id))
@@ -108,6 +132,12 @@ def org_count(request):
 
 
 def contact_count(request):
+    """
+    Gets the total contact count.
+
+    Returns:
+        Total number of contacts.
+    """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     logger.info('Contact count request made by user {0}'.format(user_id))
@@ -135,6 +165,12 @@ def contact_count(request):
 
 
 def pub_count(request):
+    """
+    Gets the total publication count.
+
+    Returns:
+        Total number of publications.
+    """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     logger.info('Publication count request made by user {0}'.format(user_id))
@@ -159,7 +195,8 @@ def org_partner_map(request):
     Generates the data needed to display the organization partner map and then stores it in the
     cache. Data returned as a JSON string.
 
-    request: HttpRequest from Django (GET)
+    Returns:
+        Partner map configurations encoded in JSON.
     """
     if request.method != 'GET':
         return HttpResponseBadRequest
@@ -207,6 +244,12 @@ def org_partner_map(request):
 
 
 def search_publications(request):
+    """
+    Searches for publications based on the search text.
+
+    Returns:
+        A { 'results' : list of JSON-encoded Publications } dictionary for the search results of Publications.
+    """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     if request.method == 'GET':
@@ -241,6 +284,12 @@ def search_publications(request):
 
 
 def search_contacts(request):
+    """
+    Searches for contacts based on the search text.
+
+    Returns:
+        A { 'results' : list of JSON-encoded Contacts } dictionary for the search results of Contacts.
+    """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     if request.method == 'GET':
@@ -316,6 +365,12 @@ def search_contacts(request):
 
 
 def search_organizations(request):
+    """
+    Searches for organizations based on the search text.
+
+    Returns:
+        A { 'results' : list of JSON-encoded Organizations } dictionary for the search results of Organizations.
+    """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     if request.method == 'GET':
@@ -348,6 +403,13 @@ def search_organizations(request):
 
 
 def orgs_by_region(request):
+    """
+    Gets the organization count by each region in India.
+
+    Returns:
+        Organization counts by region, encoded in JSON. Includes the total number of organizations and the total whose
+        region is known.
+    """
     org_dao = ctx.get_object('OrganizationDAO')
 
     regions = [
@@ -393,6 +455,13 @@ def orgs_by_region(request):
 
 
 def orgs_by_type(request):
+    """
+    Gets the organization count by each organization type.
+
+    Returns:
+        Organization counts by type, encoded in JSON. Includes the total number of organizations and the total whose
+        type is known.
+    """
     org_dao = ctx.get_object('OrganizationDAO')
 
     organizations = list(org_dao.findmany())
@@ -432,7 +501,13 @@ def orgs_by_type(request):
 
 
 def orgs_by_members(request):
+    """
+    Gets the organization count by number of members.
 
+    Returns:
+        Organization counts by members, encoded in JSON. Includes the total number of organizations and the total whose
+        number of organizations whose member count is shown.
+    """
     org_dao = ctx.get_object('OrganizationDAO')
 
     ranges = [
