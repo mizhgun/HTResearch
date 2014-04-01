@@ -76,7 +76,7 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
             return d.value / data.total_known < visibilityThreshold;
         }
 
-        $.get('/orgs-by-region/', function(data) {
+        $.get('/api/orgs-by-region/', function(data) {
             // If no organizations, indicate empty
             var categories = data.total ? data.categories : emptyCategory;
 
@@ -149,7 +149,7 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
 
             element.append('<h2>Region</h2>');
         });
-        $.get('/orgs-by-type/', function(data) {
+        $.get('/api/orgs-by-type/', function(data) {
             // If no organizations, indicate empty
             var categories = data.total ? data.categories : emptyCategory;
 
@@ -236,7 +236,7 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
 
             element.append('<h2>Type</h2>');
         });
-        $.get('/orgs-by-members/', function(data) {
+        $.get('/api/orgs-by-members/', function(data) {
             // If no organizations, indicate empty
             var categories = data.total ? data.categories : emptyCategory;
 

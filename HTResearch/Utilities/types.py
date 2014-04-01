@@ -1,4 +1,11 @@
+#
+# types.py
+# A module containing custom types to be attributed to classes.
+#
+
+
 class Singleton(type):
+    """An implementation of the Singleton pattern."""
     _instances = {}
 
     def __call__(cls, *args, **kwargs):

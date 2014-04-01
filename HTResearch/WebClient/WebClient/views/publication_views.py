@@ -19,26 +19,6 @@ logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
 
 
-def pub_count(request):
-    user_id = request.session['user_id'] if 'user_id' in request.session else None
-
-    logger.info('Publication count request made by user {0}'.format(user_id))
-
-    pub_dao = ctx.get_object('PublicationDAO')
-
-    count = ''
-    try:
-        count = pub_dao.count()
-    except:
-        logger.error('Exception encountered on publication count by user={0}'.format(user_id))
-
-    data = {
-        'count': count
-    }
-
-    return HttpResponse(json.dumps(data), content_type='application/json')
-
-
 def search_publications(request):
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 

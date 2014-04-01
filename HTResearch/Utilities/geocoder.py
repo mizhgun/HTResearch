@@ -1,12 +1,34 @@
+#
+# geocoder.py
+# A module with functions for geocoding addresses for Google Maps.
+#
+
 import urllib2
 from urllib import urlencode
 from json import loads
 
+#region Globals
 google_geocode_url = "http://maps.googleapis.com/maps/api/geocode/json?"
+#endregion
 
 
 def geocode(address, bounds=None, region=None,
-            language=None, sensor=False, exactly_one=True, timeout=None):
+            language=None, sensor=False, exactly_one=True):
+    """
+    Geocodes an address.
+
+    Arguments:
+        address (string): The address to geocode.
+        bounds (string): The bounds for geocoding.
+        region (string): The region for geocoding.
+        language (string): The specific language for geocoding.
+        sensor (boolean): Whether or not a GPS sensor is present (false by default).
+        exactly_one (boolean): Whether or not to encode exactly one item (true by default).
+
+    Returns:
+        The geocoding of the provided address.
+    """
+
     params = {
         'address': address.encode('ascii', 'ignore'),
         'sensor': str(sensor).lower()

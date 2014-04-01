@@ -1,58 +1,41 @@
 from django.conf.urls import patterns, url
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
-
 handler403 = 'HTResearch.WebClient.WebClient.views.unauthorized'
 handler404 = 'HTResearch.WebClient.WebClient.views.get_http_404_page'
 handler500 = handler404
 
-urlpatterns = patterns('HTResearch.WebClient.WebClient.views.shared_views',
-                       # Examples:
-                       # url(r'^$', 'HTResearch.WebClient.views.home', name='home'),
-                       # url(r'^HTResearch.WebClient/', include('HTResearch.WebClient.HTResearch.WebClient.urls')),
 
-                       # Uncomment the admin/doc line below to enable admin documentation:
-                       # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+urlpatterns = patterns('HTResearch.WebClient.WebClient.views.api_views',
+                       url(r'^api/heatmap-coordinates/$', 'heatmap_coordinates', name='heatmap-coordinates'),
+                       url(r'^api/search-organizations/$', 'search_organizations', name='search-organizations'),
+                       url(r'^api/search-contacts/$', 'search_contacts', name='search-contacts'),
+                       url(r'^api/search-publications/$', 'search_publications', name='search-publications'),
+                       url(r'^api/get-org-rank-rows/$', 'get_org_rank_rows', name='get-org-rank-rows'),
+                       url(r'^api/get-org-keywords/$', 'get_org_keywords', name='get-org-keywords'),
+                       url(r'^api/partner-map/$', 'org_partner_map', name='org-partner-map'),
+                       url(r'^api/orgs-by-region/$', 'orgs_by_region', name='orgs-by-region'),
+                       url(r'^api/orgs-by-type/$', 'orgs_by_type', name='orgs-by-type'),
+                       url(r'^api/orgs-by-members/$', 'orgs_by_members', name='orgs-by-members'),
+                       url(r'^api/org-count/$', 'org_count', name='org-count'),
+                       url(r'^api/contact-count/$', 'contact_count', name='contact-count'),
+                       url(r'^api/pub-count/$', 'pub_count', name='pub-count'),)
 
-                       # Uncomment the next line to enable the admin:
-                       # url(r'^admin/', include(admin.site.urls)),
-
-                       url(r'^$', 'index', name='index'),
-                       url(r'^heatmap-coordinates/$', 'heatmap_coordinates', name='heatmap-coordinates'),
-                       url(r'^coming-soon/$', 'unimplemented', name='unimplemented'),
-                       url(r'^welcome/$', 'welcome', name='welcome'),
-                       url(r'^get-started/$', 'get_started', name='get-started'),
-                       url(r'^dashboard/$', 'dashboard', name='dashboard'),
-                       )
+urlpatterns += patterns('HTResearch.WebClient.WebClient.views.shared_views',
+                        url(r'^$', 'index', name='index'),
+                        url(r'^coming-soon/$', 'unimplemented', name='unimplemented'),
+                        url(r'^welcome/$', 'welcome', name='welcome'),
+                        url(r'^get-started/$', 'get_started', name='get-started'),
+                        url(r'^dashboard/$', 'dashboard', name='dashboard'),)
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
-                        url(r'^search-organizations/$', 'search_organizations', name='search-organizations'),
                         url(r'^organization/(\w+)', 'organization_profile', name='org-prof'),
                         url(r'^org-rank/$', 'org_rank', name='org-rank'),
-                        url(r'^get-org-rank-rows/$', 'get_org_rank_rows', name='get-org-rank-rows'),
-                        url(r'^get-org-keywords/$', 'get_org_keywords', name='get-org-keywords'),
                         url(r'^request-organization/$', 'request_organization', name='request-organization'),
-                        url(r'^edit-organization/(\w+)', 'edit_organization', name='edit-organization'),
-                        url(r'^org-count/$', 'org_count', name='org-count'),
-                        url(r'^partner-map/$', 'org_partner_map', name='org-partner-map'),
-                        url(r'^partner-map-demo/$', 'partner_map_demo', name='partner-map-demo'),
-                        url(r'^orgs-by-region/$', 'orgs_by_region', name='orgs-by-region'),
-                        url(r'^orgs-by-type/$', 'orgs_by_type', name='orgs-by-type'),
-                        url(r'^orgs-by-members/$', 'orgs_by_members', name='orgs-by-members'),
-                        )
+                        url(r'^edit-organization/(\w+)', 'edit_organization', name='edit-organization'),)
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
-                        url(r'^search-contacts/$', 'search_contacts', name='search-contacts'),
                         url(r'^contact/(\w+)', 'contact_profile', name='con-prof'),
                         url(r'^edit-contact/(\w+)', 'edit_contact', name='edit-contact'),
-                        url(r'^contact-count/$', 'contact_count', name='contact-count'),
-                        )
-
-urlpatterns += patterns('HTResearch.WebClient.WebClient.views.publication_views',
-                        url(r'^search-publications/$', 'search_publications', name='search-publications'),
-                        url(r'^pub-count/$', 'pub_count', name='pub-count'),
                         )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
@@ -60,5 +43,4 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
                         url(r'^logout/$', 'logout', name='logout'),
                         url(r'^signup/$', 'signup', name='signup'),
                         url(r'^invite/$', 'send_invite', name='invite'),
-                        url(r'^account-settings/$', 'manage_account', name='manage'),
-                        )
+                        url(r'^account-settings/$', 'manage_account', name='manage'),)
