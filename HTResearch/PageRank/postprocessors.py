@@ -14,7 +14,7 @@ from HTResearch.Utilities.converter import DTOConverter
 
 class PageRankPostprocessor(object):
     """
-    A class to use PageRank functions. These functions are organized into a class to allow for the easy injection of
+    A class to handle PageRank outputs. These functions are organized into a class to allow for the easy injection of
     org_daos.
 
     Attributes:
