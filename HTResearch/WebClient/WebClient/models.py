@@ -104,14 +104,15 @@ class RequestOrgForm(forms.Form):
     def clean_url(self):
         url = self.cleaned_data['url']
         ctx = ApplicationContext(DAOContext())
-        dao = ctx.get_object('OrganizationDAO')
+        org_dao = ctx.get_object('OrganizationDAO')
+        url_metadata_dao = ctx.get_object('URLMetadataDAO')
 
         try:
-            url = UrlUtility().get_domain(url)
+            domain = UrlUtility().get_domain(url)
         except:
             raise ValidationError("Oops! We couldn't find information on that domain.")
 
-        if dao.find(organization_url=url):
+        if org_dao.find(organization_url=domain) or url_metadata_dao.find(domain=domain):
             raise ValidationError("Oops! Looks like we already have information on that organization.")
 
         return url
