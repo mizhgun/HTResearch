@@ -39,3 +39,8 @@ def get_http_404_page(request):
     """Sends a request to the 404 page."""
     html = render(request, 'shared/404.html')
     return HttpResponseNotFound(html, status=404)
+
+
+def about_us(request):
+    """Sends a request to the About Us page."""
+    return render(request, 'shared/about_us.html')

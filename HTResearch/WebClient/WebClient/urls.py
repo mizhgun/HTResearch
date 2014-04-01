@@ -16,7 +16,8 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views.api_views',
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.shared_views',
                         url(r'^$', 'index', name='index'),
                         url(r'^welcome/$', 'welcome', name='welcome'),
-                        url(r'^get-started/$', 'get_started', name='get-started'),)
+                        url(r'^get-started/$', 'get_started', name='get-started'),
+                        url(r'^about-us/$', 'about_us', name='about-us'),)
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^organization/(\w+)', 'organization_profile', name='org-prof'),
