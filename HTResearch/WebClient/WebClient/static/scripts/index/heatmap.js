@@ -35,6 +35,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
             radius: heatMapRadius,
             gradient: heatMapGradient
         });
+        heatMap.setMap(map);
     }
 
     //Use an AJAX request to retrieve cached coordinate information
