@@ -3,11 +3,13 @@
 # A module containing useful algorithms for calculating PageRank weights from a matrix.
 #
 
+# stdlib imports
 from numpy import multiply
 from scipy import linalg
 from scipy.linalg import LinAlgError
 from numpy import float64
 
+# project imports
 from HTResearch.Utilities.lists import index_of
 
 def google_matrix(matrix):

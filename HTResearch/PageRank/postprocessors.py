@@ -1,17 +1,48 @@
+#
+# postprocessors.py
+# A module containing helpers to organize the information from the PageRank algorithm into database models and to
+# store those models.
+#
+
+# stdlib imports
 import numpy
 
+# project imports
 from HTResearch.DataAccess.dto import OrganizationDTO
 from HTResearch.DataModel.model import Organization
 from HTResearch.Utilities.converter import DTOConverter
 
 class PageRankPostprocessor(object):
+    """
+    A class to use PageRank functions. These functions are organized into a class to allow for the easy injection of
+    org_daos.
+
+    Attributes:
+        org_dao (OrganizationDAO): A DAO for storing organizations
+    """
 
     def __init__(self):
+        """
+        Constructs a new PageRankPostprocessor instance.
+        """
+
         # Injected dependencies
         self.org_dao = None
 
     def give_orgs_ranks(self, small_orgs, weights):
-        """Assign orgs ranks and weights from vector."""
+        """
+        Assign orgs ranks and weights from vector.
+
+        Arguments:
+            small_orgs ([SmallOrganization]): A list of SmallOrganization objects in the same order as the weights
+                vector.
+            weights ([float]): A list of calculate PageRank weights between 0.0 and 1.0 in the same order as the
+                small_orgs list.
+
+        Returns:
+            small_orgs ([SmallOrganization]): The same list in the small_orgs argument. Weights will be assigned after
+                this function to the "page_rank" member of the SmallOrganization.
+        """
         weight_count = len(weights)
 
         # sanity check
@@ -33,7 +64,12 @@ class PageRankPostprocessor(object):
         return small_orgs
 
     def store_organizations(self, small_orgs):
-        """Store small_orgs to database"""
+        """
+        Store small_orgs to database.
+
+        Arguments:
+            small_orgs ([SmallOrganization]): A list of SmallOrganization objects to be stored to the database.
+        """
         org_dtos = []
 
         # create list of dtos
