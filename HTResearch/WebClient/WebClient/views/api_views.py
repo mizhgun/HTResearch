@@ -22,6 +22,12 @@ REFRESH_PARTNER_MAP = timedelta(minutes=5)
 
 
 def get_org_keywords(request):
+    """
+    Retrieves the organization's keywords to create the word cloud on the profile page.
+
+    Returns:
+        List of keywords encoded in JSON.
+    """
     if request.method == 'GET':
         org_id = request.GET['org_id']
     else:
@@ -34,6 +40,12 @@ def get_org_keywords(request):
 
 
 def get_org_rank_rows(request):
+    """
+    Retrieves the organization information to populate the org-rank page.
+
+    Returns:
+        Dictionary of the organization info and the count.
+    """
     start = int(request.GET['start'])
     end = int(request.GET['end'])
     if 'search' in request.GET:
@@ -65,6 +77,12 @@ def get_org_rank_rows(request):
 
 
 def heatmap_coordinates(request):
+    """
+    Gets all the lat/long values for all organizations.
+
+    Returns:
+        List of lat/long coordinates encoded in JSON.
+    """
     if request.method != 'GET':
         return HttpResponseBadRequest
 
@@ -92,7 +110,8 @@ def org_partner_map(request):
     Generates the data needed to display the organization partner map and then stores it in the
     cache. Data returned as a JSON string.
 
-    request: HttpRequest from Django (GET)
+    Returns:
+        Partner map configurations encoded in JSON.
     """
     if request.method != 'GET':
         return HttpResponseBadRequest
@@ -142,6 +161,12 @@ def org_partner_map(request):
 
 
 def search_publications(request):
+    """
+    Searches for publications based on the search text.
+
+    Returns:
+        A { 'results' : list of JSON-encoded Publications } dictionary for the search results of Publications.
+    """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     if request.method == 'GET':
@@ -176,6 +201,12 @@ def search_publications(request):
 
 
 def search_contacts(request):
+    """
+    Searches for contacts based on the search text.
+
+    Returns:
+        A { 'results' : list of JSON-encoded Contacts } dictionary for the search results of Contacts.
+    """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     if request.method == 'GET':
@@ -251,6 +282,12 @@ def search_contacts(request):
 
 
 def search_organizations(request):
+    """
+    Searches for organizations based on the search text.
+
+    Returns:
+        A { 'results' : list of JSON-encoded Organizations } dictionary for the search results of Organizations.
+    """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
 
     if request.method == 'GET':

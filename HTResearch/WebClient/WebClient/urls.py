@@ -15,7 +15,6 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views.api_views',
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.shared_views',
                         url(r'^$', 'index', name='index'),
-                        url(r'^coming-soon/$', 'unimplemented', name='unimplemented'),
                         url(r'^welcome/$', 'welcome', name='welcome'),
                         url(r'^get-started/$', 'get_started', name='get-started'),)
 
