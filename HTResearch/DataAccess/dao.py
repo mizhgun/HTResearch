@@ -15,6 +15,12 @@ from HTResearch.DataAccess.connection import DBConnection
 from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.geocoder import geocode
 from HTResearch.Utilities.url_tools import UrlUtility
+from HTResearch.Utilities.logutil import LoggingSection, get_logger
+from HTResearch.Utilities import decorators
+
+#region Globals
+logger = get_logger(LoggingSection.CLIENT, __name__)
+#endregion
 
 
 class DAO(object):
@@ -29,6 +35,7 @@ class DAO(object):
     def __init__(self):
         self.conn = DBConnection
 
+    @decorators.safe_mongocall
     def all(self, *only):
         """
         Returns all documents in the collection.
@@ -42,6 +49,7 @@ class DAO(object):
         with self.conn():
             return self.dto.objects(self._valid_query()).only(*only)
 
+    @decorators.safe_mongocall
     def merge_documents(self, dto, merge_dto):
         """
         Merges two documents (the latter document into the former).
@@ -80,6 +88,7 @@ class DAO(object):
         """
         pass
 
+    @decorators.safe_mongocall
     def delete(self, dto):
         """
         Deletes an existing document.
@@ -92,6 +101,7 @@ class DAO(object):
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
+    @decorators.safe_mongocall
     def find(self, **constraints):
         """
         Finds and returns a single (valid) document.
@@ -105,6 +115,7 @@ class DAO(object):
         with self.conn():
             return self.dto.objects(Q(**constraints) & self._valid_query()).first()
 
+    @decorators.safe_mongocall
     def count(self, search=None, **constraints):
         """
         Returns the number of documents that satisfy a query.
@@ -125,6 +136,7 @@ class DAO(object):
 
     # NOTE: This method will not return an object when
     # passed constraints that are reference types!
+    @decorators.safe_mongocall
     def findmany(self, num_elements=None, page_size=None, page=None, start=None, end=None, sort_fields=None,
                  search=None, search_fields=None, **constraints):
         """
@@ -171,7 +183,6 @@ class DAO(object):
                     return ret[start:end + 1]
 
             return ret
-
     # Query to get all valid objects
     def _valid_query(self):
         return Q()
@@ -250,6 +261,7 @@ class ContactDAO(DAO):
                     contact_dto.publications[i] = self.pub_dao.create_update(p, False)
         return contact_dto
 
+    @decorators.safe_mongocall
     def create_update(self, contact_dto, cascade_add=True):
         no_id = contact_dto.id is None
         with self.conn():
@@ -332,6 +344,7 @@ class OrganizationDAO(DAO):
             'combined_weight': 0.0,
         }
 
+    @decorators.safe_mongocall
     def merge_documents(self, existing_org_dto, new_org_dto):
         with self.conn():
             attributes = new_org_dto._data
@@ -415,6 +428,7 @@ class OrganizationDAO(DAO):
                 org_dto.partners[i] = self.create_update(p, False)
         return org_dto
 
+    @decorators.safe_mongocall
     def create_update(self, org_dto, cascade_add=True):
         no_id = org_dto.id is None
         with self.conn():
@@ -528,6 +542,7 @@ class OrganizationDAO(DAO):
         existing_dto = self.dto.objects(same_phone | same_email | same_url | same_fb | same_twitter | same_name).first()
         return existing_dto
 
+    @decorators.safe_mongocall
     def page_rank_store(self, org_dtos, store_info=False):
         """
         A method for storing a list of org_dtos' new page_rank information
@@ -538,7 +553,6 @@ class OrganizationDAO(DAO):
             org_dtos (OrganizationDTO[]): The organization DTOs to store page rank information for.
             store_info (boolean): Whether or not we should store new page_rank_info.
         """
-
         with self.conn():
             for i in range(0, len(org_dtos)):
                 dto = org_dtos[i]
@@ -573,6 +587,7 @@ class PublicationDAO(DAO):
         # Injected dependencies
         self.contact_dao = ContactDAO
 
+    @decorators.safe_mongocall
     def create_update(self, pub_dto, cascade_add=True):
         no_id = pub_dto.id is None
         with self.conn():
@@ -597,6 +612,7 @@ class URLMetadataDAO(DAO):
         super(URLMetadataDAO, self).__init__()
         self.dto = URLMetadataDTO
 
+    @decorators.safe_mongocall
     def merge_documents(self, dto, merge_dto):
         with self.conn():
             attributes = merge_dto._data
@@ -610,6 +626,7 @@ class URLMetadataDAO(DAO):
             dto.save()
             return dto
 
+    @decorators.safe_mongocall
     def create_update(self, url_dto):
         with self.conn():
             if url_dto.id is None:
@@ -622,6 +639,7 @@ class URLMetadataDAO(DAO):
             url_dto.save()
         return url_dto
 
+    @decorators.safe_mongocall
     def findmany_by_domains(self, num_elements, required_domains, blocked_domains, *sort_fields):
         if len(required_domains) > 0:
             req_query = Q(domain__in=required_domains)
@@ -661,6 +679,7 @@ class UserDAO(DAO):
             'content_weight': 0.0,
         }
 
+    @decorators.safe_mongocall
     def create_update(self, user_dto):
         with self.conn():
             if user_dto.organization is not None:
