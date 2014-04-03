@@ -18,7 +18,6 @@ def index(request):
     args.update(csrf(request))
     return render(request, 'index/index.html', args)
 
-
 def welcome(request):
     """Sends a request to the Welcome page."""
     return render(request, 'shared/welcome.html')
@@ -43,3 +42,12 @@ def get_http_404_page(request):
     """Sends a request to the 404 page."""
     html = render(request, 'shared/404.html')
     return HttpResponseNotFound(html, status=404)
+
+
+def get_http_500_page(request):
+    html = render(request, 'shared/500.html')
+    return HttpResponseNotFound(html, status=500)
+
+
+def unimplemented(request):
+    return render(request, 'shared/unimplemented.html')
