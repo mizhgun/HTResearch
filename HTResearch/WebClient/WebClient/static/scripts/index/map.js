@@ -41,6 +41,7 @@ define(['jquery',
 
         this.map = new google.maps.Map(element, options);
         this.markers = [];
+        this.resizeControls();
     };
 
     Map.prototype = {
@@ -97,9 +98,9 @@ define(['jquery',
         resizeControls: function() {
             var p = google.maps.ControlPosition;
             var mapHeight = $(this.map.getDiv()).height();
-            var scaleHeight = mapHeight/600.0;
+            var scaleHeight = mapHeight/527.0;
             var mapWidth = $(this.map.getDiv()).width();
-            var scaleWidth = mapWidth/720.0;
+            var scaleWidth = mapWidth/1440.0;
             var scaleTot = Math.min(scaleHeight, scaleWidth);
             scaleTot = Math.max(scaleTot, 1.0)
             var transOrigin = "";

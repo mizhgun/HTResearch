@@ -180,9 +180,7 @@ require(['shared/analytics',
         $('[rel=tooltip]').tooltip();
 
         // Resize map controls on window resize
-        $(window).load(function() {
-            map.resizeControls();
-        }).bind('resize', function() {
+        $(window).bind('resize', function() {
             map.resizeControls();
         });
     }
