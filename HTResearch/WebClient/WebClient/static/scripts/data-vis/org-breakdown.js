@@ -17,6 +17,14 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
             return a < 90 ? a : a - 180;
         }
 
+        // outline ring to show around each pie chart
+        var outlineRing = d3.svg.arc()
+            .innerRadius(r * 0.28)
+            .outerRadius(r * 1.02)
+            .startAngle(0)
+            .endAngle(2*Math.PI);
+
+        // category to show when there is no data
         var emptyCategory = [
             {
                 value: 100,
@@ -24,12 +32,15 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
             }
         ];
 
+        // fraction an arc must cover for its text to be visible by default
         var visibilityThreshold = 0.02;
 
+        // default arc
         var arc = d3.svg.arc()
             .innerRadius(r * 0.3)
             .outerRadius(r);
 
+        // arc on hover
         var arcOver = d3.svg.arc()
             .innerRadius(r * 0.3)
             .outerRadius(r * 1.15);
@@ -49,9 +60,10 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
             curArc.each(function() {
                 this.parentNode.appendChild(this);
             });
-            d3.select(curArc.node().parentNode).select('.info1')
+            var breakdownPanel = $(arcSel).closest('.breakdown');
+            breakdownPanel.find('.info1')
                 .text(curArcData.label);
-            d3.select(curArc.node().parentNode).select('.info2')
+            breakdownPanel.find('.info2')
                 .text(curArcData.value + ' out of ' + data.total +
                     ' (' + Math.round(curArcData.value / data.total * 100) + '%)');
         }
@@ -66,14 +78,22 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
                 curArc.select('text').style('display', 'none');
             }
             // Clear label/count indicator
-            d3.select(curArc.node().parentNode).select('.info1')
+            var breakdownPanel = $(arcSel).closest('.breakdown');
+            breakdownPanel.find('.info1')
                 .text('');
-            d3.select(curArc.node().parentNode).select('.info2')
+            breakdownPanel.find('.info2')
                 .text('');
         }
 
         function isSkinny(d, data) {
             return d.value / data.total_known < visibilityThreshold;
+        }
+
+        function addBreakdownHtml(element, name) {
+            var info1 = $('<div></div>').addClass('info1');
+            var info2 = $('<div></div>').addClass('info2');
+            var title = $('<h2></h2>').text(name);
+            element.prepend(info2).prepend(info1).append(title);
         }
 
         $.get('/api/orgs-by-region/', function(data) {
@@ -90,6 +110,10 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
                 .attr('height', h)
                 .append('svg:g')
                 .attr('transform', 'translate(' + w / 2 + ',' + (h - r * 1.15) + ')');
+
+            vis.append('svg:path')
+                .attr('fill', '#fff')
+                .attr('d', outlineRing);
 
             var pie = d3.layout.pie()
                 .value(function(d) { return d.value; });
@@ -130,24 +154,10 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
                     return 'translate(-40, -34)';
                 })
                 .html(function() {
-                    return '<h1><i class="fa fa-globe"></i></h1>';
+                    return '<i class="fa fa-globe"></i>';
                 });
 
-            vis.append('svg:text')
-                .attr('transform', function() {
-                    return 'translate(0,-200)'
-                })
-                .attr('text-anchor', 'middle')
-                .attr('class', 'info1')
-                .style('font-weight', 'bold');
-            vis.append('text')
-                .attr('transform', function() {
-                    return 'translate(0,-180)'
-                })
-                .attr('text-anchor', 'middle')
-                .attr('class', 'info2');
-
-            element.append('<h2>Region</h2>');
+            addBreakdownHtml(element, 'Region');
         });
         $.get('/api/orgs-by-type/', function(data) {
             // If no organizations, indicate empty
@@ -167,6 +177,10 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
                 .attr('height', h)
                 .append('svg:g')
                 .attr('transform', 'translate(' + w / 2 + ',' + (h - r * 1.15) + ')');
+
+            vis.append('svg:path')
+                .attr('fill', '#fff')
+                .attr('d', outlineRing);
 
             var pie = d3.layout.pie()
                 .value(function(d) { return d.value; });
@@ -217,24 +231,10 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
                     return 'translate(-40, -34)';
                 })
                 .html(function() {
-                    return '<h1><i class="fa fa-gavel"></i></h1>';
+                    return '<i class="fa fa-gavel"></i>';
                 });
 
-            vis.append('svg:text')
-                .attr('transform', function() {
-                    return 'translate(0,-200)'
-                })
-                .attr('text-anchor', 'middle')
-                .attr('class', 'info1')
-                .style('font-weight', 'bold');
-            vis.append('text')
-                .attr('transform', function() {
-                    return 'translate(0,-180)'
-                })
-                .attr('text-anchor', 'middle')
-                .attr('class', 'info2');
-
-            element.append('<h2>Type</h2>');
+            addBreakdownHtml(element, 'Type');
         });
         $.get('/api/orgs-by-members/', function(data) {
             // If no organizations, indicate empty
@@ -250,6 +250,10 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
                 .attr('height', h)
                 .append('svg:g')
                 .attr('transform', 'translate(' + w / 2 + ',' + (h - r * 1.15) + ')');
+
+            vis.append('svg:path')
+                .attr('fill', '#fff')
+                .attr('d', outlineRing);
 
             var pie = d3.layout.pie()
                 .value(function(d) { return d.value; });
@@ -290,24 +294,10 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
                     return 'translate(-40, -34)';
                 })
                 .html(function() {
-                    return '<h1><i class="fa fa-users"></i></h1>';
+                    return '<i class="fa fa-users"></i>';
                 });
 
-            vis.append('svg:text')
-                .attr('transform', function() {
-                    return 'translate(0,-200)'
-                })
-                .attr('text-anchor', 'middle')
-                .attr('class', 'info1')
-                .style('font-weight', 'bold');
-            vis.append('text')
-                .attr('transform', function() {
-                    return 'translate(0,-180)'
-                })
-                .attr('text-anchor', 'middle')
-                .attr('class', 'info2');
-
-            element.append('<h2>Members</h2>');
+            addBreakdownHtml(element, 'Members');
         });
     }
 

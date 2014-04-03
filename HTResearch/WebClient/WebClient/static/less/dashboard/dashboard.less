@@ -1,9 +1,10 @@
 // Includes
 @import "../shared/variables.less";
 
-.object-counter h1,
-.object-counter h2 {
-  text-align: center;
+.object-counter {
+  h1, h2 {
+    text-align: center;
+  }
 }
 .dashboard-panel {
   padding-top: 25px;
@@ -21,5 +22,17 @@
     text {
       color: #fff;
     }
+  }
+  .info1 {
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+  .info1, .info2 {
+    height: 16px;
+  }
+  svg i {
+    font-size: 60px;
+    padding-top: 3px;
+    z-index: 10;
   }
 }
