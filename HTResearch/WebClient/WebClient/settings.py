@@ -3,8 +3,10 @@ import mongoengine
 from HTResearch.Utilities.config import get_config_value
 # Django settings for HTResearch.WebClient project.
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
+
+ALLOWED_HOSTS = ['*']
 
 ADMINS = (
 # ('Your Name', 'your_email@example.com'),
