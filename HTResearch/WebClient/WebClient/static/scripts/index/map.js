@@ -92,6 +92,37 @@ define(['jquery',
             this.markers = [];
         },
         /**
+         * Resize controls on map
+         */
+        resizeControls: function() {
+            var p = google.maps.ControlPosition;
+            var mapHeight = $(this.map.getDiv()).height();
+            var scaleHeight = mapHeight/600.0;
+            var mapWidth = $(this.map.getDiv()).width();
+            var scaleWidth = mapWidth/720.0;
+            var scaleTot = Math.min(scaleHeight, scaleWidth);
+            scaleTot = Math.max(scaleTot, 1.0)
+            var transOrigin = "";
+            this.map.controls.forEach( function(posControls, index){
+                if (index == p.TOP_LEFT || index == p.LEFT_TOP || index == p.TOP_CENTER || index == p.LEFT_CENTER)
+                    transOrigin = "0% 0%";
+                else if (index == p.LEFT_BOTTOM || index == p.BOTTOM_LEFT || index == p.BOTTOM_CENTER)
+                    transOrigin = "0% 100%";
+                else if (index == p.BOTTOM_RIGHT || index == p.RIGHT_BOTTOM)
+                    transOrigin = "100% 100%";
+                else
+                    transOrigin = "100% 0%";
+                posControls.forEach(function (control, index2) {
+                    $(control).css("transform", "scale(" + scaleTot  + ")");
+                    $(control).css("transform-origin", transOrigin);
+                    $(control).css("-ms-transform", "scale(" + scaleTot  + ")");
+                    $(control).css("-ms-transform-origin", transOrigin);
+                    $(control).css("-webkit-transform", "scale(" + scaleTot  + ")");
+                    $(control).css("-webkit-transform-origin", transOrigin);
+                });
+            });
+        },
+        /**
          * Closes all opened InfoWindows on the map.
          */
         closeAllInfowindows: function() {

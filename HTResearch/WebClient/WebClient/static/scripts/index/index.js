@@ -178,6 +178,13 @@ require(['shared/analytics',
 
         // Make tooltips work
         $('[rel=tooltip]').tooltip();
+
+        // Resize map controls on window resize
+        $(window).load(function() {
+            map.resizeControls();
+        }).bind('resize', function() {
+            map.resizeControls();
+        });
     }
 
     //Retrieve the cookie that is created upon first visiting the website
