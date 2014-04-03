@@ -11,7 +11,7 @@ while(orgs.hasNext()) {
         }
     });
     //Unset the entire property if none left
-    if (contact_ids.length == 0) {
+    if (contact_ids.length === 0) {
         db.organization_d_t_o.update({ '_id': org._id},
         { $unset: {
             "cs": ""
@@ -42,7 +42,7 @@ while(host_orgs.hasNext()) {
     var host_org = host_orgs.next();
     var partners = host_org.ps;
     partners.forEach(function(partner, key){
-        if (db.organization_d_t_o.find({_id: partner._id}).toArray().length == 0) {
+        if (db.organization_d_t_o.find({_id: partner._id}).toArray().length === 0) {
             //Delete the references to organizations that no longer exist
             partners.splice(key, 1);
         }
