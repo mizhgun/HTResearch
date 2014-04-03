@@ -180,7 +180,7 @@ require(['shared/analytics',
         $('[rel=tooltip]').tooltip();
 
         // Resize map controls on window resize
-        $(window).bind('resize', function() {
+        $('#map-canvas').bind('DOMSubtreeModified resize', function() {
             map.resizeControls();
         });
     }

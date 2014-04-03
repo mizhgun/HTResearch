@@ -82,6 +82,7 @@ define(['jquery',
          */
         pushControl: function(position, control) {
             this.map.controls[position].push(control);
+            this.resizeControls();
         },
         /**
          * Removes all Markers from the map.
