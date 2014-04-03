@@ -27,7 +27,7 @@ require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
                     required: true
                 },
                 org_type: {
-                    range: [0, 5]
+                    range: [0, 9]
                 },
                 organization: {
                     maxlength: 60
