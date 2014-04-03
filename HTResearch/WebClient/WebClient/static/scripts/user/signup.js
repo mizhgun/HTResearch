@@ -66,5 +66,14 @@ require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
                 }
             }
         });
+
+        $('#account-type-popover').popover({
+            html: true,
+            trigger: 'hover',
+            delay: {
+                show: 0,
+                hide: 500
+            }
+        });
     });
 });

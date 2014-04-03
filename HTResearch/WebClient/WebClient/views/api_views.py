@@ -12,6 +12,7 @@ from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
 from HTResearch.Utilities.encoder import MongoJSONEncoder
+from HTResearch.Utilities import decorators
 
 #region Globals
 logger = get_logger(LoggingSection.CLIENT, __name__)
@@ -20,7 +21,7 @@ REFRESH_COORDS_LIST = timedelta(minutes=5)
 REFRESH_PARTNER_MAP = timedelta(minutes=5)
 #endregion
 
-
+@decorators.safe_apicall
 def get_org_keywords(request):
     """
     Retrieves the organization's keywords to create the word cloud on the profile page.
@@ -76,6 +77,7 @@ def get_org_rank_rows(request):
     return HttpResponse(MongoJSONEncoder().encode(obj), content_type="application/text")
 
 
+@decorators.safe_apicall
 def heatmap_coordinates(request):
     """
     Gets all the lat/long values for all organizations.
@@ -105,6 +107,7 @@ def heatmap_coordinates(request):
     return HttpResponse(coords, content_type="application/json")
 
 
+@decorators.safe_apicall
 def org_partner_map(request):
     """
     Generates the data needed to display the organization partner map and then stores it in the
@@ -246,6 +249,8 @@ def search_contacts(request):
         try:
             if c['organization']:
                 org = org_dao.find(id=c['organization'].id)
+                #Prevent adding this field as it cannot be properly encoded
+                org.page_rank_info = None
                 c['organization'] = org.__dict__['_data']
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
@@ -258,7 +263,9 @@ def search_contacts(request):
         org_dao = ctx.get_object('OrganizationDAO')
         try:
             if u['organization']:
-                org = org_dao.find(id=u['organization'].id)
+                org = org_dao.find(id=u['organization'].id).exclude('page_rank_info')
+                #Prevent adding this field as it cannot be properly encoded
+                org.page_rank_info = None
                 u['organization'] = org.__dict__['_data']
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
@@ -305,6 +312,8 @@ def search_organizations(request):
             organizations = org_dao.findmany(search=search_text, num_elements=10,
                                              sort_fields=['valid', 'combined_weight', 'name'],
                                              valid=True)
+            for org in organizations:
+                org.page_rank_info = None
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
@@ -316,4 +325,5 @@ def search_organizations(request):
         org['keywords'] = (org['keywords'] or '').split()
         results.append(org)
     data = {'results': results}
-    return HttpResponse(MongoJSONEncoder().encode(data), content_type="application/json")
+    json_data = MongoJSONEncoder().encode(data)
+    return HttpResponse(json_data, content_type="application/json")

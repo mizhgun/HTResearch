@@ -54,11 +54,13 @@ def login(request):
                 request.session['last_name'] = str(user.last_name)
                 request.session['account_type'] = str(user.account_type)
                 request.session.set_expiry(SESSION_TIMEOUT)
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect(request.session['next'] or '/')
 
             error = 'No account with the provided username and password exists.'
             logger.error('User with email={0}, password={1} not found'.format(email, password))
 
+    if 'next' not in request.session or request.path != request.session['next']:
+        request.session['next'] = request.META['HTTP_REFERER']
     return render(request, 'user/login.html', {'form': form, 'error': error})
 
 
