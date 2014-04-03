@@ -59,10 +59,7 @@ def login(request):
             error = 'No account with the provided username and password exists.'
             logger.error('User with email={0}, password={1} not found'.format(email, password))
 
-    if 'next' in request.session:
-        if request.path != request.session['next']:
-                request.session['next'] = request.META['HTTP_REFERER']
-    else:
+    if 'next' not in request.session or request.path != request.session['next']:
         request.session['next'] = request.META['HTTP_REFERER']
     return render(request, 'user/login.html', {'form': form, 'error': error})
 
