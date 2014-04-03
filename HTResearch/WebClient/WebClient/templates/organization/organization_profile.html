@@ -19,4 +19,137 @@
             {% endif %}
         </div>
     </div>
+    <div class="container-fluid">
+        <div class="page-header">
+            <h1></h1>
+        </div>
+        <div class="profile-content">
+            <div class="row profile-row">
+                <div class="col-lg-3 col-md-6 col-xs-12 profile-data">
+                    <div class="row data-row">
+                        <div class="col-xs-3">
+                            <span class="profile-icon fa fa-fw fa-globe fa-5x"></span>
+                        </div>
+                        <div class="col-xs-9">
+                            <h4>Website</h4>
+                            {% if organization.organization_url %}
+                            <a target="_blank" href="{% if not scheme %}//{% endif %}{{ organization.organization_url }}">{{ organization.organization_url }}</a>
+                            {% else %}
+                            None Available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-xs-12 profile-data">
+                    <div class="row data-row">
+                        <div class="col-xs-3">
+                            <span class="profile-icon fa fa-fw fa-facebook-square fa-5x"></span>
+                        </div>
+                        <div class="col-xs-9">
+                            <h4>Facebook</h4>
+                            {% if organization.facebook %}
+                            <a target="_blank" href="{{ organization.facebook }}">{{ organization.facebook }}</a>
+                            {% else %}
+                            None Available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-xs-12 profile-data">
+                    <div class="row data-row">
+                        <div class="col-xs-3">
+                            <span class="profile-icon fa fa-fw fa-twitter-square fa-5x"></span>
+                        </div>
+                        <div class="col-xs-9">
+                            <h4>Twitter</h4>
+                            {% if organization.twitter %}
+                            <a target="_blank" href="{{ organization.twitter }}">{{ organization.twitter }}</a>
+                            {% else %}
+                            None Available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-xs-12 profile-data">
+                    <div class="row data-row">
+                        <div class="col-xs-3">
+                            <span class="profile-icon fa fa-fw fa-tags fa-5x"></span>
+                        </div>
+                        <div class="col-xs-9">
+                            <h4>Types</h4>
+                            {% if types %}
+                            {{ types|join:", " }}
+                            {% else %}
+                            None Available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-xs-12 profile-data">
+                    <div class="row data-row">
+                        <div class="col-xs-3">
+                            <span class="profile-icon fa fa-fw fa-envelope fa-5x"></span>
+                        </div>
+                        <div class="col-xs-9">
+                            <h4>Email</h4>
+                            {% if organization.email_key %}
+                            <a target="_blank" href="mailto:{{ organization.email_key }}">{{ organization.email_key }}</a>
+                            {% else %}
+                            None Available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-xs-12 profile-data">
+                    <div class="row data-row">
+                        <div class="col-xs-3">
+                            <span class="profile-icon fa fa-fw fa-phone fa-5x"></span>
+                        </div>
+                        <div class="col-xs-9">
+                            <h4>Phone</h4>
+                            {% if organization.phone_numbers %}
+                            {{ organization.phone_numbers|first }}
+                            {% else %}
+                            None Available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-xs-12 profile-data">
+                    <div class="row data-row">
+                        <div class="col-xs-3">
+                            <span class="profile-icon fa fa-fw fa-users fa-5x"></span>
+                        </div>
+                        <div class="col-xs-9">
+                            <h4>Members</h4>
+                            {% if organization.contacts %}
+                            {% for contact in organization.contacts %}
+                            <a href="/contact/{{ contact.id }}">{{ contact.first_name }} {{ contact.last_name }}</a><br/>
+                            {% endfor %}
+                            {% else %}
+                            None Available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-xs-12 profile-data">
+                    <div class="row data-row">
+                        <div class="col-xs-3">
+                            <span class="profile-icon fa fa-fw fa-building-o fa-5x"></span>
+                        </div>
+                        <div class="col-xs-9">
+                            <h4>Partners</h4>
+                            {% if organization.partners %}
+                            {% for partner in organization.partners %}
+                            <a href="/organization/{{ partner.id }}">{{ partner.name }}</a><br/>
+                            {% endfor %}
+                            {% else %}
+                            None Available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

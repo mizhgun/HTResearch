@@ -21,6 +21,7 @@ REFRESH_COORDS_LIST = timedelta(minutes=5)
 REFRESH_PARTNER_MAP = timedelta(minutes=5)
 #endregion
 
+
 @decorators.safe_apicall
 def get_org_keywords(request):
     """

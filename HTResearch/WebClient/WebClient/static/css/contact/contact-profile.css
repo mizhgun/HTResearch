@@ -14,6 +14,15 @@
 .header-content > h1 {
   font-size: 400%;
 }
+.profile-icon {
+  color: #00a67c;
+}
+.profile-content {
+  margin-top: 75px;
+}
+.profile-data {
+  margin-bottom: 50px;
+}
 .contact-header {
   background-image: url("/static/images/contact-profile-banner.jpg");
   background-size: cover;

@@ -14,6 +14,15 @@
 .header-content > h1 {
   font-size: 400%;
 }
+.profile-icon {
+  color: #00a67c;
+}
+.profile-content {
+  margin-top: 75px;
+}
+.profile-data {
+  margin-bottom: 50px;
+}
 .navbar {
   margin-bottom: 0px;
 }
@@ -21,12 +30,4 @@
   background: url("/static/images/org-profile-banner.jpg");
   background-size: cover;
   background-repeat: no-repeat;
-}
-.header-content {
-  padding-top: 85px;
-  padding-left: 50px;
-  text-shadow: 0.1em 0.1em 0.5em #000;
-}
-.header-content > h1 {
-  font-size: 400%;
 }
