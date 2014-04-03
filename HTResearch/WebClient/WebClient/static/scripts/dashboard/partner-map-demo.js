@@ -6,5 +6,5 @@ require(['shared/analytics', 'datavis/partner-map', 'bootstrap'], function(Analy
     'use strict';
 
     Analytics.startTracking();
-    PartnerMap.initialize('#partner-map', {width: 900, height: 600});
+    PartnerMap.initialize('#partner-map', {height: 600});
 });

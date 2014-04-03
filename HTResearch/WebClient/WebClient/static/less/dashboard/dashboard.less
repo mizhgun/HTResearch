@@ -1,38 +1,39 @@
 // Includes
 @import "../shared/variables.less";
 
-.object-counter {
-  h1, h2 {
-    text-align: center;
+#dashboard {
+  .object-counter {
+    h1, h2 {
+      text-align: center;
+    }
   }
-}
-.dashboard-panel {
-  padding-top: 25px;
-  padding-bottom: 25px;
-  &:nth-child(odd) {
-    background: #fff;
-    color: @ht-teal;
-    text {
+  .dashboard-panel {
+    padding: 25px;
+    &:nth-child(odd) {
+      background: #fff;
       color: @ht-teal;
+      text {
+        color: @ht-teal;
+      }
     }
-  }
-  &:nth-child(even) {
-    background: @ht-teal;
-    color: #fff;
-    text {
+    &:nth-child(even) {
+      background: @ht-teal;
       color: #fff;
+      text {
+        color: #fff;
+      }
     }
-  }
-  .info1 {
-    font-weight: bold;
-    text-transform: capitalize;
-  }
-  .info1, .info2 {
-    height: 16px;
-  }
-  svg i {
-    font-size: 60px;
-    padding-top: 3px;
-    z-index: 10;
+    .info1 {
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+    .info1, .info2 {
+      height: 16px;
+    }
+    svg i {
+      font-size: 60px;
+      padding-top: 3px;
+      z-index: 10;
+    }
   }
 }
