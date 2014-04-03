@@ -104,7 +104,10 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             icon.addClass('glyphicon-collapse-up');
         }
 
+        var searchDiv = $("#search-box-div");
         if (searchText) {
+            searchDiv.css("pointer-events", "all");
+
             // Perform each search
             _.each(searchItems, function(searchItem) {
                 // See if we want to search for this item
@@ -131,6 +134,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             });
             searchResultsContainer.slideDown();
         } else {
+            searchDiv.css("pointer-events", "none");
             searchResultsContainer.slideUp();
         }
     }
