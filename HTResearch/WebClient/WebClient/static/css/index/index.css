@@ -302,10 +302,6 @@
 #search-results-div .collapse-icon {
   opacity: .6;
 }
-.object-counter h1,
-.object-counter h2 {
-  text-align: center;
-}
 html {
   height: 100%;
 }

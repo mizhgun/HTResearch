@@ -1,4 +1,25 @@
+// Includes
+@import "../shared/variables.less";
+
 .object-counter h1,
 .object-counter h2 {
-    text-align: center;
+  text-align: center;
+}
+.dashboard-panel {
+  padding-top: 25px;
+  padding-bottom: 25px;
+  &:nth-child(odd) {
+    background: #fff;
+    color: @ht-teal;
+    text {
+      color: @ht-teal;
+    }
+  }
+  &:nth-child(even) {
+    background: @ht-teal;
+    color: #fff;
+    text {
+      color: #fff;
+    }
+  }
 }
