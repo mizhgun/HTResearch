@@ -18,6 +18,7 @@ logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
 REFRESH_COORDS_LIST = timedelta(minutes=5)
 REFRESH_PARTNER_MAP = timedelta(minutes=5)
+REFRESH_ORG_BREAKDOWN = timedelta(minutes=5)
 #endregion
 
 
@@ -410,48 +411,57 @@ def orgs_by_region(request):
         Organization counts by region, encoded in JSON. Includes the total number of organizations and the total whose
         region is known.
     """
-    org_dao = ctx.get_object('OrganizationDAO')
 
-    regions = [
-        'Uttar Pradesh', 'Maharashtra', 'Bihar', 'West Bengal', 'Andhra Pradesh', 'Madhya Pradesh', 'Tamil Nadu',
-        'Rajasthan', 'Karnataka', 'Gujarat', 'Odisha', 'Kerala', 'Jharkhand', 'Assam', 'Punjab', 'Chhattisgarh',
-        'Haryana', 'Jammu and Kashmir', 'Uttarakhand', 'Himachal Pradesh', 'Tripura', 'Meghalaya', 'Manipur',
-        'Nagaland', 'Goa', 'Arunachal Pradesh', 'Mizoram', 'Sikkim', 'Delhi', 'Puducherry', 'Chandigarh', 'Andaman',
-        'Nicobar Islands', 'Dadra', 'Nagar Haveli', 'Daman', 'Diu', 'Lakshadweep',
-        ]
+    orgs_data = cache.get('orgs_by_region')
+    last_update = cache.get('orgs_by_region_last_update')
+    if not orgs_data or not last_update or (datetime.utcnow() - last_update > REFRESH_ORG_BREAKDOWN):
+        cache.set('organization_address_list_last_update', datetime.utcnow())
 
-    region_count = {}
-    results = []
-    # Total count in known categories
-    total_known = 0
+        org_dao = ctx.get_object('OrganizationDAO')
 
-    organizations = list(org_dao.findmany())
-    for org in organizations:
-        if org['address']:
-            for region in regions:
-                if region in org['address']:
-                    if region in region_count:
-                        region_count[region] += 1
-                    else:
-                        region_count[region] = 1
-                    break
+        regions = [
+            'Uttar Pradesh', 'Maharashtra', 'Bihar', 'West Bengal', 'Andhra Pradesh', 'Madhya Pradesh', 'Tamil Nadu',
+            'Rajasthan', 'Karnataka', 'Gujarat', 'Odisha', 'Kerala', 'Jharkhand', 'Assam', 'Punjab', 'Chhattisgarh',
+            'Haryana', 'Jammu and Kashmir', 'Uttarakhand', 'Himachal Pradesh', 'Tripura', 'Meghalaya', 'Manipur',
+            'Nagaland', 'Goa', 'Arunachal Pradesh', 'Mizoram', 'Sikkim', 'Delhi', 'Puducherry', 'Chandigarh', 'Andaman',
+            'Nicobar Islands', 'Dadra', 'Nagar Haveli', 'Daman', 'Diu', 'Lakshadweep',
+            ]
 
-    for key in region_count.iterkeys():
-        count = region_count[key]
-        total_known += count
-        results.append({
-            'label': key,
-            'value': count,
-            })
+        region_count = {}
+        results = []
+        # Total count in known categories
+        total_known = 0
 
-    total = org_dao.count()
+        organizations = list(org_dao.findmany())
+        for org in organizations:
+            if org['address']:
+                for region in regions:
+                    if region in org['address']:
+                        if region in region_count:
+                            region_count[region] += 1
+                        else:
+                            region_count[region] = 1
+                        break
 
-    data = {
-        'categories': results,
-        'total': total,
-        'total_known': total_known,
+        for key in region_count.iterkeys():
+            count = region_count[key]
+            total_known += count
+            results.append({
+                'label': key,
+                'value': count,
+                })
+
+        total = org_dao.count()
+
+        data = {
+            'categories': results,
+            'total': total,
+            'total_known': total_known,
         }
-    return HttpResponse(json.dumps(data), content_type='application/json')
+        orgs_data = json.dumps(data)
+        cache.set('orgs_by_region', orgs_data)
+
+    return HttpResponse(orgs_data, content_type='application/json')
 
 
 def orgs_by_type(request):
@@ -462,42 +472,50 @@ def orgs_by_type(request):
         Organization counts by type, encoded in JSON. Includes the total number of organizations and the total whose
         type is known.
     """
-    org_dao = ctx.get_object('OrganizationDAO')
+    orgs_data = cache.get('orgs_by_type')
+    last_update = cache.get('orgs_by_type_last_update')
+    if not orgs_data or not last_update or (datetime.utcnow() - last_update > REFRESH_ORG_BREAKDOWN):
+        cache.set('organization_address_list_last_update', datetime.utcnow())
 
-    organizations = list(org_dao.findmany())
+        org_dao = ctx.get_object('OrganizationDAO')
 
-    results = []
-    type_count = {}
-    # Total count in known categories
-    total_known = 0
+        organizations = list(org_dao.findmany())
 
-    for org in organizations:
-        if len(org['types']) > 0:
-            for i in range(len(OrgTypesEnum.mapping)):
-                if org['types'][0] == i:
-                    key = OrgTypesEnum.reverse_mapping[i]
-                    if key in type_count:
-                        type_count[key] += 1
-                    else:
-                        type_count[key] = 1
-                    break
+        results = []
+        type_count = {}
+        # Total count in known categories
+        total_known = 0
 
-    for key in type_count.iterkeys():
-        count = type_count[key]
-        total_known += count
-        results.append({
-            'label': key.lower(),
-            'value': count,
-            })
+        for org in organizations:
+            if len(org['types']) > 0:
+                for i in range(len(OrgTypesEnum.mapping)):
+                    if org['types'][0] == i:
+                        key = OrgTypesEnum.reverse_mapping[i]
+                        if key in type_count:
+                            type_count[key] += 1
+                        else:
+                            type_count[key] = 1
+                        break
 
-    total = org_dao.count()
+        for key in type_count.iterkeys():
+            count = type_count[key]
+            total_known += count
+            results.append({
+                'label': key.lower(),
+                'value': count,
+                })
 
-    data = {
-        'categories': results,
-        'total': total,
-        'total_known': total_known,
+        total = org_dao.count()
+
+        data = {
+            'categories': results,
+            'total': total,
+            'total_known': total_known,
         }
-    return HttpResponse(json.dumps(data), content_type='application/json')
+        orgs_data = json.dumps(data)
+        cache.set('orgs_by_type', orgs_data)
+
+    return HttpResponse(orgs_data, content_type='application/json')
 
 
 def orgs_by_members(request):
@@ -508,36 +526,44 @@ def orgs_by_members(request):
         Organization counts by members, encoded in JSON. Includes the total number of organizations and the total whose
         number of organizations whose member count is shown.
     """
-    org_dao = ctx.get_object('OrganizationDAO')
+    orgs_data = cache.get('orgs_by_members')
+    last_update = cache.get('orgs_by_members_last_update')
+    if not orgs_data or not last_update or (datetime.utcnow() - last_update > REFRESH_ORG_BREAKDOWN):
+        cache.set('organization_address_list_last_update', datetime.utcnow())
 
-    ranges = [
-        (1, 3, '1-3'),
-        (4, 6, '4-6'),
-        (7, 9, '7-9'),
-        (10, 12, '10+'),
+        org_dao = ctx.get_object('OrganizationDAO')
+
+        ranges = [
+            (1, 3, '1-3'),
+            (4, 6, '4-6'),
+            (7, 9, '7-9'),
+            (10, 12, '10+'),
         ]
 
-    results = []
-    # Total count in known categories
-    total_known = 0
+        results = []
+        # Total count in known categories
+        total_known = 0
 
-    for r in ranges:
-        count = 0
-        for i in range(r[0], r[1] + 1):
-            count += org_dao.count(contacts__size=i)
+        for r in ranges:
+            count = 0
+            for i in range(r[0], r[1] + 1):
+                count += org_dao.count(contacts__size=i)
 
-        total_known += count
+            total_known += count
 
-        results.append({
-            'label': r[2],
-            'value': count,
-            })
+            results.append({
+                'label': r[2],
+                'value': count,
+                })
 
-    total = org_dao.count()
+        total = org_dao.count()
 
-    data = {
-        'categories': results,
-        'total': total,
-        'total_known': total_known
-    }
-    return HttpResponse(json.dumps(data), content_type='application/json')
+        data = {
+            'categories': results,
+            'total': total,
+            'total_known': total_known
+        }
+        orgs_data = json.dumps(data)
+        cache.set('orgs_by_members', orgs_data)
+
+    return HttpResponse(orgs_data, content_type='application/json')
