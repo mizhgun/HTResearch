@@ -11,10 +11,6 @@
                 <h1>
                     Request Organization
                 </h1>
-                <h1>
-                    <small>Give us a URL of any organization relating directly or indirectly to victims of human trafficking.
-                        We'll add this organization - and any related ones - to our records.</small>
-                </h1>
             </div>
 
             {% if success %}
@@ -37,9 +33,13 @@
                 {% else %}
                     <div class="form-group">
                 {% endif %}
-                        <label for="id_url" class="control-label">Organization URL</label>
-                        <input type="url" id="id_url" class="form-control" name="url" placeholder="http://example.com">
+                        <label
+                                for="id_url" class="control-label">Organization URL
+                            <span id="help-text" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" data-title="What's this?">
 
+                            </span>
+                        </label>
+                        <input type="url" id="id_url" class="form-control" name="url" placeholder="http://example.com">
                         {% if form.url.errors %}
                             <span class="help-block">
                                 {% for error in form.url.errors %}
