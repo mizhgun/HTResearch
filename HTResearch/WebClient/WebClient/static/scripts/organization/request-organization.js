@@ -16,7 +16,7 @@ require(['shared/analytics', 'shared/validators', 'jquery', 'bootstrap'], functi
             {
                 trigger: 'hover',
                 placement: 'right',
-                content: 'Give us a URL of any organization relating directly or indirectly to victims of human trafficking. We\'ll add this organization - and any related ones - to our records.'
+                html: 'true'
             }
         );
 
