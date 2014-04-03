@@ -1,6 +1,13 @@
-from springpython.context import ApplicationContext
-import sys
+#
+# app.py
+# An executable script for running the PageRank algorithm.
+#
 
+# stdlib imports
+import sys
+from springpython.context import ApplicationContext
+
+# project imports
 from HTResearch.PageRank.algorithms import *
 from HTResearch.Utilities.context import PageRankContext
 

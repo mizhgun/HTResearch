@@ -35,6 +35,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
             radius: heatMapRadius,
             gradient: heatMapGradient
         });
+        heatMap.setMap(map);
     }
 
     //Use an AJAX request to retrieve cached coordinate information
@@ -92,6 +93,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
         $(heatmap_toggle_control).addClass('btn');
         $(heatmap_toggle_control).addClass('btn-default');
         $(heatmap_toggle_control).addClass('btn-sm');
+        $(heatmap_toggle_control).addClass('active');
         $(heatmap_toggle_control).attr('data-toggle', 'button');
         $(heatmap_toggle_control).html('<i class="fa fa-building-o"></i> Organization Density');
         heatmap_control_div.appendChild(heatmap_toggle_control);
