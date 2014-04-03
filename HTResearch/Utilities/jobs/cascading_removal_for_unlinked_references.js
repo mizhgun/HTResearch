@@ -5,7 +5,7 @@ while(orgs.hasNext()) {
     var contact_ids = org.cs;
     contact_ids.forEach(function(c_id, key) {
         var contact = db.contact_d_t_o.find({_id: c_id});
-        if (contact.toArray().length == 0) {
+        if (contact.toArray().length === 0) {
             //Delete the references to contacts that no longer exist
             contact_ids.splice(key, 1);
         }
@@ -27,7 +27,7 @@ var contacts = db.contact_d_t_o.find({o: {$exists:true}});
 while(contacts.hasNext()){
     var contact = contacts.next();
     var org = db.organization_d_t_o.find({_id: contact.o});
-    if (org.toArray().length == 0) {
+    if (org.toArray().length === 0) {
         //Delete the references to organizations that no longer exist
         db.contact_d_t_o.update({ '_id': contact._id},
         { $unset: {
@@ -48,7 +48,7 @@ while(host_orgs.hasNext()) {
         }
     });
     //Unset the entire property if none left
-    if (parnters.length == 0) {
+    if (parnters.length === 0) {
         db.organization_d_t_o.update({ '_id': host_org._id},
         { $unset: {
             "ps": ""
