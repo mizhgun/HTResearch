@@ -106,7 +106,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
 
         var searchDiv = $("#search-box-div");
         if (searchText) {
-            searchDiv.css("pointer-events", "all");
+            searchDiv.css("pointer-events", "auto");
 
             // Perform each search
             _.each(searchItems, function(searchItem) {

@@ -258,7 +258,7 @@
   width: 100%;
 }
 #custom-search-form {
-  pointer-events: all;
+  pointer-events: auto;
 }
 #search-settings-btn {
   width: 54px;
