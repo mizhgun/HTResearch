@@ -88,6 +88,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
         initHeatmap();
 
         var heatmap_control_div = document.createElement('div');
+        $(heatmap_control_div).attr('id', 'heatmap-button');
 
         var heatmap_toggle_control = document.createElement('button');
         $(heatmap_toggle_control).addClass('btn');

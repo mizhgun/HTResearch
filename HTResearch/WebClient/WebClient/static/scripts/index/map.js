@@ -115,6 +115,8 @@ define(['jquery',
                 else
                     transOrigin = "100% 0%";
                 posControls.forEach(function (control, index2) {
+                    if($(control).attr("id") == "heatmap-button")
+                        scaleTot = Math.max(scaleTot * (3.0/4.0), 1.0);
                     $(control).css("transform", "scale(" + scaleTot  + ")");
                     $(control).css("transform-origin", transOrigin);
                     $(control).css("-ms-transform", "scale(" + scaleTot  + ")");
