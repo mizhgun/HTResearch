@@ -9,7 +9,6 @@ from HTResearch.DataModel.globals import ORG_TYPE_CHOICES
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.url_tools import UrlUtility
 
-
 class InviteForm(forms.Form):
     email = forms.EmailField(max_length=40)
     message = forms.CharField(widget=forms.Textarea, max_length=280, required=False)
@@ -84,6 +83,7 @@ class ManageForm(forms.Form):
         dao = ctx.get_object('UserDAO')
 
         user = dao.find(email=email, id__ne=user_id)
+
         if user:
             raise ValidationError('An account with that email already exists.')
 
