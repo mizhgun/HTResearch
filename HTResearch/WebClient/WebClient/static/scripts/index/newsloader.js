@@ -81,7 +81,7 @@ define(['jquery',
             // Extract title, date, source, content, link, and image from the raw article
             return {
                 title: $(article.content).find('td:last div:last a:first b:first').text(),
-                date: article.publishedDate,
+                date: article.publishedDate.trim().slice(0, -15).trim(),
                 source: $(article.content).find('td:first a:first font').text().trim(),
                 contentSnippet: $(article.content).find('td:last div:last font').eq(2).text(),
                 link:  cleanArticleUrl(article.link),
