@@ -489,7 +489,7 @@ def orgs_by_type(request):
     """
     orgs_json = cache.get('orgs_by_type')
     last_update = cache.get('orgs_by_type_last_update')
-    if True or not orgs_json or not last_update or (datetime.utcnow() - last_update > REFRESH_ORG_BREAKDOWN):
+    if not orgs_json or not last_update or (datetime.utcnow() - last_update > REFRESH_ORG_BREAKDOWN):
         cache.set('organization_address_list_last_update', datetime.utcnow())
 
         org_dao = ctx.get_object('OrganizationDAO')
@@ -513,11 +513,10 @@ def orgs_by_type(request):
                 'value': count,
             })
 
-        # Sort results by value, and by 3 P's at beginning / unknown at end
+        # Sort results by value and put unknown at end
         results = sorted(results, key=lambda x: x['value'], reverse=True)
-        results = sorted(results, key=lambda x: 0 if x['label'] in ['protection', 'prevention', 'prosecution']
-                                           else 2 if x['label'] == 'unknown'
-                                           else 1)
+        results = sorted(results, key=lambda x: 1 if x['label'] == 'unknown'
+                                           else 0)
 
         total = org_dao.count()
 
