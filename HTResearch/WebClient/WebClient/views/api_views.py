@@ -20,6 +20,7 @@ ctx = ApplicationContext(DAOContext())
 REFRESH_COORDS_LIST = timedelta(minutes=5)
 REFRESH_PARTNER_MAP = timedelta(minutes=5)
 REFRESH_ORG_BREAKDOWN = timedelta(minutes=5)
+REFRESH_COUNT = timedelta(minutes=5)
 #endregion
 
 @decorators.safe_apicall
@@ -120,13 +121,21 @@ def org_count(request):
 
     logger.info('Publication count request made by user {0}'.format(user_id))
 
-    org_dao = ctx.get_object('OrganizationDAO')
+    # Cache organization count
+    count = cache.get('organization_count')
+    last_update = cache.get('organization_count_last_update')
+    if not count or not last_update or (datetime.utcnow() - last_update > REFRESH_COUNT):
 
-    count = ''
-    try:
-        count = org_dao.count()
-    except:
-        logger.error('Exception encountered on organziation count by user={0}'.format(user_id))
+        cache.set('organization_count_last_update', datetime.utcnow())
+
+        org_dao = ctx.get_object('OrganizationDAO')
+        count = ''
+        try:
+            count = org_dao.count()
+        except:
+            logger.error('Exception encountered on organziation count by user={0}'.format(user_id))
+
+        cache.set('organization_count', count)
 
     data = {
         'count': count
@@ -147,23 +156,34 @@ def contact_count(request):
 
     logger.info('Contact count request made by user {0}'.format(user_id))
 
-    contact_dao = ctx.get_object('ContactDAO')
-    user_dao = ctx.get_object('UserDAO')
+    # Cache contact count
+    count = cache.get('contact_count')
+    last_update = cache.get('contact_count_last_update')
+    if not count or not last_update or (datetime.utcnow() - last_update > REFRESH_COUNT):
 
-    contact_count = 0
-    user_count = 0
-    try:
-        contact_count = contact_dao.count()
-    except:
-        logger.error('Exception encountered on contact count by user={0}'.format(user_id))
+        cache.set('contact_count_last_update', datetime.utcnow())
 
-    try:
-        user_count = user_dao.count()
-    except:
-        logger.error('Exception encountered on user count by user={0}'.format(user_id))
+        contact_dao = ctx.get_object('ContactDAO')
+        user_dao = ctx.get_object('UserDAO')
+
+        contacts_count = 0
+        user_count = 0
+        try:
+            contacts_count = contact_dao.count()
+        except:
+            logger.error('Exception encountered on contact count by user={0}'.format(user_id))
+
+        try:
+            user_count = user_dao.count()
+        except:
+            logger.error('Exception encountered on user count by user={0}'.format(user_id))
+
+        count = contacts_count + user_count
+
+        cache.set('contact_count', count)
 
     data = {
-        'count': contact_count + user_count
+        'count': count
     }
 
     return HttpResponse(json.dumps(data), content_type='application/json')
@@ -181,13 +201,21 @@ def pub_count(request):
 
     logger.info('Publication count request made by user {0}'.format(user_id))
 
-    pub_dao = ctx.get_object('PublicationDAO')
+    # Cache publication count
+    count = cache.get('publication_count')
+    last_update = cache.get('publication_count_last_update')
+    if not count or not last_update or (datetime.utcnow() - last_update > REFRESH_COUNT):
 
-    count = ''
-    try:
-        count = pub_dao.count()
-    except:
-        logger.error('Exception encountered on publication count by user={0}'.format(user_id))
+        cache.set('publication_count_last_update', datetime.utcnow())
+
+        pub_dao = ctx.get_object('PublicationDAO')
+
+        try:
+            count = pub_dao.count()
+        except:
+            logger.error('Exception encountered on publication count by user={0}'.format(user_id))
+
+        cache.set('publication_count', count)
 
     data = {
         'count': count
@@ -426,10 +454,14 @@ def orgs_by_region(request):
         region is known.
     """
 
+    user_id = request.session['user_id'] if 'user_id' in request.session else None
+
+    logger.info('Org breakdown by region request made by user {0}'.format(user_id))
+
     orgs_json = cache.get('orgs_by_region')
     last_update = cache.get('orgs_by_region_last_update')
     if not orgs_json or not last_update or (datetime.utcnow() - last_update > REFRESH_ORG_BREAKDOWN):
-        cache.set('organization_address_list_last_update', datetime.utcnow())
+        cache.set('orgs_by_region_last_update', datetime.utcnow())
 
         org_dao = ctx.get_object('OrganizationDAO')
 
@@ -487,10 +519,15 @@ def orgs_by_type(request):
         Organization counts by type, encoded in JSON. Includes the total number of organizations and the total whose
         type is known.
     """
+
+    user_id = request.session['user_id'] if 'user_id' in request.session else None
+
+    logger.info('Org breakdown by type request made by user {0}'.format(user_id))
+
     orgs_json = cache.get('orgs_by_type')
     last_update = cache.get('orgs_by_type_last_update')
     if not orgs_json or not last_update or (datetime.utcnow() - last_update > REFRESH_ORG_BREAKDOWN):
-        cache.set('organization_address_list_last_update', datetime.utcnow())
+        cache.set('orgs_by_type_last_update', datetime.utcnow())
 
         org_dao = ctx.get_object('OrganizationDAO')
 
@@ -540,10 +577,15 @@ def orgs_by_members(request):
         Organization counts by members, encoded in JSON. Includes the total number of organizations and the total whose
         number of organizations whose member count is shown.
     """
+
+    user_id = request.session['user_id'] if 'user_id' in request.session else None
+
+    logger.info('Org breakdown by members request made by user {0}'.format(user_id))
+
     orgs_json = cache.get('orgs_by_members')
     last_update = cache.get('orgs_by_members_last_update')
     if not orgs_json or not last_update or (datetime.utcnow() - last_update > REFRESH_ORG_BREAKDOWN):
-        cache.set('organization_address_list_last_update', datetime.utcnow())
+        cache.set('orgs_by_members_last_update', datetime.utcnow())
 
         org_dao = ctx.get_object('OrganizationDAO')
 
@@ -568,7 +610,7 @@ def orgs_by_members(request):
             results.append({
                 'label': r[2],
                 'value': count,
-                })
+            })
 
         total = org_dao.count()
 
