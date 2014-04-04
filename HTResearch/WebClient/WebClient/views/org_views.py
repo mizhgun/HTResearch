@@ -34,15 +34,15 @@ def organization_profile(request, org_id):
         A rendered page of the Organization Profile.
     """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
+    account_type = request.session['account_type'] if 'account_type' in request.session else None
 
     logger.info('Request made for profile of org={0} by user={1}'.format(org_id, user_id))
     org_dao = ctx.get_object('OrganizationDAO')
 
     try:
         org = org_dao.find(id=org_id)
-    except Exception as e:
+    except:
         logger.error('Exception encountered on organization lookup for org={0} by user={1}'.format(org_id, user_id))
-        print e.message
         return get_http_404_page(request)
 
     scheme = ""
@@ -57,11 +57,14 @@ def organization_profile(request, org_id):
     facebook_str = org.facebook.split('/')[-1] if org.facebook else None
     twitter_str = "@" + org.twitter.split('/')[-1] if org.twitter else None
 
+    can_edit = account_type == AccountType.CONTRIBUTOR
+
     params = {"organization": org,
               "scheme": scheme,
               "types": org_types,
               "facebook": facebook_str,
               "twitter": twitter_str,
+              "can_edit": can_edit,
               }
     return render(request, 'organization/organization_profile.html', params)
 
