@@ -30,7 +30,7 @@
 #dashboard .dashboard-panel .info2 {
   height: 16px;
 }
-#dashboard .dashboard-panel svg i {
+#dashboard .dashboard-panel svg span {
   font-size: 60px;
   padding-top: 3px;
   z-index: 10;

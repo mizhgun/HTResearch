@@ -154,7 +154,7 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
                     return 'translate(-40, -34)';
                 })
                 .html(function() {
-                    return '<i class="fa fa-globe"></i>';
+                    return '<span class="fa fa-globe"></span>';
                 });
 
             addBreakdownHtml(element, 'Region');
@@ -232,7 +232,7 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
                     return 'translate(-40, -34)';
                 })
                 .html(function() {
-                    return '<i class="fa fa-gavel"></i>';
+                    return '<span class="fa fa-gavel"></span>';
                 });
 
             addBreakdownHtml(element, 'Type');
@@ -295,7 +295,7 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
                     return 'translate(-40, -34)';
                 })
                 .html(function() {
-                    return '<i class="fa fa-users"></i>';
+                    return '<span class="fa fa-users"></span>';
                 });
 
             addBreakdownHtml(element, 'Members');
