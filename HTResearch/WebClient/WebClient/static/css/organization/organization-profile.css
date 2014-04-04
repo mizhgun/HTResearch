@@ -8,10 +8,9 @@
 }
 .header-content {
   padding-top: 85px;
-  padding-left: 50px;
   text-shadow: 0.1em 0.1em 0.5em #000;
 }
-.header-content > h1 {
+.header-content h1 {
   font-size: 400%;
 }
 .profile-icon {

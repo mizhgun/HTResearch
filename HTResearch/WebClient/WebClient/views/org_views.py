@@ -54,9 +54,14 @@ def organization_profile(request, org_id):
     for org_type in type_nums:
         org_types.append(OrgTypesEnum.reverse_mapping[org_type].title())
 
+    facebook_str = org.facebook.split('/')[-1] if org.facebook else None
+    twitter_str = "@" + org.twitter.split('/')[-1] if org.twitter else None
+
     params = {"organization": org,
               "scheme": scheme,
               "types": org_types,
+              "facebook": facebook_str,
+              "twitter": twitter_str,
               }
     return render(request, 'organization/organization_profile.html', params)
 
