@@ -1,5 +1,17 @@
+/**
+ * Gives pie graphs of organizations broken down by region, type, and number of members.
+ *
+ * @module org-breakdown
+ */
 define(['jquery', 'd3', 'underscore'], function($, d3, _) {
 
+    /**
+     * Initializes the organization breakdown charts.
+     * @param {string} regionSelector The selector of the DOM element to use for the region graph.
+     * @param {string} typeSelector The selector of the DOM element to use for the type graph.
+     * @param {string} membersSelector The selector of the DOM element to use for the members graph.
+     * @param {object} options The options object associated with instantiation (width, height, radius).
+     */
     function initialize(regionSelector, typeSelector, membersSelector, options) {
         var w = options.width || 300;
         var h = options.height || 300;
