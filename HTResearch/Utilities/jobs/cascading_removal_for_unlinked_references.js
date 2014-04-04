@@ -1,5 +1,5 @@
 //Search for all contacts linked in each organization
-var orgs = db.organization_d_t_o.find({cs: {$exists:true}, $where:'this.cs.length>0'});
+var orgs = db.organization_d_t_o.find({cs: {$not: {$size: 0}}});
 while(orgs.hasNext()) {
     var org = orgs.next();
     var contact_ids = org.cs;
@@ -10,16 +10,8 @@ while(orgs.hasNext()) {
             contact_ids.splice(key, 1);
         }
     });
-    //Unset the entire property if none left
-    if (contact_ids.length === 0) {
-        db.organization_d_t_o.update({ '_id': org._id},
-        { $unset: {
-            "cs": ""
-        }});
-    } else {
-        org.cs = contact_ids;
-        db.organization_d_t_o.save(org);
-    }
+    org.cs = contact_ids;
+    db.organization_d_t_o.save(org);
 }
 
 //Search for all organizations linked in each contact
@@ -37,7 +29,7 @@ while(contacts.hasNext()){
 }
 
 //Search all partner organizations linked in each organization
-var host_orgs = db.organization_d_t_o.find({ps: {$exists:true}, $where:'this.ps.length>0'});
+var host_orgs = db.organization_d_t_o.find({ps: {$not: {$size: 0}}});
 while(host_orgs.hasNext()) {
     var host_org = host_orgs.next();
     var partners = host_org.ps;
@@ -47,14 +39,6 @@ while(host_orgs.hasNext()) {
             partners.splice(key, 1);
         }
     });
-    //Unset the entire property if none left
-    if (parnters.length === 0) {
-        db.organization_d_t_o.update({ '_id': host_org._id},
-        { $unset: {
-            "ps": ""
-        }});
-    } else {
-        host_org.ps = partners;
-        db.organization_d_t_o.save(org);
-    }
+    host_org.ps = partners;
+    db.organization_d_t_o.save(org);
 }
