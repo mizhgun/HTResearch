@@ -439,7 +439,7 @@ def orgs_by_region(request):
             'Haryana', 'Jammu and Kashmir', 'Uttarakhand', 'Himachal Pradesh', 'Tripura', 'Meghalaya', 'Manipur',
             'Nagaland', 'Goa', 'Arunachal Pradesh', 'Mizoram', 'Sikkim', 'Delhi', 'Puducherry', 'Chandigarh', 'Andaman',
             'Nicobar Islands', 'Dadra', 'Nagar Haveli', 'Daman', 'Diu', 'Lakshadweep',
-            ]
+        ]
 
         region_count = {}
         results = []
@@ -463,7 +463,7 @@ def orgs_by_region(request):
             results.append({
                 'label': key,
                 'value': count,
-                })
+            })
 
         total = org_dao.count()
 
@@ -489,28 +489,21 @@ def orgs_by_type(request):
     """
     orgs_json = cache.get('orgs_by_type')
     last_update = cache.get('orgs_by_type_last_update')
-    if not orgs_json or not last_update or (datetime.utcnow() - last_update > REFRESH_ORG_BREAKDOWN):
+    if True or not orgs_json or not last_update or (datetime.utcnow() - last_update > REFRESH_ORG_BREAKDOWN):
         cache.set('organization_address_list_last_update', datetime.utcnow())
 
         org_dao = ctx.get_object('OrganizationDAO')
-
-        organizations = list(org_dao.findmany())
 
         results = []
         type_count = {}
         # Total count in known categories
         total_known = 0
 
-        for org in organizations:
-            if len(org['types']) > 0:
-                for i in range(len(OrgTypesEnum.mapping)):
-                    if org['types'][0] == i:
-                        key = OrgTypesEnum.reverse_mapping[i]
-                        if key in type_count:
-                            type_count[key] += 1
-                        else:
-                            type_count[key] = 1
-                        break
+        for i in range(len(OrgTypesEnum.mapping)):
+            key = OrgTypesEnum.reverse_mapping[i]
+            orgs = org_dao.findmany(types=i)
+            type_count[key] = len(orgs)
+            total_known += len(orgs)
 
         for key in type_count.iterkeys():
             count = type_count[key]
@@ -518,7 +511,13 @@ def orgs_by_type(request):
             results.append({
                 'label': key.lower(),
                 'value': count,
-                })
+            })
+
+        # Sort results by value, and by 3 P's at beginning / unknown at end
+        results = sorted(results, key=lambda x: x['value'], reverse=True)
+        results = sorted(results, key=lambda x: 0 if x['label'] in ['protection', 'prevention', 'prosecution']
+                                           else 2 if x['label'] == 'unknown'
+                                           else 1)
 
         total = org_dao.count()
 

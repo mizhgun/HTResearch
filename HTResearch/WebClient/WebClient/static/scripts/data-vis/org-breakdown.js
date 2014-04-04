@@ -165,9 +165,9 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
 
             var element = $(typeSelector);
             var colors3p = {
-                'protection': '#4ecdc4',
-                'prevention': '#c7f464',
-                'prosecution': '#ff6b6b'
+                'prevention': '#4ecdc4',
+                'protection': '#ff6b6b',
+                'prosecution': '#c7f464'
             };
 
             var vis = d3.select(typeSelector)
@@ -183,7 +183,8 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
                 .attr('d', outlineRing);
 
             var pie = d3.layout.pie()
-                .value(function(d) { return d.value; });
+                .value(function(d) { return d.value; })
+                .sort(null);
 
             var arcs = vis.selectAll('g.slice')
                 .data(pie)
