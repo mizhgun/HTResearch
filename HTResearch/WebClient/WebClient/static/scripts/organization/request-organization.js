@@ -12,6 +12,14 @@ require(['shared/analytics', 'shared/validators', 'jquery', 'bootstrap'], functi
              Validators.checkURL(this);
         });
 
+        $('#help-text').popover(
+            {
+                trigger: 'hover',
+                placement: 'right',
+                html: 'true'
+            }
+        );
+
         $('#request-org-nav').addClass("active");
     });
 });
