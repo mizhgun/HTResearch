@@ -12,13 +12,19 @@
 {% block content %}
 <div id="dashboard">
     <div class="dashboard-panel main-area span12">
-        {% include "dashboard/counter.html" %}
+        <div class="container">
+            {% include "dashboard/counter.html" %}
+        </div>
     </div>
     <div class="dashboard-panel main-area span12">
-        {% include "dashboard/breakdown.html" %}
+        <div class="container">
+            {% include "dashboard/breakdown.html" %}
+        </div>
     </div>
     <div class="dashboard-panel main-area span12">
-        {% include "dashboard/partner-map.html" %}
+        <div class="container">
+            {% include "dashboard/partner-map.html" %}
+        </div>
     </div>
 </div>
 {% endblock %}

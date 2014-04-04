@@ -19,6 +19,9 @@
 #dashboard .dashboard-panel:nth-child(even) text {
   color: #fff;
 }
+#dashboard .dashboard-panel:last-child h1 {
+  margin-bottom: 25px;
+}
 #dashboard .dashboard-panel .info1 {
   font-weight: bold;
   text-transform: capitalize;
