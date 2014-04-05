@@ -1,10 +1,12 @@
-# compile_less.py
-# Compiles LESS files (given in the config) to CSS files if:
-#   1. A LESS file is changed
-#   2. The LESS file's parent directory inside the LESS directory is a key in the config
-#   3. The value of the config key is the correct filepath to the file that is to be compiled
-#
-# Assumptions: The LESS file changed is in the directory HTResearch\WebClient\WebClient\static\less
+"""
+compile_less.py
+Compiles LESS files (given in the config) to CSS files if:
+    1. A LESS file is changed
+    2. The LESS file's parent directory inside the LESS directory is a key in the config
+    3. The value of the config key is the correct filepath to the file that is to be compiled
+
+Assumptions: The LESS file changed is in the directory HTResearch\WebClient\WebClient\static\less
+"""
 
 import time
 import os

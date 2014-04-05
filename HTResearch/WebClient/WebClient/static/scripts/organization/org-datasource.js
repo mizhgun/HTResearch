@@ -38,7 +38,7 @@ define(['jquery'], function($) {
 
             var request = {
                 type: 'GET',
-                url: '/get-org-rank-rows/',
+                url: '/api/get-org-rank-rows/',
                 data: {
                     'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
                 },

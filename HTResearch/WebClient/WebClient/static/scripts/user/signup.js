@@ -1,3 +1,7 @@
+/**
+ * Performs client side signup form validation.
+ */
+
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
     'use strict';
 
@@ -60,6 +64,15 @@ require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
                 else {
                     error.insertAfter(element);
                 }
+            }
+        });
+
+        $('#account-type-popover').popover({
+            html: true,
+            trigger: 'hover',
+            delay: {
+                show: 0,
+                hide: 500
             }
         });
     });

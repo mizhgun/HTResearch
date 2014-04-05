@@ -1,6 +1,10 @@
-# Library imports
-import hashlib
+#
+# urlfrontier.py
+# A module for managing the cache of URLs shared by the web crawlers.
+#
+
 # stdlib imports
+import hashlib
 from multiprocessing import Queue, Process, Condition, RLock
 from Queue import Empty, Full
 
@@ -11,15 +15,18 @@ from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.types import Singleton
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
 
-
+#region Globals
 logger = get_logger(LoggingSection.FRONTIER, __name__)
+#endregion
 
 
 class CacheJobs():
+    """An enum-like class for the different cache-related jobs."""
     Fill, Empty = range(2)
 
 
 class URLFrontierRules:
+    """A class for the different information associated with different caching rules."""
     def __init__(self, required_domains=[], blocked_domains=[], sort_list=["last_visited"]):
         self._required_domains = required_domains
         self._blocked_domains = blocked_domains
@@ -94,6 +101,7 @@ def _monitor_cache(dao, max_size, cache, job_queue, job_cond, fill_cond, empty_c
 
 
 class URLFrontier:
+    """A class for monitoring the URL cache shared by web scrapers."""
     __metaclass__ = Singleton
 
     def __init__(self):
@@ -115,6 +123,12 @@ class URLFrontier:
         self._logger_lock = RLock()
 
     def start_cache_process(self, rules=URLFrontierRules()):
+        """
+        Starts the child process that maintains the URL cache.
+
+        Arguments:
+            rules (URLFrontierRules): The rules to be applied to the cache.
+        """
         with self._start_term_lock:
             cs = rules.checksum
             if cs not in self._cache_procs.keys():
@@ -145,6 +159,12 @@ class URLFrontier:
             self._proc_counts[cs] += 1
 
     def terminate_cache_process(self, rules=URLFrontierRules()):
+        """
+        Terminates the child URL cache process.
+
+        Arguments:
+            rules (URLFrontierRules): The list of rules associated with the cache.
+        """
         with self._start_term_lock:
             cs = rules.checksum
             if cs not in self._proc_counts.keys():
@@ -165,6 +185,15 @@ class URLFrontier:
                     del self._job_conds[cs]
 
     def next_url(self, rules=URLFrontierRules()):
+        """
+        Fetches the next URL from the queue.
+
+        Arguments:
+            rules (URLFrontierRules): The rules used in fetching the next URL.
+
+        Returns:
+            A URL string for the next URL in the queue, or None.
+        """
         cs = rules.checksum
         start_process = False
 
@@ -190,10 +219,22 @@ class URLFrontier:
                         return None
 
     def put_url(self, u):
+        """
+        Puts a new URL in the database.
+
+        Arguments:
+            u (URLMetadata): The URL to be placed in the database.
+        """
         url_dto = DTOConverter.to_dto(URLMetadataDTO, u)
         self.dao().create_update(url_dto)
 
     def empty_cache(self, rules=URLFrontierRules()):
+        """
+        Empties the cache. This should ONLY be used for testing purposes.
+
+        Arguments:
+            rules (URLFrontierRules): The rules associated with the cache process.
+        """
         cs = rules.checksum
         with self._mid_empty_conds[cs]:
             with self._empty_conds[cs]:

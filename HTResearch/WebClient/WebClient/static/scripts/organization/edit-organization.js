@@ -1,7 +1,18 @@
-require(['shared/validators', 'jquery', 'jquery.validate', 'bootstrap'], function(Validators, $) {
+/**
+ * Provides validation for the "Edit Organization" form
+ */
+
+require(['shared/analytics',
+    'shared/validators',
+    'jquery',
+    'jquery.validate',
+    'bootstrap'],
+    function(Analytics, Validators, $) {
     'use strict';
 
     $(function() {
+        Analytics.startTracking();
+
         $('input[type="url"]').blur(function() {
              Validators.checkURL(this);
         });

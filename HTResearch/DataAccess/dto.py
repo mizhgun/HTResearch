@@ -1,12 +1,19 @@
+#
+# dto.py
+# A module containing the different DTOs used for interaction with our MongoDB documents.
+#
+
+# stdlib imports
 import mongoengine as mongo
 
+# project imports
 from HTResearch.DataAccess.embedded_dto import *
 from HTResearch.DataModel.enums import AccountType
 from HTResearch.DataModel.globals import ORG_TYPE_CHOICES
 
 
 class ContactDTO(mongo.Document):
-    """A DTO wrapper for Contact documents"""
+    """A DTO wrapper for Contact documents."""
 
     first_name = mongo.StringField(db_field='f')
     last_name = mongo.StringField(db_field='l')
@@ -22,7 +29,7 @@ class ContactDTO(mongo.Document):
 
 
 class OrganizationDTO(mongo.Document):
-    """A DTO wrapper for Organization documents"""
+    """A DTO wrapper for Organization documents."""
 
     name = mongo.StringField(db_field='n')
     address = mongo.StringField(db_field='a')
@@ -48,7 +55,7 @@ class OrganizationDTO(mongo.Document):
 
 
 class PublicationDTO(mongo.Document):
-    """A DTO wrapper for Publication documents"""
+    """A DTO wrapper for Publication documents."""
 
     title = mongo.StringField(db_field='t')
     authors = mongo.StringField(db_field='as')
@@ -62,7 +69,7 @@ class PublicationDTO(mongo.Document):
 
 
 class URLMetadataDTO(mongo.Document):
-    """A DTO wrapper for URLMetadata documents"""
+    """A DTO wrapper for URLMetadata documents."""
 
     url = mongo.URLField(db_field='u')
     domain = mongo.StringField(db_field='d')

@@ -1,14 +1,24 @@
+#
+# url_tools.py
+# A module containing tools for working with URLs.
+#
+
+# stdlib imports
 from __future__ import with_statement
 import os
 from urlparse import urlparse
 
+# project imports
 from logutil import get_logger, LoggingSection
 from types import Singleton
 
+#region Globals
 logger = get_logger(LoggingSection.UTILITIES, __name__)
+#endregion
 
 
 class UrlUtility:
+    """A class for parsing and interacting with URLs."""
     __metaclass__ = Singleton
 
     tlds = None
@@ -21,7 +31,19 @@ class UrlUtility:
 
     @staticmethod
     def get_domain(url, no_exception=True):
+        """
+        Gets the domain for a URL.
 
+        Arguments:
+            url (string): The URL to parse.
+            no_exception (boolean): Whether or not to throw an exception when the parse is unsuccessful.
+
+        Returns:
+            The domain for the provided URL.
+
+        Raises:
+            ValueError
+        """
         if not UrlUtility.tlds:
             UrlUtility._populate_tlds()
 
