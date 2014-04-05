@@ -40,6 +40,7 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
      * @param {object} options The options object associated with instantiation (width, height).
      */
     function initialize(selector, options) {
+        var width = $(selector).width(), height = 0;
         if (options) {
             if (options.width){
                 width = options.width;
@@ -54,6 +55,12 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
             .attr('height', height)
             .attr('class', 'partner-map-svg')
             .attr('overflow', 'scroll');
+
+        $(window).resize(function() {
+            d3.select(selector).select('svg')
+                .attr('width', $(selector).width());
+            force.size([$(selector).width(), height]);
+        });
 
         defs = svg.append('defs');
 
@@ -149,7 +156,6 @@ define(['jquery', 'd3.fisheye', 'bootstrap'], function($, d3) {
                 node.attr('cx', function(d) { return d.x; })
                     .attr('cy', function(d) { return d.y; })
                     .attr('transform', function(d) {return 'translate(' + d.x + ',' + d.y +')'; });
-
             });
 
             startStopForce();
