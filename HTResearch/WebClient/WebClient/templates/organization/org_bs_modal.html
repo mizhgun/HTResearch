@@ -10,13 +10,6 @@
         </h4>
       </div>
       <div class="modal-body" id="modal-body">
-          <p>
-          {% templatetag openvariable %}if valid{% templatetag closevariable %}
-              <span id="valid" class="pull-left glyphicon glyphicon-ok"></span>&nbsp;Verified
-          {% templatetag openvariable %}else{% templatetag closevariable %}
-              <span id="invalid" class="pull-left glyphicon glyphicon-remove"></span>&nbsp;Not Verified
-          {% templatetag openvariable %}/if{% templatetag closevariable %}
-          </p>
           <table class="table table-condensed">
               {% templatetag openvariable %}if phone_numbers.length{% templatetag closevariable %}
               <tr class="modal-row">
