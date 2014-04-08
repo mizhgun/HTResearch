@@ -185,19 +185,6 @@ def edit_organization(request, org_id):
                                                                    'error': error})
 
 
-def org_rank(request, sort_method=''):
-    """
-    Sends a request to the org rank page, or the View All Organizations page.
-
-    Arguments:
-        sort_method (string): How the organizations should be sorted on the page.
-
-    Returns:
-        A rendered page to the org rank page
-    """
-    return render(request, 'organization/org_rank.html')
-
-
 def _create_org_dict(org):
     """
     Helper function to convert a Organization to a dictionary.
