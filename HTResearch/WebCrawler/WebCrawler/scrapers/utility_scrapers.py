@@ -182,45 +182,6 @@ class KeywordScraper(object):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/stopwords.txt')) as f:
             self._stopwords = f.read().splitlines()
 
-    def format_extracted_text(self, list):
-        """
-        Removes the unicode encoding of the list of keywords.
-
-        Arguments:
-            list (list): List of keywords that were scraped.
-
-        Returns:
-            list (list): List of keywords without unicode.
-        """
-        for i in range(len(list)):
-            list[i] = list[i].encode('ascii', 'ignore')
-        return list
-
-    def append_words(self, append_to, source):
-        """
-        Get all the words from the page by removing punctuation and digits.
-
-        Arguments:
-            append_to (list): The list of the words that have been scraped at the time.
-            source (list): The text from the page to be scraped.
-
-        Returns:
-            append_to (list): List of all words that have been scraped thus far.
-        """
-        if not source:
-            return append_to
-
-        #Split each array into sentence, and those into words
-        for line in self.format_extracted_text(source):
-            line = string.lower(line)
-            for c in string.punctuation:
-                line = line.replace(c, "")
-                for word in line.split():
-                    if not word.isdigit():
-                        append_to.append(self._lemmatizer.lemmatize(word))
-
-        return append_to
-
     def parse(self, response):
         all_words = []
 
@@ -232,7 +193,7 @@ class KeywordScraper(object):
 
         for element in elements:
             words = hxs.select('//' + element + '/text()').extract()
-            all_words = self.append_words(all_words, words)
+            all_words = append_words(all_words, words)
 
         #Run a frequency distribution on the web page body
         all_words_no_punct = [word.translate(None, string.punctuation) for word in all_words]
@@ -730,7 +691,7 @@ class OrgTypeScraper(object):
                     'small', 'strong', 'div', 'span', 'li', 'th', 'td', 'a[contains(@href, "image")]']
         for element in elements:
             words = hxs.select('//' + element + '/text()').extract()
-            keyword_scraper_inst.append_words(all_words, words)
+            append_words(all_words, words)
 
         all_words = list(set(self._lemmatizer.lemmatize(word) for word in all_words))
 
@@ -997,3 +958,42 @@ class USPhoneNumberScraper(object):
 def flatten(l):
     # Flatten one level of nesting
     return itertools.chain.from_iterable(l)
+
+def format_extracted_text(list):
+    """
+    Removes the unicode encoding of the list of keywords.
+
+    Arguments:
+        list (list): List of keywords that were scraped.
+
+    Returns:
+        list (list): List of keywords without unicode.
+    """
+    for i in range(len(list)):
+        list[i] = list[i].encode('ascii', 'ignore')
+    return list
+
+def append_words(append_to, source):
+    """
+    Get all the words from the page by removing punctuation and digits.
+
+    Arguments:
+        append_to (list): The list of the words that have been scraped at the time.
+        source (list): The text from the page to be scraped.
+
+    Returns:
+        append_to (list): List of all words that have been scraped thus far.
+    """
+    if not source:
+        return append_to
+
+    #Split each array into sentence, and those into words
+    for line in format_extracted_text(source):
+        line = string.lower(line)
+        for c in string.punctuation:
+            line = line.replace(c, "")
+            for word in line.split():
+                if not word.isdigit():
+                    append_to.append(WordNetLemmatizer().lemmatize(word))
+
+    return append_to

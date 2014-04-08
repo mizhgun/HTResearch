@@ -5,13 +5,15 @@ from springpython.context import ApplicationContext
 from springpython.config import Object
 
 from HTResearch.Test.Mocks.utility_scrapers import *
-from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
+from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext,\
+    DAOContext
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import PageRankScraper
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Test.Mocks.connection import MockDBConnection
+from HTResearch.Test.Mocks.dao import MockURLMetadataDAO
 
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
