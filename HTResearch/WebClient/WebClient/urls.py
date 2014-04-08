@@ -25,7 +25,7 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.shared_views',
                         url(r'^welcome/$', 'welcome', name='welcome'),
                         url(r'^get-started/$', 'get_started', name='get-started'),
                         url(r'^about/$', 'about', name='about'),
-                        url(r'^dashboard/$', 'dashboard', name='dashboard'),)
+                        url(r'^statistics/$', 'statistics', name='statistics'),)
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^organization/(\w+)', 'organization_profile', name='org-prof'),
