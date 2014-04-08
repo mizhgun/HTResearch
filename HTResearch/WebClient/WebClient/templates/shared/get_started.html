@@ -23,16 +23,33 @@
 
         <div class="row">
             <div class="col-md-7">
-                <h2 class="featurette-heading">Search using keywords. <span class="text-muted">Find the most effective efforts on anti-human trafficking.</span>
+                <h2 class="featurette-heading">Search using keywords. <span class="text-muted">Find the kinds of anti-human trafficking efforts you're looking for.</span>
                 </h2>
 
-                <p class="lead">The search box has been designed to be as flexible as possible. Feel free to make your
-                    search as broad or as specific as you would like. Your search queries will be used to grab contacts,
-                    organizations, and publications. The results will be listed and direct you to appropriate pages.</p>
+                <p class="lead">Our search box searches based on names, locations, job titles, and keywords. Look for
+                    people, organizations, news, and publications related to trafficking.  The results will
+                    be listed and direct you to appropriate pages.</p>
             </div>
             <!--Images must be 500x500-->
             <div class="col-md-5">
                 <img class="img-responsive" src="/static/images/tutorial_search.jpg">
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row">
+            <div class="col-md-5">
+                <!--Images must be 500x500-->
+                <img class="img-responsive" src="/static/images/tutorial_contribute.jpg">
+            </div>
+            <div class="col-md-7">
+                <h2 class="featurette-heading">Contribute and connect. <span class="text-muted">Edit and suggest information to help us help you.</span></h2>
+
+                <p class="lead">Is something missing from our site? Suggest an organization, invite other users, even
+                    edit current information by signing up for a “contribution” account. What’s more, you can
+                    now connect with other advocates, volunteers, and researchers, allowing for new connections
+                    and collaborations which wouldn’t otherwise be possible.</p>
             </div>
         </div>
 
@@ -60,9 +77,11 @@
                 <h2 class="featurette-heading">Simple and effective. <span class="text-muted">Using the power of Google Maps, information will be displayed vibrantly and quickly.</span>
                 </h2>
 
-                <p class="lead">The map was created to help visualize data in an intuitive manner. You can easily
-                    navigate the map using your mouse. The heat map feature shows concentrations of anti-human
-                    trafficking efforts with the click of a button.</p>
+                <p class="lead">The map was created to help visualize data in an intuitive manner. The heat map reflects
+                    the number of anti-human trafficking organizations in each area. When you search, pins
+                    on the map will notify you of the location and whether the organization is affiliated
+                    most with prevention, protection, or prosecution.
+                </p>
             </div>
             <div class="col-md-5">
                 <!--Images must be 500x500-->
@@ -72,28 +91,14 @@
 
         <hr class="featurette-divider">
 
-        <div class="row">
-            <div class="col-md-5">
-                <!--Images must be 500x500-->
-                <img class="img-responsive" src="/static/images/tutorial_contribute.jpg">
-            </div>
-            <div class="col-md-7">
-                <h2 class="featurette-heading">Contribute and connect. <span class="text-muted">Edit and suggest information to help us help you.</span></h2>
-
-                <p class="lead">Is something missing from our site? Suggest an organization, invite other users, even edit current information by signing up for a “contribution” account. What’s more, you can now connect with other advocates, volunteers, and researchers, allowing for new connections and collaborations which wouldn’t otherwise be possible.</p>
-            </div>
-        </div>
-
-        <hr class="featurette-divider">
-
         <div id="complete-tutorial-btn">
             <a
-            {% if username %}
-                href="/"
-            {% else %}
-                href="/signup/"
-            {% endif %}
-            class="btn btn-primary btn-lg">
+                    {% if username %}
+                        href="/"
+                    {% else %}
+                        href="/signup/"
+                    {% endif %}
+                        class="btn btn-primary btn-lg">
                 {% if username %}
                     Let's get started!
                 {% else %}
