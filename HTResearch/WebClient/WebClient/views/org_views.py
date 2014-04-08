@@ -55,13 +55,15 @@ def organization_profile(request, org_id):
     for org_type in type_nums:
         org_types.append(OrgTypesEnum.reverse_mapping[org_type].title())
 
-    facebook_regex = re.compile('(?:(?:http|https):\/\/)?(?:www.)?'
+    facebook_str = None
+    if org.facebook:
+        fb_regex = re.compile('(?:(?:http|https):\/\/)?(?:www.)?'
                                 'facebook.com\/(?:(?:\w)*#!\/)?'
                                 '(?:pages\/)?(?:[?\w\-]*\/)?'
                                 '(?:profile.php\?id=(?=\d.*))?([\w\-]*)?')
+        fb_match = fb_regex.match(org.facebook)
+        facebook_str = fb_match.group(1) if fb_match else None
 
-    fb_match = facebook_regex.match(org.facebook)
-    facebook_str = fb_match.group(1) if fb_match else None
     twitter_str = "@" + org.twitter.split('/')[-1] if org.twitter else None
 
     can_edit = account_type == AccountType.CONTRIBUTOR
