@@ -3,6 +3,7 @@ from urlparse import urlparse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from springpython.context import ApplicationContext
+import re
 
 # project imports
 from HTResearch.DataAccess.dto import URLMetadataDTO
@@ -54,7 +55,13 @@ def organization_profile(request, org_id):
     for org_type in type_nums:
         org_types.append(OrgTypesEnum.reverse_mapping[org_type].title())
 
-    facebook_str = org.facebook.split('/')[-1] if org.facebook else None
+    facebook_regex = re.compile('(?:(?:http|https):\/\/)?(?:www.)?'
+                                'facebook.com\/(?:(?:\w)*#!\/)?'
+                                '(?:pages\/)?(?:[?\w\-]*\/)?'
+                                '(?:profile.php\?id=(?=\d.*))?([\w\-]*)?')
+
+    fb_match = facebook_regex.match(org.facebook)
+    facebook_str = fb_match.group(1) if fb_match else None
     twitter_str = "@" + org.twitter.split('/')[-1] if org.twitter else None
 
     can_edit = account_type == AccountType.CONTRIBUTOR
