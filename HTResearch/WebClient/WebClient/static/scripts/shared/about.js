@@ -6,5 +6,5 @@ require(['shared/analytics', 'jquery', 'bootstrap'], function(Analytics, $) {
     'use strict';
 
     Analytics.startTracking();
-    $('#about-us-nav').addClass('active');
+    $('#about-nav').addClass('active');
 });
