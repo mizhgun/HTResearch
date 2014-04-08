@@ -23,8 +23,8 @@ def welcome(request):
     return render(request, 'shared/welcome.html')
 
 
-def dashboard(request):
-    return render(request, 'dashboard/dashboard.html')
+def statistics(request):
+    return render(request, 'statistics/statistics.html')
 
 
 def unauthorized(request):
