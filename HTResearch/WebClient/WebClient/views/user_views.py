@@ -52,7 +52,7 @@ def login(request):
                 request.session['user_id'] = str(user.id)
                 request.session['first_name'] = str(user.first_name)
                 request.session['last_name'] = str(user.last_name)
-                request.session['account_type'] = str(user.account_type)
+                request.session['account_type'] = user.account_type
                 request.session.set_expiry(SESSION_TIMEOUT)
                 return HttpResponseRedirect(request.session['next'] or '/')
 
