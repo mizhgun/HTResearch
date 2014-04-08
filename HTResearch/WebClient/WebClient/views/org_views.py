@@ -198,11 +198,6 @@ def org_rank(request, sort_method=''):
     return render(request, 'organization/org_rank.html')
 
 
-def partner_map_demo(request):
-    """Demo of the partner map."""
-    return render(request, 'data-vis/partner-map-demo.html')
-
-
 def _create_org_dict(org):
     """
     Helper function to convert a Organization to a dictionary.
