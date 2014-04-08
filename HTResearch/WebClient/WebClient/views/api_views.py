@@ -378,7 +378,7 @@ def search_contacts(request):
         org_dao = ctx.get_object('OrganizationDAO')
         try:
             if u['organization']:
-                org = org_dao.find(id=u['organization'].id).exclude('page_rank_info')
+                org = org_dao.find(id=u['organization'].id)
                 #Prevent adding this field as it cannot be properly encoded
                 org.page_rank_info = None
                 u['organization'] = org.__dict__['_data']

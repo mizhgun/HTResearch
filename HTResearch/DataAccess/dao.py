@@ -183,6 +183,7 @@ class DAO(object):
                     return ret[start:end + 1]
 
             return ret
+
     # Query to get all valid objects
     def _valid_query(self):
         return Q()
