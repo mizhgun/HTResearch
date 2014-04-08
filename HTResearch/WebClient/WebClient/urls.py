@@ -5,7 +5,6 @@ handler404 = 'HTResearch.WebClient.WebClient.views.shared_views.get_http_404_pag
 handler500 = 'HTResearch.WebClient.WebClient.views.shared_views.get_http_500_page'
 
 
-
 urlpatterns = patterns('HTResearch.WebClient.WebClient.views.api_views',
                        url(r'^api/heatmap-coordinates/$', 'heatmap_coordinates', name='heatmap-coordinates'),
                        url(r'^api/search-organizations/$', 'search_organizations', name='search-organizations'),
@@ -25,11 +24,11 @@ urlpatterns += patterns('HTResearch.WebClient.WebClient.views.shared_views',
                         url(r'^$', 'index', name='index'),
                         url(r'^welcome/$', 'welcome', name='welcome'),
                         url(r'^get-started/$', 'get_started', name='get-started'),
+                        url(r'^about/$', 'about', name='about'),
                         url(r'^dashboard/$', 'dashboard', name='dashboard'),)
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^organization/(\w+)', 'organization_profile', name='org-prof'),
-                        url(r'^org-rank/$', 'org_rank', name='org-rank'),
                         url(r'^request-organization/$', 'request_organization', name='request-organization'),
                         url(r'^edit-organization/(\w+)', 'edit_organization', name='edit-organization'),)
 

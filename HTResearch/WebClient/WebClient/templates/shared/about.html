@@ -1,0 +1,37 @@
+{% extends "shared/global.html" %}
+
+{% block imports %}
+    <link href="/static/css/shared/about.css" rel="stylesheet">
+    <script src="/static/scripts/shared/about.js" type="application/javascript"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container marketing">
+        <div id="title-text" class="row">
+            <h1>About</h1>
+        </div>
+
+        <!-- Who are we? -->
+        <hr class="divider">
+        <h2 class="sub-heading">Who We Are</h2>
+        <p class="lead">
+            --- I think I will put in a short introduction of Dr. Dalla’s work/achievements here ---
+            This project was envisioned by Dr. Rochelle Dalla, Associate Professor at the University of Nebraska-Lincoln
+            Department of Child, Youth, and Family Studies. It was brought to life by a team of computer science
+            students at the Jeffery S. Raikes School of Computer Science and Business Management.
+        </p>
+        <h2 class="sub-heading">What We Do</h2>
+        <p class="lead">
+            Instead of relying on organizations, workers in the field, and researchers to supply relevant human
+            trafficking information, our software uses web scraping and crawling algorithms to collect it automatically.
+            This makes it easy and extremely fast to retrieve and update our data. We also allow those with “Contributor”
+            accounts to edit, add, and flag information to fill any gaps our algorithms leave.
+        </p>
+        <h2 class="sub-heading">Why We Do It</h2>
+        <p class="lead">
+            Through this technology and with increasingly accessible information online, we can search through all the
+            opportunities the web has to offer so you don’t have to. Connect with other advocates, researchers, and
+            volunteers and find a place to help in the right field and area of the globe for you.
+        </p>
+    </div>
+{% endblock %}
