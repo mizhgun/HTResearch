@@ -41,5 +41,5 @@ def get_http_404_page(request):
 
 
 def about(request):
-    """Sends a request to the About Us page."""
+    """Sends a request to the About page."""
     return render(request, 'shared/about.html')
