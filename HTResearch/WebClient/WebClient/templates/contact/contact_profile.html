@@ -1,7 +1,7 @@
 {% extends "shared/global.html" %}
 
 {% block imports %}
-    <title>Contact - {{ first_name }}</title>
+    <title>{{ contact.first_name }} {{ contact.last_name }}</title>
     <link href="/static/css/contact/contact-profile.css" rel="stylesheet"/>
     <script type="application/javascript" src="/static/scripts/contact/contact.js"></script>
 {% endblock %}
@@ -9,12 +9,80 @@
 {% block content %}
     <div class="profile-header contact-header">
         <div class="header-content">
-            <h1>
-            {{ first_name }} {{ last_name }}
-            </h1>
-            <h3>
-                {{ position }}
-            </h3>
+            <div class="container">
+                <h1>
+                {{ contact.first_name }} {{ contact.last_name }} {% if can_edit %}<a id="edit-btn"
+                                                                                     data-toggle="tooltip" title="Edit"
+                                                                                     href="/edit-contact/{{ contact.id }}">
+                    <span class="fa fa-pencil-square"></span>
+                    </a>{% endif %}
+                </h1>
+                {% if contact.position %}
+                <h3>
+                    {{ contact.position }}
+                </h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="profile-content">
+            <div class="page-header">
+                <h1>Contact</h1>
+            </div>
+            <div class="row profile-row">
+                <div class="col-lg-4 col-md-6 col-xs-12 profile-data">
+                    <div class="row data-row">
+                        <div class="col-xs-4">
+                            <span class="profile-icon fa fa-fw fa-envelope fa-5x"></span>
+                        </div>
+                        <div class="col-xs-8">
+                            <h4>Email</h4>
+                            {% if contact.email %}
+                            <a target="_blank" href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                            {% else %}
+                            None Available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-xs-12 profile-data">
+                    <div class="row data-row">
+                        <div class="col-xs-4">
+                            <span class="profile-icon fa fa-fw fa-phone fa-5x"></span>
+                        </div>
+                        <div class="col-xs-8">
+                            <h4>Phone</h4>
+                            {% if contact.phones %}
+                            {{ contact.phones|first }}
+                            {% else %}
+                            None Available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-header">
+                <h1>Related Pages</h1>
+            </div>
+            <div class="row profile-row">
+                <div class="col-lg-4 col-md-6 col-xs-12 profile-data">
+                    <div class="row data-row">
+                        <div class="col-xs-4">
+                            <span class="profile-icon fa fa-fw fa-building-o fa-5x"></span>
+                        </div>
+                        <div class="col-xs-8">
+                            <h4>Organization</h4>
+                            {% if contact.organization %}
+                            <a href="/organization/{{ contact.organization.id }}">{{ contact.organization.name }}</a>
+                            {% else %}
+                            None Available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

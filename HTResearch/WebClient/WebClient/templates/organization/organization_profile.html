@@ -1,7 +1,7 @@
 {% extends "shared/global.html" %}
 
 {% block imports %}
-    <title>Organization - {{ organization.name }}</title>
+    <title>{{ organization.name }}</title>
     <link href="/static/css/organization/organization-profile.css" rel="stylesheet">
     <script type="application/javascript" src="/static/scripts/organization/organization.js"></script>
 {% endblock %}
@@ -11,7 +11,10 @@
         <div class="header-content">
             <div class="container">
                 <h1>
-                {{ organization.name }} {% if can_edit %}<a href="/edit/{{ organization.id }}"><span class="fa fa-pencil-square"></span></a>{% endif %}
+                {{ organization.name }} {% if can_edit %}<a id="edit-btn" data-toggle="tooltip" title="Edit"
+                                                            href="/edit-organization/{{ organization.id }}">
+                    <span class="fa fa-pencil-square"></span>
+                    </a>{% endif %}
                 </h1>
                 {% if types %}
                 <h3>
@@ -78,8 +81,7 @@
                 <h1>Contact</h1>
             </div>
             <div class="row profile-row">
-                <div class="center-block">
-                    <div class="col-lg-4 col-md-6 col-xs-12 profile-data">
+                <div class="col-lg-4 col-md-6 col-xs-12 profile-data">
                     <div class="row data-row">
                         <div class="col-xs-4">
                             <span class="profile-icon fa fa-fw fa-envelope fa-5x"></span>
@@ -124,29 +126,12 @@
                         </div>
                     </div>
                 </div>
-                </div>
-
             </div>
 
             <div class="page-header">
                 <h1>Related Pages</h1>
             </div>
             <div class="row profile-row">
-{#                <div class="col-lg-4 col-md-6 col-xs-12 profile-data">#}
-{#                    <div class="row data-row">#}
-{#                        <div class="col-xs-3">#}
-{#                            <span class="profile-icon fa fa-fw fa-tags fa-5x"></span>#}
-{#                        </div>#}
-{#                        <div class="col-xs-9">#}
-{#                            <h4>Types</h4>#}
-{#                            {% if types %}#}
-{#                            {{ types|join:", " }}#}
-{#                            {% else %}#}
-{#                            None Available#}
-{#                            {% endif %}#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
                 <div class="col-lg-4 col-md-6 col-xs-12 profile-data">
                     <div class="row data-row">
                         <div class="col-xs-4">
