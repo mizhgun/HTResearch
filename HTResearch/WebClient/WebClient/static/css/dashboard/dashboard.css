@@ -1,0 +1,37 @@
+#dashboard .object-counter h1,
+#dashboard .object-counter h2 {
+  text-align: center;
+}
+#dashboard .dashboard-panel {
+  padding: 25px;
+}
+#dashboard .dashboard-panel:nth-child(odd) {
+  background: #fff;
+  color: #00a67c;
+}
+#dashboard .dashboard-panel:nth-child(odd) text {
+  color: #00a67c;
+}
+#dashboard .dashboard-panel:nth-child(even) {
+  background: #00a67c;
+  color: #fff;
+}
+#dashboard .dashboard-panel:nth-child(even) text {
+  color: #fff;
+}
+#dashboard .dashboard-panel:last-child h1 {
+  margin-bottom: 25px;
+}
+#dashboard .dashboard-panel .info1 {
+  font-weight: bold;
+  text-transform: capitalize;
+}
+#dashboard .dashboard-panel .info1,
+#dashboard .dashboard-panel .info2 {
+  height: 16px;
+}
+#dashboard .dashboard-panel svg span {
+  font-size: 60px;
+  padding-top: 3px;
+  z-index: 10;
+}

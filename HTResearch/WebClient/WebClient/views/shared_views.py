@@ -23,6 +23,10 @@ def welcome(request):
     return render(request, 'shared/welcome.html')
 
 
+def dashboard(request):
+    return render(request, 'dashboard/dashboard.html')
+
+
 def unauthorized(request):
     """Sends a request to the Unauthorized page."""
     html = render(request, 'shared/unauthorized.html')

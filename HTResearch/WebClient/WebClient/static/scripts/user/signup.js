@@ -27,7 +27,7 @@ require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
                     required: true
                 },
                 org_type: {
-                    range: [0, 5]
+                    range: [0, 9]
                 },
                 organization: {
                     maxlength: 60
@@ -64,6 +64,15 @@ require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
                 else {
                     error.insertAfter(element);
                 }
+            }
+        });
+
+        $('#account-type-popover').popover({
+            html: true,
+            trigger: 'hover',
+            delay: {
+                show: 0,
+                hide: 500
             }
         });
     });
