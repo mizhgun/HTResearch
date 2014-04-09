@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from springpython.context import ApplicationContext
 
 from HTResearch.Utilities.context import DAOContext

@@ -3,6 +3,7 @@ from urlparse import urlparse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from springpython.context import ApplicationContext
+import re
 
 # project imports
 from HTResearch.DataAccess.dto import URLMetadataDTO
@@ -34,15 +35,15 @@ def organization_profile(request, org_id):
         A rendered page of the Organization Profile.
     """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
+    account_type = request.session['account_type'] if 'account_type' in request.session else None
 
     logger.info('Request made for profile of org={0} by user={1}'.format(org_id, user_id))
     org_dao = ctx.get_object('OrganizationDAO')
 
     try:
         org = org_dao.find(id=org_id)
-    except Exception as e:
+    except:
         logger.error('Exception encountered on organization lookup for org={0} by user={1}'.format(org_id, user_id))
-        print e.message
         return get_http_404_page(request)
 
     scheme = ""
@@ -54,9 +55,25 @@ def organization_profile(request, org_id):
     for org_type in type_nums:
         org_types.append(OrgTypesEnum.reverse_mapping[org_type].title())
 
+    facebook_str = None
+    if org.facebook:
+        fb_regex = re.compile('(?:(?:http|https):\/\/)?(?:www.)?'
+                                'facebook.com\/(?:(?:\w)*#!\/)?'
+                                '(?:pages\/)?(?:[?\w\-]*\/)?'
+                                '(?:profile.php\?id=(?=\d.*))?([\w\-]*)?')
+        fb_match = fb_regex.match(org.facebook)
+        facebook_str = fb_match.group(1) if fb_match else None
+
+    twitter_str = "@" + org.twitter.split('/')[-1] if org.twitter else None
+
+    can_edit = account_type == AccountType.CONTRIBUTOR
+
     params = {"organization": org,
               "scheme": scheme,
               "types": org_types,
+              "facebook": facebook_str,
+              "twitter": twitter_str,
+              "can_edit": can_edit,
               }
     return render(request, 'organization/organization_profile.html', params)
 
@@ -183,24 +200,6 @@ def edit_organization(request, org_id):
                                                                    'org_id': org_id,
                                                                    'success': success,
                                                                    'error': error})
-
-
-def org_rank(request, sort_method=''):
-    """
-    Sends a request to the org rank page, or the View All Organizations page.
-
-    Arguments:
-        sort_method (string): How the organizations should be sorted on the page.
-
-    Returns:
-        A rendered page to the org rank page
-    """
-    return render(request, 'organization/org_rank.html')
-
-
-def partner_map_demo(request):
-    """Demo of the partner map."""
-    return render(request, 'data-vis/partner-map-demo.html')
 
 
 def _create_org_dict(org):

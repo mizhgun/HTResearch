@@ -178,6 +178,11 @@ require(['shared/analytics',
 
         // Make tooltips work
         $('[rel=tooltip]').tooltip();
+
+        // Resize map controls on window resize
+        $('#map-canvas').bind('DOMSubtreeModified resize', function() {
+            map.resizeControls();
+        });
     }
 
     //Retrieve the cookie that is created upon first visiting the website
@@ -212,7 +217,7 @@ require(['shared/analytics',
             map.showInfo(data);
         }
         else {
-            window.location.assign('/organization/' + data.id);
+            Modal.createModal(data, '#bs-modal', '#bs-org-modal-template');
         }
     }
 

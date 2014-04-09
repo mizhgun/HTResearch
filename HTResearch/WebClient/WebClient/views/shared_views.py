@@ -23,6 +23,10 @@ def welcome(request):
     return render(request, 'shared/welcome.html')
 
 
+def statistics(request):
+    return render(request, 'statistics/statistics.html')
+
+
 def unauthorized(request):
     """Sends a request to the Unauthorized page."""
     html = render(request, 'shared/unauthorized.html')
@@ -40,10 +44,6 @@ def get_http_404_page(request):
     return HttpResponseNotFound(html, status=404)
 
 
-def get_http_500_page(request):
-    html = render(request, 'shared/500.html')
-    return HttpResponseNotFound(html, status=500)
-
-
-def unimplemented(request):
-    return render(request, 'shared/unimplemented.html')
+def about(request):
+    """Sends a request to the About page."""
+    return render(request, 'shared/about.html')

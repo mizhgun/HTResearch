@@ -201,8 +201,8 @@ define(['underscore', 'jquery', 'jquery-ui', 'jquery.slinky'], function(_, $) {
         } else {
             // Hide panel
             $(searchItem.toggleSelector).closest('.panel').hide();
-            checkForResults();
         }
+        checkForResults();
     }
 
     function checkForResults() {

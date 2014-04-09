@@ -88,6 +88,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
         initHeatmap();
 
         var heatmap_control_div = document.createElement('div');
+        $(heatmap_control_div).attr('id', 'heatmap-button');
 
         var heatmap_toggle_control = document.createElement('button');
         $(heatmap_toggle_control).addClass('btn');
@@ -95,7 +96,7 @@ define(['jquery', 'async!https://maps.googleapis.com/maps/api/js?sensor=false&li
         $(heatmap_toggle_control).addClass('btn-sm');
         $(heatmap_toggle_control).addClass('active');
         $(heatmap_toggle_control).attr('data-toggle', 'button');
-        $(heatmap_toggle_control).html('<i class="fa fa-building-o"></i> Organization Density');
+        $(heatmap_toggle_control).html('<span class="fa fa-building-o"></span> Organization Density');
         heatmap_control_div.appendChild(heatmap_toggle_control);
 
         google.maps.event.addDomListener(heatmap_toggle_control, 'click', function () {

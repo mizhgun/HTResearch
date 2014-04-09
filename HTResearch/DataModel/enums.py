@@ -23,5 +23,6 @@ OrgTypesEnum = enum(
     'PROTECTION', #6
     'PROSECUTION',#7
     'UNKNOWN',    #8
+    'NGO',        #9
     ### ADD NEW TYPES ABOVE THIS LINE ###
 )
