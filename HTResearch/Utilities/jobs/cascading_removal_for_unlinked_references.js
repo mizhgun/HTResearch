@@ -7,7 +7,7 @@ while(orgs.hasNext()) {
         var contact = db.contact_d_t_o.find({_id: c_id});
         if (contact.toArray().length === 0) {
             //Delete the references to contacts that no longer exist
-            var removed = contact_ids.splice(key, 1);
+            var removed = orgs.cs.splice(key, 1);
             print('Broken org->contact link found');
             print('Org: ');
             printjsononeline(org._id);
@@ -15,7 +15,6 @@ while(orgs.hasNext()) {
             printjsononeline(removed);
         }
     });
-    org.cs = contact_ids;
     db.organization_d_t_o.save(org);
 }
 
@@ -46,7 +45,7 @@ while(host_orgs.hasNext()) {
     partners.forEach(function(partner, key){
         if (db.organization_d_t_o.find({_id: partner._id}).toArray().length === 0) {
             //Delete the references to organizations that no longer exist
-            var removed = partners.splice(key, 1);
+            var removed = host_org.ps.splice(key, 1);
             print('Broken org->partner org link found');
             print('Org:');
             printjsononeline(org._id);
