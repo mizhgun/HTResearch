@@ -53,6 +53,5 @@ while(host_orgs.hasNext()) {
             printjsononeline(removed);
         }
     });
-    host_org.ps = partners;
     db.organization_d_t_o.save(host_org);
 }
