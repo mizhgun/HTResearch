@@ -3,7 +3,7 @@
  *
  * @module searchquery
  */
-define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
+define(['underscore', 'jquery', 'jquery-ui', 'jquery.slinky'], function(_, $) {
     var lastSearchedText;
 
     var searchBox = $('#search-box');
@@ -30,6 +30,13 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     $(document).on('mouseenter', '#search-results-div li', function() {
         searchResultsContainer.find('li').removeClass('active');
         $(this).addClass('active');
+    });
+
+    searchResultsContainer.slinky();
+
+    $('#search-results-div-scroll > .panel > .panel-heading').click(function() {
+        $(this).parent().parent().scrollTop($(this).parent().parent().scrollTop() +
+            ($(this).parent().position().top - $(this).parent().parent().offset().top));
     });
 
     // Move within search results by using up/down keys
@@ -59,10 +66,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         selection.addClass('active');
 
         if(selection.length) {
-            // Make sure panel containing selection is open
-            selection.closest('.collapse').collapse('show');
-
-            // Scroll to selection
+           // Scroll to selection
             var top = selection.offset().top - searchResultsContainer.offset().top - searchResultsContainer.height() / 2
                 + selection.height() / 2 + searchResultsContainer.scrollTop();
             searchResultsContainer.animate({ scrollTop: top }, { duration: 200, queue: false });
@@ -97,14 +101,10 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
 
         map.removeAllMarkers();
 
-        // Change the icon back if a search is performed
-        var icon = $('.collapse-icon');
-        if (icon.hasClass('glyphicon-collapse-down')){
-            icon.removeClass('glyphicon-collapse-down');
-            icon.addClass('glyphicon-collapse-up');
-        }
-
+        var searchDiv = $("#search-box-div");
         if (searchText) {
+            searchDiv.css("pointer-events", "auto");
+
             // Perform each search
             _.each(searchItems, function(searchItem) {
                 // See if we want to search for this item
@@ -131,6 +131,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             });
             searchResultsContainer.slideDown();
         } else {
+            searchDiv.css("pointer-events", "none");
             searchResultsContainer.slideUp();
         }
     }
@@ -190,9 +191,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             });
             if (results.length) {
                 $(searchItem.toggleSelector).closest('.panel').show();
-                $(searchItem.toggleSelector).attr('data-toggle', 'collapse');
-                $(searchItem.toggleSelector).removeClass('disabled');
-                $(searchItem.collapseSelector).collapse('show');
             } else {
                 $(searchItem.toggleSelector).closest('.panel').hide();
             }
@@ -203,8 +201,8 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         } else {
             // Hide panel
             $(searchItem.toggleSelector).closest('.panel').hide();
-            checkForResults();
         }
+        checkForResults();
     }
 
     function checkForResults() {
