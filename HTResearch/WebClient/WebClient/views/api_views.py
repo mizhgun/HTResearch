@@ -23,6 +23,7 @@ REFRESH_ORG_BREAKDOWN = timedelta(minutes=5)
 REFRESH_COUNT = timedelta(minutes=5)
 #endregion
 
+
 @decorators.safe_apicall
 def get_org_keywords(request):
     """

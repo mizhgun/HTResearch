@@ -28,6 +28,7 @@ def contact_profile(request, id):
         A rendered page of the Contact Profile.
     """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
+    account_type = request.session['account_type'] if 'account_type' in request.session else None
 
     logger.info('Request made for profile of contact={0} by user={1}'.format(id, user_id))
 
@@ -63,10 +64,16 @@ def contact_profile(request, id):
             org = org_dao.find(id=results['organization'].id)
             results['organization'] = org.__dict__['_data']
     except:
-        logger.error('Exception encountered on organization lookup with search_text={0}'.format(results['organization'].name))
+        logger.error('Exception encountered on organization lookup for organization={0}'
+                     .format(results['organization'].id))
         return get_http_404_page(request)
 
-    return render(request, 'contact/contact_profile.html', results)
+    can_edit = contact and account_type == AccountType.CONTRIBUTOR
+
+    return render(request, 'contact/contact_profile.html', {
+        'contact': results,
+        'can_edit': can_edit,
+    })
 
 
 def edit_contact(request, contact_id):
