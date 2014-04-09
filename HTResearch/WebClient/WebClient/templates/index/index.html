@@ -23,15 +23,19 @@
                     <div class="input-append span12">
                         {% csrf_token %}
                         <div class="input-group">
-                            <input type="text" tabindex="1" id="search-box" class="search-query" placeholder=" Search...">
+                            <input type="text" tabindex="1" id="search-box" class="search-query"
+                                   placeholder=" Search...">
+
                             <div class="input-group-btn">
-                                <button id="search-settings-btn" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                <button id="search-settings-btn" type="button" class="btn btn-primary dropdown-toggle"
+                                        data-toggle="dropdown">
                                     <span class="caret"></span>
                                 </button>
                                 <ul id="search-settings-dropdown" role="menu" class="dropdown-menu pull-right">
                                     <li role="presentation">
                                         <label class="checkbox">
-                                            <input type="checkbox" data-search="organization" class="pull-right" checked>Organizations
+                                            <input type="checkbox" data-search="organization" class="pull-right"
+                                                   checked>Organizations
                                         </label>
                                     </li>
                                     <li role="presentation">
@@ -56,76 +60,82 @@
                     </div>
                 </form>
                 <div id="search-results-div" class="panel-group" style="display: none">
-                    <div data-search="organization" class="panel panel-default search-results-panel">
-                        <div class="panel-heading">
-                            <h2 id="organization-list-header" class="panel-title">
-                                <a id="organization-toggle" class="search-anchor" data-toggle="collapse"
-                                   href="#collapse-organizations">Organizations
-                                    <div class="count"></div>
-                                    <div class="pull-right info-glyph">
-                                        <span id="organization-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
-                                    </div>
-                                </a>
-                            </h2>
-                        </div>
-                        <div id="collapse-organizations" class="panel-collapse collapse">
-                            <ul id="organization-search-list"></ul>
-                        </div>
-                    </div>
-                    <div data-search="contact" class="panel panel-default search-results-panel">
-                        <div class="panel-heading">
-                            <h2 id="contact-list-header" class="panel-title">
-                                <a id="contact-toggle" class="search-anchor disabled" data-toggle="collapse"
-                                   href="#collapse-contacts">People
-                                    <div class="count"></div>
-                                    <div class="pull-right info-glyph">
-                                        <span id="contact-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
-                                    </div>
-                                </a>
-                            </h2>
-                        </div>
-                        <div id="collapse-contacts" class="panel-collapse collapse">
-                            <ul id="contact-search-list"></ul>
-                        </div>
-                    </div>
-                    <div data-search="publication" class="panel panel-default search-results-panel">
-                        <div class="panel-heading">
-                            <h2 id="publication-list-header" class="panel-title">
-                                <a id="publication-toggle" class="search-anchor disabled" data-toggle="collapse"
-                                   href="#collapse-publications">Publications
-                                    <div class="count"></div>
-                                    <div class="pull-right info-glyph">
-                                        <span id="publication-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
-                                    </div>
-                                </a>
-                            </h2>
-                        </div>
-                        <div id="collapse-publications" class="panel-collapse collapse">
-                            <ul id="publication-search-list"></ul>
-                        </div>
-                    </div>
-                    <div data-search="news" class="panel panel-default search-results-panel">
-                        <div class="panel-heading">
-                            <h2 id="news-list-header" class="panel-title">
-                                <a id="news-toggle" class="search-anchor disabled" data-toggle="collapse"
-                                   href="#collapse-news">News
-                                    <div class="count"></div>
-                                    <div class="pull-right info-glyph">
-                                        <span id="news-icon" class="collapse-icon center-block glyphicon glyphicon-collapse-up"></span>
-                                    </div>
-                                </a>
-                            </h2>
-                        </div>
-                        <div id="collapse-news" class="panel-collapse collapse">
-                            <ul id="news-search-list"></ul>
-                        </div>
-                    </div>
-                    <div data-search="empty" class="panel panel-default empty-panel">
-                        <div class="panel-heading">
-                            <h2 id="empty-list-header" class="panel-title">
-                                No Results
-                            </h2>
-                        </div>
+                    <div id="search-results-div-scroll"> {# Dummy div for jquery.slinky.js  #}
+                        <section data-search="organization" class="panel panel-default search-results-panel">
+                            <div class="panel-heading">
+                                <h2 id="organization-list-header" class="panel-title">
+                                    <a id="organization-toggle" class="search-anchor"
+                                       href="#collapse-organizations">Organizations
+                                        <div class="count"></div>
+                                        <div class="pull-right info-glyph">
+                                            <span id="organization-icon"
+                                                  class="collapse-icon center-block"></span>
+                                        </div>
+                                    </a>
+                                </h2>
+                            </div>
+                            <div id="collapse-organizations" class="panel-collapse">
+                                <ul id="organization-search-list"></ul>
+                            </div>
+                        </section>
+                        <section data-search="contact" class="panel panel-default search-results-panel">
+                            <div class="panel-heading">
+                                <h2 id="contact-list-header" class="panel-title">
+                                    <a id="contact-toggle" class="search-anchor disabled"
+                                       href="#collapse-contacts">People
+                                        <div class="count"></div>
+                                        <div class="pull-right info-glyph">
+                                            <span id="contact-icon"
+                                                  class="collapse-icon center-block"></span>
+                                        </div>
+                                    </a>
+                                </h2>
+                            </div>
+                            <div id="collapse-contacts" class="panel-collapse">
+                                <ul id="contact-search-list"></ul>
+                            </div>
+                        </section>
+                        <section data-search="publication" class="panel panel-default search-results-panel">
+                            <div class="panel-heading">
+                                <h2 id="publication-list-header" class="panel-title">
+                                    <a id="publication-toggle" class="search-anchor disabled"
+                                       href="#collapse-publications">Publications
+                                        <div class="count"></div>
+                                        <div class="pull-right info-glyph">
+                                            <span id="publication-icon"
+                                                  class="collapse-icon center-block"></span>
+                                        </div>
+                                    </a>
+                                </h2>
+                            </div>
+                            <div id="collapse-publications" class="panel-collapse">
+                                <ul id="publication-search-list"></ul>
+                            </div>
+                        </section>
+                        <section data-search="news" class="panel panel-default search-results-panel">
+                            <div class="panel-heading">
+                                <h2 id="news-list-header" class="panel-title">
+                                    <a id="news-toggle" class="search-anchor disabled"
+                                       href="#collapse-news">News
+                                        <div class="count"></div>
+                                        <div class="pull-right info-glyph">
+                                            <span id="news-icon"
+                                                  class="collapse-icon center-block"></span>
+                                        </div>
+                                    </a>
+                                </h2>
+                            </div>
+                            <div id="collapse-news" class="panel-collapse">
+                                <ul id="news-search-list"></ul>
+                            </div>
+                        </section>
+                        <section data-search="empty" class="panel panel-default empty-panel">
+                            <div class="panel-heading">
+                                <h2 id="empty-list-header" class="panel-title">
+                                    No Results
+                                </h2>
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
