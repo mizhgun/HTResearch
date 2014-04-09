@@ -206,7 +206,7 @@
   border-radius: 5px;
 }
 #search-results-div-scroll {
-  overflow-y: auto;
+  overflow-y: scroll;
   height: 100%;
 }
 #search-results-div h2 a {
@@ -221,7 +221,7 @@
 }
 #search-results-div .panel-heading {
   line-height: 2;
-  width: 100%;
+  width: inherit;
 }
 #search-box {
   line-height: 2;
@@ -233,6 +233,9 @@
   -webkit-border-bottom-left-radius: 5px;
   -moz-border-top-left-radius: 5px;
   -moz-border-bottom-left-radius: 5px;
+}
+.search-results-panel {
+  width: 306px;
 }
 .search-results-panel h2,
 #search-box {
