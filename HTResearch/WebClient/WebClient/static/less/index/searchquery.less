@@ -1,10 +1,16 @@
 #search-results-div {
-    overflow-y: auto;
+    position: relative;
+    overflow: hidden;
     width: 100%;
     margin-top: 1px;
     height: ~"calc(100% - 55px)";
     line-height: 1.5em;
     border-radius: 5px;
+}
+
+#search-results-div-scroll {
+  overflow-y: scroll;
+  height: 100%;
 }
 
 #search-results-div h2 a {
@@ -20,7 +26,8 @@
 }
 
 #search-results-div .panel-heading {
-    line-height: 2;
+  line-height: 2;
+  width: inherit;
 }
 
 #search-box {
@@ -33,6 +40,10 @@
     -webkit-border-bottom-left-radius: 5px;
     -moz-border-top-left-radius: 5px;
     -moz-border-bottom-left-radius: 5px;
+}
+
+.search-results-panel {
+  width: 306px;
 }
 
 .search-results-panel h2,
