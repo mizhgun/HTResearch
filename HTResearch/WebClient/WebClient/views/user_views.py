@@ -227,15 +227,20 @@ def send_invite(request):
             if 'message' in form.cleaned_data:
                 message = form.cleaned_data['message']
 
-            invitation = "Hello! You've just been invited to UNL HT Research by {0} {1}."\
-                .format(request.session['first_name'], request.session['last_name'])
+            invitation = "Hello! You've just been invited to the Anti-Trafficking Atlas by {0} {1}. " \
+                         .format(request.session['first_name'], request.session['last_name'])
 
             if message:
-                invitation += " They've included a message below:\n\n{0}".format(message)
+                invitation += "They've included a message below:\n\n{0}\n\n".format(message)
+
+            invitation += "You can sign up at unlaht.cloudapp.net.\n\nWhat is it?\n\tThe Anti-Trafficking Atlas is " \
+                          "a website that indexes data about anti human trafficking organizations, contacts, and " \
+                          "publications.\n\nWhy sign up?\n\tThe Anti-Trafficking Atlas makes finding experts or " \
+                          "publications related to research easy."
 
             mail = MIMEText(invitation)
-            mail['Subject'] = 'Come Join UNL HT Research!'
-            mail['From'] = 'UNL HT'
+            mail['Subject'] = 'Come join the Anti-Trafficking Atlas!'
+            mail['From'] = 'ATA'
             mail['To'] = to
 
             username = get_config_value("MAIL", "username")
@@ -251,7 +256,7 @@ def send_invite(request):
                     server, port
                 ))
                 s.login(username, password)
-                s.sendmail('UNL.HT@cse.unl.edu', [to], mail.as_string())
+                s.sendmail('ATA@cse.unl.edu', [to], mail.as_string())
                 s.quit()
                 success = 'Your invite has been sent successfully!'
                 logger.info('Invite sent to email={0} by user={1}'.format(

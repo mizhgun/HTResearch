@@ -18,6 +18,7 @@ def index(request):
     args.update(csrf(request))
     return render(request, 'index/index.html', args)
 
+
 def welcome(request):
     """Sends a request to the Welcome page."""
     return render(request, 'shared/welcome.html')
