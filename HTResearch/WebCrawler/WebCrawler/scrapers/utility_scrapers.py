@@ -146,19 +146,19 @@ class EmailScraper(object):
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
 
-        # body will get emails that are just text in the body
-        body = hxs.select('//body//text()')
+        # all_text will get emails from the text of the page
+        all_text = hxs.select('//html//text()')
 
         # Remove C_Data tags, since they are showing up in the body text for some reason
-        body = XPathSelectorList([text for text in body if not (re.match(self._c_data, text.extract()) or
-                                                                text.extract().strip() == '')])
+        all_text = XPathSelectorList([text for text in all_text if not (re.match(self._c_data, text.extract()) or
+                                                                        text.extract().strip() == '')])
 
-        body = body.re(self._email_regex)
+        all_text = all_text.re(self._email_regex)
 
         # hrefs will get emails from hrefs
         hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(self._email_regex)
 
-        emails = body + hrefs
+        emails = hrefs + all_text
 
         # Take out the unicode, and substitute [at] for @ and [dot] for .
         for i in range(len(emails)):
