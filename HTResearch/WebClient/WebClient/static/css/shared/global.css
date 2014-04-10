@@ -3,6 +3,10 @@
   border-bottom: 5px solid #fff;
   height: 50px;
 }
+.navbar-nav > li.dropdown:hover,
+.navbar-nav > li.dropdown:active {
+  border: 0;
+}
 /* Sticky footer styles
 -------------------------------------------------- */
 html,

@@ -11,8 +11,8 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li id="about-nav"><a href="/about/"><span class="fa fa-info-circle"></span> About</a></li>
-                <li id="get-started-nav"><a href="/get-started/"><span class="glyphicon glyphicon-flash"></span> Get Started</a></li>
-                <li id="statistics-nav"><a href="/statistics/"><span class="glyphicon glyphicon-stats"></span> Statistics</a></li>
+                <li id="get-started-nav"><a href="/get-started/"><span class="fa fa-lightbulb-o"></span> Get Started</a></li>
+                <li id="statistics-nav"><a href="/statistics/"><span class="fa fa-bar-chart-o"></span> Statistics</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <span class="glyphicon glyphicon-share-alt"></span> Share
@@ -25,17 +25,17 @@
                         <li><a id="linkedin" class="share"><span class="fa fa-linkedin fa-fw"></span>LinkedIn</a></li>
                     </ul>
                 </li>
+                <li id="request-org-nav"><a href="/request-organization/"><span class="glyphicon glyphicon-cloud-upload"></span> Request Organization</a></li>
+                <li id="invite-nav"><a href="/invite/"><span class="glyphicon glyphicon-send"></span> Send Invite</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if username %}
-                    <li id="request-org-nav"><a href="/request-organization/"><span class="glyphicon glyphicon-cloud-upload"></span> Request Organization</a></li>
-                    <li id="invite-nav"><a href="/invite/"><span class="glyphicon glyphicon-send"></span> Send Invite</a></li>
-                {% endif %}
-                {% if username %}
+                    <li id="name">
+                        <a href="/contact/{{user_id}}">{{ username }}</a>
+                    </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            Welcome back, {{ username }}!
-                            <b class="caret"></b>
+                            <span class="glyphicon glyphicon-cog"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="/account-settings/">Account Preferences</a></li>
