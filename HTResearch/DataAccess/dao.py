@@ -288,7 +288,7 @@ class ContactDAO(DAO):
             contact_dto.last_updated = datetime.utcnow()
             self._update_weights(contact_dto)
             contact_dto.save()
-            if contact_dto.organization and not contact_dto in contact_dto.organization.contacts:
+            if cascade_add and contact_dto.organization and not contact_dto in contact_dto.organization.contacts:
                 contact_dto.organization.contacts.append(contact_dto)
                 contact_dto.organization.save()
         return contact_dto
@@ -697,7 +697,7 @@ class UserDAO(DAO):
         }
 
     @decorators.safe_mongocall
-    def create_update(self, user_dto):
+    def create_update(self, user_dto, cascade_add=True):
         with self.conn():
             if user_dto.organization is not None:
                 o = user_dto.organization
@@ -706,7 +706,7 @@ class UserDAO(DAO):
             user_dto.last_updated = datetime.utcnow()
             self._update_weights(user_dto)
             user_dto.save()
-            if user_dto.organization and not user_dto in user_dto.organization.user_contacts:
+            if cascade_add and user_dto.organization and not user_dto in user_dto.organization.user_contacts:
                 user_dto.organization.user_contacts.append(user_dto)
                 user_dto.organization.save()
         return user_dto
