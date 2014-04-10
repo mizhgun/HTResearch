@@ -239,7 +239,7 @@ def send_invite(request):
                           "volunteers and find a place to help in the right field and area of the globe for you.\n\n" \
                           "Why sign up?\n\t\"Collaborator\" account types can view all of the data " \
                           "about organizations, all of the contact data that was retrieved through our web scrapers, " \
-                          "and all publications. Those with \"Contributor\" accounts can edit, add, and flag" \
+                          "and all publications. Those with \"Contributor\" accounts can edit, add, and flag " \
                           "information to make the data more reliable."
 
             mail = MIMEText(invitation)
