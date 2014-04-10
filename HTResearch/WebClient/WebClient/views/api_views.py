@@ -377,9 +377,10 @@ def search_contacts(request):
         try:
             if u['organization']:
                 org = org_dao.find(id=u['organization'].id)
-                #Prevent adding this field as it cannot be properly encoded
-                org.page_rank_info = None
-                u['organization'] = org.__dict__['_data']
+                if org:
+                    #Prevent adding this field as it cannot be properly encoded
+                    org.page_rank_info = None
+                    u['organization'] = org.__dict__['_data']
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
