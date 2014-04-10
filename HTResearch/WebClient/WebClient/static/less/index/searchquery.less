@@ -27,7 +27,15 @@
 
 #search-results-div .panel-heading {
   line-height: 2;
-  width: inherit;
+  width: 100%;
+}
+
+/* Position attribute set when jquery.slinky.js changes the position to absolute
+   We have to change the width from 100% to this so that the scrollbar doesn't
+   get covered.
+*/
+#search-results-div .panel-heading[style~="position:"] {
+  width: 95%;
 }
 
 #search-box {
@@ -43,7 +51,7 @@
 }
 
 .search-results-panel {
-  width: 306px;
+  width: 100%;
 }
 
 .search-results-panel h2,
