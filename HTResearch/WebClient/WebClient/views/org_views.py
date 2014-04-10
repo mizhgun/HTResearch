@@ -87,7 +87,7 @@ def request_organization(request):
     """
     if 'user_id' not in request.session:
         logger.error('Bad request made for organization seed without login')
-        HttpResponseRedirect('/login')
+        return unauthorized(request)
     else:
         user_id = request.session['user_id']
 

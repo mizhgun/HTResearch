@@ -36,7 +36,6 @@ def contact_profile(request, id):
 
     try:
         user = user_dao.find(id=id)
-
     except:
         logger.error('Exception encountered on user lookup for user={0}'.format(id))
         return not_found(request)
