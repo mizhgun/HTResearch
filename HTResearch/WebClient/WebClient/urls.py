@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, url
 
 handler403 = 'HTResearch.WebClient.WebClient.views.unauthorized'
-handler404 = 'HTResearch.WebClient.WebClient.views.shared_views.get_http_404_page'
-handler500 = 'HTResearch.WebClient.WebClient.views.shared_views.get_http_500_page'
+handler404 = 'HTResearch.WebClient.WebClient.views.shared_views.not_found'
+handler500 = 'HTResearch.WebClient.WebClient.views.shared_views.server_error'
 
 
 urlpatterns = patterns('HTResearch.WebClient.WebClient.views.api_views',
