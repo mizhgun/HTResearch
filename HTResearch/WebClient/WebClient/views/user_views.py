@@ -235,8 +235,12 @@ def send_invite(request):
 
             invitation += "You can sign up at unlaht.cloudapp.net.\n\nWhat is it?\n\tThe Anti-Trafficking Atlas is " \
                           "a website that indexes data about anti human trafficking organizations, contacts, and " \
-                          "publications.\n\nWhy sign up?\n\tThe Anti-Trafficking Atlas makes finding experts or " \
-                          "publications related to research easy."
+                          "publications. Users can use the data to connect with other advocates, researchers, and "\
+                          "volunteers and find a place to help in the right field and area of the globe for you.\n\n" \
+                          "Why sign up?\n\t\"Collaborator\" account types can view all of the data " \
+                          "about organizations, all of the contact data that was retrieved through our web scrapers, " \
+                          "and all publications. Those with \"Contributor\" accounts can edit, add, and flag" \
+                          "information to make the data more reliable."
 
             mail = MIMEText(invitation)
             mail['Subject'] = 'Come join the Anti-Trafficking Atlas!'
