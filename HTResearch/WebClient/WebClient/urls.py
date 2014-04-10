@@ -12,23 +12,30 @@ urlpatterns = patterns('HTResearch.WebClient.WebClient.views.api_views',
                        url(r'^api/search-publications/$', 'search_publications', name='search-publications'),
                        url(r'^api/get-org-rank-rows/$', 'get_org_rank_rows', name='get-org-rank-rows'),
                        url(r'^api/get-org-keywords/$', 'get_org_keywords', name='get-org-keywords'),
-                       url(r'^api/partner-map/$', 'org_partner_map', name='org-partner-map'),)
+                       url(r'^api/partner-map/$', 'org_partner_map', name='org-partner-map'),
+                       url(r'^api/orgs-by-region/$', 'orgs_by_region', name='orgs-by-region'),
+                       url(r'^api/orgs-by-type/$', 'orgs_by_type', name='orgs-by-type'),
+                       url(r'^api/orgs-by-members/$', 'orgs_by_members', name='orgs-by-members'),
+                       url(r'^api/org-count/$', 'org_count', name='org-count'),
+                       url(r'^api/contact-count/$', 'contact_count', name='contact-count'),
+                       url(r'^api/pub-count/$', 'pub_count', name='pub-count'),)
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.shared_views',
                         url(r'^$', 'index', name='index'),
                         url(r'^welcome/$', 'welcome', name='welcome'),
-                        url(r'^get-started/$', 'get_started', name='get-started'),)
+                        url(r'^get-started/$', 'get_started', name='get-started'),
+                        url(r'^about/$', 'about', name='about'),
+                        url(r'^statistics/$', 'statistics', name='statistics'),)
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.org_views',
                         url(r'^organization/(\w+)', 'organization_profile', name='org-prof'),
-                        url(r'^org-rank/$', 'org_rank', name='org-rank'),
                         url(r'^request-organization/$', 'request_organization', name='request-organization'),
-                        url(r'^edit-organization/(\w+)', 'edit_organization', name='edit-organization'),
-                        url(r'^partner-map-demo/$', 'partner_map_demo', name='partner-map-demo'))
+                        url(r'^edit-organization/(\w+)', 'edit_organization', name='edit-organization'),)
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.contact_views',
                         url(r'^contact/(\w+)', 'contact_profile', name='con-prof'),
-                        url(r'^edit-contact/(\w+)', 'edit_contact', name='edit-contact'),)
+                        url(r'^edit-contact/(\w+)', 'edit_contact', name='edit-contact'),
+                        )
 
 urlpatterns += patterns('HTResearch.WebClient.WebClient.views.user_views',
                         url(r'^login/$', 'login', name='login'),

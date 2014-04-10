@@ -23,16 +23,19 @@
 .key .label {
   color: black;
   display: inline-block;
-  width: 100%;
+  min-width: 100%;
+  width: auto;
   margin: 5px;
 }
 .key {
   background-repeat: no-repeat;
   padding: 0 50px 0 0;
   height: 32px;
-  width: 150px;
+  min-width: 150px;
+  width: auto;
   font-size: large;
-  background-position-x: 110px;
+  background: no-repeat right center;
+  border: 50px;
 }
 .key.prevention {
   background-image: url("/static/images/prevention_pin_small.png");
@@ -197,12 +200,17 @@
   display: none;
 }
 #search-results-div {
-  overflow-y: auto;
+  position: relative;
+  overflow: hidden;
   width: 100%;
   margin-top: 1px;
   height: calc(100% - 55px);
   line-height: 1.5em;
   border-radius: 5px;
+}
+#search-results-div-scroll {
+  overflow-y: scroll;
+  height: 100%;
 }
 #search-results-div h2 a {
   display: inline-block;
@@ -216,6 +224,7 @@
 }
 #search-results-div .panel-heading {
   line-height: 2;
+  width: inherit;
 }
 #search-box {
   line-height: 2;
@@ -227,6 +236,9 @@
   -webkit-border-bottom-left-radius: 5px;
   -moz-border-top-left-radius: 5px;
   -moz-border-bottom-left-radius: 5px;
+}
+.search-results-panel {
+  width: 306px;
 }
 .search-results-panel h2,
 #search-box {
