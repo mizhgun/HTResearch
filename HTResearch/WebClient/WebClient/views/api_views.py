@@ -1,9 +1,8 @@
 # stdlib imports
 import json
-from urlparse import urlparse
 from datetime import datetime, timedelta
 from django.core.cache import cache
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseServerError
 from springpython.context import ApplicationContext
 
 # project imports
@@ -32,7 +31,7 @@ def heatmap_coordinates(request):
         List of lat/long coordinates encoded in JSON.
     """
     if request.method != 'GET':
-        return HttpResponseBadRequest
+        return HttpResponseNotAllowed(request)
 
     coords = cache.get('organization_coords_list')
     last_update = cache.get('organization_coords_list_last_update')
@@ -46,7 +45,7 @@ def heatmap_coordinates(request):
             organizations = org_dao.findmany(latlng__exists=True, latlng__ne=[])
         except:
             logger.error('Error occurred on organization lookup')
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
         for org in organizations:
             new_coords.append(org.latlng)
@@ -84,7 +83,7 @@ def org_count(request):
             count = org_dao.count()
         except:
             logger.error('Exception encountered on organziation count by user={0}'.format(user_id))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
         cache.set('organization_count', count)
 
@@ -123,13 +122,13 @@ def contact_count(request):
             contacts_count = contact_dao.count()
         except:
             logger.error('Exception encountered on contact count by user={0}'.format(user_id))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
         try:
             user_count = user_dao.count()
         except:
             logger.error('Exception encountered on user count by user={0}'.format(user_id))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
         count = contacts_count + user_count
 
@@ -167,7 +166,7 @@ def pub_count(request):
             count = pub_dao.count()
         except:
             logger.error('Exception encountered on publication count by user={0}'.format(user_id))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
         cache.set('publication_count', count)
 
@@ -188,7 +187,7 @@ def org_partner_map(request):
         Partner map configurations encoded in JSON.
     """
     if request.method != 'GET':
-        return HttpResponseBadRequest
+        return HttpResponseNotAllowed(request)
 
     pmap = cache.get('partner_map')
     last_update = cache.get('partner_map_last_update')
@@ -209,7 +208,7 @@ def org_partner_map(request):
             organizations = org_dao.all('name', 'id', 'partners', 'types', 'address')
         except:
             logger.error('Error fetching organizations')
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
         i = 0
         for org in organizations:
             new_pmap["nodes"].append({
@@ -262,7 +261,7 @@ def search_publications(request):
                                             valid=True)
         except:
             logger.error('Exception encountered on publication search with search_text={0}'.format(search_text))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
     results = []
     for dto in publications:
@@ -301,7 +300,7 @@ def search_contacts(request):
                                             valid=True)
         except:
             logger.error('Exception encountered on contact search with search_text={0}'.format(search_text))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
         if user_id:
             user_dao = ctx.get_object('UserDAO')
@@ -310,7 +309,7 @@ def search_contacts(request):
                                           sort_fields=['valid', 'content_weight', 'last_name', 'first_name'])
             except:
                 logger.error('Exception encountered on user search with search_text={0}'.format(search_text))
-                return HttpResponse(status=500)
+                return HttpResponseServerError(request)
 
     results = []
     for dto in contacts:
@@ -324,7 +323,7 @@ def search_contacts(request):
                 c['organization'] = org.__dict__['_data']
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
         c['type'] = 'contact'
         results.append(c)
 
@@ -339,7 +338,7 @@ def search_contacts(request):
                 u['organization'] = org.__dict__['_data']
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
         u['type'] = 'user'
         results.append(u)
 
@@ -377,7 +376,7 @@ def search_organizations(request):
                 org.page_rank_info = None
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
     results = []
     for dto in organizations:
@@ -428,7 +427,7 @@ def orgs_by_region(request):
             organizations = list(org_dao.findmany())
         except:
             logger.error('Error fetching organizations by user={0}'.format(user_id))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
         for org in organizations:
             if org['address']:
@@ -452,7 +451,7 @@ def orgs_by_region(request):
             total = org_dao.count()
         except:
             logger.error('Error fetching count of organizations by user={0}'.format(user_id))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
         data = {
             'categories': results,
@@ -497,7 +496,7 @@ def orgs_by_type(request):
                 orgs = org_dao.findmany(types=i)
             except:
                 logger.error('Error fetching organizations by user={0}'.format(user_id))
-                return HttpResponse(status=500)
+                return HttpResponseServerError(request)
             type_count[key] = len(orgs)
             total_known += len(orgs)
 
@@ -518,7 +517,7 @@ def orgs_by_type(request):
             total = org_dao.count()
         except:
             logger.error('Error fetching count of organizations by user={0}'.format(user_id))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
         data = {
             'categories': results,
@@ -570,7 +569,7 @@ def orgs_by_members(request):
                     count += org_dao.count(contacts__size=i)
                 except:
                     logger.error('Error fetching count of organizations by user={0}'.format(user_id))
-                    return HttpResponse(status=500)
+                    return HttpResponseServerError(request)
 
             total_known += count
 
@@ -583,7 +582,7 @@ def orgs_by_members(request):
             total = org_dao.count()
         except:
             logger.error('Error fetching count of organizations by user={0}'.format(user_id))
-            return HttpResponse(status=500)
+            return HttpResponseServerError(request)
 
         data = {
             'categories': results,
