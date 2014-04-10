@@ -35,8 +35,9 @@ define(['underscore', 'jquery', 'jquery-ui', 'jquery.slinky'], function(_, $) {
     searchResultsContainer.slinky();
 
     $('#search-results-div-scroll > .panel > .panel-heading').click(function() {
+        var count = $.inArray(this, $('#search-results-div-scroll > .panel:visible > .panel-heading'));
         $(this).parent().parent().scrollTop($(this).parent().parent().scrollTop() +
-            ($(this).parent().position().top - $(this).parent().parent().offset().top));
+            ($(this).parent().position().top - (46 * count)));
     });
 
     // Move within search results by using up/down keys
