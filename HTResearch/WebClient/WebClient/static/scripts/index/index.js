@@ -217,7 +217,7 @@ require(['shared/analytics',
             map.showInfo(data);
         }
         else {
-            window.location.assign('/organization/' + data.id);
+            Modal.createModal(data, '#bs-modal', '#bs-org-modal-template');
         }
     }
 
