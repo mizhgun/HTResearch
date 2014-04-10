@@ -69,7 +69,7 @@ def logout(request):
     """Logs the user out. Sends the user to the index page."""
     if 'user_id' not in request.session:
         logger.error('Bad request made for logout without login')
-        return unauthorized('request')
+        return unauthorized(request)
 
     user_id = request.session['user_id']
     logger.info('Logging out user={0}'.format(user_id))
@@ -88,7 +88,7 @@ def signup(request):
     if 'user_id' in request.session:
         user_id = request.session['user_id']
         logger.error('Bad request for signup made by user={0}'.format(user_id))
-        return unauthorized('request')
+        return unauthorized(request)
 
     error = ''
     form = SignupForm(request.POST or None)
@@ -209,7 +209,7 @@ def send_invite(request):
     """
     if 'user_id' not in request.session:
         logger.error('Request made for send_invite without login')
-        return unauthorized('request')
+        return unauthorized(request)
     else:
         user_id = request.session['user_id']
 
