@@ -40,6 +40,7 @@ class ScrapedOrganization(Item):
     phone_numbers = Field()
     emails = Field()
     contacts = Field()
+    user_contacts = Field()
     organization_url = Field()
     partners = Field()
     facebook = Field()

@@ -47,7 +47,7 @@ class Organization(object):
 
     def __init__(self, name=None, address=None,
                  types=[], phone_numbers=[], email_key=None,
-                 emails=[], contacts=[],
+                 emails=[], contacts=[], user_contacts=[],
                  organization_url=None,
                  partners=[], facebook=None, twitter=None,
                  keywords=None, valid=True, updated_by=None,
@@ -64,6 +64,7 @@ class Organization(object):
             email_key (string): The primary email for the organization.
             emails (string[]): The emails for the organization.
             contacts (Contact[]): The contacts for the organization.
+            user_contacts (User[]): The users associated with the organization.
             organization_url (string): The URL for the organization's website.
             partners (Organization[]): The partner organizations.
             facebook (string): The Facebook URL for the organization.
@@ -84,6 +85,7 @@ class Organization(object):
         self.email_key = email_key
         self.emails = emails
         self.contacts = contacts
+        self.user_contacts = user_contacts
         self.organization_url = organization_url
         self.partners = partners
         self.facebook = facebook
