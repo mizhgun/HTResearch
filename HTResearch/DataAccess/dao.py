@@ -288,6 +288,9 @@ class ContactDAO(DAO):
             contact_dto.last_updated = datetime.utcnow()
             self._update_weights(contact_dto)
             contact_dto.save()
+            if cascade_add and contact_dto.organization and not contact_dto in contact_dto.organization.contacts:
+                contact_dto.organization.contacts.append(contact_dto)
+                contact_dto.organization.save()
         return contact_dto
 
     def _update_weights(self, contact_dto):
@@ -317,6 +320,7 @@ class OrganizationDAO(DAO):
 
         # Injected dependencies
         self.contact_dao = ContactDAO
+        self.user_dao = UserDAO
         self.geocode = geocode
 
         # Weights for search result fields
@@ -329,7 +333,8 @@ class OrganizationDAO(DAO):
             'phone_numbers': 0.1,
             'email_key': 0.0,
             'emails': 0.1,
-            'contacts': 0.1,
+            'contacts': 0.05,
+            'user_contacts': 0.05,
             'organization_url': 0.1,
             'partners': 0.1,
             'facebook': 0.05,
@@ -422,6 +427,11 @@ class OrganizationDAO(DAO):
             if c.organization is None:
                 c.organization = org_dto
                 org_dto.contacts[i] = self.contact_dao().create_update(c, False)
+        for i in range(len(org_dto.user_contacts)):
+            u = org_dto.user_contacts[i]
+            if u.organization is None:
+                u.organization = org_dto
+                org_dto.user_contacts[i] = self.user_dao().create_update(u, False)
         for i in range(len(org_dto.partners)):
             p = org_dto.partners[i]
             if org_dto not in p.partners:
@@ -439,6 +449,12 @@ class OrganizationDAO(DAO):
                     if c.organization is not None and c.organization == org_dto:
                         c.organization = None
                     org_dto.contacts[i] = self.contact_dao().create_update(c, False)
+
+                for i in range(len(org_dto.user_contacts)):
+                    u = org_dto.user_contacts[i]
+                    if u.organization is not None and u.organization == org_dto:
+                        u.organization = None
+                    org_dto.user_contacts[i] = self.user_dao().create_update(u, False)
 
                 for i in range(len(org_dto.partners)):
                     p = org_dto.partners[i]
@@ -681,15 +697,18 @@ class UserDAO(DAO):
         }
 
     @decorators.safe_mongocall
-    def create_update(self, user_dto):
+    def create_update(self, user_dto, cascade_add=True):
         with self.conn():
             if user_dto.organization is not None:
                 o = user_dto.organization
-                user_dto.organization = self.org_dao().create_update(o)
+                user_dto.organization = self.org_dao().create_update(o, False)
 
             user_dto.last_updated = datetime.utcnow()
             self._update_weights(user_dto)
             user_dto.save()
+            if cascade_add and user_dto.organization and not user_dto in user_dto.organization.user_contacts:
+                user_dto.organization.user_contacts.append(user_dto)
+                user_dto.organization.save()
         return user_dto
 
     def _update_weights(self, user_dto):
