@@ -127,7 +127,7 @@ def signup(request):
             try:
                 user_dto = DTOConverter.to_dto(UserDTO, new_user)
                 ret_user = user_dao.create_update(user_dto)
-                request.session['name'] = str(new_user.first_name)
+                request.session['name'] = str(new_user.first_name) + ' ' + str(new_user.last_name)
                 request.session['user_id'] = str(ret_user.id)
                 request.session['account_type'] = str(ret_user.account_type)
                 request.session.set_expiry(SESSION_TIMEOUT)
@@ -190,7 +190,7 @@ def manage_account(request):
             try:
                 ret_user = user_dao.create_update(user)
                 success = 'Account settings changed successfully'
-                request.session['name'] = ret_user.first_name
+                request.session['name'] = ret_user.first_name + ' ' + ret_user.last_name
                 request.session['last_modified'] = datetime.utcnow()
                 request.session['account_type'] = ret_user.account_type
             except Exception as e:
