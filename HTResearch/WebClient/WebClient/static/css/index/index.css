@@ -65,6 +65,7 @@
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 200px;
 }
 .news-panel .btn-regional:not(.active) span {
   color: #888;
@@ -74,6 +75,9 @@
 }
 .news-panel .btn-regional.active span {
   color: #ff9e00;
+}
+.news-panel .btn-regional span {
+  line-height: inherit;
 }
 .news-panel .news-header {
   white-space: nowrap;
