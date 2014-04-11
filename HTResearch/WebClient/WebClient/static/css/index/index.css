@@ -71,7 +71,7 @@
   color: #888;
 }
 .news-panel .btn-regional:not(.active):hover span {
-  color: #8aa;
+  color: #6f6f6f;
 }
 .news-panel .btn-regional.active span {
   color: #ff9e00;
