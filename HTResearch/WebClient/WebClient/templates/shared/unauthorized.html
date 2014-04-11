@@ -1,60 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "shared/error.html" %}
+
+{% block imports %}
     <title>403 Error!</title>
-    <link rel="stylesheet" href="/static/css/lib/bootstrap/bootstrap.css">
-    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
-    <link href="/static/css/shared/global.css" rel="stylesheet">
-    <link href="/static/css/lib/font-awesome/font-awesome.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/shared/errors.css"/>
-    <script type="application/javascript" src="/static/scripts/lib/require.js"></script>
-    <script type="application/javascript" src="/static/scripts/requireconfig.js"></script>
-</head>
-<body>
-    <div id="wrapper">
-        <div class="content container">
-            <div class="row">
-                <div class="col-xs-5 col-xs-offset-1">
-                    <div class="header">
-                        <h1>Sad panda! (403)</h1>
-                        <p>
-                            Looks like you're not authorized to view this page. Sign up or login
-                            to find what you're looking for.
-                        </p>
-                    </div>
-                    <div class="guidance">
-                        <div class="row">
-                            <a href="/" alt="Go Home">
-                                <div class="col-xs-4">
-                                    <span class="fa fa-fw fa-4x fa-home"></span><br/>
-                                    <h4>Go Home</h4>
-                                </div>
-                            </a>
-                            <a href="/login/" alt="Login">
-                                <div class="col-xs-4">
-                                    <span class="fa fa-fw fa-4x fa-sign-in"></span><br/>
-                                    <h4>Login</h4>
-                                </div>
-                            </a>
-                            <a href="/signup/" alt="Sign Up">
-                                <div class="col-xs-4">
-                                    <span class="fa fa-fw fa-4x fa-level-up"></span><br/>
-                                    <h4>Sign Up</h4>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="header">
+        <h1>Sad panda! (403)</h1>
+        <p>
+            Looks like you're not authorized to view this page. Sign up or login
+            to find what you're looking for.
+        </p>
+    </div>
+    <div class="guidance">
+        <div class="row">
+            <a href="/" alt="Go Home">
+                <div class="col-xs-4">
+                    <span class="fa fa-fw fa-4x fa-home"></span><br/>
+                    <h4>Go Home</h4>
                 </div>
-                <div class="col-xs-3">
-                    <img src="/static/images/sad_panda.png"/>
+            </a>
+            <a href="/login/" alt="Login">
+                <div class="col-xs-4">
+                    <span class="fa fa-fw fa-4x fa-sign-in"></span><br/>
+                    <h4>Login</h4>
                 </div>
-            </div>
+            </a>
+            <a href="/signup/" alt="Sign Up">
+                <div class="col-xs-4">
+                    <span class="fa fa-fw fa-4x fa-level-up"></span><br/>
+                    <h4>Sign Up</h4>
+                </div>
+            </a>
         </div>
     </div>
-    <div id="footer">
-        <div id="footer-text" class="text-muted credit">
-            &copy 2014 Anti-Trafficking Atlas
-        </div>
-    </div>
-</body>
-</html>
+{% endblock %}
