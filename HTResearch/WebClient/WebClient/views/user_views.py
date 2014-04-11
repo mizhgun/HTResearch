@@ -234,7 +234,7 @@ def send_invite(request):
                 invitation += "They've included a message below:\n\n{0}\n\n".format(message)
 
             invitation += "You can sign up at unlaht.cloudapp.net.\n\nWhat is it?\n\tThe Anti-Trafficking Atlas is " \
-                          "a website that indexes data about anti human trafficking organizations, contacts, and " \
+                          "a website that indexes data about anti-human trafficking organizations, contacts, and " \
                           "publications. Users can use the data to connect with other advocates, researchers, and "\
                           "volunteers and find a place to help in the right field and area of the globe for you.\n\n" \
                           "Why sign up?\n\t\"Collaborator\" account types can view all of the data " \
