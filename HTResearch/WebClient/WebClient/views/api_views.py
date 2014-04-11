@@ -23,6 +23,7 @@ REFRESH_ORG_BREAKDOWN = timedelta(minutes=5)
 REFRESH_COUNT = timedelta(minutes=5)
 #endregion
 
+
 @decorators.safe_apicall
 def get_org_keywords(request):
     """
@@ -300,7 +301,6 @@ def search_publications(request):
         pub_dao = ctx.get_object('PublicationDAO')
         try:
             publications = pub_dao.findmany(search=search_text,
-                                            num_elements=10,
                                             sort_fields=['valid', 'title'],
                                             valid=True)
         except:
@@ -340,7 +340,6 @@ def search_contacts(request):
         contact_dao = ctx.get_object('ContactDAO')
         try:
             contacts = contact_dao.findmany(search=search_text,
-                                            num_elements=10,
                                             sort_fields=['valid', 'content_weight', 'last_name', 'first_name'],
                                             valid=True)
         except:
@@ -351,7 +350,6 @@ def search_contacts(request):
             user_dao = ctx.get_object('UserDAO')
             try:
                 users = user_dao.findmany(search=search_text,
-                                          num_elements=10,
                                           sort_fields=['valid', 'content_weight', 'last_name', 'first_name'])
             except:
                 logger.error('Exception encountered on user search with search_text={0}'.format(search_text))
@@ -379,16 +377,17 @@ def search_contacts(request):
         try:
             if u['organization']:
                 org = org_dao.find(id=u['organization'].id)
-                #Prevent adding this field as it cannot be properly encoded
-                org.page_rank_info = None
-                u['organization'] = org.__dict__['_data']
+                if org:
+                    #Prevent adding this field as it cannot be properly encoded
+                    org.page_rank_info = None
+                    u['organization'] = org.__dict__['_data']
         except:
             logger.error('Exception encountered on organization search with search_text={0}'.format(search_text))
             return get_http_404_page(request)
         u['type'] = 'user'
         results.append(u)
 
-    results = sorted(results, key=lambda k: (k['first_name'], k['last_name'], k['content_weight']))[:10]
+    results = sorted(results, key=lambda k: (k['first_name'], k['last_name'], k['content_weight']))
 
     # Add the org types to show
     # for index, contact in enumerate(results):
@@ -424,7 +423,7 @@ def search_organizations(request):
     if search_text:
         org_dao = ctx.get_object('OrganizationDAO')
         try:
-            organizations = org_dao.findmany(search=search_text, num_elements=10,
+            organizations = org_dao.findmany(search=search_text,
                                              sort_fields=['valid', 'combined_weight', 'name'],
                                              valid=True)
             for org in organizations:

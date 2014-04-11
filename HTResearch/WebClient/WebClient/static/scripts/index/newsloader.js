@@ -124,6 +124,7 @@ define(['jquery',
                 self.search(context, function(articles) {
                     // See if there were any articles
                     if (articles.length) {
+                        articles.reverse();
                         // Load articles into ticker
                         var newsCarousel = $('#news-carousel');
                         var newsDiv = $('#news-results');
