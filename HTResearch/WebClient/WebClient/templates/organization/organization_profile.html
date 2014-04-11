@@ -143,7 +143,13 @@
                             {% for contact in organization.contacts %}
                             <a href="/contact/{{ contact.id }}">{{ contact.first_name }} {{ contact.last_name }}</a><br/>
                             {% endfor %}
-                            {% else %}
+                            {% endif %}
+                            {% if organization.user_contacts %}
+                            {% for user in organization.user_contacts %}
+                            <a href="/contact/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a><br/>
+                            {% endfor %}
+                            {% endif %}
+                            {% if not organization.contacts and not organization.user_contacts %}
                             None Available
                             {% endif %}
                         </div>
