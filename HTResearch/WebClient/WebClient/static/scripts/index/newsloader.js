@@ -35,6 +35,21 @@ define(['jquery',
     });
     // General location for news
     var GENERAL_LOCATION = 'India';
+    // Month mapping so it can sort articles
+    var month = {
+        Jan: 0,
+        Feb: 1,
+        Mar: 2,
+        Apr: 3,
+        May: 4,
+        June: 5,
+        July: 6,
+        Aug: 7,
+        Sep: 8,
+        Oct: 9,
+        Nov: 10,
+        Dec: 11
+    };
 
     /**
      * An encapsulation of the Google News carousel.
@@ -106,6 +121,13 @@ define(['jquery',
                 if (!result.error) {
                     var articles = result.feed.entries;
                     articles = cleanNews(articles);
+                    articles.sort(function(d1, d2){
+                       function parseDate(str){
+                           var parts = str.split(' ');
+                           return new Date(parts[3], month[parts[2]], parts[1]);
+                       }
+                       return parseDate(d2['date']) - parseDate(d1['date']);
+                    });
                     articles = articles.filter(isValidArticle);
                     ready(articles);
                 }
@@ -124,7 +146,6 @@ define(['jquery',
                 self.search(context, function(articles) {
                     // See if there were any articles
                     if (articles.length) {
-                        articles.reverse();
                         // Load articles into ticker
                         var newsCarousel = $('#news-carousel');
                         var newsDiv = $('#news-results');
