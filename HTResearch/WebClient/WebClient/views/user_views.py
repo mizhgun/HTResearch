@@ -15,6 +15,7 @@ from HTResearch.Utilities.config import get_config_value
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
+from HTResearch.WebClient.WebClient.views.shared_views import unauthorized
 from HTResearch.WebClient.WebClient.models import LoginForm, SignupForm, InviteForm, ManageForm
 
 #region Globals
@@ -59,7 +60,7 @@ def login(request):
             error = 'No account with the provided username and password exists.'
             logger.error('User with email={0}, password={1} not found'.format(email, password))
 
-    if 'next' not in request.session or request.path != request.session['next']:
+    if 'HTTP_REFERER' in request.META and ('next' not in request.session or request.path != request.session['next']):
         request.session['next'] = request.META['HTTP_REFERER']
     return render(request, 'user/login.html', {'form': form, 'error': error})
 
@@ -68,7 +69,7 @@ def logout(request):
     """Logs the user out. Sends the user to the index page."""
     if 'user_id' not in request.session:
         logger.error('Bad request made for logout without login')
-        return HttpResponseRedirect('/')
+        return unauthorized(request)
 
     user_id = request.session['user_id']
     logger.info('Logging out user={0}'.format(user_id))
@@ -87,7 +88,7 @@ def signup(request):
     if 'user_id' in request.session:
         user_id = request.session['user_id']
         logger.error('Bad request for signup made by user={0}'.format(user_id))
-        return HttpResponseRedirect('/')
+        return unauthorized(request)
 
     error = ''
     form = SignupForm(request.POST or None)
@@ -193,7 +194,7 @@ def manage_account(request):
                 request.session['name'] = ret_user.first_name + ' ' + ret_user.last_name
                 request.session['last_modified'] = datetime.utcnow()
                 request.session['account_type'] = ret_user.account_type
-            except Exception as e:
+            except:
                 logger.error('Error occurred during account update for user={0}'.format(user_id))
                 error = 'Oops! We had a little trouble updating your account. Please try again later.'
     return render(request, 'user/manage.html', {'form': form, 'error': error, 'success': success})
@@ -208,7 +209,7 @@ def send_invite(request):
     """
     if 'user_id' not in request.session:
         logger.error('Request made for send_invite without login')
-        return HttpResponseRedirect('/login')
+        return unauthorized(request)
     else:
         user_id = request.session['user_id']
 

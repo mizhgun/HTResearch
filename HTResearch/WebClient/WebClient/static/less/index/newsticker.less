@@ -18,18 +18,23 @@
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 200px;
 }
 
-.news-panel .btn-regional:not(.active) i {
+.news-panel .btn-regional:not(.active) span {
     color: #888;
 }
 
-.news-panel .btn-regional:not(.active):hover i {
-    color: #8aa;
+.news-panel .btn-regional:not(.active):hover span {
+    color: darken(#888, 10%);
 }
 
-.news-panel .btn-regional.active i {
+.news-panel .btn-regional.active span {
     color: @ht-light-orange;
+}
+
+.news-panel .btn-regional span {
+  line-height: inherit;
 }
 
 .news-panel .news-header {

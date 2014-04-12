@@ -11,7 +11,7 @@
         <div class="header-content">
             <div class="container">
                 <h1>
-                {{ organization.name }} {% if can_edit %}<a id="edit-btn" data-toggle="tooltip" title="Edit"
+                {{ organization.name }} {% if can_edit %}<a id="edit-btn" class="pull-right" data-toggle="tooltip" title="Edit"
                                                             href="/edit-organization/{{ organization.id }}">
                     <span class="fa fa-pencil-square"></span>
                     </a>{% endif %}
