@@ -1,17 +1,30 @@
 body {
-  overflow: hidden;
-  display: table;
-}
-img {
   width: 100%;
-  position: fixed;
+  background: url("/static/images/welcome.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
 }
-div {
-  text-align: center;
+#wrapper {
+  height: 900px;
+  color: white;
+  text-shadow: 0.1em 0.1em 0.5em #000;
+}
+#wrapper h1 {
+  font-size: 400%;
+}
+#wrapper p {
+  margin-top: 50px;
+  font-size: 250%;
+}
+.content {
   position: relative;
+  top: 45%;
 }
-.container {
-  display: table-cell;
-  vertical-align: middle;
-  padding: 100px;
+a {
+  color: #999999;
+}
+a:hover,
+a:focus {
+  color: #cccccc;
+  text-decoration: none;
 }
