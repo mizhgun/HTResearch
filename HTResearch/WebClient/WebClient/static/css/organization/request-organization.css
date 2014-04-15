@@ -1,0 +1,4 @@
+#help-text:hover,
+#help-text:focus {
+  text-decoration: none;
+}
