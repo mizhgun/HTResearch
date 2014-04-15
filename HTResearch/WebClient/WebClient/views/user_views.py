@@ -220,6 +220,7 @@ def send_invite(request):
     if request.method == 'POST':
         if form.is_valid():
             to = form.cleaned_data['email']
+            name = "{0} {1}".format(request.session['first_name'], request.session['last_name'])
 
             logger.info('Request made to invite email={0} by user={1}'.format(
                 to, user_id
@@ -228,15 +229,24 @@ def send_invite(request):
             if 'message' in form.cleaned_data:
                 message = form.cleaned_data['message']
 
-            invitation = "Hello! You've just been invited to UNL HT Research by {0} {1}."\
-                .format(request.session['first_name'], request.session['last_name'])
+            invitation = "Hello!<br><br>{0} has invited you to be a part of the Anti-Trafficking Atlas (ATA), a " \
+                         "website that aggregates anti-trafficking information, such as organizations, people, news, " \
+                         "and publications by programmatically pulling data from the web. This site allows " \
+                         "researchers, advocates, and volunteers to search for places to help and people with which " \
+                         "to collaborate. If you sign up for an account, you can also aid in making sure the website " \
+                         "has complete and correct information. Help us make the anti-trafficking efforts of the " \
+                         "world easy to find. Go to <a href=\"unlaht.cloudapp.net\">unlaht.cloudapp.net</a> to sign " \
+                         "up!<br><br>" \
+                         .format(name)
 
             if message:
-                invitation += " They've included a message below:\n\n{0}".format(message)
+                invitation += "{0} says: \"{1}\"<br><br>".format(name, message)
 
-            mail = MIMEText(invitation)
-            mail['Subject'] = 'Come Join UNL HT Research!'
-            mail['From'] = 'UNL HT'
+            invitation += "Thank you,<br><br>The ATA Team"
+
+            mail = MIMEText(invitation, 'html')
+            mail['Subject'] = 'Come join the Anti-Trafficking Atlas!'
+            mail['From'] = 'ATA'
             mail['To'] = to
 
             username = get_config_value("MAIL", "username")
@@ -252,7 +262,7 @@ def send_invite(request):
                     server, port
                 ))
                 s.login(username, password)
-                s.sendmail('UNL.HT@cse.unl.edu', [to], mail.as_string())
+                s.sendmail('ATA@cse.unl.edu', [to], mail.as_string())
                 s.quit()
                 success = 'Your invite has been sent successfully!'
                 logger.info('Invite sent to email={0} by user={1}'.format(
