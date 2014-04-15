@@ -51,9 +51,7 @@ def organization_profile(request, org_id):
         scheme = urlparse(org.organization_url).scheme
 
     type_nums = org['types']
-    org_types = []
-    for org_type in type_nums:
-        org_types.append(OrgTypesEnum.reverse_mapping[org_type].title())
+    org_types = [OrgTypesEnum.reverse_mapping[t].title() for t in type_nums if t != OrgTypesEnum.UNKNOWN]
 
     facebook_str = None
     if org.facebook:
