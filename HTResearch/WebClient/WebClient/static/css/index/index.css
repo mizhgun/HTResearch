@@ -62,10 +62,9 @@
   box-shadow: none;
   -ms-box-shadow: none;
   -moz-box-shadow: none;
-  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 200px;
+  width: 100%;
 }
 .news-panel .btn-regional:not(.active) span {
   color: #888;

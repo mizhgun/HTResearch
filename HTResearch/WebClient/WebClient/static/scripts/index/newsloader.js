@@ -12,7 +12,7 @@ define(['jquery',
     // Maximum number of news articles to retrieve
     var NEWS_COUNT = 10;
     // Url of news feed
-    var NEWS_URL = 'https://news.google.com/news/feeds?output=rss&num=' + NEWS_COUNT + '&q=';
+    var NEWS_URL = 'https://news.google.com/news/feeds?output=rss&scoring=n&num=' + NEWS_COUNT + '&q=';
     // Base search terms for trafficking news
     var BASE_TERMS = [
         'prostitute',
@@ -35,21 +35,6 @@ define(['jquery',
     });
     // General location for news
     var GENERAL_LOCATION = 'India';
-    // Month mapping so it can sort articles
-    var MONTHS = {
-        Jan: 0,
-        Feb: 1,
-        Mar: 2,
-        Apr: 3,
-        May: 4,
-        Jun: 5,
-        Jul: 6,
-        Aug: 7,
-        Sep: 8,
-        Oct: 9,
-        Nov: 10,
-        Dec: 11
-    };
 
     /**
      * An encapsulation of the Google News carousel.
@@ -121,13 +106,6 @@ define(['jquery',
                 if (!result.error) {
                     var articles = result.feed.entries;
                     articles = cleanNews(articles);
-                    articles.sort(function(d1, d2){
-                       function parseDate(str){
-                           var parts = str.split(' ');
-                           return new Date(parts[3], MONTHS[parts[2]], parts[1]);
-                       }
-                       return parseDate(d2['date']) - parseDate(d1['date']);
-                    });
                     articles = articles.filter(isValidArticle);
                     ready(articles);
                 }
