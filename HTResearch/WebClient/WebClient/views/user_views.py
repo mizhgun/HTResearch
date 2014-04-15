@@ -219,6 +219,7 @@ def send_invite(request):
     if request.method == 'POST':
         if form.is_valid():
             to = form.cleaned_data['email']
+            name = "{0} {1}".format(request.session['first_name'], request.session['last_name'])
 
             logger.info('Request made to invite email={0} by user={1}'.format(
                 to, user_id
@@ -227,22 +228,22 @@ def send_invite(request):
             if 'message' in form.cleaned_data:
                 message = form.cleaned_data['message']
 
-            invitation = "Hello! You've just been invited to the Anti-Trafficking Atlas by {0} {1}. " \
-                         .format(request.session['first_name'], request.session['last_name'])
+            invitation = "Hello!<br><br>{0} has invited you to be a part of the Anti-Trafficking Atlas (ATA), a " \
+                         "website that aggregates anti-trafficking information, such as organizations, people, news, " \
+                         "and publications by programmatically pulling data from the web. This site allows " \
+                         "researchers, advocates, and volunteers to search for places to help and people with which " \
+                         "to collaborate. If you sign up for an account, you can also aid in making sure the website " \
+                         "has complete and correct information. Help us make the anti-trafficking efforts of the " \
+                         "world easy to find. Go to <a href=\"unlaht.cloudapp.net\">unlaht.cloudapp.net</a> to sign " \
+                         "up!<br><br>" \
+                         .format(name)
 
             if message:
-                invitation += "They've included a message below:\n\n{0}\n\n".format(message)
+                invitation += "{0} says: \"{1}\"<br><br>".format(name, message)
 
-            invitation += "You can sign up at unlaht.cloudapp.net.\n\nWhat is it?\n\tThe Anti-Trafficking Atlas is " \
-                          "a website that indexes data about anti-human trafficking organizations, contacts, and " \
-                          "publications. Users can use the data to connect with other advocates, researchers, and "\
-                          "volunteers and find a place to help in the right field and area of the globe for you.\n\n" \
-                          "Why sign up?\n\t\"Collaborator\" account types can view all of the data " \
-                          "about organizations, all of the contact data that was retrieved through our web scrapers, " \
-                          "and all publications. Those with \"Contributor\" accounts can edit, add, and flag " \
-                          "information to make the data more reliable."
+            invitation += "Thank you,<br><br>The ATA Team"
 
-            mail = MIMEText(invitation)
+            mail = MIMEText(invitation, 'html')
             mail['Subject'] = 'Come join the Anti-Trafficking Atlas!'
             mail['From'] = 'ATA'
             mail['To'] = to
