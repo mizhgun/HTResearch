@@ -1,15 +1,15 @@
 {% extends "shared/error.html" %}
 
 {% block imports %}
-    <title>403 Error!</title>
+    <title>500 Error!</title>
 {% endblock %}
 
 {% block content %}
     <div class="header">
-        <h1>Sad panda! (403)</h1>
+        <h1>Sad panda! (500)</h1>
         <p>
-            Looks like you're not authorized to view this page. Sign up or login
-            to find what you're looking for.
+            Looks like the page you're looking for is having some issues.
+            Try hitting up one of these ones.
         </p>
     </div>
     <div class="guidance">
@@ -20,16 +20,16 @@
                     <h4>Go Home</h4>
                 </div>
             </a>
-            <a href="/login/" alt="Login">
+            <a href="/get-started/" alt="About">
                 <div class="col-xs-4">
-                    <span class="fa fa-fw fa-4x fa-sign-in"></span><br/>
-                    <h4>Login</h4>
+                    <span class="fa fa-fw fa-4x fa-users"></span><br/>
+                    <h4>Get Started</h4>
                 </div>
             </a>
-            <a href="/signup/" alt="Sign Up">
+            <a href="/statistics/" alt="Get Started">
                 <div class="col-xs-4">
-                    <span class="fa fa-fw fa-4x fa-level-up"></span><br/>
-                    <h4>Sign Up</h4>
+                    <span class="fa fa-fw fa-4x fa-bar-chart-o"></span><br/>
+                    <h4>Statistics</h4>
                 </div>
             </a>
         </div>
