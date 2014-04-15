@@ -36,7 +36,7 @@ define(['jquery',
     // General location for news
     var GENERAL_LOCATION = 'India';
     // Month mapping so it can sort articles
-    var month = {
+    var MONTHS = {
         Jan: 0,
         Feb: 1,
         Mar: 2,
@@ -124,7 +124,7 @@ define(['jquery',
                     articles.sort(function(d1, d2){
                        function parseDate(str){
                            var parts = str.split(' ');
-                           return new Date(parts[3], month[parts[2]], parts[1]);
+                           return new Date(parts[3], MONTHS[parts[2]], parts[1]);
                        }
                        return parseDate(d2['date']) - parseDate(d1['date']);
                     });
