@@ -12,7 +12,7 @@ define(['jquery',
     // Maximum number of news articles to retrieve
     var NEWS_COUNT = 10;
     // Url of news feed
-    var NEWS_URL = 'https://news.google.com/news/feeds?output=rss&num=' + NEWS_COUNT + '&q=';
+    var NEWS_URL = 'https://news.google.com/news/feeds?output=rss&scoring=n&num=' + NEWS_COUNT + '&q=';
     // Base search terms for trafficking news
     var BASE_TERMS = [
         'prostitute',
@@ -124,7 +124,6 @@ define(['jquery',
                 self.search(context, function(articles) {
                     // See if there were any articles
                     if (articles.length) {
-                        articles.reverse();
                         // Load articles into ticker
                         var newsCarousel = $('#news-carousel');
                         var newsDiv = $('#news-results');
