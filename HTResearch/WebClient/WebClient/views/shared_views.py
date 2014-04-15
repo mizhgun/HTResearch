@@ -1,5 +1,5 @@
 # stdlib imports
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponseForbidden, HttpResponseServerError
 from django.core.context_processors import csrf
 from django.shortcuts import render
 
@@ -18,6 +18,7 @@ def index(request):
     args.update(csrf(request))
     return render(request, 'index/index.html', args)
 
+
 def welcome(request):
     """Sends a request to the Welcome page."""
     return render(request, 'shared/welcome.html')
@@ -30,7 +31,7 @@ def statistics(request):
 def unauthorized(request):
     """Sends a request to the Unauthorized page."""
     html = render(request, 'shared/unauthorized.html')
-    return HttpResponseNotFound(html, status=403)
+    return HttpResponseForbidden(html)
 
 
 def get_started(request):
@@ -38,10 +39,15 @@ def get_started(request):
     return render(request, 'shared/get_started.html')
 
 
-def get_http_404_page(request):
+def not_found(request):
     """Sends a request to the 404 page."""
-    html = render(request, 'shared/404.html')
-    return HttpResponseNotFound(html, status=404)
+    html = render(request, 'shared/not_found.html')
+    return HttpResponseNotFound(html)
+
+
+def server_error(request):
+    html = render(request, 'shared/server_error.html')
+    return HttpResponseServerError(html)
 
 
 def about(request):
