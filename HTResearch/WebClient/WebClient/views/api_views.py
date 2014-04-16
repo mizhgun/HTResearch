@@ -195,10 +195,17 @@ def org_partner_map(request):
         new_pmap = {
             "nodes": [],
             "links": [],
-            "threeps": {
+            "types": {
+                'ADVOCACY': OrgTypesEnum.ADVOCACY,
+                'EDUCATION': OrgTypesEnum.EDUCATION,
+                'GOVERNMENT': OrgTypesEnum.GOVERNMENT,
+                'NGO': OrgTypesEnum.NGO,
                 "PREVENTION": OrgTypesEnum.PREVENTION,
                 "PROTECTION": OrgTypesEnum.PROTECTION,
-                "PROSECUTION": OrgTypesEnum.PROSECUTION
+                "PROSECUTION": OrgTypesEnum.PROSECUTION,
+                'RELIGIOUS': OrgTypesEnum.RELIGIOUS,
+                'RESEARCH': OrgTypesEnum.RESEARCH,
+                'UNKNOWN': OrgTypesEnum.UNKNOWN
             }
         }
         cache.set('partner_map_last_update', datetime.utcnow())
