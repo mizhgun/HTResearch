@@ -231,7 +231,12 @@ require(['shared/analytics',
             data.content_url = "http://scholar.google.com/scholar?hl=en&q="+data.title.replace(/\s/g, '+');
         }
         else {
-            data.url_name = data.content_url;
+            if(data.content_url.length > 30) {
+                data.url_name = data.content_url.substring(0, 30)+'...';
+            }
+            else {
+                data.url_name = data.content_url;
+            }
         }
 
         Modal.createModal(data, '#bs-modal', '#publication-modal-template');
