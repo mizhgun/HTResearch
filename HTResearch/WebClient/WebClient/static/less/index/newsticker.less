@@ -20,23 +20,25 @@
     width: 100%;
 }
 
-.news-panel .btn-regional:not(.active) span {
+.btn-regional span.glyphicon {
     color: #888;
+    &:hover, &:focus {
+      color: darken(#888, 10%);
+    }
 }
 
-.news-panel .btn-regional:not(.active):hover span {
-    color: darken(#888, 10%);
-}
-
-.news-panel .btn-regional.active span {
+.btn-regional.active span.glyphicon {
     color: @ht-light-orange;
+    &:hover, &:focus {
+      color: darken(@ht-light-orange, 10%);
+    }
 }
 
-.news-panel .btn-regional span {
+.btn-regional span {
   line-height: inherit;
 }
 
-.news-panel .news-header {
+.news-header {
     white-space: nowrap;
     height: 36px;
     color: #fff;
@@ -50,7 +52,7 @@
     text-overflow: ellipsis;
 }
 
-.news-panel .news-header h2 {
+.news-header h2 {
     display: inline;
     color: #fff;
     font-size: 24px;
