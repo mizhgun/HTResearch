@@ -13,7 +13,7 @@ from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Test.Mocks.connection import MockDBConnection
-from HTResearch.Test.Mocks.dao import MockURLMetadataDAO
+from HTResearch.Test.Mocks.dao import MockURLMetadataDAO, MockContactDAO
 
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
@@ -121,6 +121,10 @@ class TestableDAOContext(DAOContext):
     @Object()
     def RegisteredDBConnection(self):
         return MockDBConnection
+
+    @Object()
+    def RegisteredContactDAO(self):
+        return MockContactDAO
 
 
 def file_to_response(test_file):
