@@ -150,6 +150,14 @@ class DocumentScraperContext(PythonConfig):
         return OrgTypeScraper
 
     @Object()
+    def RegisteredOrgFacebookScraper(self):
+        return OrgFacebookScraper
+
+    @Object()
+    def RegisteredOrgTwitterScraper(self):
+        return OrgTwitterScraper
+
+    @Object()
     def RegisteredOrgUrlScraper(self):
         return OrgUrlScraper
 
