@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/static/css/lib/bootstrap/bootstrap.css">
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <link href="/static/css/shared/global.css" rel="stylesheet">
+    <link href="/static/css/lib/font-awesome/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/shared/errors.css"/>
+    <script type="application/javascript" src="/static/scripts/lib/require.js"></script>
+    <script type="application/javascript" src="/static/scripts/requireconfig.js"></script>
+    {% block imports %}
+    {% endblock %}
+</head>
+<body>
+    <div id="wrapper">
+        <div class="content container">
+            <div class="row">
+                <div class="col-xs-5 col-xs-offset-1">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+                <div class="col-xs-3">
+                    <img src="/static/images/sad_panda.png"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "shared/footer.html" %}
+</body>
+</html>

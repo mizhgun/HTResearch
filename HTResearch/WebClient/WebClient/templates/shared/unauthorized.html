@@ -1,11 +1,37 @@
-{% extends "shared/global.html" %}
+{% extends "shared/error.html" %}
+
+{% block imports %}
+    <title>403 Error!</title>
+{% endblock %}
 
 {% block content %}
-    <div id="wrapper">
-        <div class="container jumbotron well text-center">
-            <h1> You are not authorized to access this page!</h1>
-            <h3> Log in for authorization!</h3>
-            <img src="../../static/images/unauthorized.png" alt="stop!">
+    <div class="header">
+        <h1>Sad panda! (403)</h1>
+        <p>
+            Looks like you're not authorized to view this page. Sign up or login
+            to find what you're looking for.
+        </p>
+    </div>
+    <div class="guidance">
+        <div class="row">
+            <a href="/" alt="Go Home">
+                <div class="col-xs-4">
+                    <span class="fa fa-fw fa-4x fa-home"></span><br/>
+                    <h4>Go Home</h4>
+                </div>
+            </a>
+            <a href="/login/" alt="Login">
+                <div class="col-xs-4">
+                    <span class="fa fa-fw fa-4x fa-sign-in"></span><br/>
+                    <h4>Login</h4>
+                </div>
+            </a>
+            <a href="/signup/" alt="Sign Up">
+                <div class="col-xs-4">
+                    <span class="fa fa-fw fa-4x fa-level-up"></span><br/>
+                    <h4>Sign Up</h4>
+                </div>
+            </a>
         </div>
     </div>
 {% endblock %}

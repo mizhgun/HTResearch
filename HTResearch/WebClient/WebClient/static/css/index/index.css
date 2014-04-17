@@ -62,20 +62,28 @@
   box-shadow: none;
   -ms-box-shadow: none;
   -moz-box-shadow: none;
-  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 100%;
 }
-.news-panel .btn-regional:not(.active) i {
+.btn-regional span.glyphicon {
   color: #888;
 }
-.news-panel .btn-regional:not(.active):hover i {
-  color: #8aa;
+.btn-regional span.glyphicon:hover,
+.btn-regional span.glyphicon:focus {
+  color: #6f6f6f;
 }
-.news-panel .btn-regional.active i {
+.btn-regional.active span.glyphicon {
   color: #ff9e00;
 }
-.news-panel .news-header {
+.btn-regional.active span.glyphicon:hover,
+.btn-regional.active span.glyphicon:focus {
+  color: #cc7e00;
+}
+.btn-regional span {
+  line-height: inherit;
+}
+.news-header {
   white-space: nowrap;
   height: 36px;
   color: #fff;
@@ -88,7 +96,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.news-panel .news-header h2 {
+.news-header h2 {
   display: inline;
   color: #fff;
   font-size: 24px;
@@ -199,13 +207,30 @@
 #news-carousel .article-content {
   display: none;
 }
+#search-results-div ::-webkit-scrollbar {
+  width: 12px;
+}
+#search-results-div ::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background: #fff;
+}
+#search-results-div ::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
 #search-results-div {
-  overflow-y: auto;
+  position: relative;
+  overflow: hidden;
   width: 100%;
   margin-top: 1px;
   height: calc(100% - 55px);
   line-height: 1.5em;
   border-radius: 5px;
+}
+#search-results-div-scroll {
+  overflow-y: scroll;
+  height: 100%;
 }
 #search-results-div h2 a {
   display: inline-block;
@@ -219,6 +244,14 @@
 }
 #search-results-div .panel-heading {
   line-height: 2;
+  width: 100%;
+}
+/* Position attribute set when jquery.slinky.js changes the position to absolute
+   We have to change the width from 100% to this so that the scrollbar doesn't
+   get covered.
+*/
+#search-results-div .panel-heading[style~="position:"] {
+  width: calc(100% - 1.1em);
 }
 #search-box {
   line-height: 2;
@@ -230,6 +263,9 @@
   -webkit-border-bottom-left-radius: 5px;
   -moz-border-top-left-radius: 5px;
   -moz-border-bottom-left-radius: 5px;
+}
+.search-results-panel {
+  width: 100%;
 }
 .search-results-panel h2,
 #search-box {

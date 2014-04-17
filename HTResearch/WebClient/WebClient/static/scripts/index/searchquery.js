@@ -3,7 +3,7 @@
  *
  * @module searchquery
  */
-define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
+define(['underscore', 'jquery', 'jquery-ui', 'jquery.slinky'], function(_, $) {
     var lastSearchedText;
 
     var searchBox = $('#search-box');
@@ -30,6 +30,15 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     $(document).on('mouseenter', '#search-results-div li', function() {
         searchResultsContainer.find('li').removeClass('active');
         $(this).addClass('active');
+    });
+
+    searchResultsContainer.slinky();
+
+    $('#search-results-div-scroll > .panel > .panel-heading').click(function() {
+        var count = $.inArray(this, $('#search-results-div-scroll > .panel:visible > .panel-heading'));
+        var paddingTop = $(this).parent().innerHeight() - $(this).parent().height();
+        $(this).parent().parent().scrollTop($(this).parent().parent().scrollTop() +
+            ($(this).parent().position().top - (paddingTop * count)));
     });
 
     // Move within search results by using up/down keys
@@ -59,10 +68,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         selection.addClass('active');
 
         if(selection.length) {
-            // Make sure panel containing selection is open
-            selection.closest('.collapse').collapse('show');
-
-            // Scroll to selection
+           // Scroll to selection
             var top = selection.offset().top - searchResultsContainer.offset().top - searchResultsContainer.height() / 2
                 + selection.height() / 2 + searchResultsContainer.scrollTop();
             searchResultsContainer.animate({ scrollTop: top }, { duration: 200, queue: false });
@@ -97,13 +103,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
 
         map.removeAllMarkers();
 
-        // Change the icon back if a search is performed
-        var icon = $('.collapse-icon');
-        if (icon.hasClass('glyphicon-collapse-down')){
-            icon.removeClass('glyphicon-collapse-down');
-            icon.addClass('glyphicon-collapse-up');
-        }
-
         var searchDiv = $("#search-box-div");
         if (searchText) {
             searchDiv.css("pointer-events", "auto");
@@ -126,7 +125,10 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                         endAjaxSearch();
                         // Select first result
                         setSelection(0);
-                    }, searchItem);
+                    }, searchItem, function(fail) {
+                        // Search end
+                        endAjaxSearch();
+                    });
                 } else {
                     // Hide panel
                     $(searchItem.toggleSelector).closest('.panel').hide();
@@ -140,7 +142,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     }
 
     // Default ajax search function
-    function ajaxSearch(searchQuery, ready, searchItem) {
+    function ajaxSearch(searchQuery, ready, searchItem, fail) {
         // Do an ajax call with the given url
         $.ajax({
             type: 'GET',
@@ -157,6 +159,7 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         }).fail(function(data) {
             console.log(searchItem.name, 'search failed');
                 $('.empty-panel').text('Error occurred: HTTP '+data.status);
+            fail(data);
             ready([]);
         });
     }
@@ -194,9 +197,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             });
             if (results.length) {
                 $(searchItem.toggleSelector).closest('.panel').show();
-                $(searchItem.toggleSelector).attr('data-toggle', 'collapse');
-                $(searchItem.toggleSelector).removeClass('disabled');
-                $(searchItem.collapseSelector).collapse('show');
             } else {
                 $(searchItem.toggleSelector).closest('.panel').hide();
             }
@@ -207,8 +207,8 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         } else {
             // Hide panel
             $(searchItem.toggleSelector).closest('.panel').hide();
-            checkForResults();
         }
+        checkForResults();
     }
 
     function checkForResults() {

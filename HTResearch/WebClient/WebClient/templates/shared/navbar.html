@@ -10,12 +10,13 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li id="about-nav"><a href="/about/">About</a></li>
-                <li id="get-started-nav"><a href="/get-started/">Get Started</a></li>
-                <li id="statistics-nav"><a href="/statistics/">Statistics</a></li>
+                <li id="statistics-nav"><a href="/statistics/"><span class="fa fa-bar-chart-o"></span> Statistics</a></li>
+                {% if user_id %}
+                    <li id="request-org-nav"><a href="/request-organization/"><span class="glyphicon glyphicon-cloud-upload"></span> Request Organization</a></li>
+                {% endif %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        Share
+                        <span class="glyphicon glyphicon-share-alt"></span> Share
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
@@ -23,19 +24,20 @@
                         <li><a id="twitter" class="share"><span class="fa fa-twitter fa-fw"></span>Twitter</a></li>
                         <li><a id="gplus" class="share"><span class="fa fa-google-plus fa-fw"></span>Google+</a></li>
                         <li><a id="linkedin" class="share"><span class="fa fa-linkedin fa-fw"></span>LinkedIn</a></li>
+                        {% if user_id %}
+                            <li id="invite-nav"><a href="/invite/"><span class="fa fa-envelope fa-fw"></span>Invite</a></li>
+                        {% endif %}
                     </ul>
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                {% if username %}
-                    <li id="request-org-nav"><a href="/request-organization/"><span class="glyphicon glyphicon-cloud-upload"></span> Request Organization</a></li>
-                    <li id="invite-nav"><a href="/invite/"><span class="glyphicon glyphicon-send"></span> Send Invite</a></li>
-                {% endif %}
-                {% if username %}
+                {% if user_id %}
+                    <li id="name">
+                        <a href="/contact/{{user_id}}">{{ username }}</a>
+                    </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            Welcome back, {{ username }}!
-                            <b class="caret"></b>
+                            <span class="glyphicon glyphicon-cog"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="/account-settings/">Account Preferences</a></li>
@@ -50,6 +52,15 @@
                         <a href="/signup/">Sign Up</a>
                     </li>
                 {% endif %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="fa fa-question-circle"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li id="get-started-nav"><a href="/get-started/">Tutorial</a></li>
+                        <li id="about-nav"><a href="/about/">About</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>

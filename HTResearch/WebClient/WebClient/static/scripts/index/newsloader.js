@@ -12,7 +12,7 @@ define(['jquery',
     // Maximum number of news articles to retrieve
     var NEWS_COUNT = 10;
     // Url of news feed
-    var NEWS_URL = 'https://news.google.com/news/feeds?output=rss&num=' + NEWS_COUNT + '&q=';
+    var NEWS_URL = 'https://news.google.com/news/feeds?output=rss&scoring=n&num=' + NEWS_COUNT + '&q=';
     // Base search terms for trafficking news
     var BASE_TERMS = [
         'prostitute',
@@ -98,7 +98,7 @@ define(['jquery',
          */
         search: function(searchQuery, ready) {
             var self = this;
-            var query = GENERAL_LOCATION + ' ' + BASE_QUERY + (searchQuery ? ' ' + searchQuery : '');
+            var query = (searchQuery ? searchQuery : GENERAL_LOCATION) + ' ' + BASE_QUERY;
             var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
             self.newsFeed = new google.feeds.Feed(feedParam);
             self.newsFeed.setNumEntries(10);

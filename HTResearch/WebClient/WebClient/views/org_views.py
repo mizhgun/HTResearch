@@ -3,6 +3,7 @@ from urlparse import urlparse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from springpython.context import ApplicationContext
+import re
 
 # project imports
 from HTResearch.DataAccess.dto import URLMetadataDTO
@@ -14,7 +15,7 @@ from HTResearch.Utilities.logutil import LoggingSection, get_logger
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.url_tools import UrlUtility
 from HTResearch.DataModel.enums import OrgTypesEnum
-from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
+from HTResearch.WebClient.WebClient.views.shared_views import not_found, unauthorized
 from HTResearch.WebClient.WebClient.models import RequestOrgForm, EditOrganizationForm
 
 #region Globals
@@ -34,29 +35,43 @@ def organization_profile(request, org_id):
         A rendered page of the Organization Profile.
     """
     user_id = request.session['user_id'] if 'user_id' in request.session else None
+    account_type = request.session['account_type'] if 'account_type' in request.session else None
 
     logger.info('Request made for profile of org={0} by user={1}'.format(org_id, user_id))
     org_dao = ctx.get_object('OrganizationDAO')
 
     try:
         org = org_dao.find(id=org_id)
-    except Exception as e:
+    except:
         logger.error('Exception encountered on organization lookup for org={0} by user={1}'.format(org_id, user_id))
-        print e.message
-        return get_http_404_page(request)
+        return not_found(request)
 
     scheme = ""
     if org.organization_url is not None:
         scheme = urlparse(org.organization_url).scheme
 
     type_nums = org['types']
-    org_types = []
-    for org_type in type_nums:
-        org_types.append(OrgTypesEnum.reverse_mapping[org_type].title())
+    org_types = [OrgTypesEnum.reverse_mapping[t].title() for t in type_nums if t != OrgTypesEnum.UNKNOWN]
+
+    facebook_str = None
+    if org.facebook:
+        fb_regex = re.compile('(?:(?:http|https):\/\/)?(?:www.)?'
+                                'facebook.com\/(?:(?:\w)*#!\/)?'
+                                '(?:pages\/)?(?:[?\w\-]*\/)?'
+                                '(?:profile.php\?id=(?=\d.*))?([\w\-]*)?')
+        fb_match = fb_regex.match(org.facebook)
+        facebook_str = fb_match.group(1) if fb_match else None
+
+    twitter_str = "@" + org.twitter.split('/')[-1] if org.twitter else None
+
+    can_edit = account_type == AccountType.CONTRIBUTOR
 
     params = {"organization": org,
               "scheme": scheme,
               "types": org_types,
+              "facebook": facebook_str,
+              "twitter": twitter_str,
+              "can_edit": can_edit,
               }
     return render(request, 'organization/organization_profile.html', params)
 
@@ -70,7 +85,7 @@ def request_organization(request):
     """
     if 'user_id' not in request.session:
         logger.error('Bad request made for organization seed without login')
-        HttpResponseRedirect('/login')
+        return unauthorized(request)
     else:
         user_id = request.session['user_id']
 
@@ -111,21 +126,20 @@ def edit_organization(request, org_id):
         A rendered page containing the Edit Organization form.
     """
     if 'user_id' not in request.session:
-        logger.error('Bad request made to edit org={0} without login'.format(org_id))
-        return HttpResponseRedirect('/login')
-    elif 'account_type' not in request.session or request.session['account_type'] != AccountType.CONTRIBUTOR:
-        user_id = request.session['user_id']
-        logger.error('Bad request made to edit org={0} by user={1}: Not a contributor account'.format(org_id, user_id))
-        return HttpResponseRedirect('/')
+        logger.error('Request to edit organization={0} without login'.format(org_id))
+        return unauthorized(request)
     else:
         user_id = request.session['user_id']
+        if 'account_type' not in request.session or request.session['account_type'] != AccountType.CONTRIBUTOR:
+            logger.error('Request to edit organization={0} without credentials by user={1}'.format(org_id, user_id))
+            return unauthorized(request)
 
     try:
         dao = ctx.get_object('OrganizationDAO')
         org = dao.find(id=org_id)
     except:
         logger.error('Exception encountered on organization lookup for org={0} by user={1}'.format(org_id, user_id))
-        return get_http_404_page()
+        return not_found()
 
     emails = org.emails if org.emails else []
     phone_numbers = org.phone_numbers if org.phone_numbers else []

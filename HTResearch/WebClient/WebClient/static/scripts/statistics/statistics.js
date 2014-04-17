@@ -2,6 +2,8 @@ require(['jquery', 'shared/analytics', 'datavis/partner-map', 'datavis/org-break
     function($, Analytics, PartnerMap, OrgBreakdown) {
     'use strict';
 
+    $('#statistics-nav').addClass('active');
+
     $.get('/api/org-count/', function(data) {
         $('#org-count').text(data.count)
     });
