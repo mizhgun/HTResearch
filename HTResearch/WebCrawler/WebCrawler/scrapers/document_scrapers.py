@@ -17,10 +17,12 @@ from utility_scrapers import *
 
 class ContactScraper():
     """A class that uses the OrgContactsScraper to find contacts associated with a particular organization."""
+    def __init__(self):
+        self.org_contact_scraper = OrgContactsScraper()
+
     def parse(self, response):
         #get all the values out of the dictionary that the Contact scraper returns
-        org_contact_scraper = OrgContactsScraper()
-        contact_dicts = org_contact_scraper.parse(response)
+        contact_dicts = self.org_contact_scraper.parse(response)
         contacts = []
         for name in contact_dicts.iterkeys():
             contact = ScrapedContact()
