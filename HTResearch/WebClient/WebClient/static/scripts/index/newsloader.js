@@ -98,7 +98,7 @@ define(['jquery',
          */
         search: function(searchQuery, ready) {
             var self = this;
-            var query = GENERAL_LOCATION + ' ' + BASE_QUERY + (searchQuery ? ' ' + searchQuery : '');
+            var query = (searchQuery ? searchQuery : GENERAL_LOCATION) + ' ' + BASE_QUERY;
             var feedParam = NEWS_URL + query.split(/,?\s/).join('+');
             self.newsFeed = new google.feeds.Feed(feedParam);
             self.newsFeed.setNumEntries(10);
