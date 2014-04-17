@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from HTResearch.DataModel.enums import AccountType
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.logutil import LoggingSection, get_logger
-from HTResearch.WebClient.WebClient.views.shared_views import get_http_404_page
+from HTResearch.WebClient.WebClient.views.shared_views import not_found
 from HTResearch.WebClient.WebClient.views.shared_views import unauthorized
 from HTResearch.WebClient.WebClient.models import EditContactForm
 
@@ -36,10 +36,9 @@ def contact_profile(request, id):
 
     try:
         user = user_dao.find(id=id)
-
     except:
         logger.error('Exception encountered on user lookup for user={0}'.format(id))
-        return get_http_404_page(request)
+        return not_found(request)
 
     if user and not user_id:
         logger.warn('Unauthorized request made for user={0}'.format(user.id))
@@ -51,7 +50,7 @@ def contact_profile(request, id):
         contact = contact_dao.find(id=id)
     except:
         logger.error('Exception encountered on contact lookup for contact={0}'.format(id))
-        return get_http_404_page(request)
+        return not_found(request)
 
     if contact:
         results = contact.__dict__['_data']
@@ -66,7 +65,7 @@ def contact_profile(request, id):
     except:
         logger.error('Exception encountered on organization lookup for organization={0}'
                      .format(results['organization'].id))
-        return get_http_404_page(request)
+        return not_found(request)
 
     can_edit = contact and account_type == AccountType.CONTRIBUTOR
 
@@ -87,11 +86,13 @@ def edit_contact(request, contact_id):
         A rendered page containing the Edit Contact form.
     """
     if 'user_id' not in request.session:
-        return HttpResponseRedirect('/login')
-    elif 'account_type' not in request.session or request.session['account_type'] != AccountType.CONTRIBUTOR:
-        return HttpResponseRedirect('/')
+        logger.error('Request to edit contact={0} without login'.format(contact_id))
+        return unauthorized(request)
     else:
         user_id = request.session['user_id']
+        if 'account_type' not in request.session or request.session['account_type'] != AccountType.CONTRIBUTOR:
+            logger.error('Request to edit contact={0} without credentials by user={1}'.format(contact_id, user_id))
+            return unauthorized(request)
 
     contact_dao = ctx.get_object('ContactDAO')
 
@@ -102,7 +103,7 @@ def edit_contact(request, contact_id):
         contact = contact_dao.find(id=contact_id)
     except:
         logger.error('Exception encountered on contact lookup for contact={0} by user={1}'.format(contact_id, user_id))
-        return get_http_404_page(request)
+        return not_found(request)
 
     phones = contact.phones if contact.phones else []
 
