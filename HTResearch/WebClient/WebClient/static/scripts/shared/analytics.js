@@ -14,6 +14,7 @@ define(function() {
               m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
               })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
+            //TODO: change this to 'atatlas.org' upon release
             ga('create', 'UA-48869339-1', 'unlhtprod.cloudapp.net');
             ga('send', 'pageview');
         }
