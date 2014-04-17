@@ -1,7 +1,6 @@
 # stdlib imports
-from datetime import datetime
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib.auth.hashers import make_password, check_password
 from email.mime.text import MIMEText
 import smtplib
@@ -55,7 +54,8 @@ def login(request):
                 request.session['last_name'] = str(user.last_name)
                 request.session['account_type'] = user.account_type
                 request.session.set_expiry(SESSION_TIMEOUT)
-                return HttpResponseRedirect(request.session['next'] or '/')
+                route = request.session['next'] if 'next' in request.session else '/'
+                return HttpResponseRedirect(route)
 
             error = 'No account with the provided username and password exists.'
             logger.error('User with email={0}, password={1} not found'.format(email, password))
@@ -149,7 +149,7 @@ def manage_account(request):
     """
     if 'user_id' not in request.session:
         logger.error('Request made for account-preferences without login')
-        return HttpResponseRedirect('/login')
+        return HttpResponsePermanentRedirect('/login')
 
     user_id = request.session['user_id']
     user_dao = ctx.get_object('UserDAO')
