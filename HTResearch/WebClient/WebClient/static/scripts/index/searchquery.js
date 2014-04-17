@@ -125,7 +125,10 @@ define(['underscore', 'jquery', 'jquery-ui', 'jquery.slinky'], function(_, $) {
                         endAjaxSearch();
                         // Select first result
                         setSelection(0);
-                    }, searchItem);
+                    }, searchItem, function(fail) {
+                        // Search end
+                        endAjaxSearch();
+                    });
                 } else {
                     // Hide panel
                     $(searchItem.toggleSelector).closest('.panel').hide();
@@ -139,7 +142,7 @@ define(['underscore', 'jquery', 'jquery-ui', 'jquery.slinky'], function(_, $) {
     }
 
     // Default ajax search function
-    function ajaxSearch(searchQuery, ready, searchItem) {
+    function ajaxSearch(searchQuery, ready, searchItem, fail) {
         // Do an ajax call with the given url
         $.ajax({
             type: 'GET',
@@ -156,6 +159,7 @@ define(['underscore', 'jquery', 'jquery-ui', 'jquery.slinky'], function(_, $) {
         }).fail(function(data) {
             console.log(searchItem.name, 'search failed');
                 $('.empty-panel').text('Error occurred: HTTP '+data.status);
+            fail(data);
             ready([]);
         });
     }
