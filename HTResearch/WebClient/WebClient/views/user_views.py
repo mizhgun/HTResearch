@@ -88,7 +88,7 @@ def signup(request):
     if 'user_id' in request.session:
         user_id = request.session['user_id']
         logger.error('Bad request for signup made by user={0}'.format(user_id))
-        return unauthorized(request)
+        return HttpResponseRedirect('/')
 
     error = ''
     form = SignupForm(request.POST or None)
