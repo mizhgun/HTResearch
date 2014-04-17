@@ -1,5 +1,4 @@
 # stdlib imports
-from datetime import datetime
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password
@@ -55,7 +54,8 @@ def login(request):
                 request.session['last_name'] = str(user.last_name)
                 request.session['account_type'] = user.account_type
                 request.session.set_expiry(SESSION_TIMEOUT)
-                return HttpResponseRedirect(request.session['next'] or '/')
+                route = request.session['next'] if 'next' in request.session else '/'
+                return HttpResponseRedirect(route)
 
             error = 'No account with the provided username and password exists.'
             logger.error('User with email={0}, password={1} not found'.format(email, password))
@@ -88,7 +88,7 @@ def signup(request):
     if 'user_id' in request.session:
         user_id = request.session['user_id']
         logger.error('Bad request for signup made by user={0}'.format(user_id))
-        return unauthorized(request)
+        return HttpResponseRedirect('/')
 
     error = ''
     form = SignupForm(request.POST or None)

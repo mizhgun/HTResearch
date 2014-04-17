@@ -5,13 +5,15 @@ from springpython.context import ApplicationContext
 from springpython.config import Object
 
 from HTResearch.Test.Mocks.utility_scrapers import *
-from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext
+from HTResearch.Utilities.context import DocumentScraperContext, UtilityScraperContext, UrlMetadataScraperContext,\
+    DAOContext
 from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.link_scraper import PageRankScraper
 from HTResearch.DataAccess.dto import URLMetadataDTO
 from HTResearch.DataModel.model import URLMetadata
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Test.Mocks.connection import MockDBConnection
+from HTResearch.Test.Mocks.dao import MockURLMetadataDAO, MockContactDAO
 
 
 TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources')
@@ -19,40 +21,52 @@ TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resour
 
 class TestableDocumentScraperContext(DocumentScraperContext):
     @Object()
-    def RegisteredOrgNameScraper(self):
-        return MockOrgNameScraper
-
-    @Object()
-    def RegisteredOrgAddressScraper(self):
-        return MockOrgAddressScraper
-
-    @Object()
-    def RegisteredOrgTypeScraper(self):
-        return MockOrgTypeScraper
-
-    @Object()
-    def RegisteredIndianPhoneNumberScraper(self):
-        return MockIndianPhoneNumberScraper
-
-    @Object()
-    def RegisteredUSPhoneNumberScraper(self):
-        return MockUSPhoneNumberScraper
+    def RegisteredContactNameScraper(self):
+        return MockContactNameScraper
 
     @Object()
     def RegisteredEmailScraper(self):
         return MockEmailScraper
 
     @Object()
+    def RegisteredIndianPhoneNumberScraper(self):
+        return MockIndianPhoneNumberScraper
+
+    @Object()
+    def RegisteredKeywordScraper(self):
+        return MockKeywordScraper
+
+    @Object()
+    def RegisteredOrgAddressScraper(self):
+        return MockOrgAddressScraper
+
+    @Object()
     def RegisteredOrgContactsScraper(self):
         return MockOrgContactsScraper
 
     @Object()
-    def RegisteredOrgUrlScraper(self):
-        return MockOrgUrlScraper
+    def RegisteredOrgFacebookScraper(self):
+        return MockOrgFacebookScraper
+
+    @Object()
+    def RegisteredOrgTwitterScraper(self):
+        return MockOrgTwitterScraper
+
+    @Object()
+    def RegisteredOrgNameScraper(self):
+        return MockOrgNameScraper
 
     @Object()
     def RegisteredOrgPartnersScraper(self):
         return MockOrgPartnersScraper
+
+    @Object()
+    def RegisteredOrgTypeScraper(self):
+        return MockOrgTypeScraper
+
+    @Object()
+    def RegisteredOrgUrlScraper(self):
+        return MockOrgUrlScraper
 
     @Object()
     def RegisteredFacebookScraper(self):
@@ -63,8 +77,32 @@ class TestableDocumentScraperContext(DocumentScraperContext):
         return MockOrgTwitterScraper
 
     @Object()
-    def RegisteredKeywordScraper(self):
-        return MockKeywordScraper
+    def RegisteredPublicationAuthorsScraper(self):
+        return MockPublicationAuthorsScraper
+
+    @Object()
+    def RegisteredPublicationDateScraper(self):
+        return MockPublicationDateScraper
+
+    @Object()
+    def RegisteredPublicationPublisherScraper(self):
+        return MockPublicationPublisherScraper
+
+    @Object()
+    def RegisteredPublicationTitleScraper(self):
+        return MockPublicationTitleScraper
+
+    @Object()
+    def RegisteredPublicationTypeScraper(self):
+        return MockPublicationTypeScraper
+
+    @Object()
+    def RegisteredUrlMetadataScraper(self):
+        return MockUrlMetadataScraper
+
+    @Object()
+    def RegisteredUSPhoneNumberScraper(self):
+        return MockUSPhoneNumberScraper
 
 
 class TestableUrlMetadataScraperContext(UrlMetadataScraperContext):
@@ -83,6 +121,10 @@ class TestableDAOContext(DAOContext):
     @Object()
     def RegisteredDBConnection(self):
         return MockDBConnection
+
+    @Object()
+    def RegisteredContactDAO(self):
+        return MockContactDAO
 
 
 def file_to_response(test_file):
@@ -708,11 +750,13 @@ class ScraperTests(unittest.TestCase):
             self.assertIn(test, infos, "URL " + str(test) + " was not found")
 
     def test_contact_scraper(self):
+        ctx = ApplicationContext(TestableDocumentScraperContext())
+
         test_files = [
             "httpwwwprajwalaindiacomcontactushtml",
         ]
 
-        contact_scraper = ContactScraper()
+        contact_scraper = ctx.get_object('ContactScraper')
         contacts = []
 
         for input_file in test_files:
@@ -725,36 +769,12 @@ class ScraperTests(unittest.TestCase):
                     contacts.append(ret)
 
         assert_list = [{
-                           'email': 'lalitha.gollamudi@gmail.com',
-                           'first_name': 'Lalitha',
-                           'last_name': 'Gollamudi',
-                           'organization': {'name': 'PRAJWALA'},
-                           'position': None,
-                           'phones': ['914024410813'],
-                       },
-                       {
-                           'email': 'lavanya.ravulapalli@gmail.com',
-                           'first_name': 'Lavanya',
-                           'last_name': 'Ravulapalli',
-                           'organization': {'name': 'PRAJWALA'},
-                           'position': None,
-                           'phones': []
-                       },
-                       {
-                           'email': 'kmulhauser@consultingwomen.com',
-                           'first_name': 'Karen',
-                           'last_name': 'Mulhuaser',
-                           'organization': {'name': 'PRAJWALA'},
-                           'position': None,
-                           'phones': [],
-                       },
-                       {
-                           'email': 'sunitha_2002@yahoo.com',
-                           'first_name': 'Sunitha',
-                           'last_name': 'Krishnan',
-                           'organization': {'name': 'PRAJWALA'},
-                           'position': 'Chief Functionary',
-                           'phones': ['919848025014'],
+                           'email': 'test',
+                           'first_name': 'test',
+                           'last_name': 'test',
+                           'organization': {'name': 'test'},
+                           'position': 'test',
+                           'phones': ['test'],
                        }]
 
         for test in assert_list:
@@ -780,33 +800,23 @@ class ScraperTests(unittest.TestCase):
                     orgs.append(ret)
 
         assert_list = [{
-                           'name': 'Bombay Teen Challenge',
-                           'types': [
-                               OrgTypesEnum.RELIGIOUS,
-                               OrgTypesEnum.EDUCATION,
-                               OrgTypesEnum.PREVENTION,
-                           ],
-                           'phone_numbers': [
-                               '16157124863',  # US number
-                               '912226042242'  # indian number
-                           ],
-                           'emails': [
-                               'tvarghese@bombayteenchallenge.org',
-                               'kkdevaraj@bombayteenchallenge.org',
-                           ],
-                           'address':
-                               'Mumbai 400052',
-                           'contacts': [
-                               # not yet implemented
-                           ],
-                           'organization_url': 'bombayteenchallenge.org/',
-                           'partners': [
-                               # not yet implemented
-                           ],
-                           'facebook': 'http://www.facebook.com/BombayTeenChallenge',
-                           'twitter': 'https://twitter.com/bombaytc',
-                           'keywords': 'bombay teen challenge seek mumbai woman health india life read street vocational education program music rescued blog btc child contact donate drug gift light live reach red trust wa district men safe addict care training [] education. out. office tel access afraid allows ambedkar announced ash bandra beauty began betrayed',
+                           "name": "test",
+                           "types": ["test"],
+                           "phone_numbers": ["test", "test"],
+                           "emails": ["test"],
+                           "address": "test",
+                           "contacts": ["test test"],
+                           "organization_url": 'http://bombayteenchallenge.org/',
+                           "partners": ['test'],
+                           "facebook": 'test',
+                           "twitter": 'test',
+                           "keywords":
+                               "bombay challenge teen seek mumbai education woman health india life music read rescued "
+                               "street vocational program  blog btc care child contact district donate drug gift light "
+                               "live men office reach red safe tel training trust wa addict 501c3 access afraid allows "
+                               "ambedkar announced ash bandra beauty began betrayed bound",
                        }]
+
         for test in assert_list:
             self.assertIn(test, orgs, 'Org \'' + str(test) + '\' not found')
 

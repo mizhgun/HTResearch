@@ -8,6 +8,7 @@ from HTResearch.DataModel.model import *
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Test.Mocks.dao import *
+from HTResearch.DataModel.enums import OrgTypesEnum
 
 
 class TestableDAOContext(DAOContext):
