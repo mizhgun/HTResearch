@@ -1,6 +1,6 @@
 # stdlib imports
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.http import HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password
 from email.mime.text import MIMEText
 import smtplib
@@ -149,7 +149,7 @@ def manage_account(request):
     """
     if 'user_id' not in request.session:
         logger.error('Request made for account-preferences without login')
-        return HttpResponsePermanentRedirect('/login')
+        return HttpResponseRedirect('/login')
 
     user_id = request.session['user_id']
     user_dao = ctx.get_object('UserDAO')
