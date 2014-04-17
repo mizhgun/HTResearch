@@ -233,7 +233,7 @@ require(['shared/analytics',
         else {
             data.url_name = data.content_url;
         }
-        debugger;
+
         Modal.createModal(data, '#bs-modal', '#publication-modal-template');
     }
 
