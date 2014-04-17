@@ -76,8 +76,8 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
             breakdownPanel.find('.info1')
                 .text(curArcData.label);
             breakdownPanel.find('.info2')
-                .text(curArcData.value + ' out of ' + data.total +
-                    ' (' + Math.round(curArcData.value / data.total * 100) + '%)');
+                .text(curArcData.value + ' out of ' + data.total_known +
+                    ' (' + Math.round(curArcData.value / data.total_known * 100) + '%)');
         }
         function arcMouseLeave(arcSel, data) {
             var curArc = d3.select(arcSel);
@@ -176,10 +176,17 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
             var categories = data.total ? data.categories : emptyCategory;
 
             var element = $(typeSelector);
-            var colors3p = {
+            var colors = {
+                'advocacy': '#006600',
+                'education': '#ef843c',
+                'government': '#eab839',
+                'ngo': '#7eb26d',
                 'prevention': '#4ecdc4',
                 'protection': '#ff6b6b',
-                'prosecution': '#c7f464'
+                'prosecution': '#c7f464',
+                'religious': '#7eb26d',
+                'research': '#705da0',
+                'unknown': '#ba43a9'
             };
 
             var vis = d3.select(typeSelector)
@@ -219,7 +226,7 @@ define(['jquery', 'd3', 'underscore'], function($, d3, _) {
 
             arcs.append('svg:path')
                 .attr('fill', function(d, i) {
-                    return colors3p[d.data.label.toLowerCase()]
+                    return colors[d.data.label.toLowerCase()]
                        || grayscale(0.4 + 0.6 * i / categories.length);
                 })
                 .attr('d', arc);
