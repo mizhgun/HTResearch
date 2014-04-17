@@ -7,7 +7,7 @@ while(orgs.hasNext()) {
         var contact = db.contact_d_t_o.find({_id: c_id});
         if (!contact.hasNext()) {
             //Delete the references to contacts that no longer exist
-            var removed = orgs.cs.splice(key, 1);
+            var removed = org.cs.splice(key, 1);
             print('Broken org->contact link found');
             print('Org: ');
             printjsononeline(org._id);
