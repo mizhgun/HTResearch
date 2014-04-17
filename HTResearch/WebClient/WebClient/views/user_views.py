@@ -192,7 +192,6 @@ def manage_account(request):
                 ret_user = user_dao.create_update(user)
                 success = 'Account settings changed successfully'
                 request.session['name'] = ret_user.first_name + ' ' + ret_user.last_name
-                request.session['last_modified'] = datetime.utcnow()
                 request.session['account_type'] = ret_user.account_type
             except:
                 logger.error('Error occurred during account update for user={0}'.format(user_id))
