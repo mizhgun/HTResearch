@@ -13,6 +13,7 @@ from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import UrlMetadataScraper
 from HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches import ItemSwitch
 from HTResearch.Utilities.converter import ModelConverter
+from HTResearch.Test.Mocks.utility_scrapers import MockOrgContactsScraper
 
 # NOTE: Contexts should logically wrap modules and the various classes they define, as well as providing an interface
 # for declaring various dependencies. To do this properly, we've used "Registered________" in the past, which indicates
@@ -89,7 +90,9 @@ class DocumentScraperContext(PythonConfig):
     """A context for various document-level scrapers."""
     @Object()
     def ContactScraper(self):
-        return ContactScraper()
+        con = ContactScraper()
+        con.org_contact_scraper = MockOrgContactsScraper()
+        return con
 
     @Object()
     def OrganizationScraper(self):

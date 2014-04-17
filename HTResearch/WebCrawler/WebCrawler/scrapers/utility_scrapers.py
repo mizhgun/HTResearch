@@ -959,6 +959,7 @@ def flatten(l):
     # Flatten one level of nesting
     return itertools.chain.from_iterable(l)
 
+
 def format_extracted_text(list):
     """
     Removes the unicode encoding of the list of keywords.
@@ -972,6 +973,7 @@ def format_extracted_text(list):
     for i in range(len(list)):
         list[i] = list[i].encode('ascii', 'ignore')
     return list
+
 
 def append_words(append_to, source):
     """
