@@ -75,5 +75,12 @@ require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
                 hide: 500
             }
         });
+
+        $('.has-error input').on('change keyup paste', function() {
+            if($(this).next().hasClass('help-block'))
+                $(this).next().fadeOut(400, function() {
+                    $(this).next().remove();
+                })
+        });
     });
 });
