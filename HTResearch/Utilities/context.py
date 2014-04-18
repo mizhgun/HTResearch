@@ -91,7 +91,7 @@ class DocumentScraperContext(PythonConfig):
     @Object()
     def ContactScraper(self):
         con = ContactScraper()
-        con.org_contact_scraper = MockOrgContactsScraper()
+        con.org_contact_scraper = self.RegisteredOrgContactsScraper()()
         return con
 
     @Object()
