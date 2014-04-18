@@ -1,36 +1,39 @@
+#
+# utility_scrapers.py
+# A module containing the scrapers that grab individual fields of data.
+#
+
+# stdlib imports
+from bson.binary import Binary
+import datetime
+import hashlib
+import heapq
 import itertools
 import os
 import re
-from urlparse import urlparse, urljoin
 import string
-import datetime
-import hashlib
-import operator
-import heapq
-from sgmllib import SGMLParseError
-
 from nltk import FreqDist, WordNetLemmatizer
 from scrapy.selector import HtmlXPathSelector
 from scrapy.selector import XPathSelectorList
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
-from bson.binary import Binary
+from sgmllib import SGMLParseError
+from urlparse import urlparse, urljoin
 
+# project imports
 from ..items import *
+from link_scraper import LinkScraper
 from HTResearch.DataAccess.dao import *
+from HTResearch.DataModel.enums import OrgTypesEnum
 from HTResearch.Utilities.converter import *
 from HTResearch.Utilities.logutil import *
-from link_scraper import LinkScraper
-from HTResearch.DataModel.enums import OrgTypesEnum
 
-
-
-# ALL OF THE TEMPLATE CONSTRUCTORS ARE JUST THERE SO THERE ARE NO ERRORS WHEN TESTING THE SCRAPERS THAT ARE DONE.
-# Will likely remove/change them.
-
+#region Globals
 _utilityscrapers_logger = get_logger(LoggingSection.CRAWLER, __name__)
+#endregion
 
 
 class ContactNameScraper(object):
+    """A class that scrapes first and last names of people on a given page."""
     try:
         _names and _last_names and _stopwords and _titles
     except NameError:
@@ -49,7 +52,7 @@ class ContactNameScraper(object):
         length = len(_titles)
         # catch Dr and Dr.
         for i in range(0, length):
-            _titles.append(_titles[i]+'.')
+            _titles.append(_titles[i] + '.')
 
     def __init__(self):
         # Make a regex check for if a potential name is actually a date. Not concerned with months that aren't in the
@@ -91,11 +94,11 @@ class ContactNameScraper(object):
 
                     # if the last name wasn't caught but first name was and next word is last name format
                     try:
-                        next_uppercase = str_split[i+1].istitle() or str_split[i+1].isupper()
-                        next_all_alpha = all(c.isalpha() or c == '.' for c in str_split[i+1])
-                        if next_uppercase and str_split[i+1] not in cns._stopwords and \
-                                next_all_alpha and str_split[i+1] not in name_to_add:
-                            name_to_add += str_split[i+1]
+                        next_uppercase = str_split[i + 1].istitle() or str_split[i + 1].isupper()
+                        next_all_alpha = all(c.isalpha() or c == '.' for c in str_split[i + 1])
+                        if next_uppercase and str_split[i + 1] not in cns._stopwords and \
+                                next_all_alpha and str_split[i + 1] not in name_to_add:
+                            name_to_add += str_split[i + 1]
                     except IndexError:
                         pass
 
@@ -119,11 +122,11 @@ class ContactNameScraper(object):
 
 
 class ContactPositionScraper(object):
+    """A class that scrapes work positions of people on a given page."""
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/positions.txt')) as f:
             self._positions = f.read().splitlines()
         self._tag = re.compile(r'<[A-Za-z0-9]*>|<[A-Za-z0-9]+|</[A-Za-z0-9]*>')
-        self._remove_attributes = re.compile(r'<([A-Za-z][A-Za-z0-9]*)[^>]*>')
 
     def parse(self, response):
         for position in self._positions:
@@ -131,37 +134,33 @@ class ContactPositionScraper(object):
                 return position
 
 
-class ContactPublicationsScraper(object):
-    def __init__(self):
-        self.publications = []
-
-
 class EmailScraper(object):
+    """A class that scrapes emails on a given page."""
     def __init__(self):
-        self.email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
-                                      r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
-                                      r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
-                                      r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
-        self.c_data = re.compile(r'(.*?)<!\[CDATA(.*?)]]>(.*?)', re.DOTALL)
+        self._email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+\[at][A-Za-z0-9.-]+\[dot][A-Za-z]{2,4}\b|'
+                                       r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b|'
+                                       r'\b[A-Za-z0-9._%+-]+ at [A-Za-z0-9.-]+ dot [A-Za-z]{2,4}\b|'
+                                       r'\b[A-Za-z0-9._%+-]+\(at\)[A-Za-z0-9.-]+\(dot\)[A-Za-z]{2,4}\b')
+        self._c_data = re.compile(r'(.*?)<!\[CDATA(.*?)]]>(.*?)', re.DOTALL)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
 
-        # body will get emails that are just text in the body
-        body = hxs.select('//body//text()')
+        # all_text will get emails from the text of the page
+        all_text = hxs.select('//html//text()')
 
         # Remove C_Data tags, since they are showing up in the body text for some reason
-        body = XPathSelectorList([text for text in body if not (re.match(self.c_data, text.extract()) or
-                                                                text.extract().strip() == '')])
+        all_text = XPathSelectorList([text for text in all_text if not (re.match(self._c_data, text.extract()) or
+                                                                        text.extract().strip() == '')])
 
-        body = body.re(self.email_regex)
+        all_text = all_text.re(self._email_regex)
 
         # hrefs will get emails from hrefs
-        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(self.email_regex)
+        hrefs = hxs.select("//./a[contains(@href,'@')]/@href").re(self._email_regex)
 
-        emails = body + hrefs
+        emails = hrefs + all_text
 
-        # Take out the unicode or whatever, and substitute [at] for @ and [dot] for .
+        # Take out the unicode, and substitute [at] for @ and [dot] for .
         for i in range(len(emails)):
             emails[i] = emails[i].encode('ascii', 'ignore')
             emails[i] = re.sub(r'(\[at]|\(at\)| at )([A-Za-z0-9.-]+)(\[dot]|\(dot\)| dot )', r'@\2.', emails[i])
@@ -173,6 +172,7 @@ class EmailScraper(object):
 
 
 class KeywordScraper(object):
+    """A class that scrapes the 50 most used words on a given page."""
     NUM_KEYWORDS = 50
     _stopwords = []
     _lemmatizer = WordNetLemmatizer()
@@ -181,26 +181,6 @@ class KeywordScraper(object):
         #Load words to be ignored
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/stopwords.txt')) as f:
             self._stopwords = f.read().splitlines()
-
-    def format_extracted_text(self, list):
-        for i in range(len(list)):
-            list[i] = list[i].encode('ascii', 'ignore')
-        return list
-
-    def append_words(self, append_to, source):
-        if not source:
-            return append_to
-
-        #Split each array into sentence, and those into words
-        for line in self.format_extracted_text(source):
-            line = string.lower(line)
-            for c in string.punctuation:
-                line = line.replace(c, "")
-                for word in line.split():
-                    if not word.isdigit():
-                        append_to.append(self._lemmatizer.lemmatize(word))
-
-        return append_to
 
     def parse(self, response):
         all_words = []
@@ -213,7 +193,7 @@ class KeywordScraper(object):
 
         for element in elements:
             words = hxs.select('//' + element + '/text()').extract()
-            all_words = self.append_words(all_words, words)
+            all_words = append_words(all_words, words)
 
         #Run a frequency distribution on the web page body
         all_words_no_punct = [word.translate(None, string.punctuation) for word in all_words]
@@ -230,6 +210,7 @@ class KeywordScraper(object):
 
 
 class IndianPhoneNumberScraper(object):
+    """A class that scrapes Indian phone numbers on a given page."""
     def __init__(self):
         self._india_format_regex = re.compile(r'\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?[0-9]?[0-9]?[-./\s]?[0-9]?'
                                               r'[-./\s]?[0-9]{5}[0-9]?\b|\b(?!\s)(?:91[-./\s]+)?[0-9]+[0-9]+[-./\s]?'
@@ -254,16 +235,13 @@ class IndianPhoneNumberScraper(object):
         phone_nums_list = []
         for num in phone_nums:
             num = re.sub("\D", "", num)
-            # removing ScrapedPhoneNumber() item in favor of returning exactly what DB expects
-            # Paul Poulsen
-            #number = ScrapedPhoneNumber()
-            #number["phone_number"] = num
             phone_nums_list.append(num)
 
         return phone_nums_list
 
 
 class OrgAddressScraper(object):
+    """A class that scrapes the city and country of an organization on a given page."""
     def __init__(self):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Resources/cities.txt')) as f:
             self._cities = f.read().splitlines()
@@ -296,8 +274,8 @@ class OrgAddressScraper(object):
                         counter += 1
                     if len(body[i + 1]) == 6 and body[i + 1].isdigit():
                         city_and_zip.append((city, body[i + 1]))
-                    elif len(body[i + 1]) == 3 and len(body[i + 2]) == 3 and body[i + 1].isdigit() and body[
-                                i + 2].isdigit():
+                    elif len(body[i + 1]) == 3 and len(body[i + 2]) == 3 and body[i + 1].isdigit() and \
+                            body[i + 2].isdigit():
                         city_and_zip.append((city, body[i + 1] + body[i + 2]))
         address_list = []
         for i in range(len(city_and_zip)):
@@ -310,6 +288,7 @@ class OrgAddressScraper(object):
 
 
 class OrgContactsScraper(object):
+    """A class that scrapes the contacts that are associated with an organization on a given page."""
     def __init__(self):
         self._name_scraper = ContactNameScraper()
         self._number_scraper = IndianPhoneNumberScraper()
@@ -327,17 +306,16 @@ class OrgContactsScraper(object):
         if names is not None:
             self._contacts = {name.get('name'): {} for name in names}
             for name in names:
-                n = string.find(response.body, name.get('name'))    #find the index of each contact so we can search
-                contact_indices.append(n)                           #only between the contacts for their info
+                n = string.find(response.body, name.get('name'))    # find the index of each contact so we can search
+                contact_indices.append(n)                           # only between the contacts for their info
         for i in range(len(names)):
             if i < len(names) - 1:
                 cr = response.replace(body=response.body[contact_indices[i]:contact_indices[i + 1]])
             else:
                 cr = response.replace(body=response.body[contact_indices[i]:])
             self._contacts[names[i].get('name')]['position'] = [self._position_scraper.parse(cr)
-                                                          if self._position_scraper.parse(cr)
-                                                          else None][0]
-            numbers = []
+                                                                if self._position_scraper.parse(cr)
+                                                                else None][0]
             india_num = self._number_scraper.parse(cr)[0] if self._number_scraper.parse(cr) else None
             if india_num:
                 numbers = [india_num]
@@ -349,13 +327,26 @@ class OrgContactsScraper(object):
                     numbers = []
             self._contacts[names[i].get('name')]['number'] = numbers
             self._contacts[names[i].get('name')]['email'] = [self.compare_emails(cr, names[i].get('name'))
-                                                       if self.compare_emails(cr, names[i].get('name'))
-                                                       else None][0]
+                                                             if self.compare_emails(cr, names[i].get('name'))
+                                                             else None][0]
             self._contacts[names[i].get('name')]['organization'] = org_name
         return self._contacts
 
     # if any part of the name is in the email, take that email, otherwise just take the first element from the list
     def compare_emails(self, response, name):
+        """
+        Checks if the contact's name is in an email to try and get the correct one.
+
+        Arguments:
+            response (Response): The page to scrape for emails.
+            name (string): Name of the contact.
+            name (string): Name of the contact.
+
+        Returns:
+            If name is in one of the emails, return that email.
+            Else return first email in the list.
+            If no emails in the list, return None.
+        """
         emails = self._email_scraper.parse(response)
         name_split = name.split()
         for email in emails:
@@ -368,13 +359,14 @@ class OrgContactsScraper(object):
 
 
 class OrgFacebookScraper(object):
+    """A class that scrapes an organization's Facebook link on a given page."""
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?facebook\.com/.+(?:/)?$", re.IGNORECASE)
-        self.fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
+        self._fb_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
 
     def parse(self, response):
         try:
-            fb_links = self.fb_link_ext.extract_links(response)
+            fb_links = self._fb_link_ext.extract_links(response)
         except SGMLParseError as e:
             # Page was poorly formatted, oh well
             _utilityscrapers_logger.error('Exception encountered when link extracting page: %s' % str(response.url))
@@ -387,13 +379,14 @@ class OrgFacebookScraper(object):
 
 
 class OrgTwitterScraper(object):
+    """A class that scrapes an organization's Twitter link on a given page."""
     def __init__(self):
         regex_allow = re.compile("^(?:(?:http|https)://)?(?:www\.)?twitter\.com/(?:#!/)?\w+(?:/)?$", re.IGNORECASE)
-        self.tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
+        self._tw_link_ext = SgmlLinkExtractor(allow=regex_allow, canonicalize=False, unique=True)
 
     def parse(self, response):
         try:
-            tw_links = self.tw_link_ext.extract_links(response)
+            tw_links = self._tw_link_ext.extract_links(response)
         except SGMLParseError as e:
             # Page was poorly formatted, oh well
             _utilityscrapers_logger.error('Exception encountered when link extracting page: %s' % str(response.url))
@@ -406,6 +399,7 @@ class OrgTwitterScraper(object):
 
 
 class OrgNameScraper(object):
+    """A class that scrapes the organization name on a given page."""
     def __init__(self):
         self._split_punctuation = re.compile(r"[ \w']+")
         #Load words to be ignored
@@ -456,6 +450,7 @@ class OrgNameScraper(object):
 
 
 class OrgPartnersScraper(object):
+    """A class that scrapes partner organizations of a particular organization on a given page."""
     def __init__(self):
         self._link_scraper = LinkScraper()
         self._partner_text = 'partner'
@@ -463,8 +458,16 @@ class OrgPartnersScraper(object):
                                '../Resources/blocked_org_domains.txt')) as f:
             self._blocked_domains = map(lambda x: x.rstrip(), f)
 
-    # Find the path to selected node(s)
     def _path_to(self, sel):
+        """
+        Find the path to selected node(s).
+
+        Arguments:
+            sel (HtmlXPathSelector): XPath to potential partner links.
+
+        Returns:
+            path (string): XPath to the partner organization's link.
+        """
         path = ''
         while sel:
             tags = sel.select('name()').extract()
@@ -472,9 +475,18 @@ class OrgPartnersScraper(object):
             sel = sel.select('..')
         return path
 
-    # Find out how many external links are in a list
-    # (returns 0 if not all external links)
     def _external_link_count(self, page_url, sel):
+        """
+        Find out how many external links are in a list.
+
+        Arguments:
+            page_url (string): Url of the page.
+            sel (HtmlXPathSelector): XPath to check all the links in that XPath.
+
+        Returns:
+            count (integer): Number of external links.
+                         Returns 0 if not all external links.
+        """
         count = 0
         checked_domains = []
         for href in sel.select('@href').extract():
@@ -535,6 +547,7 @@ class OrgPartnersScraper(object):
 
 
 class OrgTypeScraper(object):
+    """A class that scrapes the type of an organization based on keywords that were scraped."""
     def __init__(self):
         # Lemmatizer for shortening each word to a more-commonly-used form of the word
         self._lemmatizer = WordNetLemmatizer()
@@ -663,15 +676,6 @@ class OrgTypeScraper(object):
         for key in self._type_words.iterkeys():
             self._type_words[key] = [self._lemmatizer.lemmatize(word) for word in self._type_words[key]]
 
-    # Find the minimum index of a term from a search list in a list
-    @staticmethod
-    def _min_index_found(listwords, searchwords):
-        index = float('inf')
-        for word in searchwords:
-            if word in listwords:
-                index = min(index, listwords.index(word))
-        return index
-
     # Get the organization type
     def parse(self, response):
         keyword_scraper_inst = self._keyword_scraper()
@@ -687,7 +691,7 @@ class OrgTypeScraper(object):
                     'small', 'strong', 'div', 'span', 'li', 'th', 'td', 'a[contains(@href, "image")]']
         for element in elements:
             words = hxs.select('//' + element + '/text()').extract()
-            keyword_scraper_inst.append_words(all_words, words)
+            append_words(all_words, words)
 
         all_words = list(set(self._lemmatizer.lemmatize(word) for word in all_words))
 
@@ -721,24 +725,24 @@ class OrgTypeScraper(object):
         #if there are less than three types and none of them are P's, append prevention
         if not threepees:
             types.append(OrgTypesEnum.PREVENTION)
-
-
         return types or [OrgTypesEnum.UNKNOWN]
 
 
 class OrgUrlScraper(object):
+    """A class that scrapes the url of an organization on a given page."""
     def __init__(self):
         pass
 
     def parse(self, response):
         parse = urlparse(response.url)
-        url = '%s/' % (parse.netloc)
+        url = '%s/' % parse.netloc
         return url
 
 
 class PublicationCitationSourceScraper(object):
+    """A class that scrapes the sources of a publication."""
     def __init__(self):
-        self.hash_regex = re.compile('\w{12}')
+        self._hash_regex = re.compile('\w{12}')
 
     def parse(self, response):
         #All hashes are fetched by gs_ocit calls
@@ -749,12 +753,13 @@ class PublicationCitationSourceScraper(object):
         #for the ajax source keys
         sources = hxs.select('//a').re(source_string_regex)
         for source in sources:
-            keys.append(re.search(self.hash_regex, source).group())
+            keys.append(re.search(self._hash_regex, source).group())
 
         return keys
 
 
 class PublicationAuthorsScraper(object):
+    """A class that scrapes the author(s) of a publication."""
     def __init__(self):
         pass
 
@@ -777,8 +782,9 @@ class PublicationAuthorsScraper(object):
 
 
 class PublicationDateScraper(object):
+    """A class that scrapes the date of a publication."""
     def __init__(self):
-        self.date_regex = re.compile('\d{4}')
+        self._date_regex = re.compile('\d{4}')
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -788,11 +794,12 @@ class PublicationDateScraper(object):
         chicago_format_html = str.replace(chicago_format_html, '<div id="gs_cit2" tabindex="0" class="gs_citr">', '')
         chicago_format_html = str.replace(chicago_format_html, '</div>', '')
 
-        date = re.search(self.date_regex, chicago_format_html).group()
+        date = re.search(self._date_regex, chicago_format_html).group()
         return date
 
 
 class PublicationPublisherScraper(object):
+    """A class that scrapes the publisher of a citation."""
     def __init__(self):
         pass
 
@@ -818,6 +825,7 @@ class PublicationPublisherScraper(object):
 
 
 class PublicationTitleScraper(object):
+    """A class that scrapes the title of a publication."""
     def __init__(self):
         pass
 
@@ -844,24 +852,25 @@ class PublicationTitleScraper(object):
 
 
 class PublicationURLScraper(object):
+    """A class that scrapes the url of a publication."""
     def __init__(self):
         #Seed titles to look for on page
-        self.titles = []
+        self._titles = []
 
     def seed_titles(self, title_names):
-        self.titles = self.titles + title_names
+        self._titles = self._titles + title_names
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
         sources = hxs.select('//h3/a').extract()
 
         urls = []
-        for i in range(0, len(self.titles)):
+        for i in range(0, len(self._titles)):
             urls.append(None)
 
         start = "=\""
         index = 0
-        for title in self.titles:
+        for title in self._titles:
             for source in sources:
                     if re.sub(r'\W+', '', title) in re.sub(r'\W+', '', source):
                         raw_link = source.encode('ascii', 'ignore')
@@ -869,7 +878,9 @@ class PublicationURLScraper(object):
             index += 1
         return urls
 
+
 class UrlMetadataScraper(object):
+    """A class that scrapes the metadata of a particular url."""
     def __init__(self):
         self.dao = URLMetadataDAO
 
@@ -914,14 +925,11 @@ class UrlMetadataScraper(object):
         # if the existing checksum was None, set the checksum and update_freq to 0 (above),
         # as this should be the first time we've seen this page
 
-        # TODO: Score the page.
-        # Ideas for page scoring:  Simple Google PageRank using references to/from other pages; Keyword Search;
-        # Update frequency; User Feedback (the more a page is clicked the more we want to keep it updated)
-
         return metadata
 
 
 class USPhoneNumberScraper(object):
+    """A class that scrapes US phone numbers on a given page"""
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
         us_format_regex = re.compile(
@@ -942,10 +950,6 @@ class USPhoneNumberScraper(object):
         phone_nums_list = []
         for num in phone_nums:
             num = re.sub("\D", "", num)
-            # Removing item in favor of giving data ready for DB
-            # Paul Poulsen
-            #number = ScrapedPhoneNumber()
-            #number["phone_number"] = num
             phone_nums_list.append(num)
 
         return phone_nums_list
@@ -954,3 +958,44 @@ class USPhoneNumberScraper(object):
 def flatten(l):
     # Flatten one level of nesting
     return itertools.chain.from_iterable(l)
+
+
+def format_extracted_text(list):
+    """
+    Removes the unicode encoding of the list of keywords.
+
+    Arguments:
+        list (list): List of keywords that were scraped.
+
+    Returns:
+        list (list): List of keywords without unicode.
+    """
+    for i in range(len(list)):
+        list[i] = list[i].encode('ascii', 'ignore')
+    return list
+
+
+def append_words(append_to, source):
+    """
+    Get all the words from the page by removing punctuation and digits.
+
+    Arguments:
+        append_to (list): The list of the words that have been scraped at the time.
+        source (list): The text from the page to be scraped.
+
+    Returns:
+        append_to (list): List of all words that have been scraped thus far.
+    """
+    if not source:
+        return append_to
+
+    #Split each array into sentence, and those into words
+    for line in format_extracted_text(source):
+        line = string.lower(line)
+        for c in string.punctuation:
+            line = line.replace(c, "")
+            for word in line.split():
+                if not word.isdigit():
+                    append_to.append(WordNetLemmatizer().lemmatize(word))
+
+    return append_to

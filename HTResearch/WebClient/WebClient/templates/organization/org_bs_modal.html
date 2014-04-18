@@ -3,18 +3,13 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title" id="modal-header">
-            ${name}
+            <a href="/organization/${id}">
+                <h3 class="modal-title">${name}</h3>
+            </a>
             <button class="btn btn-default close" data-dismiss="modal">&#x2716;</button>
         </h4>
       </div>
       <div class="modal-body" id="modal-body">
-          <p>
-          {% templatetag openvariable %}if valid{% templatetag closevariable %}
-              <span id="valid" class="pull-left glyphicon glyphicon-ok"></span>&nbsp;Verified
-          {% templatetag openvariable %}else{% templatetag closevariable %}
-              <span id="invalid" class="pull-left glyphicon glyphicon-remove"></span>&nbsp;Not Verified
-          {% templatetag openvariable %}/if{% templatetag closevariable %}
-          </p>
           <table class="table table-condensed">
               {% templatetag openvariable %}if phone_numbers.length{% templatetag closevariable %}
               <tr class="modal-row">
@@ -43,10 +38,6 @@
               </tr>
               {% templatetag openvariable %}/if{% templatetag closevariable %}
           </table>
-      </div>
-      <div class="modal-footer">
-          <a href="/organization/${id}" class="btn btn-primary pull-right">More Info</a>
-          <a id="edit-org-btn" href="/edit-organization/${id}" class="btn btn-primary pull-right">Edit</a>
       </div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 {% extends "shared/global.html" %}
 
 {% block imports %}
-    <title>Human Trafficking Research</title>
+    <title>Signup</title>
     <link href="/static/css/user/signup.css" rel="stylesheet">
     <script src="/static/scripts/user/signup.js" type="application/javascript"></script>
 {% endblock %}
@@ -77,7 +77,19 @@
         {% else %}
             <div class="form-group">
         {% endif %}
-        <label for="id_account_type" class="control-label">Account Type*</label>
+        <label for="id_account_type" class="control-label">Account Type*
+            <a class="glyphicon glyphicon-question-sign" id="account-type-popover" href="#" data-container="body" data-toggle="popover" data-placement="right"
+               data-original-title="Which account should I choose?"
+               data-content="
+               <b>Collaborator</b>
+               <br />
+               <p>Collaborators can view all information on the site, will have their profile page visible
+               to contributors, and can suggest new organizations.</p>
+               <b>Contributor</b>
+               <br />
+               <p>Contributors can do everything a collaborator can, <i>and can also edit existing
+               information for organizations and contacts or flag them as invalid.</i></p>"></a>
+        </label>
 
         <div id="id_account_type">
             <div class="radio">
@@ -138,6 +150,12 @@
                     Research
                 </label>
             </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="org_type" value="9">
+                    NGO
+                </label>
+            </div>
         </div>
         {% if form.org_type.errors %}
             <span class="help-block">
@@ -171,7 +189,7 @@
         {% endif %}
         <label for="id_background" class="control-label">Background*</label>
         <textarea class="form-control" form="signup-form" id="id_background" name="background"
-                  placeholder="Provide a short summary of your research background"></textarea>
+                  placeholder="Provide a short description of your primary human trafficking work"></textarea>
         {% if form.background.errors %}
             <span class="help-block">
                                 {% for error in form.background.errors %}

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Welcome!</title>
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
     <link href="/static/css/lib/bootstrap/bootstrap.css" rel="stylesheet">
     <link href="/static/css/shared/welcome.css" rel="stylesheet">
     <script type="application/javascript" src="/static/scripts/lib/require.js"></script>
@@ -8,22 +10,17 @@
 </head>
 
 <body>
-<img id="wrapper" src="/static/images/welcome_blur.jpg" alt="Welcome!">
-
-<div class="container table">
-    <div class="jumbotron">
-        <h2>
-            Welcome to the Anti-Trafficking Knowledge Management System
-        </h2>
-
-        <p>Our goal is to create a website that indexes up-to-date anti-human trafficking information, which users can
+    <div id="wrapper">
+        <div class="container content">
+            <h1>Welcome to the Anti-Trafficking Atlas!</h1>
+            <p>Our goal is to create a website that indexes up-to-date anti-human trafficking information, which users can
             see and search for in an intuitive and efficient way, ultimately allowing them to determine how they can
             help.</p>
-
-        <button type="button" class="btn btn-lg btn-primary">Continue</button>
+            <p>
+                Ready to get started? Let's start off with a <a id="create-cookie" href="/get-started/">tutorial</a>.
+            </p>
+        </div>
     </div>
-</div>
-
 <script type="text/javascript" src="/static/scripts/shared/welcome.js"></script>
 </body>
 </html>

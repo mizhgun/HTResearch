@@ -1,3 +1,7 @@
+/**
+ * Configuration file for requirejs modules.
+ */
+
 require.config({
     baseUrl: '/static/scripts/lib',
     paths: {
@@ -17,6 +21,7 @@ require.config({
         'jquery.tmpl': ['jquery'],
         'jquery.validate': ['jquery'],
         'jquery-ui': ['jquery'],
+        'jquery.slinky': ['jquery'],
         'bootstrap': [
             'jquery',
             'jquery-ui'

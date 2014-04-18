@@ -9,7 +9,6 @@ from HTResearch.DataModel.globals import ORG_TYPE_CHOICES
 from HTResearch.Utilities.context import DAOContext
 from HTResearch.Utilities.url_tools import UrlUtility
 
-
 class InviteForm(forms.Form):
     email = forms.EmailField(max_length=40)
     message = forms.CharField(widget=forms.Textarea, max_length=280, required=False)
@@ -84,6 +83,7 @@ class ManageForm(forms.Form):
         dao = ctx.get_object('UserDAO')
 
         user = dao.find(email=email, id__ne=user_id)
+
         if user:
             raise ValidationError('An account with that email already exists.')
 
@@ -104,14 +104,15 @@ class RequestOrgForm(forms.Form):
     def clean_url(self):
         url = self.cleaned_data['url']
         ctx = ApplicationContext(DAOContext())
-        dao = ctx.get_object('OrganizationDAO')
+        org_dao = ctx.get_object('OrganizationDAO')
+        url_metadata_dao = ctx.get_object('URLMetadataDAO')
 
         try:
-            url = UrlUtility().get_domain(url)
+            domain = UrlUtility().get_domain(url)
         except:
             raise ValidationError("Oops! We couldn't find information on that domain.")
 
-        if dao.find(organization_url=url):
+        if org_dao.find(organization_url=domain) or url_metadata_dao.find(domain=domain):
             raise ValidationError("Oops! Looks like we already have information on that organization.")
 
         return url

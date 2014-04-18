@@ -1,4 +1,10 @@
+/**
+ * Performs client side signup form validation.
+ */
+
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
+    'use strict';
+
     $(function () {
         $('#sign-up-nav').addClass('active');
 
@@ -21,7 +27,7 @@ require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
                     required: true
                 },
                 org_type: {
-                    range: [0, 5]
+                    range: [0, 9]
                 },
                 organization: {
                     maxlength: 60
@@ -59,6 +65,22 @@ require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
                     error.insertAfter(element);
                 }
             }
+        });
+
+        $('#account-type-popover').popover({
+            html: true,
+            trigger: 'hover',
+            delay: {
+                show: 0,
+                hide: 500
+            }
+        });
+
+        $('.has-error input').on('change keyup paste', function() {
+            if($(this).next().hasClass('help-block'))
+                $(this).next().fadeOut(400, function() {
+                    $(this).next().remove();
+                })
         });
     });
 });

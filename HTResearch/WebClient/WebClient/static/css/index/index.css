@@ -23,16 +23,19 @@
 .key .label {
   color: black;
   display: inline-block;
-  width: 100%;
+  min-width: 100%;
+  width: auto;
   margin: 5px;
 }
 .key {
   background-repeat: no-repeat;
-  padding: 0 32px 0 0;
+  padding: 0 50px 0 0;
   height: 32px;
-  width: 128px;
+  min-width: 150px;
+  width: auto;
   font-size: large;
-  background-position-x: 106px;
+  background: no-repeat right center;
+  border: 50px;
 }
 .key.prevention {
   background-image: url("/static/images/prevention_pin_small.png");
@@ -59,20 +62,28 @@
   box-shadow: none;
   -ms-box-shadow: none;
   -moz-box-shadow: none;
-  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 100%;
 }
-.news-panel .btn-regional:not(.active) i {
+.btn-regional span.glyphicon {
   color: #888;
 }
-.news-panel .btn-regional:not(.active):hover i {
-  color: #8aa;
+.btn-regional span.glyphicon:hover,
+.btn-regional span.glyphicon:focus {
+  color: #6f6f6f;
 }
-.news-panel .btn-regional.active i {
+.btn-regional.active span.glyphicon {
   color: #ff9e00;
 }
-.news-panel .news-header {
+.btn-regional.active span.glyphicon:hover,
+.btn-regional.active span.glyphicon:focus {
+  color: #cc7e00;
+}
+.btn-regional span {
+  line-height: inherit;
+}
+.news-header {
   white-space: nowrap;
   height: 36px;
   color: #fff;
@@ -85,7 +96,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.news-panel .news-header h2 {
+.news-header h2 {
   display: inline;
   color: #fff;
   font-size: 24px;
@@ -151,11 +162,12 @@
 }
 #news-carousel .carousel-caption .article-source {
   position: absolute;
-  left: 0;
-  top: calc(6% + 60px);
-  right: 0;
+  bottom: 3%;
+  right: 12%;
   font-size: 12px;
   font-weight: 100;
+  height: 16px;
+  overflow: hidden;
   color: #aaa;
 }
 #news-carousel .article-title a {
@@ -163,9 +175,20 @@
   display: block;
 }
 #news-carousel .article-date {
-  font-size: 80%;
-  margin-bottom: 3px;
-  display: none;
+  font-size: 12px;
+  display: block;
+  font-weight: bold;
+  color: #fff;
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 40%;
+  height: 16px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
 }
 #news-carousel .carousel-caption .article-content-snippet {
   display: inline-block;
@@ -184,13 +207,30 @@
 #news-carousel .article-content {
   display: none;
 }
+#search-results-div ::-webkit-scrollbar {
+  width: 12px;
+}
+#search-results-div ::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background: #fff;
+}
+#search-results-div ::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
 #search-results-div {
-  overflow-y: auto;
+  position: relative;
+  overflow: hidden;
   width: 100%;
   margin-top: 1px;
   height: calc(100% - 55px);
   line-height: 1.5em;
   border-radius: 5px;
+}
+#search-results-div-scroll {
+  overflow-y: scroll;
+  height: 100%;
 }
 #search-results-div h2 a {
   display: inline-block;
@@ -204,6 +244,14 @@
 }
 #search-results-div .panel-heading {
   line-height: 2;
+  width: 100%;
+}
+/* Position attribute set when jquery.slinky.js changes the position to absolute
+   We have to change the width from 100% to this so that the scrollbar doesn't
+   get covered.
+*/
+#search-results-div .panel-heading[style~="position:"] {
+  width: calc(100% - 1em);
 }
 #search-box {
   line-height: 2;
@@ -215,6 +263,9 @@
   -webkit-border-bottom-left-radius: 5px;
   -moz-border-top-left-radius: 5px;
   -moz-border-bottom-left-radius: 5px;
+}
+.search-results-panel {
+  width: 100%;
 }
 .search-results-panel h2,
 #search-box {
@@ -257,6 +308,9 @@
   border-bottom-right-radius: 0;
   width: 100%;
 }
+#custom-search-form {
+  pointer-events: auto;
+}
 #search-settings-btn {
   width: 54px;
   height: 54px;
@@ -270,6 +324,7 @@
   overflow: hidden;
 }
 #search-box-div {
+  pointer-events: none;
   width: 100%;
   height: calc(100% - 250px);
   background-color: transparent;
@@ -311,9 +366,26 @@ body {
   padding: 0;
   overflow-y: hidden;
 }
+noscript {
+  top: 50%;
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  margin-top: -2em;
+  font-size: xx-large;
+}
 #edit-org-btn,
 #edit-contact-btn {
   margin-right: 10px;
+}
+#map-container {
+  float: left;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  min-height: 1px;
+  padding: 0;
+  position: relative;
 }
 #map-canvas {
   display: block;
@@ -327,8 +399,8 @@ body {
   margin: 0;
   padding: 0;
   display: table;
-  margin-top: -42px;
-  padding-top: 42px;
+  margin-top: -51px;
+  padding-top: 51px;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }

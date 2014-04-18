@@ -1,16 +1,40 @@
+#
+# preprocessors.py
+# A module containing helpers to organize the information from the database models into a form for the PageRank
+# algorithm.
+#
+
+# project imports
 from helper_classes import SmallOrganization
 from HTResearch.DataModel.model import Organization, PageRankInfo
 from HTResearch.Utilities.converter import DTOConverter
 from HTResearch.Utilities.lists import index_of
 
 class PageRankPreprocessor(object):
+    """
+    A class to prepare data for PageRank algorithms. These functions are organized into a class to allow for the
+    easy injection of org_daos.
+
+    Attributes:
+        org_dao (OrganizationDAO): A DAO for retrieving organizations
+    """
 
     def __init__(self):
+        """
+        Constructs a new PageRankPreprocessor instance.
+        """
+
         # Injected dependencies
         self.org_dao = None
 
     def bring_orgs_to_memory(self):
-        """ Make a db call to get all organizations and trim it down to a smaller model to conserve space"""
+        """
+        Make a db call to get all organizations and trim it down to a smaller model to conserve space.
+
+        Returns:
+            small_orgs ([SmallOrganization]): A list of all organizations from the database, converted to
+                SmallOrganization objects to save some space.
+        """
 
         # grab all organizations
         tmp_org_dtos = self.org_dao.all("id", "page_rank_info.total", "organization_url",
@@ -26,7 +50,17 @@ class PageRankPreprocessor(object):
         return small_orgs
 
     def cleanup_data(self, small_orgs):
-        """Make sure the counts all add up so we don't get screwed up by the math later"""
+        """
+        Make sure the counts all add up so we don't get screwed up by the math later.
+
+        Arguments:
+            small_orgs ([SmallOrganization]): A list of all organizations from the database in the form of
+                SmallOrganization objects.
+
+        Returns:
+            small_orgs ([SmallOrganization]): The same list of small_orgs passed as argument, with the internal
+                consistency of page_rank information verified and corrected if errant.
+        """
 
         # List of domains we care about, remove the rest
         org_domains = [o.org_domain for o in small_orgs]
@@ -60,7 +94,16 @@ class PageRankPreprocessor(object):
         return small_orgs
 
     def create_matrix(self, cleaned_small_orgs):
-        """Convert the cleaned small_orgs to a matrix."""
+        """
+        Convert the cleaned small_orgs to a matrix.
+
+        Arguments:
+            cleaned_small_orgs ([SmallOrganization]): The list of all organizations in the form of SmallOrganization
+                objects that has passed through the cleanup_data function.
+
+        Returns:
+            matrix [[float]]: A 2D matrix of floats on which to perform the PageRank algorithm.
+        """
 
         org_count = len(cleaned_small_orgs)
 

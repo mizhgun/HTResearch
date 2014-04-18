@@ -11,7 +11,7 @@
         <!-- Three columns of text below the carousel -->
         <div id="title-text" class="row">
             <div>
-                <h1>Welcome to the Anti-Trafficking Info Hub</h1>
+                <h1>Welcome to the Anti-Trafficking Atlas</h1>
             </div>
         </div>
         <!-- /.row -->
@@ -23,16 +23,16 @@
 
         <div class="row">
             <div class="col-md-7">
-                <h2 class="featurette-heading">Search using keywords. <span class="text-muted">Find the most effective efforts on anti-human trafficking.</span>
+                <h2 class="featurette-heading">Search using keywords. <span class="text-muted">Find the kinds of anti-human trafficking efforts you're looking for.</span>
                 </h2>
 
-                <p class="lead">The search box has been designed to be as flexible as possible. Feel free to make your
-                    search as broad or as specific as you would like. Your search queries will be used to grab contacts,
-                    organizations, and publications. The results will be listed and direct you to appropriate pages.</p>
+                <p class="lead">Our search box searches based on names, locations, job titles, and keywords. Look for
+                    people, organizations, news, and publications related to trafficking. The results will
+                    be listed and direct you to appropriate pages.</p>
             </div>
             <!--Images must be 500x500-->
             <div class="col-md-5">
-                <img class="img-responsive" src="/static/images/tutorial_search.jpg">
+                <img class="img-responsive" src="/static/images/tutorial_search.png">
             </div>
         </div>
 
@@ -41,46 +41,78 @@
         <div class="row">
             <div class="col-md-5">
                 <!--Images must be 500x500-->
-                <img class="img-responsive" src="/static/images/tutorial_news.jpg">
+                <img class="img-responsive" src="/static/images/tutorial_contribute.png">
             </div>
+            <div class="col-md-7">
+                <h2 class="featurette-heading">Contribute and connect. <span class="text-muted">Edit and suggest information to help us help you.</span>
+                </h2>
+
+                <p class="lead">Is something missing from our site? <a
+                        href="../request-organization/">Suggest an organization</a>, <a
+                        href="../invite/">invite other users</a>, even
+                    edit current information by <a href="/signup/">signing up for a "contribution"
+                        account</a>. What's more, you can
+                    now connect with other advocates, volunteers, and researchers, allowing for new connections
+                    and collaborations which wouldn't otherwise be possible.</p>
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row">
             <div class="col-md-7">
                 <h2 class="featurette-heading">Get the latest news. <span class="text-muted">We'll fetch relevant anti-human trafficking news for the area you're interested in.</span>
                 </h2>
 
                 <p class="lead">News articles will be retrieved based on what you're looking at on the map. If you're
                     looking at a certain organization, the kinds of articles will be modified to focus on that
-                    organization. You can also manually filter the news results from global to regional sources. </p>
+                    organization. You can also manually filter the news results from global to regional sources by
+                    clicking
+                    the pin next to the news ticker. </p>
+            </div>
+            <div class="col-md-5">
+                <!--Images must be 500x500-->
+                <img class="img-responsive" src="/static/images/tutorial_news.png">
             </div>
         </div>
 
         <hr class="featurette-divider">
 
         <div class="row">
+            <div class="col-md-5">
+                <!--Images must be 500x500-->
+                <img class="img-responsive" src="/static/images/tutorial_map.png">
+            </div>
             <div class="col-md-7">
-                <h2 class="featurette-heading">Simple and effective. <span class="text-muted">Using the power of Google Maps, information will be displayed vibrantly and quickly.</span>
+                <h2 class="featurette-heading">Simple and effective. <span class="text-muted">Using the power of Google Maps, find exactly where the efforts are taking place.</span>
                 </h2>
 
-                <p class="lead">The map was created to help visualize data in an intuitive manner. You can easily
-                    navigate the map using your mouse. The heat map feature shows concentrations of anti-human
-                    trafficking efforts with the click of a button.</p>
-            </div>
-            <div class="col-md-5">
-                <!--Images must be 500x500-->
-                <img class="img-responsive" src="/static/images/tutorial_map.jpg">
+                <p class="lead">The map was created to help visualize data in an intuitive manner. The heat map reflects
+                    the number of anti-human trafficking organizations in each area. When you search, pins
+                    on the map will notify you of the location and whether the organization is affiliated
+                    most with prevention, protection, or prosecution.
+                </p>
             </div>
         </div>
 
         <hr class="featurette-divider">
 
         <div class="row">
+            <div class="col-md-7">
+                <h2 class="featurette-heading">View the big picture. <span class="text-muted">Look at the breakdown of our data on the <a
+                        href="/statistics">Statistics</a> page.</span>
+                    <!--or whatever the path is to the stats page-->
+                </h2>
+
+                <p class="lead">An update on how extensive our index is. See at a glance what regions and types of
+                    organizations are
+                    best-represented. Also take a look at the structure of the connections between the organizations in
+                    the "Partner Map."
+                </p>
+            </div>
             <div class="col-md-5">
                 <!--Images must be 500x500-->
-                <img class="img-responsive" src="/static/images/tutorial_contribute.jpg">
-            </div>
-            <div class="col-md-7">
-                <h2 class="featurette-heading">Contribute and connect. <span class="text-muted">Edit and suggest information to help us help you.</span></h2>
-
-                <p class="lead">Is something missing from our site? Suggest an organization, invite other users, even edit current information by signing up for a “contribution” account. What’s more, you can now connect with other advocates, volunteers, and researchers, allowing for new connections and collaborations which wouldn’t otherwise be possible.</p>
+                <img class="img-responsive" src="/static/images/tutorial_stats.png">
             </div>
         </div>
 
@@ -88,12 +120,12 @@
 
         <div id="complete-tutorial-btn">
             <a
-            {% if username %}
-                href="/"
-            {% else %}
-                href="/signup/"
-            {% endif %}
-            class="btn btn-primary btn-lg">
+                    {% if username %}
+                        href="/"
+                    {% else %}
+                        href="/signup/"
+                    {% endif %}
+                        class="btn btn-primary btn-lg">
                 {% if username %}
                     Let's get started!
                 {% else %}

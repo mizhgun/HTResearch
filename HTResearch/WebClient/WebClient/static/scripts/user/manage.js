@@ -1,4 +1,10 @@
+/**
+ * Performs management page validation.
+ */
+
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
+    'use strict';
+
     $(function () {
         $('#manage-form').validate({
             rules: {
@@ -19,7 +25,7 @@ require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
                     required: true
                 },
                 org_type: {
-                    range: [0, 5]
+                    range: [0, 9]
                 },
                 organization: {
                     maxlength: 60
@@ -56,6 +62,13 @@ require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
                     error.insertAfter(element);
                 }
             }
+        });
+
+        $('.has-error input').on('change keyup paste', function() {
+            if($(this).next().hasClass('help-block'))
+                $(this).next().fadeOut(400, function() {
+                    $(this).next().remove();
+                })
         });
     });
 });

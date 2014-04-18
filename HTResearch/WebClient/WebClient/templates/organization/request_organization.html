@@ -2,6 +2,7 @@
 
 {% block imports %}
     <script src="/static/scripts/organization/request-organization.js" type="application/javascript"></script>
+    <link rel="stylesheet" href="/static/css/organization/request-organization.css">
 {% endblock %}
 
 {% block content %}
@@ -10,8 +11,6 @@
             <div class="page-header">
                 <h1>
                     Request Organization
-                    <small>Give us a URL and we'll add this organization - and any related ones - to
-                    our records.</small>
                 </h1>
             </div>
 
@@ -35,9 +34,15 @@
                 {% else %}
                     <div class="form-group">
                 {% endif %}
-                        <label for="id_url" class="control-label">Organization URL</label>
+                    <label
+                        for="id_url" class="control-label">Organization URL
+                        <a id="help-text" class="glyphicon glyphicon-question-sign"
+                            data-toggle="tooltip" data-placement="right" data-container="body" data-title="What's this?"
+                            data-content="<p>Give us a URL of any organization relating directly or indirectly to victims of human trafficking.
+                            We'll add this organization - and any related ones - to our records.</p>">
+                        </a>
+                    </label>
                         <input type="url" id="id_url" class="form-control" name="url" placeholder="http://example.com">
-
                         {% if form.url.errors %}
                             <span class="help-block">
                                 {% for error in form.url.errors %}

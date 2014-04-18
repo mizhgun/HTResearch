@@ -96,7 +96,7 @@ class PageRankTest(unittest.TestCase):
         self.assertIsNotNone(new_model, "Error: did not find a model by name %s" % model.name)
 
         self.assertEqual(model.page_rank, new_model.page_rank, "Different ranks!")
-        self.assertEqual(model.page_rank_weight, new_model.page_rank_weight, "Different rank weights!")
+        self.assertAlmostEqual(model.page_rank_weight, new_model.page_rank_weight, 4, "Different rank weights!")
 
 
 if __name__ == '__main__':

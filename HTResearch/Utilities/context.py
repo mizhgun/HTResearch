@@ -1,3 +1,8 @@
+#
+# context.py
+# A module for declaring SpringPython contexts to wrap various modules or packages.
+#
+
 # stdlib imports
 from springpython.config import *
 
@@ -8,10 +13,17 @@ from HTResearch.WebCrawler.WebCrawler.scrapers.document_scrapers import *
 from HTResearch.WebCrawler.WebCrawler.scrapers.utility_scrapers import UrlMetadataScraper
 from HTResearch.WebCrawler.WebCrawler.item_pipeline.item_switches import ItemSwitch
 from HTResearch.Utilities.converter import ModelConverter
+from HTResearch.Test.Mocks.utility_scrapers import MockOrgContactsScraper
+
+# NOTE: Contexts should logically wrap modules and the various classes they define, as well as providing an interface
+# for declaring various dependencies. To do this properly, we've used "Registered________" in the past, which indicates
+# that the value is the "registered" version of the class to be used within the context (for example, a ContactDAO
+# instead of a MockContactDAO)
 
 
 class DAOContext(PythonConfig):
-    # Contextual instances of the classes defined in this module
+    """A context for various DAOs."""
+
     @Object()
     def ContactDAO(self):
         dao = ContactDAO()
@@ -75,9 +87,12 @@ class DAOContext(PythonConfig):
 
 
 class DocumentScraperContext(PythonConfig):
+    """A context for various document-level scrapers."""
     @Object()
     def ContactScraper(self):
-        return ContactScraper()
+        con = ContactScraper()
+        con.org_contact_scraper = self.RegisteredOrgContactsScraper()()
+        return con
 
     @Object()
     def OrganizationScraper(self):
@@ -135,6 +150,14 @@ class DocumentScraperContext(PythonConfig):
         return OrgTypeScraper
 
     @Object()
+    def RegisteredOrgFacebookScraper(self):
+        return OrgFacebookScraper
+
+    @Object()
+    def RegisteredOrgTwitterScraper(self):
+        return OrgTwitterScraper
+
+    @Object()
     def RegisteredOrgUrlScraper(self):
         return OrgUrlScraper
 
@@ -152,6 +175,7 @@ class DocumentScraperContext(PythonConfig):
 
 
 class UtilityScraperContext(PythonConfig):
+    """A context for various utility-level scrapers."""
     @Object()
     def OrgTypeScraper(self):
         scraper = OrgTypeScraper()
@@ -164,6 +188,7 @@ class UtilityScraperContext(PythonConfig):
 
 
 class UrlMetadataScraperContext(PythonConfig):
+    """A context for the URLMetadataScraper."""
     @Object()
     def UrlMetadataScraper(self):
         scraper = UrlMetadataScraper()
@@ -176,6 +201,7 @@ class UrlMetadataScraperContext(PythonConfig):
 
 
 class URLFrontierContext(PythonConfig):
+    """A context for the URLFrontier."""
     @Object()
     def URLFrontier(self):
         frontier = URLFrontier()
@@ -188,6 +214,7 @@ class URLFrontierContext(PythonConfig):
 
 
 class ItemPipelineContext(DAOContext, URLFrontierContext):
+    """A context for the ItemPipeline."""
     @Object()
     def ItemSwitch(self):
         switch = ItemSwitch()
@@ -198,8 +225,9 @@ class ItemPipelineContext(DAOContext, URLFrontierContext):
         switch.url_dao = self.RegisteredURLMetadataDAO()()
         return switch
 
-class ConverterContext(PythonConfig):
 
+class ConverterContext(PythonConfig):
+    """A context for the data converters."""
     @Object
     def ModelConverter(self):
         converter = ModelConverter()
@@ -212,7 +240,7 @@ class ConverterContext(PythonConfig):
 
 
 class PageRankContext(DAOContext):
-
+    """A context for the PageRank processors."""
     @Object()
     def PageRankPreprocessor(self):
         prp = PageRankPreprocessor()

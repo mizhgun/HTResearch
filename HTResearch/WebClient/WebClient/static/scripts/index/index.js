@@ -1,14 +1,19 @@
-require(['shared/modal',
-        'index/map',
-        'index/newsloader',
-        'index/heatmap',
-        'index/searchquery',
-        'underscore',
-        'jquery',
-        'jquery.tmpl',
-        'bootstrap',
-        'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
-    function(Modal, Map, NewsLoader, HeatMap, SearchQuery, _, $) {
+/**
+ * Main script for the Index page.
+ */
+
+require(['shared/analytics',
+    'shared/modal',
+    'index/map',
+    'index/newsloader',
+    'index/heatmap',
+    'index/searchquery',
+    'underscore',
+    'jquery',
+    'jquery.tmpl',
+    'bootstrap',
+    'async!https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization'],
+    function(Analytics, Modal, Map, NewsLoader, HeatMap, SearchQuery, _, $) {
     'use strict';
 
     var map;
@@ -16,7 +21,7 @@ require(['shared/modal',
 
     function initialize() {
         $('#home-nav').addClass('active');
-
+        $('.search-div').show();
         var visited = getCookie("htresearchv2");
         if (!visited) {
             window.location = '/welcome';
@@ -24,6 +29,8 @@ require(['shared/modal',
 
         map = new Map($('#map-canvas')[0]);
         newsLoader = new NewsLoader();
+
+        Analytics.startTracking();
         HeatMap.initialize(map.getMap());
 
         /**
@@ -46,7 +53,7 @@ require(['shared/modal',
         var searchItems = [
             {
                 name: 'organization',
-                url: '/search-organizations/',
+                url: '/api/search-organizations/',
                 toggleSelector: '#organization-toggle',
                 collapseSelector: '#collapse-organizations',
                 listSelector: '#organization-search-list',
@@ -56,7 +63,7 @@ require(['shared/modal',
             },
             {
                 name: 'contact',
-                url: '/search-contacts/',
+                url: '/api/search-contacts/',
                 toggleSelector: '#contact-toggle',
                 collapseSelector: '#collapse-contacts',
                 listSelector: '#contact-search-list',
@@ -66,7 +73,7 @@ require(['shared/modal',
             },
             {
                 name: 'publication',
-                url: '/search-publications/',
+                url: '/api/search-publications/',
                 toggleSelector: '#publication-toggle',
                 collapseSelector: '#collapse-publications',
                 listSelector: '#publication-search-list',
@@ -171,8 +178,14 @@ require(['shared/modal',
 
         // Make tooltips work
         $('[rel=tooltip]').tooltip();
+
+        // Resize map controls on window resize
+        $('#map-canvas').bind('DOMSubtreeModified resize', function() {
+            map.resizeControls();
+        });
     }
 
+    //Retrieve the cookie that is created upon first visiting the website
     function getCookie(name) {
         var arg = name + "=";
         var argLength = arg.length;
@@ -204,7 +217,7 @@ require(['shared/modal',
             map.showInfo(data);
         }
         else {
-            window.location.assign('/organization/' + data.id);
+            Modal.createModal(data, '#bs-modal', '#bs-org-modal-template');
         }
     }
 
@@ -213,6 +226,14 @@ require(['shared/modal',
     }
 
     function showPublicationModal(data) {
+        if(!data.content_url) {
+            data.url_name = 'Google Scholar'
+            data.content_url = "http://scholar.google.com/scholar?hl=en&q="+data.title.replace(/\s/g, '+');
+        }
+        else {
+            data.url_name = data.content_url.substring(0,30) + (data.content_url.length > 30 ? '...' : '');
+        }
+
         Modal.createModal(data, '#bs-modal', '#publication-modal-template');
     }
 

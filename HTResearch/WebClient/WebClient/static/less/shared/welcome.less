@@ -1,20 +1,34 @@
 body {
-    overflow: hidden;
-    display: table;
+  width: 100%;
+  background: url("/static/images/welcome.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
-img {
-    width: 100%;
-    position: fixed;
+#wrapper {
+  height: 900px;
+  color: white;
+  text-shadow: 0.1em 0.1em 0.5em #000;
+
+  h1 {
+    font-size: 400%;
+  }
+  p {
+    margin-top: 50px;
+    font-size: 250%;
+  }
 }
 
-div {
-    text-align: center;
-    position: relative;
+.content {
+  position: relative;
+  top: 45%;
 }
 
-.container {
-    display: table-cell;
-    vertical-align: middle;
-    padding: 100px;
+a {
+  color: darken(#fff, 40%);
+
+  &:hover, &:focus {
+    color: darken(#fff, 20%);
+    text-decoration: none;
+  }
 }

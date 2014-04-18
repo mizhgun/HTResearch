@@ -1,8 +1,14 @@
-define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
+/**
+ * Provides an interface for performing searches against the database.
+ *
+ * @module searchquery
+ */
+define(['underscore', 'jquery', 'jquery-ui', 'jquery.slinky'], function(_, $) {
     var lastSearchedText;
 
     var searchBox = $('#search-box');
     var searchResultsContainer = $('#search-results-div');
+    var searchResultsDivScroll = $('#search-results-div-scroll');
 
     // Focus search box when typing
     $(document).keypress(function() {
@@ -25,6 +31,15 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
     $(document).on('mouseenter', '#search-results-div li', function() {
         searchResultsContainer.find('li').removeClass('active');
         $(this).addClass('active');
+    });
+
+    searchResultsContainer.slinky();
+
+    $('#search-results-div-scroll > .panel > .panel-heading').click(function() {
+        var count = $.inArray(this, $('#search-results-div-scroll > .panel:visible > .panel-heading'));
+        var paddingTop = $(this).parent().innerHeight() - $(this).parent().height();
+        $(this).parent().parent().scrollTop($(this).parent().parent().scrollTop() +
+            ($(this).parent().position().top - (paddingTop * count)));
     });
 
     // Move within search results by using up/down keys
@@ -54,13 +69,10 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         selection.addClass('active');
 
         if(selection.length) {
-            // Make sure panel containing selection is open
-            selection.closest('.collapse').collapse('show');
-
-            // Scroll to selection
-            var top = selection.offset().top - searchResultsContainer.offset().top - searchResultsContainer.height() / 2
-                + selection.height() / 2 + searchResultsContainer.scrollTop();
-            searchResultsContainer.animate({ scrollTop: top }, { duration: 200, queue: false });
+           // Scroll to selection
+            var top = selection.offset().top - searchResultsDivScroll.offset().top - searchResultsDivScroll.height() / 2
+                + selection.height() / 2 + searchResultsDivScroll.scrollTop();
+            searchResultsDivScroll.animate({ scrollTop: top }, { duration: 200, queue: false });
         }
     }
 
@@ -77,6 +89,14 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         searchResultsContainer.find('li.active').find('a').click();
     }
 
+    /**
+     * Performs a search against the Mongo database.
+     *
+     * @param {string} searchText The search text.
+     * @param {object} searchItems A set of search items to be used for displaying results.
+     * @param {object} map The Google Map object associated with the search.
+     * @param {boolean} reload Whether or not to reload results for the same query.
+     */
     function search(searchText, searchItems, map, reload) {
         if (!reload && lastSearchedText === searchText)
             return;
@@ -84,14 +104,10 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
 
         map.removeAllMarkers();
 
-        // Change the icon back if a search is performed
-        var icon = $('.collapse-icon');
-        if (icon.hasClass('glyphicon-collapse-down')){
-            icon.removeClass('glyphicon-collapse-down');
-            icon.addClass('glyphicon-collapse-up');
-        }
-
+        var searchDiv = $("#search-box-div");
         if (searchText) {
+            searchDiv.css("pointer-events", "auto");
+
             // Perform each search
             _.each(searchItems, function(searchItem) {
                 // See if we want to search for this item
@@ -110,7 +126,10 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
                         endAjaxSearch();
                         // Select first result
                         setSelection(0);
-                    }, searchItem);
+                    }, searchItem, function(fail) {
+                        // Search end
+                        endAjaxSearch();
+                    });
                 } else {
                     // Hide panel
                     $(searchItem.toggleSelector).closest('.panel').hide();
@@ -118,12 +137,13 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             });
             searchResultsContainer.slideDown();
         } else {
+            searchDiv.css("pointer-events", "none");
             searchResultsContainer.slideUp();
         }
     }
 
     // Default ajax search function
-    function ajaxSearch(searchQuery, ready, searchItem) {
+    function ajaxSearch(searchQuery, ready, searchItem, fail) {
         // Do an ajax call with the given url
         $.ajax({
             type: 'GET',
@@ -136,8 +156,11 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
         }).done(function(data) {
             var results = JSON.parse(data).results;
             ready(results);
+            $('.empty-panel').text('No Results');
         }).fail(function(data) {
             console.log(searchItem.name, 'search failed');
+                $('.empty-panel').text('Error occurred: HTTP '+data.status);
+            fail(data);
             ready([]);
         });
     }
@@ -175,9 +198,6 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             });
             if (results.length) {
                 $(searchItem.toggleSelector).closest('.panel').show();
-                $(searchItem.toggleSelector).attr('data-toggle', 'collapse');
-                $(searchItem.toggleSelector).removeClass('disabled');
-                $(searchItem.collapseSelector).collapse('show');
             } else {
                 $(searchItem.toggleSelector).closest('.panel').hide();
             }
@@ -189,8 +209,20 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             // Hide panel
             $(searchItem.toggleSelector).closest('.panel').hide();
         }
+        checkForResults();
     }
 
+    function checkForResults() {
+        var check = $('.search-results-panel').is(':visible');
+        if(!check) {
+            $('.empty-panel').show();
+        }
+        else {
+            $('.empty-panel').hide();
+        }
+    }
+
+    //Display the loading indicator if searches are pending
     var searchesPending = 0;
     function startAjaxSearch() {
         searchesPending++;
@@ -198,6 +230,8 @@ define(['underscore', 'jquery', 'jquery-ui'], function(_, $) {
             $('#search-ajax-loader').removeClass('hidden');
         }
     }
+
+    //Similarly, hide the loading indicator if no searches are pending
     function endAjaxSearch() {
         searchesPending--;
         if (searchesPending === 0) {
