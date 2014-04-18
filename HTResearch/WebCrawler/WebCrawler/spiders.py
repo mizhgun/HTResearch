@@ -1,21 +1,28 @@
+#
+# spiders.py
+# A module containing the spiders that crawl pages to scrape data.
+#
+
+# stdlib imports
 import os
-
-from springpython.context import ApplicationContext
-from scrapy.spider import BaseSpider
-from scrapy.http import Request
-from scrapy import log
-from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
-
-from HTResearch.Utilities.context import URLFrontierContext
-
 from scrapers.document_scrapers import *
 from scrapers.site_specific import StopTraffickingDotInScraper
+from scrapy import log
+from scrapy.spider import BaseSpider
+from scrapy.http import Request
+from springpython.context import ApplicationContext
 
-# Since this logger can be shared by the whole module, we can instantiate it here
+# project imports
+from HTResearch.URLFrontier.urlfrontier import URLFrontierRules
+from HTResearch.Utilities.context import URLFrontierContext
+
+#region Globals
 logger = get_logger(LoggingSection.CRAWLER, __name__)
+#endregion
 
 
 class OrgSpider(BaseSpider):
+    """A class that crawls pages for organizations and contacts (through OrgContactsScraper)."""
     name = 'org_spider'
     # empty start_urls, we're setting our own
     start_urls = []
@@ -30,7 +37,6 @@ class OrgSpider(BaseSpider):
         self.scrapers = []
         self.org_scraper = OrganizationScraper()
         self.meta_data_scraper = UrlMetadataScraper()
-        self.scrapers.append(OrganizationScraper())
         self.scrapers.append(ContactScraper())
         self.scrapers.append(LinkScraper())
         self.url_frontier_rules = URLFrontierRules(blocked_domains=OrgSpider._get_blocked_domains())
@@ -105,6 +111,7 @@ class OrgSpider(BaseSpider):
 
 
 class StopTraffickingSpider(BaseSpider):
+    """A class that crawls a very specific site so we can have more data."""
     name = "stop_trafficking"
     allowed_domains = ['stoptrafficking.in']
     start_urls = ['http://www.stoptrafficking.in/Directory.aspx']
@@ -156,8 +163,17 @@ class StopTraffickingSpider(BaseSpider):
         yield url_item
 
     def _get_url_metadata(self, item):
+        """
+        Gets the metadata for the page.
+
+        Arguments:
+            item (dictionary): Dictionary of a contact or an organization.
+
+        Returns:
+            url_item (dictionary): Dictionary of url metadata.
+        """
         if not isinstance(item, ScrapedOrganization) \
-            or item['organization_url'] is None or item['organization_url'] == "":
+           or item['organization_url'] is None or item['organization_url'] == "":
             return None
 
         url_item = ScrapedUrl()
@@ -170,6 +186,7 @@ class StopTraffickingSpider(BaseSpider):
 
 
 class PublicationSpider(BaseSpider):
+    """A class that crawls Google Scholar with different queries for publications."""
     name = "publication_spider"
     allowed_domains = ['scholar.google.com']
 
@@ -195,7 +212,7 @@ class PublicationSpider(BaseSpider):
             self.main_page = response
             #Return citation requests
             for url in self.citation_urls:
-                yield Request('http://'+url, dont_filter=True)
+                yield Request('http://' + url, dont_filter=True)
 
         else:
             #Publications will be stored in the scraper until all information

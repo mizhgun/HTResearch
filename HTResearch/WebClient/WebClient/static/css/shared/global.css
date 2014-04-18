@@ -3,6 +3,15 @@
   border-bottom: 5px solid #fff;
   height: 50px;
 }
+.navbar-nav > li.dropdown:hover,
+.navbar-nav > li.dropdown:active {
+  border: 0;
+}
+.navbar-brand:hover,
+.navbar-brand.active {
+  border-bottom: 5px solid #fff;
+  height: 50px;
+}
 /* Sticky footer styles
 -------------------------------------------------- */
 html,
@@ -15,20 +24,19 @@ body {
   min-height: 100%;
   height: auto;
   /* Negative indent footer by its height */
-  margin: 0 auto -60px;
+  margin: 0 auto -120px;
   /* Pad bottom by footer height */
-  padding: 0 0 60px;
+  padding: 0 0 120px;
 }
 /* Set the fixed height of the footer here */
 #footer {
-  height: 60px;
+  padding: 8px;
+  margin-top: -120px;
+  min-height: 120px;
   background-color: #eeeeee;
-  display: none;
-  visibility: hidden;
 }
 #footer-text {
   position: relative;
-  top: 40%;
   text-align: center;
 }
 /* Forms

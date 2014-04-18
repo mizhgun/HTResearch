@@ -1,4 +1,10 @@
+/**
+ * Performs client side login validation.
+ */
+
 require(['jquery', 'jquery.validate', 'bootstrap'], function($) {
+    'use strict';
+
     $(function() {
         $('#login-nav').addClass('active');
 

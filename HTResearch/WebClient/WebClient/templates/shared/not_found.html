@@ -1,0 +1,34 @@
+{% extends "shared/error.html" %}
+
+{% block imports %}
+    <title>404 Error!</title>
+{% endblock %}
+
+{% block content %}
+    <div class="header">
+        <h1>Sad panda! (404)</h1>
+        <p>Looks like the page you're looking for can't be found. Try hitting up one of these ones.</p>
+    </div>
+    <div class="guidance">
+        <div class="row">
+            <a href="/" alt="Go Home">
+                <div class="col-xs-4">
+                    <span class="fa fa-fw fa-4x fa-home"></span><br/>
+                    <h4>Go Home</h4>
+                </div>
+            </a>
+            <a href="/get-started/" alt="About">
+                <div class="col-xs-4">
+                    <span class="fa fa-fw fa-4x fa-users"></span><br/>
+                    <h4>Get Started</h4>
+                </div>
+            </a>
+            <a href="/statistics/" alt="Get Started">
+                <div class="col-xs-4">
+                    <span class="fa fa-fw fa-4x fa-bar-chart-o"></span><br/>
+                    <h4>Statistics</h4>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endblock %}

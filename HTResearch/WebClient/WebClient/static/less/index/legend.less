@@ -11,17 +11,20 @@
 .key .label {
     color: black;
     display: inline-block;
-    width: 100%;
+    min-width: 100%;
+    width: auto;
     margin: 5px;
 }
 
 .key{
     background-repeat: no-repeat;
-    padding: 0 32px 0 0;
+    padding: 0 50px 0 0;
     height: 32px;
-    width: 128px;
+    min-width: 150px;
+    width: auto;
     font-size: large;
-    background-position-x: 106px;
+    background: no-repeat right center;
+    border: 50px;
 }
 .key.prevention {
     background-image: url("/static/images/prevention_pin_small.png");

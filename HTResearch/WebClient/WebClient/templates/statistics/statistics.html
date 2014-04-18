@@ -1,0 +1,29 @@
+{% extends "shared/global.html" %}
+
+{% block imports %}
+    <title>Statistics</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <link href="/static/css/statistics/statistics.css" rel="stylesheet">
+    <link href="/static/css/user/signup.css" rel="stylesheet">
+    <script src="/static/scripts/statistics/statistics.js" type="application/javascript"></script>
+{% endblock %}
+
+{% block content %}
+<div id="statistics">
+    <div class="statistics-panel main-area span12">
+        <div class="container">
+            {% include "statistics/counter.html" %}
+        </div>
+    </div>
+    <div class="statistics-panel main-area span12">
+        <div class="container">
+            {% include "statistics/breakdown.html" %}
+        </div>
+    </div>
+    <div class="statistics-panel main-area span12">
+        <div class="container">
+            {% include "statistics/partner-map.html" %}
+        </div>
+    </div>
+</div>
+{% endblock %}

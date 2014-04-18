@@ -1,10 +1,12 @@
-# compile_less.py
-# Compiles LESS files (given in the config) to CSS files if:
-#   1. A LESS file is changed
-#   2. The LESS file's parent directory inside the LESS directory is a key in the config
-#   3. The value of the config key is the correct filepath to the file that is to be compiled
-#
-# Assumptions: The LESS file changed is in the directory HTResearch\WebClient\WebClient\static\less
+"""
+compile_less.py
+Compiles LESS files (given in the config) to CSS files if:
+    1. A LESS file is changed
+    2. The LESS file's parent directory inside the LESS directory is a key in the config
+    3. The value of the config key is the correct filepath to the file that is to be compiled
+
+Assumptions: The LESS file changed is in the directory HTResearch\WebClient\WebClient\static\less
+"""
 
 import time
 import os
@@ -31,9 +33,13 @@ class CompileLessHandler(FileSystemEventHandler):
                     for key, value in files_to_compile.iteritems():
                         files = value.split(',')
                         for f in files:
-                            command_arg = '{0}\\less\\{1}\\{2}.less > {0}\\css\\{1}\\{2}.css'.format(path, key,
-                                                                                                     f.strip())
-                            call('lessc ' + command_arg, shell=True)
+                            f = f.strip()
+                            command_arg = '{0}\\less\\{1}\\{2}.less > {0}\\css\\{1}\\{2}.css'.format(path, key, f)
+                            result = call('lessc ' + command_arg, shell=True)
+                            if result:
+                                print "--File {0}.less had a problem in its compilation--".format(f)
+                            else:
+                                print "File {0}.less has been recompiled.".format(f)
                 elif directory == 'less':
                     break
 
@@ -42,6 +48,7 @@ if __name__ == "__main__":
     event_handler = CompileLessHandler()
     observer = Observer()
 
+    print "Script has been started and is watching {0}".format(path)
     # Schedules watching a path
     observer.schedule(event_handler, path, recursive=True)
     observer.start()

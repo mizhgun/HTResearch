@@ -15,24 +15,30 @@
     box-shadow: none;
     -ms-box-shadow: none;
     -moz-box-shadow: none;
-    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
 }
 
-.news-panel .btn-regional:not(.active) i {
+.btn-regional span.glyphicon {
     color: #888;
+    &:hover, &:focus {
+      color: darken(#888, 10%);
+    }
 }
 
-.news-panel .btn-regional:not(.active):hover i {
-    color: #8aa;
-}
-
-.news-panel .btn-regional.active i {
+.btn-regional.active span.glyphicon {
     color: @ht-light-orange;
+    &:hover, &:focus {
+      color: darken(@ht-light-orange, 10%);
+    }
 }
 
-.news-panel .news-header {
+.btn-regional span {
+  line-height: inherit;
+}
+
+.news-header {
     white-space: nowrap;
     height: 36px;
     color: #fff;
@@ -46,7 +52,7 @@
     text-overflow: ellipsis;
 }
 
-.news-panel .news-header h2 {
+.news-header h2 {
     display: inline;
     color: #fff;
     font-size: 24px;
@@ -124,11 +130,12 @@
 
 #news-carousel .carousel-caption .article-source {
     position: absolute;
-    left: 0;
-    top: ~"calc(6% + 60px)";
-    right: 0;
+    bottom: 3%;
+    right: 12%;
     font-size: 12px;
     font-weight: 100;
+    height: 16px;
+    overflow: hidden;
     color: #aaa;
 }
 
@@ -138,9 +145,20 @@
 }
 
 #news-carousel .article-date {
-    font-size: 80%;
-    margin-bottom: 3px;
-    display: none;
+    font-size: 12px;
+    display: block;
+    font-weight: bold;
+    color: #fff;
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    top: 40%;
+    height: 16px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
 }
 
 #news-carousel .carousel-caption .article-content-snippet {

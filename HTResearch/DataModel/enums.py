@@ -1,3 +1,9 @@
+#
+# enums.py
+# A module containing the various enums used throughout the project.
+#
+
+# project imports
 from HTResearch.Utilities.data_structures import enum
 
 AccountType = enum(
@@ -17,5 +23,6 @@ OrgTypesEnum = enum(
     'PROTECTION', #6
     'PROSECUTION',#7
     'UNKNOWN',    #8
+    'NGO',        #9
     ### ADD NEW TYPES ABOVE THIS LINE ###
 )
