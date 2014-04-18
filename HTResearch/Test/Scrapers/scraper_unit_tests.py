@@ -20,9 +20,6 @@ TEST_FILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resour
 
 
 class TestableDocumentScraperContext(DocumentScraperContext):
-    @Object()
-    def RegisteredContactNameScraper(self):
-        return MockContactNameScraper
 
     @Object()
     def RegisteredEmailScraper(self):
@@ -75,30 +72,6 @@ class TestableDocumentScraperContext(DocumentScraperContext):
     @Object()
     def RegisteredTwitterScraper(self):
         return MockOrgTwitterScraper
-
-    @Object()
-    def RegisteredPublicationAuthorsScraper(self):
-        return MockPublicationAuthorsScraper
-
-    @Object()
-    def RegisteredPublicationDateScraper(self):
-        return MockPublicationDateScraper
-
-    @Object()
-    def RegisteredPublicationPublisherScraper(self):
-        return MockPublicationPublisherScraper
-
-    @Object()
-    def RegisteredPublicationTitleScraper(self):
-        return MockPublicationTitleScraper
-
-    @Object()
-    def RegisteredPublicationTypeScraper(self):
-        return MockPublicationTypeScraper
-
-    @Object()
-    def RegisteredUrlMetadataScraper(self):
-        return MockUrlMetadataScraper
 
     @Object()
     def RegisteredUSPhoneNumberScraper(self):
