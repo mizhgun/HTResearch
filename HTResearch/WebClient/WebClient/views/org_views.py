@@ -65,6 +65,8 @@ def organization_profile(request, org_id):
     twitter_str = "@" + org.twitter.split('/')[-1] if org.twitter else None
 
     can_edit = account_type == AccountType.CONTRIBUTOR
+    cleaned_partners = [partner for partner in org.partners if partner.name]
+    all_contacts = org.contacts + org.user_contacts if user_id else org.contacts
 
     params = {"organization": org,
               "scheme": scheme,
@@ -72,6 +74,8 @@ def organization_profile(request, org_id):
               "facebook": facebook_str,
               "twitter": twitter_str,
               "can_edit": can_edit,
+              "partners": cleaned_partners,
+              "contacts": all_contacts,
               }
     return render(request, 'organization/organization_profile.html', params)
 
