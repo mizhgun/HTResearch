@@ -8,6 +8,7 @@ define(['underscore', 'jquery', 'jquery-ui', 'jquery.slinky'], function(_, $) {
 
     var searchBox = $('#search-box');
     var searchResultsContainer = $('#search-results-div');
+    var searchResultsDivScroll = $('#search-results-div-scroll');
 
     // Focus search box when typing
     $(document).keypress(function() {
@@ -69,9 +70,9 @@ define(['underscore', 'jquery', 'jquery-ui', 'jquery.slinky'], function(_, $) {
 
         if(selection.length) {
            // Scroll to selection
-            var top = selection.offset().top - searchResultsContainer.offset().top - searchResultsContainer.height() / 2
-                + selection.height() / 2 + searchResultsContainer.scrollTop();
-            searchResultsContainer.animate({ scrollTop: top }, { duration: 200, queue: false });
+            var top = selection.offset().top - searchResultsDivScroll.offset().top - searchResultsDivScroll.height() / 2
+                + selection.height() / 2 + searchResultsDivScroll.scrollTop();
+            searchResultsDivScroll.animate({ scrollTop: top }, { duration: 200, queue: false });
         }
     }
 

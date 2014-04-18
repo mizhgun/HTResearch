@@ -226,6 +226,14 @@ require(['shared/analytics',
     }
 
     function showPublicationModal(data) {
+        if(!data.content_url) {
+            data.url_name = 'Google Scholar'
+            data.content_url = "http://scholar.google.com/scholar?hl=en&q="+data.title.replace(/\s/g, '+');
+        }
+        else {
+            data.url_name = data.content_url.substring(0,30) + (data.content_url.length > 30 ? '...' : '');
+        }
+
         Modal.createModal(data, '#bs-modal', '#publication-modal-template');
     }
 
