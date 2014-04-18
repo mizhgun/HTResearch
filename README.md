@@ -1,5 +1,6 @@
 # HTResearch
-A repository for the Anti-Trafficking Atlas, a collaborative effort between the UNL Department of
+A repository for the Anti-Trafficking Atlas, a collaborative effort between the UNL Department of Child, Youth, and
+Family Studies, and the Jeffrey S. Raikes School of Computer Science and Management.
 
 ## What does this do?
 The Anti-Trafficking Atlas is a website that provides a centralized way for government and research professionals
