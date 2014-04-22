@@ -107,7 +107,7 @@
 }
 #news-carousel .carousel-inner {
   height: 200px;
-  background: #00a67c;
+  background: #cd0000;
   border: #000000;
   border-radius: 5px;
   -moz-border-radius: 5px;
@@ -285,7 +285,7 @@
 }
 .search-results-panel li.active {
   color: #fff;
-  background-color: #00a67c;
+  background-color: #cd0000;
 }
 .search-results-panel li.active a {
   color: #fff;

@@ -7,13 +7,13 @@
 }
 #statistics .statistics-panel:nth-child(odd) {
   background: #fff;
-  color: #00a67c;
+  color: #cd0000;
 }
 #statistics .statistics-panel:nth-child(odd) text {
-  color: #00a67c;
+  color: #cd0000;
 }
 #statistics .statistics-panel:nth-child(even) {
-  background: #00a67c;
+  background: #cd0000;
   color: #fff;
 }
 #statistics .statistics-panel:nth-child(even) text {
