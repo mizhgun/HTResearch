@@ -16,9 +16,9 @@ from HTResearch.Utilities import decorators
 logger = get_logger(LoggingSection.CLIENT, __name__)
 ctx = ApplicationContext(DAOContext())
 REFRESH_COORDS_LIST = timedelta(minutes=5)
-REFRESH_PARTNER_MAP = timedelta(minutes=5)
-REFRESH_ORG_BREAKDOWN = timedelta(minutes=5)
-REFRESH_COUNT = timedelta(minutes=5)
+REFRESH_PARTNER_MAP = timedelta(minutes=20)
+REFRESH_ORG_BREAKDOWN = timedelta(minutes=20)
+REFRESH_COUNT = timedelta(minutes=20)
 #endregion
 
 
